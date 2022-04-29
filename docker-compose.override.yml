@@ -24,9 +24,9 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     depends_on:
-      - masa.scheduler.server
+      - masa.scheduler.service.server
 
-  masa.scheduler.server:
+  masa.scheduler.service.server:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80 #https://+:443;
@@ -37,7 +37,7 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  masa.scheduler.server.dapr:
+  masa.scheduler.service.server.dapr:
     image: "daprio/daprd:1.5.1"
     command: ["./daprd",
       "-app-id", "masa-scheduler-server",
@@ -45,12 +45,12 @@ services:
       "-components-path", "/components"
       ]
     depends_on:
-      - masa.scheduler.server
+      - masa.scheduler.service.server
     volumes:
       - "./dapr/components/:/components"
-    network_mode: "service:masa.scheduler.server"
+    network_mode: "service:masa.scheduler.service.server"
 
-  masa.scheduler.worker:
+  masa.scheduler.service.worker:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80 #https://+:443;
@@ -61,7 +61,7 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  masa.scheduler.worker.dapr:
+  masa.scheduler.service.worker.dapr:
     image: "daprio/daprd:1.5.1"
     command: ["./daprd",
       "-app-id", "masa-scheduler-worker",
@@ -69,10 +69,10 @@ services:
       "-components-path", "/components"
       ]
     depends_on:
-      - masa.scheduler.worker
+      - masa.scheduler.service.worker
     volumes:
       - "./dapr/components/:/components"
-    network_mode: "service:masa.scheduler.worker"
+    network_mode: "service:masa.scheduler.service.worker"
 
 
   dapr-placement:

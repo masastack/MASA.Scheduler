@@ -36,5 +36,9 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 	</ItemGroup>
 	
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Contracts\MASA.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
+	</ItemGroup>
+	
 	<ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>
