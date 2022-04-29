@@ -4,7 +4,7 @@ namespace MASA.Scheduler.Caller.Callers
 {
     public class JobCaller : HttpClientCallerBase
     {
-        protected override string BaseAddress { get; set; } = "http://localhost:6239";
+        protected override string BaseAddress { get; set; } = "http://localhost:16002";
 
         public JobCaller(IServiceProvider serviceProvider) : base(serviceProvider)
         {
