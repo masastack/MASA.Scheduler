@@ -1,10 +1,9 @@
-﻿namespace MASA.Scheduler.Service.Domain.Aggregates.Orders
+﻿namespace MASA.Scheduler.Service.Domain.Aggregates.Jobs
 {
-    public class Order : AggregateRoot<int>
+    public class Job : AggregateRoot<int>
     {
-        public Order()
+        public Job()
         {
-            Items = new List<OrderItem>();
         }
 
         public DateTimeOffset CreationTime { get; set; } = DateTimeOffset.Now;
@@ -12,7 +11,5 @@
         public string OrderNumber { get; set; } = default!;
 
         public string Address { get; set; } = default!;
-
-        public List<OrderItem> Items { get; set; }
     }
 }

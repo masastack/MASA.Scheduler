@@ -1,7 +1,7 @@
 ﻿namespace MASA.Scheduler.Service.Actors
 {
-    public interface IOrderActor : IActor
+    public interface IJobActor : IActor
     {
-        Task<List<Order>> GetListAsync();
+        Task<List<Job>> GetListAsync();
     }
 }

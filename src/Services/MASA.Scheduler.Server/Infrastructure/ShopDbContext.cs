@@ -2,7 +2,7 @@
 {
     public class ShopDbContext : IntegrationEventLogContext
     {
-        public DbSet<Order> Orders { get; set; } = default!;
+        public DbSet<Job> Jobs { get; set; } = default!;
 
         public ShopDbContext(MasaDbContextOptions<ShopDbContext> options) : base(options)
         {

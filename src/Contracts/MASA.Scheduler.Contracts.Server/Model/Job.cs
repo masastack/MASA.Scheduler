@@ -1,6 +1,6 @@
-﻿namespace MASA.Scheduler.Contracts.Order.Model
+﻿namespace MASA.Scheduler.Contracts.Server.Model
 {
-    public class Order
+    public class Job
     {
         public DateTime CreationTime { get; set; }
 

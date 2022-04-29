@@ -1,18 +1,18 @@
 ﻿namespace MASA.Scheduler.Service.Actors
 {
-    public class OrderActor : Actor, IOrderActor
+    public class JobActor : Actor, IJobActor
     {
 
-        readonly IOrderRepository _orderRepository;
+        readonly IJobRepository _jobRepository;
 
-        public OrderActor(ActorHost host, IOrderRepository orderRepository) : base(host)
+        public JobActor(ActorHost host, IJobRepository jobRepository) : base(host)
         {
-            _orderRepository = orderRepository;
+            _jobRepository = jobRepository;
         }
 
-        public async Task<List<Order>> GetListAsync()
+        public async Task<List<Job>> GetListAsync()
         {
-            var data = await _orderRepository.GetListAsync();
+            var data = await _jobRepository.GetListAsync();
             return data;
         }
     }

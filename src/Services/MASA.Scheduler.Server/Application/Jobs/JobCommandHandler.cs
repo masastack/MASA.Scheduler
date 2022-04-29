@@ -1,40 +1,40 @@
-﻿namespace MASA.Scheduler.Service.Application.Orders
+﻿namespace MASA.Scheduler.Service.Application.Jobs
 {
-    public class OrderCommandHandler
+    public class JobCommandHandler
     {
-        private readonly OrderDomainService _domainService;
+        private readonly JobDomainService _domainService;
 
-        public OrderCommandHandler(OrderDomainService domainService)
+        public JobCommandHandler(JobDomainService domainService)
         {
             _domainService = domainService;
         }
 
         [EventHandler(Order = 1)]
-        public async Task CreateHandleAsync(OrderCreateCommand command)
+        public async Task CreateHandleAsync(JobCreateCommand command)
         {
-            await _domainService.PlaceOrderAsync();
+            await _domainService.CreateJobAsync();
             //you work
             await Task.CompletedTask;
         }
     }
 
-    public class OrderStockHandler : CommandHandler<OrderCreateCommand>
+    public class OrderStockHandler : CommandHandler<JobCreateCommand>
     {
-        public override Task CancelAsync(OrderCreateCommand comman)
+        public override Task CancelAsync(JobCreateCommand comman)
         {
             //cancel todo callback 
             return Task.CompletedTask;
         }
 
         [EventHandler(FailureLevels = FailureLevels.ThrowAndCancel)]
-        public override Task HandleAsync(OrderCreateCommand comman)
+        public override Task HandleAsync(JobCreateCommand comman)
         {
             //todo decrease stock
             return Task.CompletedTask;
         }
 
         [EventHandler(0, FailureLevels.Ignore, IsCancel = true)]
-        public Task AddCancelLogs(OrderCreateCommand query)
+        public Task AddCancelLogs(JobCreateCommand query)
         {
             //todo increase stock
             return Task.CompletedTask;

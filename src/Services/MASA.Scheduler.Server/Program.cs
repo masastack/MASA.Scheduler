@@ -3,7 +3,7 @@
 builder.Services.AddDaprClient();
 builder.Services.AddActors(options =>
 {
-    options.Actors.RegisterActor<OrderActor>();
+    options.Actors.RegisterActor<JobActor>();
 });
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>

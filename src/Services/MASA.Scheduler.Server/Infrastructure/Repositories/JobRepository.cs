@@ -1,15 +1,15 @@
 ﻿namespace MASA.Scheduler.Service.Infrastructure.Repositories
 {
-    public class OrderRepository : Repository<ShopDbContext, Order>, IOrderRepository
+    public class JobRepository : Repository<ShopDbContext, Job>, IJobRepository
     {
-        public OrderRepository(ShopDbContext context, IUnitOfWork unitOfWork)
+        public JobRepository(ShopDbContext context, IUnitOfWork unitOfWork)
             : base(context, unitOfWork)
         {
         }
-        public async Task<List<Order>> GetListAsync()
+        public async Task<List<Job>> GetListAsync()
         {
             var data = Enumerable.Range(1, 5).Select(index =>
-                  new Order
+                  new Job
                   {
                       CreationTime = DateTimeOffset.Now,
                       Id = index,
