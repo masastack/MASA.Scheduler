@@ -1,8 +1,8 @@
 ﻿namespace MASA.Scheduler.Service.Infrastructure.Repositories
 {
-    public class JobRepository : Repository<ShopDbContext, Job>, IJobRepository
+    public class JobRepository : Repository<SchedulerDbContext, Job>, IJobRepository
     {
-        public JobRepository(ShopDbContext context, IUnitOfWork unitOfWork)
+        public JobRepository(SchedulerDbContext context, IUnitOfWork unitOfWork)
             : base(context, unitOfWork)
         {
         }
@@ -12,7 +12,6 @@
                   new Job
                   {
                       CreationTime = DateTimeOffset.Now,
-                      Id = index,
                       OrderNumber = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
                       Address = $"Address {index}"
                   }).ToList();

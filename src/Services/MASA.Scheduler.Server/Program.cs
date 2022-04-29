@@ -17,6 +17,17 @@ builder.Services.AddAuthentication(options =>
     options.RequireHttpsMetadata = false;
     options.Audience = "";
 });
+
+builder.Services.AddMasaRedisCache(builder.Configuration.GetSection("RedisConfig"));
+builder.Services.AddPmClient(callerOption =>
+{
+    callerOption.UseHttpClient(_builder =>
+    {
+        _builder.Name = builder.Configuration.GetValue<string>("PmClient:Name");
+        _builder.Configure = opt => opt.BaseAddress = new Uri(builder.Configuration.GetValue<string>("PmClient:Url"));
+    });
+});
+
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
@@ -46,19 +57,23 @@ var app = builder.Services
             }
         });
     })
-    .AddTransient(typeof(IMiddleware<>), typeof(LogMiddleware<>))
     .AddFluentValidation(options =>
     {
         options.RegisterValidatorsFromAssemblyContaining<Program>();
     })
-    .AddTransient(typeof(IMiddleware<>), typeof(ValidatorMiddleware<>))
     .AddDomainEventBus(options =>
     {
-        options.UseEventBus()
-               .UseUoW<ShopDbContext>(dbOptions => dbOptions.UseSqlite("DataSource=:memory:"))
-               .UseDaprEventBus<IntegrationEventLogService>()
-               .UseEventLog<ShopDbContext>()
-               .UseRepository<ShopDbContext>();
+        options
+        .UseDaprEventBus<IntegrationEventLogService>(options => options.UseEventLog<SchedulerDbContext>())
+        .UseEventBus(eventBusBuilder =>
+        {
+            eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
+            eventBusBuilder.UseMiddleware(typeof(LogMiddleware<>));
+        })
+        .UseIsolationUoW<SchedulerDbContext>(
+            isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
+            dbOptions => dbOptions.UseSqlServer())
+        .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder);
 
