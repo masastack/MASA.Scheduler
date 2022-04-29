@@ -18,7 +18,7 @@
         }
     }
 
-    public class OrderStockHandler : CommandHandler<JobCreateCommand>
+    public class JobStockHandler : CommandHandler<JobCreateCommand>
     {
         public override Task CancelAsync(JobCreateCommand comman)
         {
