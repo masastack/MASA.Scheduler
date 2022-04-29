@@ -1,0 +1,54 @@
+[
+  {
+    "Id": 1,
+    "Title": "Dashboard",
+    "Icon": "mdi-trending-up",
+    "Children": [
+      {
+        "Id": 2,
+        "Title": "eCommerce",
+        "Icon": "mdi-circle",
+        "Href": "dashboard/ecommerce"
+      },
+      {
+        "Id": 3,
+        "Hide": true,
+        "Title": "Analytics",
+        "Icon": "mdi-circle",
+        "Href": "dashboard/analytics"
+      }
+    ]
+  },
+  {
+    "Id": 27,
+    "Title": "Others",
+    "Icon": "mdi-dots-horizontal",
+    "Children": [
+      {
+        "Id": 28,
+        "Hide": true,
+        "Title": "Account Settings",
+        "Icon": "mdi-circle",
+        "Href": "pages/others/account-settings"
+      },
+      {
+        "Id": 29,
+        "Title": "500",
+        "Icon": "mdi-circle",
+        "Href": "pages/others/500"
+      },
+      {
+        "Id": 30,
+        "Title": "401",
+        "Icon": "mdi-circle",
+        "Href": "pages/others/401"
+      },
+      {
+        "Id": 31,
+        "Title": "404",
+        "Icon": "mdi-circle",
+        "Href": "pages/others/404"
+      }
+    ]
+  }
+]

@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<UserSecretsId>1c1198a0-537d-4dd8-8bf6-6ec4a1225e39</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileContext>..\..\..</DockerfileContext>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="0.3.0" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="0.3.0" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF" Version="0.3.0" />
+		<PackageReference Include="FluentValidation" Version="10.3.6" />
+		<PackageReference Include="FluentValidation.AspNetCore" Version="10.3.6" />
+		<PackageReference Include="Dapr.Actors.AspNetCore" Version="1.5.0" />
+		<PackageReference Include="Dapr.AspNetCore" Version="1.5.0" />
+		<PackageReference Include="Masa.BuildingBlocks.Ddd.Domain" Version="0.3.0" />
+		<PackageReference Include="Masa.Contrib.Ddd.Domain" Version="0.3.0" />
+		<PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EF" Version="0.3.0" />
+		<PackageReference Include="Masa.Contrib.ReadWriteSpliting.Cqrs" Version="0.3.0" />
+		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="0.3.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
+		<PackageReference Include="Masa.Contrib.Data.UoW.EF" Version="0.3.0" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="0.3.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+	</ItemGroup>
+	
+	<ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+</Project>
