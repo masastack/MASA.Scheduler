@@ -14,7 +14,6 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums
         Running = 1,
         Success,
         Failure,
-        Stopped,
         Timeout,
         TimeoutSuccess,
         TimeoutFailure,

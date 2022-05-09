@@ -36,8 +36,6 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs
                 case TaskRunStatus.Failure:
                     FailureCount++;
                     break;
-                case TaskRunStatus.Stopped:
-                    break;
                 case TaskRunStatus.Timeout:
                     TimeoutCount++;
                     break;
@@ -48,8 +46,13 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs
                     TimeoutFailureCount++;
                     break;
             }
+
             LastRunStatus = status;
-            LastRunTime = DateTimeOffset.Now;
+
+            if (status != TaskRunStatus.Running)
+            {
+                LastRunTime = DateTimeOffset.Now;
+            }
         }
     }
 }
