@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 
-namespace Masa.Scheduler.Web.Admin.WebAssembly
+namespace Masa.Scheduler.Web.Admin.WebAssembly;
+
+public class TestAuthStateProvider : AuthenticationStateProvider
 {
-    public class TestAuthStateProvider : AuthenticationStateProvider
+    public async override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        public async override Task<AuthenticationState> GetAuthenticationStateAsync()
-        {
-            var anonymous = new ClaimsIdentity();
-            return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(anonymous)));
-        }
+        var anonymous = new ClaimsIdentity();
+        return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(anonymous)));
     }
 }

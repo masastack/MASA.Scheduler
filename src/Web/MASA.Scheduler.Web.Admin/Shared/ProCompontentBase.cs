@@ -1,25 +1,24 @@
-﻿namespace Masa.Scheduler.Web.Admin
+﻿namespace Masa.Scheduler.Web.Admin;
+
+public abstract class ProCompontentBase : ComponentBase
 {
-    public abstract class ProCompontentBase : ComponentBase
+    private I18n? _languageProvider;
+
+    [Inject]
+    public I18n LanguageProvider
     {
-        private I18n? _languageProvider;
-
-        [Inject]
-        public I18n LanguageProvider
+        get
         {
-            get
-            {
-                return _languageProvider ?? throw new Exception("please Inject I18n!");
-            }
-            set
-            {
-                _languageProvider = value;
-            }
+            return _languageProvider ?? throw new Exception("please Inject I18n!");
         }
-
-        public string T(string key)
+        set
         {
-            return LanguageProvider.T(key) ?? key;
+            _languageProvider = value;
         }
+    }
+
+    public string T(string key)
+    {
+        return LanguageProvider.T(key) ?? key;
     }
 }

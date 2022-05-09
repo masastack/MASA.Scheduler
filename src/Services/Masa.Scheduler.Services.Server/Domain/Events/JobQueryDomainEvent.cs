@@ -1,7 +1,6 @@
-﻿namespace MASA.Scheduler.Service.Domain.Events
+﻿namespace MASA.Scheduler.Service.Domain.Events;
+
+public record JobQueryDomainEvent : DomainEvent
 {
-    public record JobQueryDomainEvent : DomainEvent
-    {
-        public List<Job> Jobs { get; set; } = new();
-    }
+    public List<Job> Jobs { get; set; } = new();
 }

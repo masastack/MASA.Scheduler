@@ -1,6 +1,5 @@
-﻿namespace MASA.Scheduler.Service.Application.Jobs.Commands
+﻿namespace MASA.Scheduler.Service.Application.Jobs.Commands;
+
+public record JobCreateCommand : DomainCommand
 {
-    public record JobCreateCommand : DomainCommand
-    {
-    }
 }

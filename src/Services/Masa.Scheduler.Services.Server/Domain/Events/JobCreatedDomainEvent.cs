@@ -1,6 +1,5 @@
-﻿namespace MASA.Scheduler.Service.Domain.Events
+﻿namespace MASA.Scheduler.Service.Domain.Events;
+
+public record JobCreatedDomainEvent : DomainEvent
 {
-    public record JobCreatedDomainEvent : DomainEvent
-    {
-    }
 }

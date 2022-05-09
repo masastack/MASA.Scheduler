@@ -1,7 +1,6 @@
-﻿namespace Masa.Scheduler.Web.Admin.Data.Base
+﻿namespace Masa.Scheduler.Web.Admin.Data.Base;
+
+public static class GlobalVariables
 {
-    public static class GlobalVariables
-    {
-        public const string DefaultRoute = "dashboard/ecommerce";
-    }
+    public const string DefaultRoute = "dashboard/ecommerce";
 }
