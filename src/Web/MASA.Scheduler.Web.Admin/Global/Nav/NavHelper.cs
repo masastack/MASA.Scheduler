@@ -8,26 +8,46 @@ namespace Masa.Scheduler.Web.Admin.Global
         private List<NavModel> _navList;
         private NavigationManager _navigationManager;
         private GlobalConfig _globalConfig;
+        private AuthService _authService;
 
         public List<NavModel> Navs { get; } = new();
 
         public List<NavModel> SameLevelNavs { get; } = new();
 
         public List<PageTabItem> PageTabItems { get; } = new();
+        
 
-        public NavHelper(List<NavModel> navList, NavigationManager navigationManager, GlobalConfig globalConfig)
+        public NavHelper(List<NavModel> navList, NavigationManager navigationManager, GlobalConfig globalConfig, SchedulerCaller schedulerCaller)
         {
             _navList = navList;
             _navigationManager = navigationManager;
             _globalConfig = globalConfig;
+            _authService = schedulerCaller.AuthService;
             Initialization();
         }
 
         private void Initialization()
         {
-            _navList.ForEach(nav =>
+            _navList.ForEach(async nav =>
             {
                 if (nav.Hide is false) Navs.Add(nav);
+
+                //Team Child Get by Auth
+                if(nav.Id == 1)
+                {
+                    var teamList = await _authService.GetTeamListAsync();
+
+                    var teamChild = new List<NavModel>();
+
+                    int childId = 1;
+
+                    teamList.ForEach(team =>
+                    {
+                        teamChild.Add(new NavModel(childId, $"/project/{team.Id}", team.Avatar, team.Name, new NavModel[] { }));
+                    });
+
+                    nav.Children = teamChild.ToArray();
+                }
 
                 if (nav.Children is not null)
                 {

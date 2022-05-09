@@ -4,19 +4,6 @@
     "Title": "Team",
     "Icon": "mdi-account-multiple",
     "Children": [
-      {
-        "Id": 2,
-        "Title": "eCommerce",
-        "Icon": "mdi-circle",
-        "Href": "dashboard/ecommerce"
-      },
-      {
-        "Id": 3,
-        "Hide": true,
-        "Title": "Analytics",
-        "Icon": "mdi-circle",
-        "Href": "dashboard/analytics"
-      }
     ]
   },
   {

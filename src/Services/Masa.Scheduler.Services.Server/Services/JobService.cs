@@ -5,22 +5,20 @@ namespace Masa.Scheduler.Services.Server.Server.Services
 {
     public class JobService : ServiceBase
     {
-        public JobService(IServiceCollection services) : base(services)
+        public JobService(IServiceCollection services) : base(services, "api/job")
         {
-            App.MapGet("/job/list", QueryList).Produces<List<Job>>()
-                .WithName("GetJobs")
-                .RequireAuthorization();
-            App.MapPost("/createJob", CreateJob);
+            MapGet(ListAsync);
+            MapPost(CreateAsync);
         }
 
 
-        public async Task<IResult> QueryList(JobDomainService jobDomainService)
+        public async Task<IResult> ListAsync(JobDomainService jobDomainService)
         {
             var jobs = await jobDomainService.QueryListAsync();
             return Results.Ok(jobs);
         }
 
-        public async Task<IResult> CreateJob(IEventBus eventBus)
+        public async Task<IResult> CreateAsync(IEventBus eventBus)
         {
             var comman = new JobCreateCommand();
             await eventBus.PublishAsync(comman);

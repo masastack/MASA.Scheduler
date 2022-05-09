@@ -48,3 +48,5 @@ global using Masa.Scheduler.Services.Server.Domain.Aggregates.Tasks;
 global using Masa.Scheduler.Services.Server.Domain.Aggregates.Resources;
 global using System.Reflection;
 global using Masa.Contrib.ReadWriteSpliting.Cqrs.Queries;
+global using Masa.Scheduler.Services.Server.Application.Teams.Queries;
+global using Masa.Scheduler.Contracts.Server.Model;

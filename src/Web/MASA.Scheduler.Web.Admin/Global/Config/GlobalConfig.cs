@@ -14,6 +14,7 @@ namespace Masa.Scheduler.Web.Admin.Global
         private string? _favorite;
         private NavModel? _currentNav;
         private CookieStorage? _cookieStorage;
+        private bool _loading;
 
         #endregion
 
@@ -105,6 +106,19 @@ namespace Masa.Scheduler.Web.Admin.Global
             }
         }
 
+        public bool Loading
+        {
+            get => _loading;
+            set
+            {
+                if (_loading != value)
+                {
+                    _loading = value;
+                    OnLoadingChanged?.Invoke(_loading);
+                }
+            }
+        }
+
         #endregion
 
         public GlobalConfig(CookieStorage cookieStorage, I18nConfig i18nConfig, IHttpContextAccessor httpContextAccessor)
@@ -117,9 +131,11 @@ namespace Masa.Scheduler.Web.Admin.Global
         #region event
 
         public delegate void GlobalConfigChanged();
+        public delegate void LoadingChanged(bool Loading);
         public event GlobalConfigChanged? OnPageModeChanged;
         public event GlobalConfigChanged? OnCurrentNavChanged;
         public event GlobalConfigChanged? OnLanguageChanged;
+        public event LoadingChanged? OnLoadingChanged;
 
         #endregion
 
