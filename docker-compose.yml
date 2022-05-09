@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+
+  redis:
+    image: redis:alpine
+
+  masa.scheduler.database:
+     image: mcr.microsoft.com/mssql/server:2019-latest
+     ports:
+       - "14333:1433"
+     environment:
+      - SA_PASSWORD=P@ssw0rd
+      - ACCEPT_EULA=Y
+
+  masa.scheduler.web.admin:
+    image: ${DOCKER_REGISTRY-}masaschedulerwebadmin
+    build:
+      context: .
+      dockerfile: src/Web/Masa.Scheduler.Web.Admin.Server/Dockerfile
+
+  masa.scheduler.service.server:
+    image: ${DOCKER_REGISTRY-}masaschedulerserver
+    build:
+      context: .
+      dockerfile: src/Services/Masa.Scheduler.Service.Server/Dockerfile
+
+  masa.scheduler.service.worker:
+    image: ${DOCKER_REGISTRY-}masaschedulerworker
+    build:
+      context: .
+      dockerfile: src/Services/Masa.Scheduler.Service.Worker/Dockerfile
+
+  dapr-placement:
+    image: "daprio/dapr:1.5.1"
