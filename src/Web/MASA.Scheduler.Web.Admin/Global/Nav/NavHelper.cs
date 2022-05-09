@@ -17,7 +17,7 @@ namespace Masa.Scheduler.Web.Admin.Global
         public List<PageTabItem> PageTabItems { get; } = new();
         
 
-        public NavHelper(List<NavModel> navList, NavigationManager navigationManager, GlobalConfig globalConfig, SchedulerCaller schedulerCaller)
+        public NavHelper(List<NavModel> navList, NavigationManager navigationManager, GlobalConfig globalConfig, SchedulerServerCaller schedulerCaller)
         {
             _navList = navList;
             _navigationManager = navigationManager;

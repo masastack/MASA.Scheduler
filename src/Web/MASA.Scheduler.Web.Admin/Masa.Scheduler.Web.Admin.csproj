@@ -15,8 +15,8 @@
     <PackageReference Include="Masa.Blazor" Version="0.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.2" />
   </ItemGroup>
-
-`  <ItemGroup>
+	
+  <ItemGroup>
     <ProjectReference Include="..\..\ApiGateways\Caller\MASA.Scheduler.ApiGateways.Caller\Masa.Scheduler.ApiGateways.Caller.csproj" />
   </ItemGroup>
 

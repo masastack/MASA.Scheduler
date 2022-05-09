@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.ApiGateways.Caller
 {
-    public class SchedulerCaller : HttpClientCallerBase
+    public class SchedulerServerCaller : HttpClientCallerBase
     {
         JobService? _jobService;
         AuthService? _authService;
@@ -12,9 +12,9 @@ namespace Masa.Scheduler.ApiGateways.Caller
 
         public AuthService AuthService => _authService ?? (_authService = new(CallerProvider));
 
-        public SchedulerCaller(IServiceProvider serviceProvider, SchedulerApiOptions options) : base(serviceProvider)
+        public SchedulerServerCaller(IServiceProvider serviceProvider, SchedulerApiOptions options) : base(serviceProvider)
         {
-            Name = nameof(SchedulerCaller);
+            Name = nameof(SchedulerServerCaller);
             BaseAddress = options.SchedulerServerBaseAddress;
         }
 
