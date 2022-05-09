@@ -1,14 +1,16 @@
-﻿using MASA.Scheduler.Contracts.Server.Model;
-
-namespace MASA.Scheduler.Caller.Callers
+﻿namespace MASA.Scheduler.Caller.Callers
 {
     public class JobCaller : HttpClientCallerBase
     {
-        protected override string BaseAddress { get; set; } = "http://localhost:16002";
+        private readonly IConfiguration _configuration;
 
-        public JobCaller(IServiceProvider serviceProvider) : base(serviceProvider)
+        protected override string BaseAddress { get; set; }
+
+        public JobCaller(IServiceProvider serviceProvider, IConfiguration configuration) : base(serviceProvider)
         {
             Name = nameof(JobCaller);
+            _configuration = configuration;
+            BaseAddress = configuration["SchedulerServerBaseAddress"];
         }
 
         public async Task<List<Job>> GetListAsync()

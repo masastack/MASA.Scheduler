@@ -51,17 +51,6 @@
             }
         }
 
-        public string PageMode
-        {
-            get => _pageMode ?? PageModes.PageTab;
-            set
-            {
-                _pageMode = value;
-                _cookieStorage?.SetItemAsync(PageModeKey, value);
-                OnPageModeChanged?.Invoke();
-            }
-        }
-
         public bool NavigationMini
         {
             get => _navigationMini;
@@ -114,7 +103,6 @@
         #region event
 
         public delegate void GlobalConfigChanged();
-        public event GlobalConfigChanged? OnPageModeChanged;
         public event GlobalConfigChanged? OnCurrentNavChanged;
         public event GlobalConfigChanged? OnLanguageChanged;
 

@@ -2,14 +2,16 @@
 {
     public class Job : AggregateRoot<int>
     {
-        public Job()
+        public Job(string orderNumber, string address)
         {
+            OrderNumber = orderNumber;
+            Address = address;
         }
 
-        public DateTimeOffset CreationTime { get; set; } = DateTimeOffset.Now;
+        public DateTimeOffset CreationTime { get; private set; } = DateTimeOffset.Now;
 
-        public string OrderNumber { get; set; } = default!;
+        public string OrderNumber { get; private set; } = default!;
 
-        public string Address { get; set; } = default!;
+        public string Address { get; private set; } = default!;
     }
 }

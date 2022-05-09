@@ -7,7 +7,6 @@ global using Masa.Scheduler.Web.Admin.Data.Dashboard.ECommerce;
 global using Masa.Scheduler.Web.Admin.Data.Dashboard.ECommerce.Dto;
 global using Masa.Scheduler.Web.Admin.Data.Shared.Favorite;
 global using Masa.Scheduler.Web.Admin.Global;
-global using Masa.Scheduler.Web.Admin.Global.Config;
 global using Masa.Scheduler.Web.Admin.Global.Nav.Model;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Forms;
