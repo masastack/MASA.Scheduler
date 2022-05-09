@@ -1,4 +1,7 @@
-﻿namespace MASA.Scheduler.Service.Domain.Services
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+namespace Masa.Scheduler.Services.Server.Domain.Services
 {
     public class ProductDomainService : DomainService
     // you can alse implement an interface like below

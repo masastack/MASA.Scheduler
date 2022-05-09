@@ -1,6 +1,7 @@
-﻿using MASA.Scheduler.Contracts.Server.Model;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace MASA.Scheduler.Caller.Callers
+namespace MASA.Scheduler.ApiGateways.Caller.Callers
 {
     public class JobCaller : HttpClientCallerBase
     {
@@ -11,10 +12,10 @@ namespace MASA.Scheduler.Caller.Callers
             Name = nameof(JobCaller);
         }
 
-        public async Task<List<Job>> GetListAsync()
+        public async Task<List<JobDto>> GetListAsync()
         {
-            var result = await CallerProvider.GetAsync<List<Job>>($"job/list");
-            return result ?? new List<Job>();
+            var result = await CallerProvider.GetAsync<List<JobDto>>($"job/list");
+            return result ?? new List<JobDto>();
         }
     }
 }

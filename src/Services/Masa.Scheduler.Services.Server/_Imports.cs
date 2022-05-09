@@ -1,4 +1,7 @@
-﻿global using Dapr.Actors;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+global using Dapr.Actors;
 global using Dapr.Actors.Client;
 global using Dapr.Actors.Runtime;
 global using FluentValidation;
@@ -19,15 +22,15 @@ global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF;
 global using Masa.Contrib.ReadWriteSpliting.Cqrs.Commands;
 global using Masa.Contrib.Service.MinimalAPIs;
 global using Masa.Utils.Data.EntityFrameworkCore;
-global using MASA.Scheduler.Service.Actors;
-global using MASA.Scheduler.Service.Application.Jobs.Commands;
-global using MASA.Scheduler.Service.Application.Jobs.Queries;
-global using MASA.Scheduler.Service.Domain.Aggregates.Jobs;
-global using MASA.Scheduler.Service.Domain.Events;
-global using MASA.Scheduler.Service.Domain.Repositories;
-global using MASA.Scheduler.Service.Domain.Services;
-global using MASA.Scheduler.Service.Infrastructure;
-global using MASA.Scheduler.Service.Infrastructure.Middleware;
+global using Masa.Scheduler.Services.Server.Actors;
+global using Masa.Scheduler.Services.Server.Application.Jobs.Commands;
+global using Masa.Scheduler.Services.Server.Application.Jobs.Queries;
+global using Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
+global using Masa.Scheduler.Services.Server.Domain.Events;
+global using Masa.Scheduler.Services.Server.Domain.Repositories;
+global using Masa.Scheduler.Services.Server.Domain.Services;
+global using Masa.Scheduler.Services.Server.Infrastructure;
+global using Masa.Scheduler.Services.Server.Infrastructure.Middleware;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.Utils.Caching.Redis;
 global using Masa.Utils.Caching.Redis.DependencyInjection;
@@ -39,3 +42,11 @@ global using Masa.Contrib.Isolation.UoW.EF;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.OpenApi.Models;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
+global using Masa.Scheduler.Services.Server.Domain.Aggregates.Tasks;
+global using Masa.Scheduler.Services.Server.Domain.Aggregates.Resources;
+global using System.Reflection;
+global using Masa.Contrib.ReadWriteSpliting.Cqrs.Queries;
+global using Masa.Scheduler.Services.Server.Application.Teams.Queries;
+global using Masa.Scheduler.Contracts.Server.Model;

@@ -1,4 +1,7 @@
-﻿global using BlazorComponent;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+global using BlazorComponent;
 global using BlazorComponent.I18n;
 global using Masa.Blazor;
 global using Masa.Scheduler.Web.Admin.Data.Base;
