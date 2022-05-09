@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
-public class JobRunDetail: Entity<Guid>
+public class JobRunDetail : Entity<Guid>
 {
     public int SuccessCount { get; private set; }
 

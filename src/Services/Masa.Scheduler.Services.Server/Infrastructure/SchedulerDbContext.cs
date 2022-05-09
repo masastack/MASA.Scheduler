@@ -9,6 +9,10 @@ public class SchedulerDbContext : IsolationDbContext
 
     public DbSet<Job> Jobs { get; set; } = default!;
 
+    public DbSet<SchedulerTask> Tasks { get; set; } = default!;
+
+    public DbSet<SchedulerResource> Resources { get; set; } = default!;
+
     public SchedulerDbContext(MasaDbContextOptions<SchedulerDbContext> options) : base(options)
     {
 

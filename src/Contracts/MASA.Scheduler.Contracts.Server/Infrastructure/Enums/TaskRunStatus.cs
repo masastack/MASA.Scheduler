@@ -10,5 +10,5 @@ public enum TaskRunStatus
     Failure,
     Timeout,
     TimeoutSuccess,
-    TimeoutFailure,
+    TimeoutFailure
 }

@@ -15,7 +15,7 @@ public class SchedulerResource : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public string Version { get; private set; } = string.Empty;
 
-    public int JobAppId { get; private set;}
+    public int JobAppId { get; private set; }
 
     public SchedulerResource(int jobAppId, string name, string description, string filePath, string version)
     {

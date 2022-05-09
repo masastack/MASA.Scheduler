@@ -7,5 +7,5 @@ public enum RoutingStrategyTypes
 {
     Poll = 1,
     Auto,
-    Assign,
+    Assign
 }

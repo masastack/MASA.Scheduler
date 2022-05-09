@@ -6,7 +6,7 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 public class Job : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 {
     private JobRunDetail _jobRunDetail = new();
-    private List<SchedulerTask> _schedulerTasks = new(); 
+    private List<SchedulerTask> _schedulerTasks = new();
 
     public Job()
     {
@@ -100,12 +100,12 @@ public class Job : AuditAggregateRoot<Guid, Guid>, ISoftDelete
     }
 
     public void UpdateJob(
-        string name, 
+        string name,
         string principal,
-        bool isAlertException, 
-        int alertMessageTemplate, 
-        ScheduleTypes scheduleType, 
-        JobTypes jobType, 
+        bool isAlertException,
+        int alertMessageTemplate,
+        ScheduleTypes scheduleType,
+        JobTypes jobType,
         RoutingStrategyTypes routingStrategy,
         ScheduleExpiredStrategyTypes scheduleExpiredStrategy,
         RunTimeoutStrategyTypes runTimeoutStrategy,
@@ -116,7 +116,7 @@ public class Job : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         int status)
     {
         Name = name;
-        Principal = principal;  
+        Principal = principal;
         IsAlertException = isAlertException;
         AlertMessageTemplate = alertMessageTemplate;
         ScheduleType = scheduleType;

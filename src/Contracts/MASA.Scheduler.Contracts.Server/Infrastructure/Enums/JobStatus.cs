@@ -6,5 +6,5 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 public enum JobStatus
 {
     Enabled = 1,
-    Disabled,
+    Disabled
 }

@@ -6,5 +6,5 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 public enum ScheduleTypes
 {
     None = 1,
-    CRON = 2,
+    CRON
 }

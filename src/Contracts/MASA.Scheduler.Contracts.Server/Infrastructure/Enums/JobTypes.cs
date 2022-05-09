@@ -6,6 +6,6 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 public enum JobTypes
 {
     Shell = 1,
-    Http = 2,
-    SourceCode = 3
+    Http,
+    JobApp
 }
