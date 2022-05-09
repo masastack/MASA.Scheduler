@@ -2,7 +2,6 @@
 
 public class JobActor : Actor, IJobActor
 {
-
     readonly IJobRepository _jobRepository;
 
     public JobActor(ActorHost host, IJobRepository jobRepository) : base(host)
