@@ -14,7 +14,7 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.EntityConfigurations.Res
             builder.HasIndex(x => x.Name).IsUnique().HasFilter("[IsDeleted] = 0");
             builder.Property(x => x.Description).HasMaxLength(255);
             builder.Property(x => x.FilePath).HasMaxLength(255);
-            builder.Property(x => x.DownloadUrl).HasMaxLength(255);
+            builder.Property(x => x.Version).HasMaxLength(255);
         }
     }
 }

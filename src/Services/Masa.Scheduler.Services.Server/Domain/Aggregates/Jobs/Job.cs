@@ -130,5 +130,10 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs
             Description = description;
             Status = status;
         }
+
+        public void UPdateRunDetail(TaskRunStatus taskRunStatus)
+        {
+            RunDetail.UpdateJobRunDetail(taskRunStatus);
+        }
     }
 }
