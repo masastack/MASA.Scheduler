@@ -1,21 +1,21 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
-// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+﻿namespace MASA.Scheduler.Caller.Callers;
 
-namespace MASA.Scheduler.ApiGateways.Caller.Callers
+public class JobCaller : HttpClientCallerBase
 {
-    public class JobCaller : HttpClientCallerBase
+    private readonly IConfiguration _configuration;
+
+    protected override string BaseAddress { get; set; }
+
+    public JobCaller(IServiceProvider serviceProvider, IConfiguration configuration) : base(serviceProvider)
     {
-        protected override string BaseAddress { get; set; } = "http://localhost:16002";
+        Name = nameof(JobCaller);
+        _configuration = configuration;
+        BaseAddress = configuration["SchedulerServerBaseAddress"];
+    }
 
-        public JobCaller(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            Name = nameof(JobCaller);
-        }
-
-        public async Task<List<JobDto>> GetListAsync()
-        {
-            var result = await CallerProvider.GetAsync<List<JobDto>>($"job/list");
-            return result ?? new List<JobDto>();
-        }
+    public async Task<List<JobDto>> GetListAsync()
+    {
+        var result = await CallerProvider.GetAsync<List<JobDto>>($"job/list");
+        return result ?? new List<JobDto>();
     }
 }

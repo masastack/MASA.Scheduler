@@ -1,10 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Scheduler.Services.Server.Domain.Events
+namespace Masa.Scheduler.Services.Server.Domain.Events;
+
+public record JobQueryDomainEvent : DomainEvent
 {
-    public record JobQueryDomainEvent : DomainEvent
-    {
-        public List<Job> Jobs { get; set; } = new();
-    }
+    public List<Job> Jobs { get; set; } = new();
 }
