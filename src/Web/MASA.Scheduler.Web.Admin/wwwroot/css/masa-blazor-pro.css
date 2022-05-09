@@ -1054,14 +1054,14 @@ tr:hover {
     content: none !important;
 }
 
-.m-page-tabs .m-tab:hover {
+/*.m-page-tabs .m-tab:hover {
     background-color: #F6F8FD;
     color: #485585 !important;
-}
+}*/
 
-    .m-page-tabs .m-tab:hover > .m-icon {
-        color: #485585 !important;
-    }
+.m-page-tabs .m-tab:hover > .m-icon {
+    color: #485585 !important;
+}
 
 .m-app-bar.rounded-b-4 > .m-toolbar__content {
     border-bottom-left-radius: 20px !important;
