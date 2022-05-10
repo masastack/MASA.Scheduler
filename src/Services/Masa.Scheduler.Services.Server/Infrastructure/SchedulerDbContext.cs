@@ -7,7 +7,7 @@ public class SchedulerDbContext : IsolationDbContext
 {
     public const string SERVER_SCHEMA = "server";
 
-    public DbSet<Job> Jobs { get; set; } = default!;
+    public DbSet<SchedulerJob> Jobs { get; set; } = default!;
 
     public DbSet<SchedulerTask> Tasks { get; set; } = default!;
 

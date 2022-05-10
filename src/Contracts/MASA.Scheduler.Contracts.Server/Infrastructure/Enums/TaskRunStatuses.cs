@@ -3,8 +3,12 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum ScheduleTypes
+public enum TaskRunStatuses
 {
-    None = 1,
-    Cron
+    Running = 1,
+    Success,
+    Failure,
+    Timeout,
+    TimeoutSuccess,
+    TimeoutFailure
 }

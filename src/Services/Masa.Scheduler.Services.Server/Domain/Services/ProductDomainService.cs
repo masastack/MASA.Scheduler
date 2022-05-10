@@ -10,18 +10,18 @@ public class ProductDomainService : DomainService
     }
 
     [EventHandler(Order = 1)]
-    public void DeductInvenroyCompletedAsync(JobCreatedDomainEvent @event)
+    public void DeductInvenroyCompletedAsync(SchedulerJobCreatedDomainEvent @event)
     {
     }
 
     [EventHandler(Order = 0, FailureLevels = FailureLevels.ThrowAndCancel)]
-    public Task DeductInvenroyAsync(JobCreatedDomainEvent @event)
+    public Task DeductInvenroyAsync(SchedulerJobCreatedDomainEvent @event)
     {
         throw new NotImplementedException();
     }
 
     [EventHandler(1, FailureLevels.Ignore, IsCancel = true)]
-    public Task CancelDeductInvenroyAsync(JobCreatedDomainEvent @event)
+    public Task CancelDeductInvenroyAsync(SchedulerJobCreatedDomainEvent @event)
     {
         throw new NotImplementedException();
     }
