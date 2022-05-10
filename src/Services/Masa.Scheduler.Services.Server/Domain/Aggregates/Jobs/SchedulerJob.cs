@@ -131,7 +131,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         Status = status;
     }
 
-    public void UPdateRunDetail(TaskRunStatuses taskRunStatus)
+    public void UpdateRunDetail(TaskRunStatuses taskRunStatus)
     {
         RunDetail.UpdateJobRunDetail(taskRunStatus);
     }
