@@ -32,7 +32,6 @@ namespace Masa.Scheduler.Web.Admin.Global
             {
                 if (nav.Hide is false) Navs.Add(nav);
 
-                //Team Child Get by Auth
                 if(nav.Id == 1)
                 {
                     var teamList = await _authService.GetTeamListAsync();
@@ -44,6 +43,7 @@ namespace Masa.Scheduler.Web.Admin.Global
                     teamList.ForEach(team =>
                     {
                         teamChild.Add(new NavModel(childId, $"/team/{team.Id}", team.Avatar, team.Name, new NavModel[] { }));
+                        childId++;
                     });
 
                     nav.Children = teamChild.ToArray();
