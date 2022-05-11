@@ -22,7 +22,7 @@ public class SchedulerJobService : ServiceBase
 
     public async Task<IResult> CreateJob(IEventBus eventBus)
     {
-        var comman = new CreateSchedulerJobCommand();
+        var comman = new AddSchedulerJobCommand();
         await eventBus.PublishAsync(comman);
         return Results.Ok();
     }

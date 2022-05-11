@@ -8,11 +8,6 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
     private SchedulerJobRunDetail _jobRunDetail = new();
     private List<SchedulerTask> _schedulerTasks = new();
 
-    public SchedulerJob()
-    {
-
-    }
-
     public string Name { get; private set; } = string.Empty;
 
     public string Principal { get; private set; } = string.Empty;

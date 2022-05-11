@@ -13,7 +13,7 @@ public class SchedulerJobCommandHandler
     }
 
     [EventHandler(Order = 1)]
-    public async Task CreateHandleAsync(CreateSchedulerJobCommand command)
+    public async Task CreateHandleAsync(AddSchedulerJobCommand command)
     {
         await _domainService.CreateJobAsync();
         //you work

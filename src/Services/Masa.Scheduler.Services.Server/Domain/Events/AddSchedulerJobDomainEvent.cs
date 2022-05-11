@@ -3,6 +3,6 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Events;
 
-public record SchedulerJobCreatedDomainEvent : DomainEvent
+public record AddSchedulerJobDomainEvent : DomainEvent
 {
 }

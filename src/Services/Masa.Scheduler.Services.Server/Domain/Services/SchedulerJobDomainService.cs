@@ -16,8 +16,7 @@ public class SchedulerJobDomainService : DomainService
 
     public async Task CreateJobAsync()
     {
-        //todo create order
-        var orderEvent = new SchedulerJobCreatedDomainEvent();
+        var orderEvent = new AddSchedulerJobDomainEvent();
         await EventBus.PublishAsync(orderEvent);
     }
 

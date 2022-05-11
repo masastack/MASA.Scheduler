@@ -5,8 +5,6 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Tasks;
 
 public class SchedulerTask : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 {
-    private SchedulerJob _job = new();
-
     public int RunCount { get; private set; }
 
     public long RunTime { get; private set; }
@@ -21,7 +19,7 @@ public class SchedulerTask : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public Guid JobId { get; private set; }
 
-    public SchedulerJob Job => _job;
+    public SchedulerJob Job { get; set; } = null!;
 
     public bool IsDeleted { get; private set; }
 

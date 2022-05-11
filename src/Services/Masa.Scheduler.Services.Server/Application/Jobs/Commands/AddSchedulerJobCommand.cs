@@ -3,6 +3,6 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Jobs.Commands;
 
-public record CreateSchedulerJobCommand : DomainCommand
+public record AddSchedulerJobCommand : DomainCommand
 {
 }

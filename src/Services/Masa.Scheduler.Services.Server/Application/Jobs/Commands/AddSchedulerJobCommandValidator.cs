@@ -3,9 +3,9 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Jobs.Commands;
 
-public class CreateSchedulerJobCommandValidator : AbstractValidator<CreateSchedulerJobCommand>
+public class AddSchedulerJobCommandValidator : AbstractValidator<AddSchedulerJobCommand>
 {
-    public CreateSchedulerJobCommandValidator()
+    public AddSchedulerJobCommandValidator()
     {
         //RuleFor(cmd => cmd.Items).Must(cmd => cmd.Any()).WithMessage("the order items cannot be empty");
     }
