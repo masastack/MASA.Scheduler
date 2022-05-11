@@ -23,3 +23,4 @@ global using System.Reflection;
 global using System.Text.Json;
 global using Masa.Scheduler.ApiGateways.Caller;
 global using Masa.Scheduler.ApiGateways.Caller.Services;
+global using Masa.Scheduler.Contracts.Server.Model;

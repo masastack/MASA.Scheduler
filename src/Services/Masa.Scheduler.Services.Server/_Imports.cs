@@ -50,3 +50,4 @@ global using System.Reflection;
 global using Masa.Contrib.ReadWriteSpliting.Cqrs.Queries;
 global using Masa.Scheduler.Services.Server.Application.Teams.Queries;
 global using Masa.Scheduler.Contracts.Server.Model;
+global using Masa.Scheduler.Services.Server.Application.Projects.Queries;

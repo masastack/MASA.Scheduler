@@ -7,10 +7,13 @@ namespace Masa.Scheduler.ApiGateways.Caller
     {
         JobService? _jobService;
         AuthService? _authService;
+        PMService? _pmService;
 
         public JobService JobService => _jobService ?? (_jobService = new(CallerProvider));
 
         public AuthService AuthService => _authService ?? (_authService = new(CallerProvider));
+
+        public PMService PMService => _pmService ?? (_pmService = new(CallerProvider));
 
         public SchedulerCaller(IServiceProvider serviceProvider, SchedulerApiOptions options) : base(serviceProvider)
         {

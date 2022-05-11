@@ -406,7 +406,7 @@
 }
 
 .rounded-2 {
-    border-radius: 10px !important;
+    border-radius: 8px !important;
 }
 
 .rounded-4 {
@@ -1066,4 +1066,9 @@ tr:hover {
 .m-app-bar.rounded-b-4 > .m-toolbar__content {
     border-bottom-left-radius: 20px !important;
     border-bottom-right-radius: 20px !important;
+}
+
+.m-list-item-group .env-list.m-list-item--active {
+    background: #4318FF !important;
+    color: #fff !important;
 }

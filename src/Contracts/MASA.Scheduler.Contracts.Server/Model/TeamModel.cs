@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Masa.Scheduler.Contracts.Server.Model
 {
-    public class Team
+    public class TeamModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;

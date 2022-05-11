@@ -11,10 +11,10 @@ namespace Masa.Scheduler.ApiGateways.Caller.Services
         {
             BaseUrl = "api/auth";
         }
-        public async Task<List<Team>> GetTeamListAsync()
+        public async Task<List<TeamModel>> GetTeamListAsync()
         {
-            var result = await GetAsync<List<Team>>($"TeamList");
-            return result ?? new List<Team>();
+            var result = await GetAsync<List<TeamModel>>($"TeamList");
+            return result ?? new List<TeamModel>();
         }
     }
 }

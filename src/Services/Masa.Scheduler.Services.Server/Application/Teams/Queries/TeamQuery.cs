@@ -3,8 +3,8 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Teams.Queries
 {
-    public record TeamQuery : Query<List<Team>>
+    public record TeamQuery : Query<List<TeamModel>>
     {
-        public override List<Team> Result { get; set; } = new();
+        public override List<TeamModel> Result { get; set; } = new();
     }
 }
