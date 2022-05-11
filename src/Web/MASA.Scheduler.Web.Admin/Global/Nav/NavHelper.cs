@@ -43,7 +43,7 @@ namespace Masa.Scheduler.Web.Admin.Global
 
                     teamList.ForEach(team =>
                     {
-                        teamChild.Add(new NavModel(childId, $"/project/{team.Id}", team.Avatar, team.Name, new NavModel[] { }));
+                        teamChild.Add(new NavModel(childId, $"/team/{team.Id}", team.Avatar, team.Name, new NavModel[] { }));
                     });
 
                     nav.Children = teamChild.ToArray();
