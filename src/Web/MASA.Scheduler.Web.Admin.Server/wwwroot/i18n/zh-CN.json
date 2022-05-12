@@ -29,5 +29,8 @@
   "Reset Password v2": "重置密码版本2",
   "Others": "其他",
   "Account Settings": "账户设置",
-  "Favorite": "收藏"
+  "Favorite": "收藏",
+  "Team": "团队",
+  "Job": "Job",
+  "Task": "任务"
 }

@@ -1068,7 +1068,10 @@ tr:hover {
     border-bottom-right-radius: 20px !important;
 }
 
-.m-list-item-group .env-list.m-list-item--active {
+.m-list-item-group .project-list.m-list-item--active {
     background: #4318FF !important;
     color: #fff !important;
+}
+.project-list {
+    margin: 16px 0 !important;
 }
