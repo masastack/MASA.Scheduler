@@ -6,6 +6,7 @@ namespace Masa.Scheduler.Services.Server.Application.Jobs;
 public class SchedulerJobQueryHandler
 {
     readonly ISchedulerJobRepository _schedulerJobRepository;
+
     public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository)
     {
         _schedulerJobRepository = schedulerJobRepository;

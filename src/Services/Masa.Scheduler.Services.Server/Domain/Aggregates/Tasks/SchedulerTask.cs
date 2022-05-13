@@ -13,9 +13,9 @@ public class SchedulerTask : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public DateTimeOffset SchedulerStartTime { get; private set; }
 
-    public DateTimeOffset? TaskRunStartTime { get; private set; }
+    public DateTimeOffset TaskRunStartTime { get; private set; } = DateTimeOffset.MinValue;
 
-    public DateTimeOffset? TaskRunEndTime { get; private set; }
+    public DateTimeOffset TaskRunEndTime { get; private set; } = DateTimeOffset.MinValue;
 
     public Guid JobId { get; private set; }
 
@@ -40,6 +40,6 @@ public class SchedulerTask : AuditAggregateRoot<Guid, Guid>, ISoftDelete
     {
         TaskStatus = taskStatus;
         TaskRunEndTime = DateTimeOffset.Now;
-        RunTime = Convert.ToInt64((TaskRunStartTime!.Value - TaskRunEndTime.Value).TotalSeconds);
+        RunTime = Convert.ToInt64((TaskRunStartTime - TaskRunEndTime).TotalSeconds);
     }
 }

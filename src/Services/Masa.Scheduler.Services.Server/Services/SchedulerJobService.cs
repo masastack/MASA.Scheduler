@@ -10,7 +10,7 @@ public class SchedulerJobService : ServiceBase
         App.MapGet("/job/list", QueryList).Produces<List<SchedulerJob>>()
             .WithName("GetJobs")
             .RequireAuthorization();
-        App.MapPost("/createJob", CreateJob);
+        App.MapPost("/job", CreateJob);
     }
 
 

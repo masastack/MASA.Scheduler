@@ -10,11 +10,9 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public string Name { get; private set; } = string.Empty;
 
-    public string Principal { get; private set; } = string.Empty;
+    public string Owner { get; private set; } = string.Empty;
 
     public bool IsAlertException { get; private set; }
-
-    public int AlertMessageTemplate { get; private set; }
 
     public ScheduleTypes ScheduleType { get; private set; }
 
@@ -38,7 +36,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public string Description { get; private set; } = string.Empty;
 
-    public int Status { get; private set; }
+    public bool IsEnabled { get; private set; }
 
     public Guid BelongTeamId { get; private set; }
 
@@ -56,9 +54,8 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public SchedulerJob(
         string name,
-        string principal,
+        string owner,
         bool isAlertException,
-        int alertMessageTemplate,
         ScheduleTypes scheduleType,
         JobTypes jobType,
         RoutingStrategyTypes routingStrategy,
@@ -68,16 +65,15 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         FailedStrategyTypes failedStrategy,
         int failedRetryInterval,
         string description,
-        int status,
+        bool isEnabled,
         Guid belongTeamId,
         int belongProjectId,
         Guid resourseId,
         string mainFunc)
     {
         Name = name;
-        Principal = principal;
+        Owner = owner;
         IsAlertException = isAlertException;
-        AlertMessageTemplate = alertMessageTemplate;
         ScheduleType = scheduleType;
         JobType = jobType;
         RoutingStrategy = routingStrategy;
@@ -87,7 +83,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         FailedStrategy = failedStrategy;
         FailedRetryInterval = failedRetryInterval;
         Description = description;
-        Status = status;
+        IsEnabled = isEnabled;
         BelongProjectId = belongProjectId;
         BelongTeamId = belongTeamId;
         ResourceId = resourseId;
@@ -96,9 +92,8 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public void UpdateJob(
         string name,
-        string principal,
+        string owner,
         bool isAlertException,
-        int alertMessageTemplate,
         ScheduleTypes scheduleType,
         JobTypes jobType,
         RoutingStrategyTypes routingStrategy,
@@ -108,12 +103,11 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         FailedStrategyTypes failedStrategy,
         int failedRetryInterval,
         string description,
-        int status)
+        bool isEnabled)
     {
         Name = name;
-        Principal = principal;
+        Owner = owner;
         IsAlertException = isAlertException;
-        AlertMessageTemplate = alertMessageTemplate;
         ScheduleType = scheduleType;
         JobType = jobType;
         RoutingStrategy = routingStrategy;
@@ -123,7 +117,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         FailedStrategy = failedStrategy;
         FailedRetryInterval = failedRetryInterval;
         Description = description;
-        Status = status;
+        IsEnabled = isEnabled;
     }
 
     public void UpdateRunDetail(TaskRunStatuses taskRunStatus)

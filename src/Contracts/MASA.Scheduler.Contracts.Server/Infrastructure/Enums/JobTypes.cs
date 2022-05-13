@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
 public enum JobTypes
 {
-    Shell = 1,
-    Http,
-    JobApp
+    Http = 1,
+    JobApp,
+    DaprServiceInvocation
 }

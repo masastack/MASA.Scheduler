@@ -7,6 +7,6 @@ public enum ScheduleBlockStrategyTypes
 {
     Serial = 1,
     Parallel,
-    Throw,
+    Discard,
     Cover
 }

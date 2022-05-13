@@ -7,11 +7,9 @@ public class SchedulerJobDto
 {
     public string Name { get; set; } = string.Empty;
 
-    public string Principal { get; set; } = string.Empty;
+    public string Owner { get; set; } = string.Empty;
 
     public bool IsAlertException { get; set; }
-
-    public int AlertMessageTemplate { get; set; }
 
     public ScheduleTypes ScheduleType { get; set; }
 
@@ -35,7 +33,7 @@ public class SchedulerJobDto
 
     public string Description { get; set; } = string.Empty;
 
-    public int Status { get; set; }
+    public bool IsEnabled { get; set; }
 
     public Guid BelongTeamId { get; set; }
 

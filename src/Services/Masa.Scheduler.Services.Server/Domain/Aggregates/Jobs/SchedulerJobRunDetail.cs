@@ -17,9 +17,9 @@ public class SchedulerJobRunDetail : Entity<Guid>
 
     public int TotalRunCount { get; private set; }
 
-    public DateTimeOffset LastRunTime { get; private set; }
+    public DateTimeOffset LastRanTime { get; private set; } = DateTimeOffset.MinValue;
 
-    public TaskRunStatuses LastRunStatus { get; private set; }
+    public TaskRunStatuses LastRanStatus { get; private set; }
 
     public Guid JobId { get; private set; }
 
@@ -47,11 +47,11 @@ public class SchedulerJobRunDetail : Entity<Guid>
                 break;
         }
 
-        LastRunStatus = status;
+        LastRanStatus = status;
 
         if (status != TaskRunStatuses.Running)
         {
-            LastRunTime = DateTimeOffset.Now;
+            LastRanTime = DateTimeOffset.Now;
         }
     }
 }

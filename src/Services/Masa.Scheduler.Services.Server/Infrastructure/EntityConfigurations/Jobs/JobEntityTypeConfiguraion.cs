@@ -16,7 +16,7 @@ public class JobEntityTypeConfiguraion : IEntityTypeConfiguration<SchedulerJob>
         builder.HasIndex(x => x.BelongProjectId);
         builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
         builder.Property(x => x.Description).HasMaxLength(255);
-        builder.Property(x => x.Principal).HasMaxLength(20);
+        builder.Property(x => x.Owner).HasMaxLength(20);
         builder.Property(x => x.MainFunc).HasMaxLength(50);
         builder.HasOne(x => x.RunDetail).WithOne().HasForeignKey<SchedulerJobRunDetail>(x => x.JobId);
     }

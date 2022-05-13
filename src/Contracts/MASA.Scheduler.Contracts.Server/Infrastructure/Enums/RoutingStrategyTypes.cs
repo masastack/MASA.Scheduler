@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
 public enum RoutingStrategyTypes
 {
-    Poll = 1,
-    Auto,
-    Assign
+    RoundRobin = 1,
+    DynamicRatioApm,
+    Specified
 }
