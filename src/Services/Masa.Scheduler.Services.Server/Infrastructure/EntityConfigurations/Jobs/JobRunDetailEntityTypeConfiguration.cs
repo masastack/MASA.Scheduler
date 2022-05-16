@@ -3,15 +3,14 @@
 
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Masa.Scheduler.Services.Server.Infrastructure.EntityConfigurations.Jobs
+namespace Masa.Scheduler.Services.Server.Infrastructure.EntityConfigurations.Jobs;
+
+public class JobRunDetailEntityTypeConfiguration : IEntityTypeConfiguration<SchedulerJobRunDetail>
 {
-    public class JobRunDetailEntityTypeConfiguration : IEntityTypeConfiguration<JobRunDetail>
+    public void Configure(EntityTypeBuilder<SchedulerJobRunDetail> builder)
     {
-        public void Configure(EntityTypeBuilder<JobRunDetail> builder)
-        {
-            builder.ToTable(nameof(JobRunDetail), SchedulerDbContext.SERVER_SCHEMA);
-            builder.HasKey(x => x.Id);
-            builder.HasIndex(x => x.JobId).IsUnique();
-        }
+        builder.ToTable(nameof(SchedulerJobRunDetail), SchedulerDbContext.SERVER_SCHEMA);
+        builder.HasKey(x => x.Id);
+        builder.HasIndex(x => x.JobId).IsUnique();
     }
 }

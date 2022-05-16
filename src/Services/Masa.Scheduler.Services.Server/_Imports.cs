@@ -22,7 +22,6 @@ global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF;
 global using Masa.Contrib.ReadWriteSpliting.Cqrs.Commands;
 global using Masa.Contrib.Service.MinimalAPIs;
 global using Masa.Utils.Data.EntityFrameworkCore;
-global using Masa.Scheduler.Services.Server.Actors;
 global using Masa.Scheduler.Services.Server.Application.Jobs.Commands;
 global using Masa.Scheduler.Services.Server.Application.Jobs.Queries;
 global using Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;

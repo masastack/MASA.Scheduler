@@ -7,10 +7,10 @@ namespace Masa.Scheduler.Services.Server.Services
     {
         public AuthService(IServiceCollection services) : base(services, "api/auth")
         {
-            MapGet(TeamListAsync);
+            MapGet(GetTeamListAsync);
         }
 
-        public async Task<IResult> TeamListAsync(IEventBus eventBus)
+        public async Task<IResult> GetTeamListAsync(IEventBus eventBus)
         {
             var query = new TeamQuery();
             await eventBus.PublishAsync(query);

@@ -13,7 +13,7 @@ namespace Masa.Scheduler.ApiGateways.Caller.Services
         }
         public async Task<List<TeamModel>> GetTeamListAsync()
         {
-            var result = await GetAsync<List<TeamModel>>($"TeamList");
+            var result = await GetAsync<List<TeamModel>>($"GetTeamList");
             return result ?? new List<TeamModel>();
         }
     }

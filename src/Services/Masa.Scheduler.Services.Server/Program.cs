@@ -4,10 +4,6 @@
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDaprClient();
-builder.Services.AddActors(options =>
-{
-    options.Actors.RegisterActor<JobActor>();
-});
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
 {
@@ -88,7 +84,6 @@ app.UseCloudEvents();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapSubscribeHandler();
-    endpoints.MapActorsHandlers();
 });
 app.UseHttpsRedirection();
 

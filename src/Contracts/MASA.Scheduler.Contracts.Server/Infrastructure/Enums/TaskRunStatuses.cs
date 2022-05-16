@@ -3,8 +3,13 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum FailedStrategyTypes
+public enum TaskRunStatuses
 {
-    Auto = 1,
-    Manual
+    Idle = 1,
+    Running,
+    Success,
+    Failure,
+    Timeout,
+    TimeoutSuccess,
+    TimeoutFailure
 }

@@ -11,13 +11,7 @@
         </MContainer>
     </PrependContent>
     <ChildContent>
-        <MContainer>
-            <h6>Mode</h6>
-            <MButtonGroup Mandatory Value=GlobalConfig.PageMode ValueChanged="PageModeChanged" class="mt-1">
-                <MButton Value="PageModes.Breadcrumb" Text Width="135">@PageModes.Breadcrumb</MButton>
-                <MButton Value="PageModes.PageTab" Text Width="135">@PageModes.PageTab</MButton>
-            </MButtonGroup>
-        </MContainer>
+        
     </ChildContent>
 </MNavigationDrawer>
 
@@ -28,8 +22,4 @@
     [Parameter]
     public EventCallback<bool> ShowChanged { get; set; }
 
-    void PageModeChanged(StringNumber value)
-    {
-        GlobalConfig.PageMode = value.ToString();
-    }
 }

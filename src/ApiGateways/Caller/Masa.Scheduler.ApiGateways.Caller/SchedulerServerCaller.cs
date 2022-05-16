@@ -5,11 +5,11 @@ namespace Masa.Scheduler.ApiGateways.Caller
 {
     public class SchedulerServerCaller : HttpClientCallerBase
     {
-        JobService? _jobService;
+        SchedulerJobService? _jobService;
         AuthService? _authService;
         PMService? _pmService;
 
-        public JobService JobService => _jobService ?? (_jobService = new(CallerProvider));
+        public SchedulerJobService JobService => _jobService ?? (_jobService = new(CallerProvider));
 
         public AuthService AuthService => _authService ?? (_authService = new(CallerProvider));
 
