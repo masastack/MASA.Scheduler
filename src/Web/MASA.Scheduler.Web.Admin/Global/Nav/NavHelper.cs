@@ -14,51 +14,50 @@ public class NavHelper
 
     public List<NavModel> SameLevelNavs { get; } = new();
 
-        public List<PageTabItem> PageTabItems { get; } = new();
-        
+    public List<PageTabItem> PageTabItems { get; } = new();
 
-        public NavHelper(List<NavModel> navList, NavigationManager navigationManager, GlobalConfig globalConfig, SchedulerServerCaller schedulerCaller)
-        {
-            _navList = navList;
-            _navigationManager = navigationManager;
-            _globalConfig = globalConfig;
-            _authService = schedulerCaller.AuthService;
-            Initialization();
-        }
+    public NavHelper(List<NavModel> navList, NavigationManager navigationManager, GlobalConfig globalConfig, SchedulerServerCaller schedulerCaller)
+    {
+        _navList = navList;
+        _navigationManager = navigationManager;
+        _globalConfig = globalConfig;
+        _authService = schedulerCaller.AuthService;
+        Initialization();
+    }
 
-        private void Initialization()
+    private void Initialization()
+    {
+        _navList.ForEach(async nav =>
         {
-            _navList.ForEach(async nav =>
+            if (nav.Hide is false) Navs.Add(nav);
+
+            if (nav.Id == 1)
             {
-                if (nav.Hide is false) Navs.Add(nav);
+                var teamList = await _authService.GetTeamListAsync();
 
-                if(nav.Id == 1)
+                var teamChild = new List<NavModel>();
+
+                int childId = 1;
+
+                teamList.Data.ForEach(team =>
                 {
-                    var teamList = await _authService.GetTeamListAsync();
+                    teamChild.Add(new NavModel(childId, $"/team/{team.Id}", team.Avatar, team.Name, new NavModel[] { }));
+                    childId++;
+                });
 
-                    var teamChild = new List<NavModel>();
+                nav.Children = teamChild.ToArray();
+            }
 
-                    int childId = 1;
-
-                    teamList.ForEach(team =>
-                    {
-                        teamChild.Add(new NavModel(childId, $"/team/{team.Id}", team.Avatar, team.Name, new NavModel[] { }));
-                        childId++;
-                    });
-
-                    nav.Children = teamChild.ToArray();
-                }
-
-                if (nav.Children is not null)
-                {
-                    nav.Children = nav.Children.Where(c => c.Hide is false).ToArray();
+            if (nav.Children is not null)
+            {
+                nav.Children = nav.Children.Where(c => c.Hide is false).ToArray();
 
                 nav.Children.ForEach(child =>
-                {
-                    child.ParentId = nav.Id;
-                    child.FullTitle = $"{nav.Title} {child.Title}";
-                    child.ParentIcon = nav.Icon;
-                });
+                    {
+                child.ParentId = nav.Id;
+                child.FullTitle = $"{nav.Title} {child.Title}";
+                child.ParentIcon = nav.Icon;
+            });
             }
         });
 

@@ -11,9 +11,15 @@ public class AuthService : ServiceBase
     {
         BaseUrl = "api/auth";
     }
-    public async Task<List<TeamModel>> GetTeamListAsync()
+    public async Task<TeamListResponse> GetTeamListAsync()
     {
-        var result = await GetAsync<List<TeamModel>>($"GetTeamList");
-        return result ?? new List<TeamModel>();
+        var result = await GetAsync<List<TeamDto>>($"GetTeamList");
+
+        var response = new TeamListResponse()
+        {
+            Data = result ?? new()
+        };
+
+        return response;
     }
 }

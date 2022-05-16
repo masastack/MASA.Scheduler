@@ -1,9 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Scheduler.Contracts.Server.Model;
+namespace Masa.Scheduler.Contracts.Server.Dtos;
 
-public class ProjectModel
+public class ProjectDto
 {
     public int Id { get; set; }
 

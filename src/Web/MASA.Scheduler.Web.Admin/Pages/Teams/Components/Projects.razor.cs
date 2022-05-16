@@ -5,14 +5,15 @@ namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 public partial class Projects
 {
     [Parameter]
-    public Guid TeamId { get; set; } = Guid.Empty;
+    public Guid TeamId { get; set; }
 
     [Parameter]
     public EventCallback<int> OnProjectChanged { get; set; }
 
     private string _projectName = string.Empty;
-    private List<ProjectModel> _projects = new();
+    private List<ProjectDto> _projects = new();
     private StringNumber _selectedProjectId = null!;
+    private Guid? prevTeamId;
 
     public StringNumber SelectedProjectId
     {
@@ -36,15 +37,17 @@ public partial class Projects
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (prevTeamId != TeamId)
         {
             await InitDataAsync();
+            prevTeamId = TeamId;
         }
     }
 
     private async Task InitDataAsync()
     {
-        _projects = await SchedulerCaller.PMService.GetProjectListAsync(TeamId);
+        var response = await SchedulerServerCaller.PMService.GetProjectListAsync(TeamId);
+        _projects = response.Data;
         SelectedProjectId = SelectedProjectId == 0 && _projects.Any() ? _projects.FirstOrDefault()!.Id : SelectedProjectId;
         StateHasChanged();
     }
