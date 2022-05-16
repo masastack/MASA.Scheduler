@@ -25,11 +25,9 @@ public partial class Jobs
         }
     }
 
-
     public Task OnProjectChanged()
     {
         return Task.CompletedTask;
     }
-
 }
 
