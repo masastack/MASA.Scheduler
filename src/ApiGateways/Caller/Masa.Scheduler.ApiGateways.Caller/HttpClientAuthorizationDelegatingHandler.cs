@@ -1,25 +1,24 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Scheduler.ApiGateways.Caller
+namespace Masa.Scheduler.ApiGateways.Caller;
+
+public class HttpClientAuthorizationDelegatingHandler: DelegatingHandler
 {
-    public class HttpClientAuthorizationDelegatingHandler: DelegatingHandler
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
-        public HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccessor)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        var userClaim = _httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(c => c.Type == "UserId");
+        if (userClaim != null)
         {
-            _httpContextAccessor = httpContextAccessor;
+            request.Headers.Add("user-id", userClaim.Value);
         }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var userClaim = _httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(c => c.Type == "UserId");
-            if (userClaim != null)
-            {
-                request.Headers.Add("user-id", userClaim.Value);
-            }
-            return await base.SendAsync(request, cancellationToken);
-        }
+        return await base.SendAsync(request, cancellationToken);
     }
 }

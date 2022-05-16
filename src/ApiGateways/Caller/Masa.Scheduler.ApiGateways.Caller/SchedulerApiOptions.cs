@@ -7,15 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Masa.Scheduler.ApiGateways.Caller
-{
-    public class SchedulerApiOptions
-    {
-        public string SchedulerServerBaseAddress { get; set; }
+namespace Masa.Scheduler.ApiGateways.Caller;
 
-        public SchedulerApiOptions(string schedulerServiceBaseAddress)
-        {
-            SchedulerServerBaseAddress = schedulerServiceBaseAddress;
-        }
+public class SchedulerApiOptions
+{
+    public string SchedulerServerBaseAddress { get; set; }
+
+    public SchedulerApiOptions(string schedulerServiceBaseAddress)
+    {
+        SchedulerServerBaseAddress = schedulerServiceBaseAddress;
     }
 }

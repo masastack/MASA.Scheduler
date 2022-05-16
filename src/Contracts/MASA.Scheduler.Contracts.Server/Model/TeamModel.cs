@@ -7,14 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Masa.Scheduler.Contracts.Server.Model
+namespace Masa.Scheduler.Contracts.Server.Model;
+
+public class TeamModel
 {
-    public class TeamModel
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Avatar { get; set; } = string.Empty;
-        public int MemberCount { get; set; }
-        public string Description { get; set; } = string.Empty;
-    }
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Avatar { get; set; } = string.Empty;
+    public int MemberCount { get; set; }
+    public string Description { get; set; } = string.Empty;
 }
