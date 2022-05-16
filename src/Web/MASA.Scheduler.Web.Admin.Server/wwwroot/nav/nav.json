@@ -1,8 +1,8 @@
 [
   {
     "Id": 1,
-    "Title": "Dashboard",
-    "Icon": "mdi-trending-up",
+    "Title": "Team",
+    "Icon": "mdi-account-multiple",
     "Children": [
       {
         "Id": 2,

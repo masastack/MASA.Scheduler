@@ -1,11 +1,10 @@
-﻿global using BlazorComponent;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+global using BlazorComponent;
 global using BlazorComponent.I18n;
 global using Masa.Blazor;
 global using Masa.Scheduler.Web.Admin.Data.Base;
-global using Masa.Scheduler.Web.Admin.Data.Dashboard.Analytics;
-global using Masa.Scheduler.Web.Admin.Data.Dashboard.ECommerce;
-global using Masa.Scheduler.Web.Admin.Data.Dashboard.ECommerce.Dto;
-global using Masa.Scheduler.Web.Admin.Data.Shared.Favorite;
 global using Masa.Scheduler.Web.Admin.Global;
 global using Masa.Scheduler.Web.Admin.Global.Nav.Model;
 global using Microsoft.AspNetCore.Components;

@@ -13,9 +13,9 @@ public class JobCaller : HttpClientCallerBase
         BaseAddress = configuration["SchedulerServerBaseAddress"];
     }
 
-    public async Task<List<Job>> GetListAsync()
+    public async Task<List<SchedulerJobDto>> GetListAsync()
     {
-        var result = await CallerProvider.GetAsync<List<Job>>($"job/list");
-        return result ?? new List<Job>();
+        var result = await CallerProvider.GetAsync<List<SchedulerJobDto>>($"job/list");
+        return result ?? new List<SchedulerJobDto>();
     }
 }

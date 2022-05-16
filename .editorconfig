@@ -74,6 +74,8 @@ csharp_style_expression_bodied_properties = true:suggestion
 #prefer the language keyword for member access expressions, instead of the type name, for types that have a keyword to represent them
 dotnet_style_predefined_type_for_member_access = true:suggestion
 
+file_header_template = Copyright (c) MASA Stack All rights reserved.\nLicensed under the Apache License. See LICENSE.txt in the project root for license information.
+
 #Style - Expression-level  preferences
 
 #prefer default over default(T)

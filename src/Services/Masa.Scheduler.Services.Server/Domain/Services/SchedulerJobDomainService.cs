@@ -1,0 +1,29 @@
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+namespace Masa.Scheduler.Services.Server.Domain.Services;
+
+public class SchedulerJobDomainService : DomainService
+{
+    private readonly ILogger<SchedulerJob> _logger;
+    private readonly ISchedulerJobRepository _schedulerJobRepository;
+
+    public SchedulerJobDomainService(IDomainEventBus eventBus, ILogger<SchedulerJob> logger, ISchedulerJobRepository schedulerJobRepository) : base(eventBus)
+    {
+        _logger = logger;
+        _schedulerJobRepository = schedulerJobRepository;
+    }
+
+    public async Task CreateJobAsync()
+    {
+        var orderEvent = new AddSchedulerJobDomainEvent();
+        await EventBus.PublishAsync(orderEvent);
+    }
+
+    public async Task<IList<SchedulerJob>> QueryListAsync()
+    {
+        var query = new SchedulerJobQuery();
+        await EventBus.PublishAsync(query);
+        return query.Result;
+    }
+}
