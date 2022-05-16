@@ -36,7 +36,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public string Description { get; private set; } = string.Empty;
 
-    public bool IsEnabled { get; private set; }
+    public bool Enabled { get; private set; }
 
     public Guid BelongTeamId { get; private set; }
 
