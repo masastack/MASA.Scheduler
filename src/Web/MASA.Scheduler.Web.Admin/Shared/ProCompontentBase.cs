@@ -6,7 +6,7 @@ namespace Masa.Scheduler.Web.Admin
     public abstract class ProCompontentBase : ComponentBase
     {
         private I18n? _languageProvider;
-        private SchedulerCaller? _schedulerCaller;
+        private SchedulerServerCaller? _schedulerCaller;
         private GlobalConfig? _globalConfig;
         private NavigationManager? _navigationManager;
 
@@ -24,7 +24,7 @@ namespace Masa.Scheduler.Web.Admin
         }
 
         [Inject]
-        public SchedulerCaller SchedulerCaller
+        public SchedulerServerCaller SchedulerCaller
         {
             get
             {
