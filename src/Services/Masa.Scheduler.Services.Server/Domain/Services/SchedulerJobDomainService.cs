@@ -13,17 +13,4 @@ public class SchedulerJobDomainService : DomainService
         _logger = logger;
         _schedulerJobRepository = schedulerJobRepository;
     }
-
-    public async Task CreateJobAsync()
-    {
-        var orderEvent = new AddSchedulerJobDomainEvent();
-        await EventBus.PublishAsync(orderEvent);
-    }
-
-    public async Task<IList<SchedulerJob>> QueryListAsync()
-    {
-        var query = new SchedulerJobQuery();
-        await EventBus.PublishAsync(query);
-        return query.Result;
-    }
 }

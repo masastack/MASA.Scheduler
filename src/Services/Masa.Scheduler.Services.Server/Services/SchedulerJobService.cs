@@ -8,22 +8,37 @@ public class SchedulerJobService : ServiceBase
     public SchedulerJobService(IServiceCollection services) : base(services, "api/job")
     {
         MapGet(ListAsync);
-        MapPost(CreateAsync);
+        MapPost(AddAsync);
+        MapPut(UpdateAsync);
+        MapDelete(DeleteAsync);
     }
 
 
-    public async Task<IResult> ListAsync(SchedulerJobDomainService jobDomainService)
+    public async Task<IResult> ListAsync(IEventBus eventBus, [FromBody] SchedulerJobListRequest reqeuset)
     {
-        var jobs = await jobDomainService.QueryListAsync();
-        return Results.Ok(jobs);
+        var query = new SchedulerJobQuery(reqeuset);
+        await eventBus.PublishAsync(query);
+        return Results.Ok(query.Result);
     }
 
-    public async Task<IResult> CreateAsync(IEventBus eventBus)
+    public async Task<IResult> AddAsync(IEventBus eventBus, [FromBody] AddSchedulerJobRequest reqeuset)
     {
-        var comman = new AddSchedulerJobCommand();
+        var comman = new AddSchedulerJobCommand(reqeuset);
         await eventBus.PublishAsync(comman);
         return Results.Ok();
     }
 
+    public async Task<IResult> UpdateAsync(IEventBus eventBus, [FromBody] UpdateSchedulerJobRequest reqeuset)
+    {
+        var comman = new UpdateSchedulerJobCommand(reqeuset);
+        await eventBus.PublishAsync(comman);
+        return Results.Ok();
+    }
 
+    public async Task<IResult> DeleteAsync(IEventBus eventBus, [FromQuery] Guid jobId)
+    {
+        var comman = new RemoveSchedulerJobCommand(jobId);
+        await eventBus.PublishAsync(comman);
+        return Results.Ok();
+    }
 }

@@ -12,11 +12,11 @@ public class JobEntityTypeConfiguraion : IEntityTypeConfiguration<SchedulerJob>
         builder.HasIndex(x => x.Name).IsUnique().HasFilter("[IsDeleted] = 0");
         builder.HasIndex(x => x.BelongTeamId);
         builder.HasIndex(x => x.BelongProjectId);
+        builder.HasIndex(x => x.Origin);
         builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
         builder.Property(x => x.Description).HasMaxLength(255);
         builder.Property(x => x.Owner).HasMaxLength(20);
         builder.Property(x => x.Origin).HasMaxLength(50);
-        builder.HasOne(x => x.RunDetail).WithOne().HasForeignKey<SchedulerJobRunDetail>(x => x.JobId);
         builder.Property(x => x.JobAppConfig).HasConversion(new JsonValueConverter<SchedulerJobAppConfig>());
         builder.Property(x => x.HttpConfig).HasConversion(new JsonValueConverter<SchedulerJobHttpConfig>());
         builder.Property(x => x.DaprServiceInvocationConfig).HasConversion(new JsonValueConverter<SchedulerJobDaprServiceInvocationConfig>());

@@ -58,3 +58,8 @@ global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 global using Masa.Scheduler.Services.Server.Infrastructure.EntityConfigurations.ValueConverts;
 global using Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
 global using Masa.Scheduler.Contracts.Server.Dtos;
+global using Microsoft.AspNetCore.Mvc;
+global using Masa.Scheduler.Contracts.Server.Requests;
+global using Mapster;
+global using Masa.Scheduler.Contracts.Server.Validator;
+global using System.Linq.Expressions;

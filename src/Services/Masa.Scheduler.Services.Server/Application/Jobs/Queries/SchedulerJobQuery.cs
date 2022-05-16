@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Jobs.Queries;
 
-public record SchedulerJobQuery : DomainQuery<List<SchedulerJob>>
+public record SchedulerJobQuery(SchedulerJobListRequest Request) : Query<PaginationDto<SchedulerJob>>
 {
-    public override List<SchedulerJob> Result { get; set; } = new();
+    public override PaginationDto<SchedulerJob> Result { get; set; } = new();
 }

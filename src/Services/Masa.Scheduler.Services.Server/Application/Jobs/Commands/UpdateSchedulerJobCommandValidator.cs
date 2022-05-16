@@ -3,9 +3,9 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Jobs.Commands;
 
-public class AddSchedulerJobCommandValidator : AbstractValidator<AddSchedulerJobCommand>
+public class UpdateSchedulerJobCommandValidator: AbstractValidator<UpdateSchedulerJobCommand>
 {
-    public AddSchedulerJobCommandValidator()
+    public UpdateSchedulerJobCommandValidator()
     {
         RuleFor(command => command.Request.Data).SetValidator(new SchedulerJobValidator<SchedulerJobDto>());
     }

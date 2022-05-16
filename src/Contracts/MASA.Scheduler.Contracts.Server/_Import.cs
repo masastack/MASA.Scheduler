@@ -4,3 +4,4 @@ global using System.ComponentModel;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 global using Masa.Scheduler.Contracts.Server.Messages;
 global using Masa.Scheduler.Contracts.Server.Dtos;
+global using FluentValidation;

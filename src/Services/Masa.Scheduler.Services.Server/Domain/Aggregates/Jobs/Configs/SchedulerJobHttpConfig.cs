@@ -5,25 +5,22 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
 
 public class SchedulerJobHttpConfig
 {
-    public Guid JobId { get; private set; }
-
     public HttpMethods HttpMethod { get; private set; }
 
     public string RequestUrl { get; private set; } = string.Empty;
 
-    public string HttpParameter { get; private set; } = string.Empty;
+    public Dictionary<string, string> HttpParameter { get; private set; }
 
-    public string HttpHeaders { get; private set; }
+    public Dictionary<string,string> HttpHeaders { get; private set; }
 
-    public string HttpBody { get; set; } = string.Empty;
+    public string HttpBody { get; private set; } = string.Empty;
 
     public HttpVerifyTypes HttpVerifyType { get; private set; }
 
     public string VerifyContent { get; private set; } = string.Empty;
 
-    public SchedulerJobHttpConfig(Guid jobId, HttpMethods httpMethod, string requestUrl, string httpParameter, string httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
+    public SchedulerJobHttpConfig(HttpMethods httpMethod, string requestUrl, Dictionary<string, string> httpParameter, Dictionary<string, string> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
     {
-        JobId = jobId;
         HttpMethod = httpMethod;
         RequestUrl = requestUrl;
         HttpParameter = httpParameter;

@@ -5,8 +5,6 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
 public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 {
-    private SchedulerJobRunDetail _jobRunDetail = null!;
-
     private List<SchedulerTask> _schedulerTasks = new();
 
     private SchedulerJobAppConfig? _jobAppConfig;
@@ -51,7 +49,13 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public string Origin { get; private set; } = string.Empty;
 
-    public SchedulerJobRunDetail RunDetail { get => _jobRunDetail; private set => _jobRunDetail = value; }
+    public DateTimeOffset LastScheduleTime { get; private set; } = DateTimeOffset.MinValue;
+
+    public DateTimeOffset LastRunStartTime { get; private set; } = DateTime.MinValue;
+
+    public DateTimeOffset LastRunEndTime { get; private set; } = DateTimeOffset.MinValue;
+
+    public TaskRunStatuses LastRunStatus { get; private set; }
 
     public SchedulerJobAppConfig? JobAppConfig { get => _jobAppConfig; private set => _jobAppConfig = value; }
 
@@ -67,6 +71,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
     {
         JobType = jobType;
         Origin = origin;
+        Enabled = true;
     }
 
     public SchedulerJob(
@@ -84,8 +89,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         int failedRetryCount,
         string description,
         Guid belongTeamId,
-        int belongProjectId,
-        string mainFunc)
+        int belongProjectId)
     {
         Name = name;
         Owner = owner;
@@ -105,44 +109,59 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         BelongTeamId = belongTeamId;
     }
 
-    public void UpdateJob(
-        string name,
-        string owner,
-        bool isAlertException,
-        ScheduleTypes scheduleType,
-        RoutingStrategyTypes routingStrategy,
-        ScheduleBlockStrategyTypes scheduleBlockStrategy,
-        ScheduleExpiredStrategyTypes scheduleExpiredStrategy,
-        RunTimeoutStrategyTypes runTimeoutStrategy,
-        int runTimeoutSecond,
-        FailedStrategyTypes failedStrategy,
-        int failedRetryInterval,
-        int failedRetryCount,
-        string description)
+    public void UpdateJob(SchedulerJobDto dto)
     {
-        Name = name;
-        Owner = owner;
-        IsAlertException = isAlertException;
-        ScheduleType = scheduleType;
-        RoutingStrategy = routingStrategy;
-        ScheduleBlockStrategy = scheduleBlockStrategy;
-        ScheduleExpiredStrategy = scheduleExpiredStrategy;
-        RunTimeoutStrategy = runTimeoutStrategy;
-        RunTimeoutSecond = runTimeoutSecond;
-        FailedStrategy = failedStrategy;
-        FailedRetryInterval = failedRetryInterval;
-        FailedRetryCount = failedRetryCount;
-        Description = description;
+        Name = dto.Name;
+        Owner = dto.Owner;
+        IsAlertException = dto.IsAlertException;
+        ScheduleType = dto.ScheduleType;
+        RoutingStrategy = dto.RoutingStrategy;
+        ScheduleBlockStrategy = dto.ScheduleBlockStrategy;
+        ScheduleExpiredStrategy = dto.ScheduleExpiredStrategy;
+        RunTimeoutStrategy = dto.RunTimeoutStrategy;
+        RunTimeoutSecond = dto.RunTimeoutSecond;
+        FailedStrategy = dto.FailedStrategy;
+        FailedRetryInterval = dto.FailedRetryInterval;
+        FailedRetryCount = dto.FailedRetryCount;
+        Description = dto.Description;
+
+        switch (dto.JobType)
+        {
+            case JobTypes.Http:
+                SetHttpConfig(dto.HttpConfig);
+                break;
+            case JobTypes.JobApp:
+                SetJobAppConfig(dto.JobAppConfig);
+                break;
+            case JobTypes.DaprServiceInvocation:
+                SetDaprServiceInvocationConfig(dto.DaprServiceInvocationConfig);
+                break;
+            default:
+                throw new UserFriendlyException("Job type error");
+        }
     }
 
-    public void UpdateRunDetail(TaskRunStatuses taskRunStatus)
+    public void UpdateLastScheduleTime(DateTimeOffset scheduleTime)
     {
-        RunDetail.UpdateJobRunDetail(taskRunStatus);
+        LastScheduleTime = scheduleTime;
     }
 
-    public void CreateRunDetail()
+    public void UpdateLastRunDetail(TaskRunStatuses taskRunStatus)
     {
-        RunDetail = new(Id);
+        LastRunStatus = taskRunStatus;
+
+        switch (taskRunStatus)
+        {
+            case TaskRunStatuses.Running:
+                LastRunStartTime = DateTimeOffset.Now;
+                break;
+            case TaskRunStatuses.Success:
+            case TaskRunStatuses.TimeoutSuccess:
+            case TaskRunStatuses.Timeout:
+            case TaskRunStatuses.Failure:
+                LastRunEndTime = DateTimeOffset.Now;
+                break;
+        }
     }
 
     public void SetEnabled()
@@ -155,18 +174,33 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         Enabled = false;
     }
 
-    public void SetJobAppConfig(int jobAppId, string jobEntryAssembly, string jobEntryMethod, string jobParams, string version)
+    public void SetJobAppConfig(SchedulerJobAppConfigDto? dto)
     {
-        JobAppConfig = new (Id, jobAppId, jobEntryAssembly, jobEntryMethod, jobParams, version);
+        if (dto == null)
+        {
+            return;
+        }
+
+        JobAppConfig = new (dto.JobEntryAssembly, dto.JobEntryMethod, dto.JobParams, dto.Version);
     }
 
-    public void SetHttpConfig(HttpMethods httpMethod, string requestUrl, string httpParameter, string httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
+    public void SetHttpConfig(SchedulerJobHttpConfigDto? dto)
     {
-        HttpConfig = new (Id, httpMethod, requestUrl, httpParameter, httpHeader, httpBody, httpVerifyType, verityContent);
+        if (dto == null)
+        {
+            return;
+        }
+
+        HttpConfig = new (dto.HttpMethod, dto.RequestUrl, dto.HttpParameter, dto.HttpHeaders, dto.HttpBody, dto.HttpVerifyType, dto.VerifyContent);
     }
 
-    public void SetDaprServiceInvocationConfig(int daprServiceAppId, string methodName, HttpMethods httpMethod, string data)
+    public void SetDaprServiceInvocationConfig(SchedulerJobDaprServiceInvocationConfigDto? dto)
     {
-        DaprServiceInvocationConfig = new(Id, daprServiceAppId, methodName, httpMethod, data);
+        if (dto == null)
+        {
+            return;
+        }
+
+        DaprServiceInvocationConfig = new(dto.DaprServiceAppId, dto.MethodName, dto.HttpMethod, dto.Data);
     }
 }
