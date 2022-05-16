@@ -12,7 +12,7 @@ namespace Masa.Scheduler.Services.Server.Application.Teams
             {
                 new TeamModel()
                 {
-                    Id = new Guid("22A8CA67-F5C2-44A7-2129-08DA1DE0EBC7"),
+                    Id = new Guid("00000000-0000-0000-0000-000000000000"),
                     Name = "Masa团队",
                     Description = "Masa 团队",
                     MemberCount = 1,
