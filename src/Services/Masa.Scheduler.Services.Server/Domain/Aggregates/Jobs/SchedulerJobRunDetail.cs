@@ -5,6 +5,11 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
 public class SchedulerJobRunDetail : Entity<Guid>
 {
+    public SchedulerJobRunDetail(Guid jobId)
+    {
+        JobId = jobId;
+    }
+
     public int SuccessCount { get; private set; }
 
     public int FailureCount { get; private set; }
@@ -41,9 +46,6 @@ public class SchedulerJobRunDetail : Entity<Guid>
                 break;
             case TaskRunStatuses.TimeoutSuccess:
                 TimeoutSuccessCount++;
-                break;
-            case TaskRunStatuses.TimeoutFailure:
-                TimeoutFailureCount++;
                 break;
         }
 

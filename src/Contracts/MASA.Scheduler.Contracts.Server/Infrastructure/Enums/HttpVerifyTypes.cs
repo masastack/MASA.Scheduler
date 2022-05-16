@@ -3,12 +3,11 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum TaskRunStatuses
+public enum HttpVerifyTypes
 {
-    Idle = 1,
-    Running,
-    Success,
-    Failure,
-    Timeout,
-    TimeoutSuccess
+    StatusCode200 = 1,
+    CustomStatusCode,
+    ContentContains,
+    ContentDoesNotContain,
 }
+

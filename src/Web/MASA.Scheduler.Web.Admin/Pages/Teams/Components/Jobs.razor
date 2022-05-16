@@ -1,5 +1,129 @@
-﻿<h3>Job</h3>
+﻿@inherits ProCompontentBase
 
-@code {
+<div class="pl-6" style="overflow: hidden; display:block;">
+    <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-4" Style="background:#fff;padding:0 12px;"> 
+        <div class="d-flex" style="width:100%; padding-top:5px; padding-bottom:5px">
+            <MRadioGroup @bind-Value="_queryStatus" Row Style="margin-top:0px; padding-top:8px;">
+                @foreach (KeyValuePair<string, TaskRunStatuses> pair in GetEnumMap<TaskRunStatuses>())
+                {
+                    <MRadio TValue="TaskRunStatuses" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
+                        <LabelContent>
+                            <span style="color: @ComputedStatusColor(pair.Value)"> @T(pair.Key) </span>
+                        </LabelContent>
+                    </MRadio>
+                }
+            </MRadioGroup>
+            <MSpacer></MSpacer>
+            <MTextField @bind-Value="_queryJobName" Color="primary" Class="rounded-2 search" Style="max-width:340px;" Placeholder="@T("Search")" HideDetails="@("auto")" Flat Dense Solo BackgroundColor="fill-lighten-1">
+                <PrependInnerContent>
+                    <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
+                </PrependInnerContent>
+            </MTextField>
 
-}
+            <MButton Icon OnClick="ShowFilter"> 
+                <MIcon>
+                    mdi-filter
+                </MIcon>
+            </MButton>
+        </div>
+        @if (_showFilter)
+        {
+            <div class="d-flex" style="padding-bottom:5px;">
+                <MSelect Style="width:200px" @bind-Value="_jobQueryType" HideDetails="@("auto")" Outlined Clearable Items="JobQueryTimeTypes" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                </MSelect>
+                <PDateTimePicker Outlined Clearable @bind-Value="_queryStartTime" Label="@T("StartTime")" style="width:200px; margin-left:10px;">
+                </PDateTimePicker>
+                <PDateTimePicker Outlined Clearable @bind-Value="_queryEndTime" Label="@T("EndTime")" style="width:200px; margin-left:10px;">
+                </PDateTimePicker>
+            </div>
+        }
+    </MRow>
+    <div class="rounded-4 mt-6 py-2" style="height:calc(100vh - 234px);background:#fff;display:flex; flex-direction:column; justify-content:space-between; overflow:auto;">
+        @*<div>
+            <MExpansionPanels Flat Accordion>
+                @foreach (var project in _projects)
+                {
+                    var apps = _apps.Where(app => app.ProjectId == project.Id && app.EnvironmentClusters.Select(ec => ec.EnvironmentCluster.Id).Contains(_selectEnvClusterId.AsT1)).ToList();
+                    <MExpansionPanel Style="margin-bottom: 12px; border-radius: 20px;">
+                        <MExpansionPanelHeader>
+                            <span style="display:flex;align-items:center;margin-right:10px;">
+                                <div class="text-h6">
+                                    @project.Name
+                                    <span class="ml-2 text-caption">|</span>
+                                    <sapn class="ml-1 text-caption">@T("AppCount"):@apps.Count</sapn>
+                                    <div class="text-caption d-flex" style="padding:0">
+                                        @{
+                                            string backgroundColor;
+                                            switch (project.LabelName.ToLower())
+                                            {
+                                                case "basic ability":
+                                                    backgroundColor = "#37D7AD";
+                                                    break;
+                                                case "ops ability":
+                                                    backgroundColor = "#FFB547";
+                                                    break;
+                                                case "data factory":
+                                                    backgroundColor = "#5FB9FF";
+                                                    break;
+                                                default:
+                                                    backgroundColor = "";
+                                                    break;
+                                            }
+                                        }
+                                        <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px;">
+                                            @project.LabelName
+                                        </div>
+                                        @project.Identity
+                                    </div>
+                                </div>
+                                <MSpacer />
+                                <div style="display:flex;align-items:center;">
+                                    <MButton Icon StopPropagation Class="mr-1" OnClick="()=>UpdateProjectAsync(project.Id)"><MIcon>mdi-pencil</MIcon></MButton>
+                                    <MDivider Vertical Style="height: 20px;margin: 7px 8px 0 8px;" />
+                                </div>
+                            </span>
+                        </MExpansionPanelHeader>
+                        <MExpansionPanelContent>
+                            <MRow>
+                                @foreach (var app in apps)
+                                {
+                                    @if (app.ProjectId == project.Id)
+                                    {
+                                        <MCol Lg="4" Md="6" Sm="12">
+                                            <AppCard App="app" EnvironmentClusters="app.EnvironmentClusters" OnClick="()=>UpdateAppAsync(app.Id,project.Id)"></AppCard>
+                                        </MCol>
+                                    }
+                                }
+                                <MCol Lg="4" Md="6" Sm="12">
+                                    <MRow NoGutters>
+                                        <MCol Class="pr-2">
+                                            <MCard Outlined Style="border-radius:10px !important; display:flex; align-items: center; justify-content: center; border-style: dashed;" MinHeight="162">
+                                                <MButton Ripple=false Plain OnClick="()=>ShowAppModalAsync(project.Id)"><MIcon Left>mdi-plus</MIcon>@T("Add App")</MButton>
+                                            </MCard>
+                                        </MCol>
+                                        <MCol>
+                                            <MCard Outlined Style="border-radius:10px !important; display:flex; align-items: center; justify-content: center; border-style: dashed;" MinHeight="162">
+                                                <MButton Ripple=false Plain OnClick="()=>ShowRelationAppModalAsync(project.Id)"><MIcon Left>mdi-plus</MIcon>@T("Select an existing app")</MButton>
+                                            </MCard>
+                                        </MCol>
+                                    </MRow>
+                                </MCol>
+                            </MRow>
+                            <div class="d-flex justify-space-between mt-3">
+                                <div>
+                                    <img style="height:24px;width:24px" src="/img/avatar/9.svg">
+                                </div>
+                                <div class="text-caption">编辑于一小时前</div>
+                            </div>
+                        </MExpansionPanelContent>
+                    </MExpansionPanel>
+                }
+            </MExpansionPanels>
+        </div>
+        <MCard Outlined Class="mb-4 mx-6" Style="padding:0 6px; border-radius:0 !important; display: flex; justify-content: center; align-items: center; border-style: dashed;" MinHeight=54>
+            <MButton Ripple=false Plain OnClick="()=>ShowProjectModalAsync()">
+                <MIcon Left>mdi-plus</MIcon>@T("Add Project")
+            </MButton>
+        </MCard>*@
+    </div>
+</div>

@@ -3,12 +3,12 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum TaskRunStatuses
+public enum HttpMethods
 {
-    Idle = 1,
-    Running,
-    Success,
-    Failure,
-    Timeout,
-    TimeoutSuccess
+    GET = 1,
+    POST,
+    HEAD,
+    PUT,
+    DELETE
 }
+

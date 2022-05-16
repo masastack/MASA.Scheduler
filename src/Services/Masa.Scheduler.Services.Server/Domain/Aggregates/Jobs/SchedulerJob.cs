@@ -5,8 +5,15 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
 public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 {
-    private SchedulerJobRunDetail _jobRunDetail = new();
+    private SchedulerJobRunDetail _jobRunDetail = null!;
+
     private List<SchedulerTask> _schedulerTasks = new();
+
+    private SchedulerJobAppConfig? _jobAppConfig;
+
+    private SchedulerJobDaprServiceInvocationConfig? _daprServiceInvocationConfig;
+ 
+    private SchedulerJobHttpConfig? _httpConfig;
 
     public string Name { get; private set; } = string.Empty;
 
@@ -42,15 +49,25 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public int BelongProjectId { get; private set; }
 
-    public Guid ResourceId { get; private set; }
-
-    public string MainFunc { get; private set; } = string.Empty;
+    public string Origin { get; private set; } = string.Empty;
 
     public SchedulerJobRunDetail RunDetail { get => _jobRunDetail; private set => _jobRunDetail = value; }
+
+    public SchedulerJobAppConfig? JobAppConfig { get => _jobAppConfig; private set => _jobAppConfig = value; }
+
+    public SchedulerJobDaprServiceInvocationConfig? DaprServiceInvocationConfig { get => _daprServiceInvocationConfig; private set => _daprServiceInvocationConfig = value; }
+
+    public SchedulerJobHttpConfig? HttpConfig { get => _httpConfig; private set => _httpConfig = value; }
 
     public IReadOnlyCollection<SchedulerTask> SchedulerTasks => _schedulerTasks;
 
     public bool IsDeleted { get; private set; }
+
+    public SchedulerJob(JobTypes jobType, string origin)
+    {
+        JobType = jobType;
+        Origin = origin;
+    }
 
     public SchedulerJob(
         string name,
@@ -64,11 +81,10 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         int runTimeoutSecond,
         FailedStrategyTypes failedStrategy,
         int failedRetryInterval,
+        int failedRetryCount,
         string description,
-        bool enabled,
         Guid belongTeamId,
         int belongProjectId,
-        Guid resourseId,
         string mainFunc)
     {
         Name = name;
@@ -82,12 +98,11 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         RunTimeoutSecond = runTimeoutSecond;
         FailedStrategy = failedStrategy;
         FailedRetryInterval = failedRetryInterval;
+        FailedRetryCount = failedRetryCount;
         Description = description;
-        Enabled = enabled;
+        Enabled = true;
         BelongProjectId = belongProjectId;
         BelongTeamId = belongTeamId;
-        ResourceId = resourseId;
-        MainFunc = mainFunc;
     }
 
     public void UpdateJob(
@@ -95,33 +110,63 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         string owner,
         bool isAlertException,
         ScheduleTypes scheduleType,
-        JobTypes jobType,
         RoutingStrategyTypes routingStrategy,
+        ScheduleBlockStrategyTypes scheduleBlockStrategy,
         ScheduleExpiredStrategyTypes scheduleExpiredStrategy,
         RunTimeoutStrategyTypes runTimeoutStrategy,
         int runTimeoutSecond,
         FailedStrategyTypes failedStrategy,
         int failedRetryInterval,
-        string description,
-        bool enabled)
+        int failedRetryCount,
+        string description)
     {
         Name = name;
         Owner = owner;
         IsAlertException = isAlertException;
         ScheduleType = scheduleType;
-        JobType = jobType;
         RoutingStrategy = routingStrategy;
+        ScheduleBlockStrategy = scheduleBlockStrategy;
         ScheduleExpiredStrategy = scheduleExpiredStrategy;
         RunTimeoutStrategy = runTimeoutStrategy;
         RunTimeoutSecond = runTimeoutSecond;
         FailedStrategy = failedStrategy;
         FailedRetryInterval = failedRetryInterval;
+        FailedRetryCount = failedRetryCount;
         Description = description;
-        Enabled = enabled;
     }
 
     public void UpdateRunDetail(TaskRunStatuses taskRunStatus)
     {
         RunDetail.UpdateJobRunDetail(taskRunStatus);
+    }
+
+    public void CreateRunDetail()
+    {
+        RunDetail = new(Id);
+    }
+
+    public void SetEnabled()
+    {
+        Enabled = true;
+    }
+
+    public void SetDisabled()
+    {
+        Enabled = false;
+    }
+
+    public void SetJobAppConfig(int jobAppId, string jobEntryAssembly, string jobEntryMethod, string jobParams, string version)
+    {
+        JobAppConfig = new (Id, jobAppId, jobEntryAssembly, jobEntryMethod, jobParams, version);
+    }
+
+    public void SetHttpConfig(HttpMethods httpMethod, string requestUrl, string httpParameter, string httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
+    {
+        HttpConfig = new (Id, httpMethod, requestUrl, httpParameter, httpHeader, httpBody, httpVerifyType, verityContent);
+    }
+
+    public void SetDaprServiceInvocationConfig(int daprServiceAppId, string methodName, HttpMethods httpMethod, string data)
+    {
+        DaprServiceInvocationConfig = new(Id, daprServiceAppId, methodName, httpMethod, data);
     }
 }

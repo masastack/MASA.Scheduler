@@ -3,12 +3,10 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum TaskRunStatuses
+public enum JobQueryTimeTypes
 {
-    Idle = 1,
-    Running,
-    Success,
-    Failure,
-    Timeout,
-    TimeoutSuccess
+    ScheduleTime = 1,
+    RunStartTime,
+    RunEndTime
 }
+

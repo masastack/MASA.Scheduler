@@ -24,4 +24,6 @@ public class SchedulerJobService : ServiceBase
         await eventBus.PublishAsync(comman);
         return Results.Ok();
     }
+
+
 }
