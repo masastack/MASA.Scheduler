@@ -6,7 +6,7 @@ namespace Masa.Scheduler.Web.Admin
     public abstract class ProCompontentBase : ComponentBase
     {
         private I18n? _languageProvider;
-        private SchedulerServerCaller? _schedulerCaller;
+        private SchedulerServerCaller? _schedulerServerCaller;
         private GlobalConfig? _globalConfig;
         private NavigationManager? _navigationManager;
 
@@ -28,11 +28,11 @@ namespace Masa.Scheduler.Web.Admin
         {
             get
             {
-                return _schedulerCaller ?? throw new Exception("please Inject SchedulerCaller!");
+                return _schedulerServerCaller ?? throw new Exception("please Inject SchedulerCaller!");
             }
             set
             {
-                _schedulerCaller = value;
+                _schedulerServerCaller = value;
             }
         }
 
