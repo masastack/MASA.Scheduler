@@ -24,7 +24,7 @@ public abstract class ProCompontentBase : ComponentBase
     }
 
     [Inject]
-    public SchedulerServerCaller SchedulerCaller
+    public SchedulerServerCaller SchedulerServerCaller
     {
         get
         {

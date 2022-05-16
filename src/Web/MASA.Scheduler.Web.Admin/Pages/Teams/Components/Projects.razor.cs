@@ -13,6 +13,7 @@ public partial class Projects
     private string _projectName = string.Empty;
     private List<ProjectDto> _projects = new();
     private StringNumber _selectedProjectId = null!;
+    private Guid? prevTeamId;
 
     public StringNumber SelectedProjectId
     {
@@ -36,15 +37,16 @@ public partial class Projects
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (prevTeamId != TeamId)
         {
             await InitDataAsync();
+            prevTeamId = TeamId;
         }
     }
 
     private async Task InitDataAsync()
     {
-        var response = await SchedulerCaller.PMService.GetProjectListAsync(TeamId);
+        var response = await SchedulerServerCaller.PMService.GetProjectListAsync(TeamId);
         _projects = response.Data;
         SelectedProjectId = SelectedProjectId == 0 && _projects.Any() ? _projects.FirstOrDefault()!.Id : SelectedProjectId;
         StateHasChanged();
