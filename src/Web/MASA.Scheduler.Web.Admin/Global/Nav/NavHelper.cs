@@ -39,7 +39,7 @@ public class NavHelper
 
                 int childId = 1;
 
-                teamList.ForEach(team =>
+                teamList.Data.ForEach(team =>
                 {
                     teamChild.Add(new NavModel(childId, $"/team/{team.Id}", team.Avatar, team.Name, new NavModel[] { }));
                     childId++;

@@ -2,3 +2,5 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 global using System.ComponentModel;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
+global using Masa.Scheduler.Contracts.Server.Messages;
+global using Masa.Scheduler.Contracts.Server.Dtos;

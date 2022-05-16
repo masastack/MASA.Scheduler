@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Projects.Queries;
 
-public record ProjectQuery: Query<List<ProjectModel>>
+public record ProjectQuery: Query<List<ProjectDto>>
 {
     public Guid TeamId { get; set; }
 
@@ -12,5 +12,5 @@ public record ProjectQuery: Query<List<ProjectModel>>
         TeamId = teamId;
     }
 
-    public override List<ProjectModel> Result { get; set; } = new();
+    public override List<ProjectDto> Result { get; set; } = new();
 }

@@ -11,10 +11,5 @@ namespace Masa.Scheduler.ApiGateways.Caller;
 
 public class SchedulerApiOptions
 {
-    public string SchedulerServerBaseAddress { get; set; }
-
-    public SchedulerApiOptions(string schedulerServiceBaseAddress)
-    {
-        SchedulerServerBaseAddress = schedulerServiceBaseAddress;
-    }
+    public string SchedulerServerBaseAddress { get; set; } = string.Empty;
 }

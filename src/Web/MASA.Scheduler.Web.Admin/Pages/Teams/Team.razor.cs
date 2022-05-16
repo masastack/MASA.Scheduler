@@ -5,15 +5,12 @@ namespace Masa.Scheduler.Web.Admin.Pages.Teams;
 
 public partial class Team
 {
-
     [Parameter]
     public string TeamId { get; set; } = string.Empty;
 
     private int _projectId;
     private StringNumber _curTab = 0;
-
     private Dictionary<StringNumber, string> NavTab => new Dictionary<StringNumber, string>() { { 0, T("Job") }, { 1, T("Task") } };
-
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {

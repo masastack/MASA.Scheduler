@@ -6,7 +6,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSchedulerApiGateways(this IServiceCollection services, Action<SchedulerApiOptions>? configs = null)
     {
-        var option = new SchedulerApiOptions("http://localhost:16002");
+        var option = new SchedulerApiOptions();
 
         configs?.Invoke(option);
 

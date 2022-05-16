@@ -1,7 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-
 namespace Masa.Scheduler.Services.Server.Application.Projects;
 
 public class ProjectQueryHandler
@@ -18,7 +17,7 @@ public class ProjectQueryHandler
     {
         var projectList = await _pmClient.ProjectService.GetProjectListAsync("development");
 
-        query.Result = projectList.FindAll(p => p.TeamId == query.TeamId).Select(p => new ProjectModel()
+        query.Result = projectList.FindAll(p => p.TeamId == query.TeamId).Select(p => new ProjectDto()
         {
             Name = p.Name,
             Id = p.Id,

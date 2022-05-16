@@ -11,10 +11,16 @@ public class PMService: ServiceBase
     {
         BaseUrl = "api/pm";
     }
-    public async Task<List<ProjectModel>> GetProjectListAsync(Guid teamId)
+    public async Task<ProjectListResponse> GetProjectListAsync(Guid teamId)
     {
-        var result = await GetAsync<List<ProjectModel>>($"{nameof(GetProjectListAsync)}?teamId={teamId}");
-        return result ?? new List<ProjectModel>();
+        var result = await GetAsync<List<ProjectDto>>($"{nameof(GetProjectListAsync)}?teamId={teamId}");
+
+        var response = new ProjectListResponse()
+        {
+            Data = result ?? new List<ProjectDto>()
+        };
+
+        return response;
     }
 }
 
