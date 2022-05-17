@@ -21,6 +21,8 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public ScheduleTypes ScheduleType { get; private set; }
 
+    public string CronExpression { get; private set; } = string.Empty;
+
     public JobTypes JobType { get; private set; }
 
     public RoutingStrategyTypes RoutingStrategy { get; private set; }
@@ -79,6 +81,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         string owner,
         bool isAlertException,
         ScheduleTypes scheduleType,
+        string cronExpression,
         JobTypes jobType,
         RoutingStrategyTypes routingStrategy,
         ScheduleExpiredStrategyTypes scheduleExpiredStrategy,
@@ -95,6 +98,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         Owner = owner;
         IsAlertException = isAlertException;
         ScheduleType = scheduleType;
+        CronExpression = cronExpression;
         JobType = jobType;
         RoutingStrategy = routingStrategy;
         ScheduleExpiredStrategy = scheduleExpiredStrategy;
@@ -115,6 +119,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         Owner = dto.Owner;
         IsAlertException = dto.IsAlertException;
         ScheduleType = dto.ScheduleType;
+        CronExpression = dto.CronExpression;
         RoutingStrategy = dto.RoutingStrategy;
         ScheduleBlockStrategy = dto.ScheduleBlockStrategy;
         ScheduleExpiredStrategy = dto.ScheduleExpiredStrategy;

@@ -23,17 +23,23 @@ public class SchedulerTask : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public bool IsDeleted { get; private set; }
 
-    public SchedulerTask(Guid jobId)
+    public string Origin { get; private set; }
+
+    public string WorkerHost { get; private set; } = string.Empty;
+
+    public SchedulerTask(Guid jobId, string origin)
     {
         JobId = jobId;
+        Origin = origin;
         SchedulerStartTime = DateTimeOffset.Now;
     }
 
-    public void TaskStart()
+    public void TaskStart(string workerHost)
     {
         RunCount++;
         TaskRunStartTime = DateTimeOffset.Now;
         TaskStatus = TaskRunStatuses.Running;
+        WorkerHost = workerHost;
     }
 
     public void TaskEnd(TaskRunStatuses taskStatus)
