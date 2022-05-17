@@ -18,14 +18,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddMasaRedisCache(builder.Configuration.GetSection("RedisConfig"));
-builder.Services.AddPmClient(callerOption =>
-{
-    callerOption.UseHttpClient(_builder =>
-    {
-        _builder.Name = builder.Configuration.GetValue<string>("PmClient:Name");
-        _builder.Configure = opt => opt.BaseAddress = new Uri(builder.Configuration.GetValue<string>("PmClient:Url"));
-    });
-});
+builder.Services.AddPmClient(builder.Configuration.GetValue<string>("PmClient:Url"));
 
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -91,7 +84,6 @@ app.UseCloudEvents();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapSubscribeHandler();
-    endpoints.MapActorsHandlers();
 });
 app.UseHttpsRedirection();
 

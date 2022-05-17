@@ -1,0 +1,23 @@
+﻿@inherits ProCompontentBase
+
+<MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 110px );">
+    <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 206px );">
+        <MList Width="194">
+            <MListItemGroup Class="rounded-2"
+                            @bind-Value="@SelectedProjectId"
+                            Mandatory
+                            Color="#A3AED0">
+                @foreach (var project in _projects)
+                {
+                    <MListItem Class="rounded-2 project-list" Value="project.Id" Dense>
+                        <ItemContent>
+                            <MListItemContent>
+                                <MListItemTitle>@project.Name</MListItemTitle>
+                            </MListItemContent>
+                        </ItemContent>
+                    </MListItem>
+                }
+            </MListItemGroup>
+        </MList>
+    </div>
+</MNavigationDrawer>

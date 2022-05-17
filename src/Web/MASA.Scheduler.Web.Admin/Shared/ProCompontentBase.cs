@@ -6,6 +6,9 @@ namespace Masa.Scheduler.Web.Admin;
 public abstract class ProCompontentBase : ComponentBase
 {
     private I18n? _languageProvider;
+    private SchedulerServerCaller? _schedulerServerCaller;
+    private GlobalConfig? _globalConfig;
+    private NavigationManager? _navigationManager;
 
     [Inject]
     public I18n LanguageProvider
@@ -19,6 +22,47 @@ public abstract class ProCompontentBase : ComponentBase
             _languageProvider = value;
         }
     }
+
+    [Inject]
+    public SchedulerServerCaller SchedulerServerCaller
+    {
+        get
+        {
+            return _schedulerServerCaller ?? throw new Exception("please Inject SchedulerCaller!");
+        }
+        set
+        {
+            _schedulerServerCaller = value;
+        }
+    }
+
+    [Inject]
+    public GlobalConfig GlobalConfig
+    {
+        get
+        {
+            return _globalConfig ?? throw new Exception("please Inject GlobalConfig!");
+        }
+        set
+        {
+            _globalConfig = value;
+        }
+    }
+
+    [Inject]
+    public NavigationManager NavigationManager
+    {
+        get
+        {
+            return _navigationManager ?? throw new Exception("please Inject NavigationManager!");
+        }
+        set
+        {
+            _navigationManager = value;
+        }
+
+    }
+
 
     public string T(string key)
     {

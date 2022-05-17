@@ -406,7 +406,7 @@
 }
 
 .rounded-2 {
-    border-radius: 10px !important;
+    border-radius: 8px !important;
 }
 
 .rounded-4 {
@@ -1054,16 +1054,24 @@ tr:hover {
     content: none !important;
 }
 
-.m-page-tabs .m-tab:hover {
+/*.m-page-tabs .m-tab:hover {
     background-color: #F6F8FD;
     color: #485585 !important;
-}
+}*/
 
-    .m-page-tabs .m-tab:hover > .m-icon {
-        color: #485585 !important;
-    }
+.m-page-tabs .m-tab:hover > .m-icon {
+    color: #485585 !important;
+}
 
 .m-app-bar.rounded-b-4 > .m-toolbar__content {
     border-bottom-left-radius: 20px !important;
     border-bottom-right-radius: 20px !important;
+}
+
+.m-list-item-group .project-list.m-list-item--active {
+    background: #4318FF !important;
+    color: #fff !important;
+}
+.project-list {
+    margin: 16px 0 !important;
 }
