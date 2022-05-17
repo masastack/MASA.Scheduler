@@ -25,7 +25,6 @@ global using Masa.Utils.Data.EntityFrameworkCore;
 global using Masa.Scheduler.Services.Server.Application.Jobs.Commands;
 global using Masa.Scheduler.Services.Server.Application.Jobs.Queries;
 global using Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
-global using Masa.Scheduler.Services.Server.Domain.Events;
 global using Masa.Scheduler.Services.Server.Domain.Repositories;
 global using Masa.Scheduler.Services.Server.Domain.Services;
 global using Masa.Scheduler.Services.Server.Infrastructure;
