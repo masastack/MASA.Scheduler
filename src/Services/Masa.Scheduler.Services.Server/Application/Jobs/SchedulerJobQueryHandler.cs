@@ -5,13 +5,15 @@ namespace Masa.Scheduler.Services.Server.Application.Jobs;
 
 public class SchedulerJobQueryHandler
 {
-    readonly ISchedulerJobRepository _schedulerJobRepository;
-    readonly SchedulerDbContext _dbContext;
+    private readonly ISchedulerJobRepository _schedulerJobRepository;
+    private readonly SchedulerDbContext _dbContext;
+    private readonly IMapper _mapper;
 
-    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext)
+    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _dbContext = dbContext;
+        _mapper = mapper;
     }
 
     [EventHandler]
@@ -84,7 +86,7 @@ public class SchedulerJobQueryHandler
             condition = condition.And(job => job.Origin == request.Origin);
         }
 
-        var jobs = await _schedulerJobRepository.GetPaginatedListAsync(condition, new PaginatedOptions()
+        var paginatedResult = await _schedulerJobRepository.GetPaginatedListAsync(condition, new PaginatedOptions()
         {
             Page = request.Page,
             PageSize = request.PageSize,
@@ -95,6 +97,8 @@ public class SchedulerJobQueryHandler
             }
         });
 
-        query.Result = new(jobs.Total, jobs.TotalPages ,jobs.Result);
+        var jobDtos = _mapper.Map<List<SchedulerJobDto>>(paginatedResult.Result);
+
+        query.Result = new(paginatedResult.Total, paginatedResult.TotalPages , jobDtos);
     }
 }
