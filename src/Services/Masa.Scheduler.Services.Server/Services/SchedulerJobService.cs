@@ -11,6 +11,7 @@ public class SchedulerJobService : ServiceBase
         MapPost(AddAsync, string.Empty);
         MapPut(UpdateAsync, string.Empty);
         MapDelete(DeleteAsync, string.Empty);
+        MapPut(ChangeEnableStatusAsync);
     }
 
     public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatuses? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize)
@@ -34,16 +35,16 @@ public class SchedulerJobService : ServiceBase
         return Results.Ok(query.Result);
     }
 
-    public async Task<IResult> AddAsync(IEventBus eventBus, [FromBody] AddSchedulerJobRequest reqeuset)
+    public async Task<IResult> AddAsync(IEventBus eventBus, [FromBody] AddSchedulerJobRequest requset)
     {
-        var comman = new AddSchedulerJobCommand(reqeuset);
+        var comman = new AddSchedulerJobCommand(requset);
         await eventBus.PublishAsync(comman);
         return Results.Ok();
     }
 
-    public async Task<IResult> UpdateAsync(IEventBus eventBus, [FromBody] UpdateSchedulerJobRequest reqeuset)
+    public async Task<IResult> UpdateAsync(IEventBus eventBus, [FromBody] UpdateSchedulerJobRequest requset)
     {
-        var comman = new UpdateSchedulerJobCommand(reqeuset);
+        var comman = new UpdateSchedulerJobCommand(requset);
         await eventBus.PublishAsync(comman);
         return Results.Ok();
     }
@@ -51,6 +52,13 @@ public class SchedulerJobService : ServiceBase
     public async Task<IResult> DeleteAsync(IEventBus eventBus, [FromQuery] Guid jobId)
     {
         var comman = new RemoveSchedulerJobCommand(jobId);
+        await eventBus.PublishAsync(comman);
+        return Results.Ok();
+    }
+
+    public async Task<IResult> ChangeEnableStatusAsync(IEventBus eventBus, [FromBody] ChangeEnabledStatusRequest request)
+    {
+        var comman = new ChangeEnableStatusSchedulerJobCommand(request);
         await eventBus.PublishAsync(comman);
         return Results.Ok();
     }

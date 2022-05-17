@@ -164,14 +164,9 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         }
     }
 
-    public void SetEnabled()
+    public void ChangeEnableStatus()
     {
-        Enabled = true;
-    }
-
-    public void SetDisabled()
-    {
-        Enabled = false;
+        Enabled = !Enabled;
     }
 
     public void SetJobAppConfig(SchedulerJobAppConfigDto? dto)

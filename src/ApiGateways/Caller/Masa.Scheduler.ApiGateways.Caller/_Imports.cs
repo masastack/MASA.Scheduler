@@ -9,3 +9,4 @@ global using Microsoft.Extensions.DependencyInjection;
 global using System.Reflection;
 global using Masa.Scheduler.Contracts.Server.Responses;
 global using Masa.Scheduler.Contracts.Server.Dtos;
+global using Masa.Scheduler.Contracts.Server.Requests;

@@ -51,4 +51,19 @@ public class SchedulerJobCommandHandler
 
         await _schedulerJobRepository.RemoveAsync(job);
     }
+
+    [EventHandler]
+    public async Task ChangeEnabledStatusHandleAsync(ChangeEnableStatusSchedulerJobCommand command)
+    {
+        var job = await _schedulerJobRepository.FindAsync(command.Request.Id);
+
+        if (job is null)
+        {
+            throw new UserFriendlyException($"Job id {command.Request.Id}, not found");
+        }
+
+        job.ChangeEnableStatus();
+
+        await _schedulerJobRepository.UpdateAsync(job);
+    }
 }
