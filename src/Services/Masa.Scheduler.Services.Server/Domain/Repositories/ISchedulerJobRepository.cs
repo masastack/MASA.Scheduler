@@ -5,5 +5,4 @@ namespace Masa.Scheduler.Services.Server.Domain.Repositories;
 
 public interface ISchedulerJobRepository : IRepository<SchedulerJob, Guid>
 {
-    Task<List<SchedulerJob>> GetListAsync();
 }
