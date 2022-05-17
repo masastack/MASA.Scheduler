@@ -9,7 +9,7 @@ public class SchedulerJobService : ServiceBase
 
     public SchedulerJobService(ICallerProvider callerProvider) : base(callerProvider)
     {
-        BaseUrl = "api/job/";
+        BaseUrl = "api/scheduler-job/";
     }
 
     public async Task<List<SchedulerJobDto>> GetListAsync()

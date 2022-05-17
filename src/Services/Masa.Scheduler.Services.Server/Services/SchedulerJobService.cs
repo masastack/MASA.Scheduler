@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Services.Server.Server.Services;
 
 public class SchedulerJobService : ServiceBase
 {
-    public SchedulerJobService(IServiceCollection services) : base(services, "api/job")
+    public SchedulerJobService(IServiceCollection services) : base(services, "api/scheduler-job")
     {
         MapGet(ListAsync);
         MapPost(CreateAsync);
