@@ -13,7 +13,7 @@ public class SchedulerJobDaprServiceInvocationConfig
 
     public string Data { get; private set; } = string.Empty;
 
-    public SchedulerJobDaprServiceInvocationConfig(int daprServiceAppId, string methodName, HttpMethods httpMethod, string data)
+    public void SetConfig(int daprServiceAppId, string methodName, HttpMethods httpMethod, string data)
     {
         DaprServiceAppId = daprServiceAppId;
         MethodName = methodName;

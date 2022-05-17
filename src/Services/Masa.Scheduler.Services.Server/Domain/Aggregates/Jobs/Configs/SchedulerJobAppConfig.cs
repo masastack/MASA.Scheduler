@@ -13,7 +13,7 @@ public class SchedulerJobAppConfig
 
     public string Version { get; private set; } = string.Empty;
 
-    public SchedulerJobAppConfig(string jobEntryAssembly, string jobEntryMethod, string jobParams, string version)
+    public void SetConfig(string jobEntryAssembly, string jobEntryMethod, string jobParams, string version)
     {
         JobEntryAssembly = jobEntryAssembly;
         JobEntryMethod = jobEntryMethod;

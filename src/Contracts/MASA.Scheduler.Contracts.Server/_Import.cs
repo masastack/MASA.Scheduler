@@ -5,3 +5,6 @@ global using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 global using Masa.Scheduler.Contracts.Server.Messages;
 global using Masa.Scheduler.Contracts.Server.Dtos;
 global using FluentValidation;
+global using System.Reflection;
+global using Masa.Scheduler.Contracts.Server.Requests;
+global using HttpMethods = Masa.Scheduler.Contracts.Server.Infrastructure.Enums.HttpMethods;

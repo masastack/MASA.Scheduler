@@ -9,9 +9,9 @@ public class SchedulerJobHttpConfig
 
     public string RequestUrl { get; private set; } = string.Empty;
 
-    public Dictionary<string, string> HttpParameter { get; private set; }
+    public Dictionary<string, string> HttpParameter { get; private set; } = new();
 
-    public Dictionary<string,string> HttpHeaders { get; private set; }
+    public Dictionary<string, string> HttpHeaders { get; private set; } = new();
 
     public string HttpBody { get; private set; } = string.Empty;
 
@@ -19,7 +19,7 @@ public class SchedulerJobHttpConfig
 
     public string VerifyContent { get; private set; } = string.Empty;
 
-    public SchedulerJobHttpConfig(HttpMethods httpMethod, string requestUrl, Dictionary<string, string> httpParameter, Dictionary<string, string> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
+    public void SetConfig(HttpMethods httpMethod, string requestUrl, Dictionary<string, string> httpParameter, Dictionary<string, string> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
     {
         HttpMethod = httpMethod;
         RequestUrl = requestUrl;

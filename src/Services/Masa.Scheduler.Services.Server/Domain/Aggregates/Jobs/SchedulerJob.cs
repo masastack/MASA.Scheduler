@@ -7,11 +7,11 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 {
     private List<SchedulerTask> _schedulerTasks = new();
 
-    private SchedulerJobAppConfig? _jobAppConfig;
+    private SchedulerJobAppConfig _jobAppConfig = new();
 
-    private SchedulerJobDaprServiceInvocationConfig? _daprServiceInvocationConfig;
- 
-    private SchedulerJobHttpConfig? _httpConfig;
+    private SchedulerJobDaprServiceInvocationConfig _daprServiceInvocationConfig = new();
+
+    private SchedulerJobHttpConfig _httpConfig = new();
 
     public string Name { get; private set; } = string.Empty;
 
@@ -51,17 +51,17 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public DateTimeOffset LastScheduleTime { get; private set; } = DateTimeOffset.MinValue;
 
-    public DateTimeOffset LastRunStartTime { get; private set; } = DateTime.MinValue;
+    public DateTimeOffset LastRunStartTime { get; private set; } = DateTimeOffset.MinValue;
 
     public DateTimeOffset LastRunEndTime { get; private set; } = DateTimeOffset.MinValue;
 
     public TaskRunStatuses LastRunStatus { get; private set; }
 
-    public SchedulerJobAppConfig? JobAppConfig { get => _jobAppConfig; private set => _jobAppConfig = value; }
+    public SchedulerJobAppConfig JobAppConfig { get => _jobAppConfig; private set => _jobAppConfig = value; }
 
-    public SchedulerJobDaprServiceInvocationConfig? DaprServiceInvocationConfig { get => _daprServiceInvocationConfig; private set => _daprServiceInvocationConfig = value; }
+    public SchedulerJobDaprServiceInvocationConfig DaprServiceInvocationConfig { get => _daprServiceInvocationConfig; private set => _daprServiceInvocationConfig = value; }
 
-    public SchedulerJobHttpConfig? HttpConfig { get => _httpConfig; private set => _httpConfig = value; }
+    public SchedulerJobHttpConfig HttpConfig { get => _httpConfig; private set => _httpConfig = value; }
 
     public IReadOnlyCollection<SchedulerTask> SchedulerTasks => _schedulerTasks;
 
@@ -180,8 +180,8 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         {
             return;
         }
-
-        JobAppConfig = new (dto.JobEntryAssembly, dto.JobEntryMethod, dto.JobParams, dto.Version);
+        JobAppConfig ??= new();
+        JobAppConfig.SetConfig(dto.JobEntryAssembly, dto.JobEntryMethod, dto.JobParams, dto.Version);
     }
 
     public void SetHttpConfig(SchedulerJobHttpConfigDto? dto)
@@ -191,7 +191,8 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
             return;
         }
 
-        HttpConfig = new (dto.HttpMethod, dto.RequestUrl, dto.HttpParameter, dto.HttpHeaders, dto.HttpBody, dto.HttpVerifyType, dto.VerifyContent);
+        HttpConfig ??= new();
+        HttpConfig.SetConfig(dto.HttpMethod, dto.RequestUrl, dto.HttpParameter, dto.HttpHeaders, dto.HttpBody, dto.HttpVerifyType, dto.VerifyContent);
     }
 
     public void SetDaprServiceInvocationConfig(SchedulerJobDaprServiceInvocationConfigDto? dto)
@@ -200,7 +201,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         {
             return;
         }
-
-        DaprServiceInvocationConfig = new(dto.DaprServiceAppId, dto.MethodName, dto.HttpMethod, dto.Data);
+        DaprServiceInvocationConfig ??= new();
+        DaprServiceInvocationConfig.SetConfig(dto.DaprServiceAppId, dto.MethodName, dto.HttpMethod, dto.Data);
     }
 }

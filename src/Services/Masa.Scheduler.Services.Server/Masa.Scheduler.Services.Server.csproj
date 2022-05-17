@@ -13,6 +13,7 @@
 		<PackageReference Include="Mapster" Version="7.3.0" />
 		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="0.4.0-preview.4" />
 		<PackageReference Include="Masa.Contrib.BasicAbility.Pm" Version="0.4.0-preview.4" />
+		<PackageReference Include="Masa.Contrib.Data.Mapping.Mapster" Version="0.4.0-rc1" />
 		<PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="0.4.0-preview.4" />
 		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF" Version="0.4.0-preview.4" />
 		<PackageReference Include="FluentValidation" Version="11.0.1" />
@@ -44,6 +45,10 @@
 	
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Contracts\MASA.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="Migrations\" />
 	</ItemGroup>
 	
 	<ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

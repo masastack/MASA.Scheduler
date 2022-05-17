@@ -3,30 +3,26 @@
 
 namespace Masa.Scheduler.Services.Server.Infrastructure.EntityConfigurations.ValueConverts;
 
-public class JsonValueConverter<T> : ValueConverter<T?, string> where T : class
+public class JsonValueConverter<T> : ValueConverter<T, string> where T : class, new()
 {
     public JsonValueConverter()
         : base(x => SerializeObject(x), x => DeserializeObject(x))
     {
 
     }
-   
 
-    private static string SerializeObject(T? obj)
+    private static string SerializeObject(T obj)
     {
-        if (obj == null)
-            return "";
-
         return JsonConvert.SerializeObject(obj);
     }
 
-    private static T? DeserializeObject(string json)
+    private static T DeserializeObject(string json)
     {
         if (string.IsNullOrEmpty(json))
         {
-            return default;
+            return new T();
         }
 
-        return JsonConvert.DeserializeObject<T>(json);
+        return JsonConvert.DeserializeObject<T>(json)!;
     }
 }

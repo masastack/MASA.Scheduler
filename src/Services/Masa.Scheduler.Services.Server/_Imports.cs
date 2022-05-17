@@ -63,3 +63,5 @@ global using Masa.Scheduler.Contracts.Server.Requests;
 global using Mapster;
 global using Masa.Scheduler.Contracts.Server.Validator;
 global using System.Linq.Expressions;
+global using Masa.Contrib.Data.Mapping.Mapster;
+global using Masa.BuildingBlocks.Data.Mapping;

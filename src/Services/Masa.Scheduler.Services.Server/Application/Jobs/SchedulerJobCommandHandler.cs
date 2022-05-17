@@ -6,16 +6,18 @@ namespace Masa.Scheduler.Services.Server.Application.Jobs;
 public class SchedulerJobCommandHandler
 {
     private readonly ISchedulerJobRepository _schedulerJobRepository;
+    private readonly IMapper _mapper;
 
-    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository)
+    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository, IMapper mapper)
     {
         _schedulerJobRepository = schedulerJobRepository;
+        _mapper = mapper;
     }
 
     [EventHandler]
     public async Task AddHandleAsync(AddSchedulerJobCommand command)
     {
-        var job = command.Request.Adapt<SchedulerJob>();
+        var job = _mapper.Map<SchedulerJob>(command.Request.Data);
 
         await _schedulerJobRepository.AddAsync(job);
     }

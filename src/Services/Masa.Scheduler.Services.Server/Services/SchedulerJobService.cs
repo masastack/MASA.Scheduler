@@ -7,16 +7,29 @@ public class SchedulerJobService : ServiceBase
 {
     public SchedulerJobService(IServiceCollection services) : base(services, "api/job")
     {
-        MapGet(ListAsync);
-        MapPost(AddAsync);
-        MapPut(UpdateAsync);
-        MapDelete(DeleteAsync);
+        MapGet(ListAsync, string.Empty);
+        MapPost(AddAsync, string.Empty);
+        MapPut(UpdateAsync, string.Empty);
+        MapDelete(DeleteAsync, string.Empty);
     }
 
-
-    public async Task<IResult> ListAsync(IEventBus eventBus, [FromBody] SchedulerJobListRequest reqeuset)
+    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatuses? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize)
     {
-        var query = new SchedulerJobQuery(reqeuset);
+        var request = new SchedulerJobListRequest()
+        {
+            IsCreatedByManual = isCreatedByManual,
+            FilterStatus = filterStatus ?? 0,
+            JobName = jobName ?? "",
+            JobType = jobType ?? 0,
+            Origin = origin ?? "",
+            QueryTimeType = queryTimeType ?? 0,
+            QueryStartTime = queryStartTime,
+            QueryEndTime = queryEndTime,
+            Page = page,
+            PageSize = pageSize
+        };
+
+        var query = new SchedulerJobQuery(request);
         await eventBus.PublishAsync(query);
         return Results.Ok(query.Result);
     }
