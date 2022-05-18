@@ -23,22 +23,35 @@ public class SchedulerJobQueryHandler
 
         Expression<Func<SchedulerJob, bool>> condition = job => true;
 
-        condition = condition.And(request.IsCreatedByManual, job => job.Origin == string.Empty);
-        condition = condition.And(!request.IsCreatedByManual, job => job.Origin != string.Empty);
+        if (request.IsCreatedByManual)
+        {
+            condition = condition.And(job => job.Origin == string.Empty);
+        }
+        else
+        {
+            condition = condition.And(job => job.Origin != string.Empty);
+        }
 
         condition = condition.And(request.FilterStatus != 0, job => job.LastRunStatus == request.FilterStatus);
 
         condition = condition.And(!string.IsNullOrEmpty(request.JobName), job => job.Name.Contains(request.JobName));
 
-        condition = condition.And(request.QueryTimeType == JobQueryTimeTypes.ScheduleTime && request.QueryStartTime.HasValue, job => job.LastScheduleTime >= request.QueryStartTime);
-        condition = condition.And(request.QueryTimeType == JobQueryTimeTypes.ScheduleTime && request.QueryEndTime.HasValue, job => job.LastScheduleTime < request.QueryEndTime);
-
-        condition = condition.And(request.QueryTimeType == JobQueryTimeTypes.RunStartTime && request.QueryStartTime.HasValue, job => job.LastRunStartTime >= request.QueryStartTime);
-        condition = condition.And(request.QueryTimeType == JobQueryTimeTypes.RunStartTime && request.QueryEndTime.HasValue, job => job.LastRunStartTime < request.QueryEndTime);
-
-        condition = condition.And(request.QueryTimeType == JobQueryTimeTypes.RunEndTime && request.QueryStartTime.HasValue, job => job.LastRunEndTime >= request.QueryStartTime);
-        condition = condition.And(request.QueryTimeType == JobQueryTimeTypes.RunEndTime && request.QueryEndTime.HasValue, job => job.LastRunEndTime < request.QueryEndTime);
-
+        switch (request.QueryTimeType)
+        {
+            case JobQueryTimeTypes.ScheduleTime:
+                condition = condition.And(request.QueryStartTime.HasValue, job => job.LastScheduleTime >= request.QueryStartTime);
+                condition = condition.And(request.QueryEndTime.HasValue, job => job.LastScheduleTime < request.QueryEndTime);
+                break;
+            case JobQueryTimeTypes.RunStartTime:
+                condition = condition.And(request.QueryStartTime.HasValue, job => job.LastRunStartTime >= request.QueryStartTime);
+                condition = condition.And(request.QueryEndTime.HasValue, job => job.LastRunStartTime < request.QueryEndTime);
+                break;
+            case JobQueryTimeTypes.RunEndTime:
+                condition = condition.And(request.QueryStartTime.HasValue, job => job.LastRunEndTime >= request.QueryStartTime);
+                condition = condition.And(request.QueryEndTime.HasValue, job => job.LastRunEndTime < request.QueryEndTime);
+                break;
+        }
+       
         condition = condition.And(request.JobType != 0, job => job.JobType == request.JobType);
 
         condition = condition.And(!string.IsNullOrEmpty(request.Origin), job => job.Origin == request.Origin);

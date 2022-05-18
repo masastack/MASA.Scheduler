@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
 
-public class SchedulerJobAppConfig
+public class SchedulerJobAppConfig: ValueObject
 {
     public string JobEntryAssembly { get; private set; } = string.Empty;
 
@@ -19,5 +19,13 @@ public class SchedulerJobAppConfig
         JobEntryMethod = jobEntryMethod;
         JobParams = jobParams;
         Version = version;
+    }
+
+    protected override IEnumerable<object> GetEqualityValues()
+    {
+        yield return JobEntryAssembly;
+        yield return JobEntryMethod;
+        yield return JobParams;
+        yield return Version;
     }
 }

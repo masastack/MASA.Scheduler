@@ -8,6 +8,6 @@ public enum HttpVerifyTypes
     StatusCode200 = 1,
     CustomStatusCode,
     ContentContains,
-    ContentDoesNotContain,
+    ContentUnContains,
 }
 

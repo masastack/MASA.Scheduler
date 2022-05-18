@@ -3,13 +3,13 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
 
-public class SchedulerJobHttpConfig
+public class SchedulerJobHttpConfig : ValueObject
 {
     public HttpMethods HttpMethod { get; private set; }
 
     public string RequestUrl { get; private set; } = string.Empty;
 
-    public Dictionary<string, string> HttpParameter { get; private set; } = new();
+    public Dictionary<string, string> HttpParameters { get; private set; } = new();
 
     public Dictionary<string, string> HttpHeaders { get; private set; } = new();
 
@@ -19,14 +19,25 @@ public class SchedulerJobHttpConfig
 
     public string VerifyContent { get; private set; } = string.Empty;
 
-    public void SetConfig(HttpMethods httpMethod, string requestUrl, Dictionary<string, string> httpParameter, Dictionary<string, string> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
+    public void SetConfig(HttpMethods httpMethod, string requestUrl, Dictionary<string, string> httpParameters, Dictionary<string, string> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
     {
         HttpMethod = httpMethod;
         RequestUrl = requestUrl;
-        HttpParameter = httpParameter;
+        HttpParameters = httpParameters;
         HttpHeaders = httpHeader;
         HttpBody = httpBody;
         HttpVerifyType = httpVerifyType;
         VerifyContent = verityContent;
+    }
+
+    protected override IEnumerable<object> GetEqualityValues()
+    {
+        yield return HttpMethod;
+        yield return RequestUrl;
+        yield return HttpParameters;
+        yield return HttpHeaders;
+        yield return HttpBody;
+        yield return HttpVerifyType;
+        yield return VerifyContent;
     }
 }

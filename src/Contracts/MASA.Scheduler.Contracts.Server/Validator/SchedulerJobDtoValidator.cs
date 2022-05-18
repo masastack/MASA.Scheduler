@@ -3,9 +3,9 @@
 
 namespace Masa.Scheduler.Contracts.Server.Validator;
 
-public class SchedulerJobValidator<T> : AbstractValidator<T> where T : SchedulerJobDto
+public class SchedulerJobDtoValidator : AbstractValidator<SchedulerJobDto>
 {
-    public SchedulerJobValidator()
+    public SchedulerJobDtoValidator()
     {
         RuleFor(job => job.FailedRetryCount).GreaterThanOrEqualTo(0);
         RuleFor(job => job.FailedRetryInterval).GreaterThanOrEqualTo(0);

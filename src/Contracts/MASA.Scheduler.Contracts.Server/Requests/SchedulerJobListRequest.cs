@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Contracts.Server.Requests;
 
-public class SchedulerJobListRequest: BaseRequest
+public class SchedulerJobListRequest: PaginationRequest
 {
     public bool IsCreatedByManual { get; set; }
 
@@ -20,9 +20,5 @@ public class SchedulerJobListRequest: BaseRequest
     public JobTypes JobType { get; set; }
 
     public string Origin { get; set; } = string.Empty;
-
-    public int Page { get; set; }
-
-    public int PageSize { get; set; }
 }
 

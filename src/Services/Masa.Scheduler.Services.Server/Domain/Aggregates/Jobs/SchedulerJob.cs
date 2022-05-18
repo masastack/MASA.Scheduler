@@ -192,7 +192,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         }
 
         HttpConfig ??= new();
-        HttpConfig.SetConfig(dto.HttpMethod, dto.RequestUrl, dto.HttpParameter, dto.HttpHeaders, dto.HttpBody, dto.HttpVerifyType, dto.VerifyContent);
+        HttpConfig.SetConfig(dto.HttpMethod, dto.RequestUrl, dto.HttpParameters, dto.HttpHeaders, dto.HttpBody, dto.HttpVerifyType, dto.VerifyContent);
     }
 
     public void SetDaprServiceInvocationConfig(SchedulerJobDaprServiceInvocationConfigDto? dto)
