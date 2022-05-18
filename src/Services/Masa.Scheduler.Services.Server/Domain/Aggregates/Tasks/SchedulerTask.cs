@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Tasks;
 
-public class SchedulerTask : AuditAggregateRoot<Guid, Guid>, ISoftDelete
+public class SchedulerTask : FullAuditAggregateRoot<Guid, Guid>
 {
     public int RunCount { get; private set; }
 
@@ -11,7 +11,7 @@ public class SchedulerTask : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public TaskRunStatuses TaskStatus { get; private set; }
 
-    public DateTimeOffset SchedulerStartTime { get; private set; }
+    public DateTimeOffset SchedulerTime { get; private set; }
 
     public DateTimeOffset TaskRunStartTime { get; private set; } = DateTimeOffset.MinValue;
 
@@ -21,31 +21,37 @@ public class SchedulerTask : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public SchedulerJob Job { get; set; } = null!;
 
-    public bool IsDeleted { get; private set; }
-
     public string Origin { get; private set; }
 
     public string WorkerHost { get; private set; } = string.Empty;
 
-    public SchedulerTask(Guid jobId, string origin)
+    public string Message { get; private set; } = string.Empty;
+
+    public Guid RunUserId { get; private set; }
+
+    public SchedulerTask(Guid jobId, string origin, Guid runUserId)
     {
         JobId = jobId;
         Origin = origin;
-        SchedulerStartTime = DateTimeOffset.Now;
+        RunUserId = runUserId;
+        SchedulerTime = DateTimeOffset.Now;
     }
 
-    public void TaskStart(string workerHost)
+    public void TaskStart(string workerHost, Guid runUserId)
     {
         RunCount++;
         TaskRunStartTime = DateTimeOffset.Now;
         TaskStatus = TaskRunStatuses.Running;
+        RunUserId = runUserId;
         WorkerHost = workerHost;
+        RunTime = 0;
     }
 
-    public void TaskEnd(TaskRunStatuses taskStatus)
+    public void TaskEnd(TaskRunStatuses taskStatus, string message)
     {
         TaskStatus = taskStatus;
         TaskRunEndTime = DateTimeOffset.Now;
-        RunTime = Convert.ToInt64((TaskRunStartTime - TaskRunEndTime).TotalSeconds);
+        Message = message;
+        RunTime = Convert.ToInt64((TaskRunEndTime - TaskRunStartTime).TotalSeconds);
     }
 }

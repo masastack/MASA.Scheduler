@@ -15,7 +15,7 @@ public class ProjectQueryHandler
     [EventHandler]
     public async Task TeamListHandleAsync(ProjectQuery query)
     {
-        var projectList = await _pmClient.ProjectService.GetProjectListAsync("development");
+        var projectList = await _pmClient.ProjectService.GetProjectAppsAsync("development");
 
         query.Result = projectList.FindAll(p => p.TeamId == query.TeamId).Select(p => new ProjectDto()
         {

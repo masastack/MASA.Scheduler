@@ -1,10 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Scheduler.Contracts.Server.Requests;
+namespace Masa.Scheduler.Services.Server.Domain.Repositories;
 
-public class AddSchedulerJobRequest: BaseRequest
+public interface ISchedulerTaskRepository : IRepository<SchedulerTask, Guid>
 {
-    public SchedulerJobDto Data { get; set; } = new();
 }
-

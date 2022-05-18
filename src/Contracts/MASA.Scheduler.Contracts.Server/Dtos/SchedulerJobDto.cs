@@ -21,6 +21,8 @@ public class SchedulerJobDto
 
     public RoutingStrategyTypes RoutingStrategy { get; set; }
 
+    public string SpecifiedWorkerHost { get; set; } = string.Empty;
+
     public ScheduleExpiredStrategyTypes ScheduleExpiredStrategy { get; set; }
 
     public ScheduleBlockStrategyTypes ScheduleBlockStrategy { get; set; }

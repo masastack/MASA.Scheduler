@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
-public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
+public class SchedulerJob : FullAuditAggregateRoot<Guid, Guid>
 {
     private List<SchedulerTask> _schedulerTasks = new();
 
@@ -26,6 +26,8 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
     public JobTypes JobType { get; private set; }
 
     public RoutingStrategyTypes RoutingStrategy { get; private set; }
+
+    public string SpecifiedWorkerHost { get; set; } = string.Empty;
 
     public ScheduleExpiredStrategyTypes ScheduleExpiredStrategy { get; private set; }
 
@@ -67,8 +69,6 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public IReadOnlyCollection<SchedulerTask> SchedulerTasks => _schedulerTasks;
 
-    public bool IsDeleted { get; private set; }
-
     public SchedulerJob(JobTypes jobType, string origin)
     {
         JobType = jobType;
@@ -84,6 +84,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         string cronExpression,
         JobTypes jobType,
         RoutingStrategyTypes routingStrategy,
+        string specifiedWorkerHost,
         ScheduleExpiredStrategyTypes scheduleExpiredStrategy,
         RunTimeoutStrategyTypes runTimeoutStrategy,
         int runTimeoutSecond,
@@ -101,6 +102,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         CronExpression = cronExpression;
         JobType = jobType;
         RoutingStrategy = routingStrategy;
+        SpecifiedWorkerHost = specifiedWorkerHost;
         ScheduleExpiredStrategy = scheduleExpiredStrategy;
         RunTimeoutStrategy = runTimeoutStrategy;
         RunTimeoutSecond = runTimeoutSecond;
@@ -121,6 +123,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         ScheduleType = dto.ScheduleType;
         CronExpression = dto.CronExpression;
         RoutingStrategy = dto.RoutingStrategy;
+        SpecifiedWorkerHost = dto.SpecifiedWorkerHost;
         ScheduleBlockStrategy = dto.ScheduleBlockStrategy;
         ScheduleExpiredStrategy = dto.ScheduleExpiredStrategy;
         RunTimeoutStrategy = dto.RunTimeoutStrategy;

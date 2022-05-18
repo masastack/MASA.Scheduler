@@ -20,6 +20,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddMasaRedisCache(builder.Configuration.GetSection("RedisConfig"));
 builder.Services.AddPmClient(builder.Configuration.GetValue<string>("PmClient:Url"));
 builder.Services.AddMapping();
+builder.Services.AddWorkerManager();
 
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -65,10 +66,24 @@ var app = builder.Services
         })
         .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
-            dbOptions => dbOptions.UseSqlServer())
+            dbOptions => dbOptions.UseSqlServer().UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder);
+
+
+//app.UseMasaExceptionHandling(opt =>
+//{
+//    opt.CustomExceptionHandler = exception =>
+//    {
+//        Exception friendlyException = exception;
+//        if (exception is ValidationException validationException)
+//        {
+//            friendlyException = new UserFriendlyException(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
+//        }
+//        return (friendlyException, false);
+//    };
+//});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

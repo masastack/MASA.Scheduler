@@ -13,4 +13,9 @@ public class SchedulerJobDomainService : DomainService
         _logger = logger;
         _schedulerJobRepository = schedulerJobRepository;
     }
+
+    public async Task StartJobAsync(StartSchedulerJobRequest request)
+    {
+        await EventBus.PublishAsync(new StartJobDomainEvent(request));
+    }
 }

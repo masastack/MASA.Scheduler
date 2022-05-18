@@ -11,9 +11,10 @@ public class SchedulerTaskEntityTypeConfiguration : IEntityTypeConfiguration<Sch
     {
         builder.ToTable(nameof(SchedulerTask), SchedulerDbContext.SERVER_SCHEMA);
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => x.JobId).HasFilter("[IsDeleted] = 0");
+        builder.HasIndex(x => x.JobId);
         builder.Property(x => x.Origin).HasMaxLength(50);
         builder.Property(x => x.WorkerHost).HasMaxLength(100);
+        builder.Property(x => x.Message).HasMaxLength(255);
         builder.HasOne(x => x.Job).WithMany(p => p.SchedulerTasks).HasForeignKey(x => x.JobId);
     }
 }

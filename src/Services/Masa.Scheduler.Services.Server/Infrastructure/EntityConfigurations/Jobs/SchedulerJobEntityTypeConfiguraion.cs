@@ -18,6 +18,7 @@ public class SchedulerJobEntityTypeConfiguraion : IEntityTypeConfiguration<Sched
         builder.Property(x => x.Owner).HasMaxLength(20);
         builder.Property(x => x.Origin).HasMaxLength(50);
         builder.Property(x => x.CronExpression).HasMaxLength(100);
+        builder.Property(x => x.SpecifiedWorkerHost).HasMaxLength(100);
         builder.Property(x => x.JobAppConfig).HasConversion(new JsonValueConverter<SchedulerJobAppConfig>());
         builder.Property(x => x.HttpConfig).HasConversion(new JsonValueConverter<SchedulerJobHttpConfig>());
         builder.Property(x => x.DaprServiceInvocationConfig).HasConversion(new JsonValueConverter<SchedulerJobDaprServiceInvocationConfig>());
