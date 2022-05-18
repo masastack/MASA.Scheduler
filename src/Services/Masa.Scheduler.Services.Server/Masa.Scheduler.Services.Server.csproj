@@ -31,7 +31,6 @@
 		<PackageReference Include="Masa.Contrib.ReadWriteSpliting.Cqrs" Version="0.4.0-rc1" />
 		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="0.4.0-rc1" />
 		<PackageReference Include="Masa.Utils.Caching.Redis" Version="0.4.0-rc1" />
-		<PackageReference Include="Masa.Utils.Data.EntityFrameworkCore.SqlServer" Version="0.4.0-preview.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
 		<PackageReference Include="Masa.Contrib.Data.UoW.EF" Version="0.4.0-rc1" />
 		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="0.4.0-rc1" />
