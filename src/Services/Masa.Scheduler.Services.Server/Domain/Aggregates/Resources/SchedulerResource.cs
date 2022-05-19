@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Resources;
 
-public class SchedulerResource : FullAuditAggregateRoot<Guid, Guid>
+public class SchedulerResource : FullAggregateRoot<Guid, Guid>
 {
     public string Name { get; private set; } = string.Empty;
 

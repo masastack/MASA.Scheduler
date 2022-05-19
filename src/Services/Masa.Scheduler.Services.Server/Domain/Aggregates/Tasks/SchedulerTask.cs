@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Tasks;
 
-public class SchedulerTask : FullAuditAggregateRoot<Guid, Guid>
+public class SchedulerTask : FullAggregateRoot<Guid, Guid>
 {
     public int RunCount { get; private set; }
 

@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
-public class SchedulerJob : FullAuditAggregateRoot<Guid, Guid>
+public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 {
     private List<SchedulerTask> _schedulerTasks = new();
 
