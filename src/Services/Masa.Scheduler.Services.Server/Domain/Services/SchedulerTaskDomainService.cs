@@ -44,6 +44,6 @@ public class SchedulerTaskDomainService : DomainService
 
     public async Task NotifyTaskRunResultAsync(NotifySchedulerTaskRunResultRequest request)
     {
-
+        await EventBus.PublishAsync(new NotifyTaskRunResultDomainEvent(request));
     }
 }

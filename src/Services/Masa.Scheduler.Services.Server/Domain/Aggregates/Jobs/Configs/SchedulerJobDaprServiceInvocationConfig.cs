@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
 
-public class SchedulerJobDaprServiceInvocationConfig
+public class SchedulerJobDaprServiceInvocationConfig : ValueObject
 {
     public int DaprServiceAppId { get; private set; }
 
@@ -19,5 +19,13 @@ public class SchedulerJobDaprServiceInvocationConfig
         MethodName = methodName;
         HttpMethod = httpMethod;
         Data = data;
+    }
+
+    protected override IEnumerable<object> GetEqualityValues()
+    {
+        yield return DaprServiceAppId;
+        yield return MethodName;
+        yield return HttpMethod;
+        yield return Data;
     }
 }

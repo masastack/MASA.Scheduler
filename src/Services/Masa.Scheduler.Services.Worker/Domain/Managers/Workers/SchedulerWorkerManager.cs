@@ -104,7 +104,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         var requestMessage = new HttpRequestMessage()
         {
             Method = ConvertHttpMethod(jobDto.HttpConfig.HttpMethod),
-            RequestUri = GetRequestUrl(jobDto.HttpConfig.RequestUrl, jobDto.HttpConfig.HttpParameter),
+            RequestUri = GetRequestUrl(jobDto.HttpConfig.RequestUrl, jobDto.HttpConfig.HttpParameters),
             Content = ConvertHttpContent(jobDto.HttpConfig.HttpBody)
         };
 
@@ -135,7 +135,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                     isSucess = true;
                 }
                 break;
-            case HttpVerifyTypes.ContentDoesNotContain:
+            case HttpVerifyTypes.ContentUnContains:
                 content = await response.Content.ReadAsStringAsync();
                 if (string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || !content.Contains(jobDto.HttpConfig.VerifyContent))
                 {

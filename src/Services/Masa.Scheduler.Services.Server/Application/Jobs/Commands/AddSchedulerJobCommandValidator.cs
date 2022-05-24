@@ -7,6 +7,6 @@ public class AddSchedulerJobCommandValidator : AbstractValidator<AddSchedulerJob
 {
     public AddSchedulerJobCommandValidator()
     {
-        RuleFor(command => command.Request.Data).SetValidator(new SchedulerJobValidator<SchedulerJobDto>());
+        RuleFor(command => command.Request.Data).SetValidator(new SchedulerJobDtoValidator());
     }
 }

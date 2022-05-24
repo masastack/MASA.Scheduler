@@ -85,3 +85,4 @@ global using Masa.Utils.Development.Dapr.AspNetCore;
 global using Masa.Scheduler.ApiGateways.Caller;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Consts;
 global using Masa.Scheduler.Contracts.Server.Requests.SchedulerWorker;
+global using Masa.BuildingBlocks.Ddd.Domain.Values;

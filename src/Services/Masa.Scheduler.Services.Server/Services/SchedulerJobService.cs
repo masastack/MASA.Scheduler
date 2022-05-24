@@ -37,36 +37,36 @@ public class SchedulerJobService : ServiceBase
 
     public async Task<IResult> AddAsync(IEventBus eventBus, [FromBody] AddSchedulerJobRequest requset)
     {
-        var comman = new AddSchedulerJobCommand(requset);
-        await eventBus.PublishAsync(comman);
+        var command = new AddSchedulerJobCommand(requset);
+        await eventBus.PublishAsync(command);
         return Results.Ok();
     }
 
     public async Task<IResult> UpdateAsync(IEventBus eventBus, [FromBody] UpdateSchedulerJobRequest requset)
     {
-        var comman = new UpdateSchedulerJobCommand(requset);
-        await eventBus.PublishAsync(comman);
+        var command = new UpdateSchedulerJobCommand(requset);
+        await eventBus.PublishAsync(command);
         return Results.Ok();
     }
 
     public async Task<IResult> DeleteAsync(IEventBus eventBus, [FromQuery] Guid jobId)
     {
-        var comman = new RemoveSchedulerJobCommand(jobId);
-        await eventBus.PublishAsync(comman);
+        var command = new RemoveSchedulerJobCommand(jobId);
+        await eventBus.PublishAsync(command);
         return Results.Ok();
     }
 
     public async Task<IResult> ChangeEnableStatusAsync(IEventBus eventBus, [FromBody] ChangeEnabledStatusRequest request)
     {
-        var comman = new ChangeEnableStatusSchedulerJobCommand(request);
-        await eventBus.PublishAsync(comman);
+        var command = new ChangeEnableStatusSchedulerJobCommand(request);
+        await eventBus.PublishAsync(command);
         return Results.Ok();
     }
 
     public async Task<IResult> StartJobAsync(IEventBus eventBus, [FromBody] StartSchedulerJobRequest request)
     {
-        var comman = new StartSchedulerJobCommand(request);
-        await eventBus.PublishAsync(comman);
+        var command = new StartSchedulerJobCommand(request);
+        await eventBus.PublishAsync(command);
         return Results.Ok();
     }
 }

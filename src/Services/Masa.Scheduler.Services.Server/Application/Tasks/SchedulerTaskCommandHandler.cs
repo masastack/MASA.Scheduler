@@ -45,6 +45,6 @@ public class SchedulerTaskCommandHandler
     [EventHandler]
     public async Task NotifyTaskRunResultHandleAsync(NotifySchedulerTaskRunResultCommand command)
     {
-
+        await _schedulerTaskDomainService.NotifyTaskRunResultAsync(command.Request);
     }
 }
