@@ -19,6 +19,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddMasaRedisCache(builder.Configuration.GetSection("RedisConfig"));
 builder.Services.AddPmClient(builder.Configuration.GetValue<string>("PmClient:Url"));
+builder.Services.AddMapping();
 
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

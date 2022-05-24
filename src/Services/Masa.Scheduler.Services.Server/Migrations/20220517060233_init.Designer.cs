@@ -4,6 +4,7 @@ using Masa.Scheduler.Services.Server.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masa.Scheduler.Services.Server.Migrations
 {
     [DbContext(typeof(SchedulerDbContext))]
-    partial class SchedulerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220517060233_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,11 +89,6 @@ namespace Masa.Scheduler.Services.Server.Migrations
 
                     b.Property<Guid>("Creator")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CronExpression")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("DaprServiceInvocationConfig")
                         .IsRequired()
@@ -273,11 +270,6 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<Guid>("Modifier")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Origin")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int>("RunCount")
                         .HasColumnType("int");
 
@@ -295,11 +287,6 @@ namespace Masa.Scheduler.Services.Server.Migrations
 
                     b.Property<int>("TaskStatus")
                         .HasColumnType("int");
-
-                    b.Property<string>("WorkerHost")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 

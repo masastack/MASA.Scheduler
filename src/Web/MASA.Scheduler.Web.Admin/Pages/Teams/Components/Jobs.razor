@@ -1,5 +1,44 @@
-﻿<h3>Job</h3>
+﻿@inherits ProCompontentBase
 
-@code {
+<div class="pl-6" style="overflow: hidden; display:block;">
+    <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-4" Style="background:#fff;padding:0 12px;"> 
+        <div class="d-flex" style="width:100%; padding-top:5px; padding-bottom:5px">
+            <MRadioGroup @bind-Value="_queryStatus" Row Style="margin-top:0px; padding-top:8px;">
+                @foreach (KeyValuePair<string, TaskRunStatuses> pair in GetEnumMap<TaskRunStatuses>())
+                {
+                    <MRadio TValue="TaskRunStatuses" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
+                        <LabelContent>
+                            <span style="color: @ComputedStatusColor(pair.Value)"> @T(pair.Key) </span>
+                        </LabelContent>
+                    </MRadio>
+                }
+            </MRadioGroup>
+            <MSpacer></MSpacer>
+            <MTextField @bind-Value="_queryJobName" Color="primary" Class="rounded-2 search" Style="max-width:340px;" Placeholder="@T("Search")" HideDetails="@("auto")" Flat Dense Solo BackgroundColor="fill-lighten-1">
+                <PrependInnerContent>
+                    <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
+                </PrependInnerContent>
+            </MTextField>
 
-}
+            <MButton Icon OnClick="ShowFilter"> 
+                <MIcon>
+                    mdi-filter
+                </MIcon>
+            </MButton>
+        </div>
+        @if (_showFilter)
+        {
+            <div class="d-flex" style="padding-bottom:5px;">
+                <MSelect Style="width:200px" @bind-Value="_jobQueryType" HideDetails="@("auto")" Outlined Clearable Items="JobQueryTimeTypes" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                </MSelect>
+                <PDateTimePicker Outlined Clearable @bind-Value="_queryStartTime" Label="@T("StartTime")" style="width:200px; margin-left:10px;">
+                </PDateTimePicker>
+                <PDateTimePicker Outlined Clearable @bind-Value="_queryEndTime" Label="@T("EndTime")" style="width:200px; margin-left:10px;">
+                </PDateTimePicker>
+            </div>
+        }
+    </MRow>
+    <div class="rounded-4 mt-6 py-2" style="height:calc(100vh - 234px);background:#fff;display:flex; flex-direction:column; justify-content:space-between; overflow:auto;">
+       
+    </div>
+</div>

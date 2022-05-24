@@ -12,9 +12,29 @@ public class SchedulerJobService : ServiceBase
         BaseUrl = "api/scheduler-job/";
     }
 
-    public async Task<List<SchedulerJobDto>> GetListAsync()
+    public async Task<SchedulerJobListResponse> GetListAsync(SchedulerJobListRequest request)
     {
-        var result = await GetAsync<List<SchedulerJobDto>>($"List");
-        return result ?? new List<SchedulerJobDto>();
+        var result = await GetAsync<SchedulerJobListRequest,SchedulerJobListResponse>(string.Empty, request);
+        return result ?? new();
+    }
+
+    public async Task AddAsync(AddSchedulerJobRequest request)
+    {
+        await PostAsync(string.Empty, request);
+    }
+
+    public async Task UpdateAsync(UpdateSchedulerJobRequest request)
+    {
+        await PutAsync(string.Empty, request);
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        await DeleteAsync(string.Empty, id);
+    }
+
+    public async Task ChangeEnableStatusAsync(ChangeEnabledStatusRequest request)
+    {
+        await PutAsync("ChangeEnableStatus", request);
     }
 }

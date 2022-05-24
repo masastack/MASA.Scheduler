@@ -32,5 +32,16 @@
   "Favorite": "收藏",
   "Team": "团队",
   "Job": "Job",
-  "Task": "任务"
+  "Task": "任务",
+  "ScheduleTime": "调度时间",
+  "RunStartTime": "运行开始时间",
+  "RunEndTime": "运行结束时间",
+  "StartTime": "开始时间",
+  "EndTime": "结束时间",
+  "Running": "运行中",
+  "Success": "成功",
+  "Failure": "失败",
+  "Timeout": "超时",
+  "TimeoutSuccess": "超时成功",
+  "Idle": "空闲"
 }

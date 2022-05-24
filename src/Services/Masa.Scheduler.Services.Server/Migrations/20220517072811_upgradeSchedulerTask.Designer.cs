@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masa.Scheduler.Services.Server.Migrations
 {
     [DbContext(typeof(SchedulerDbContext))]
-    [Migration("20220507014827_SchedulerInit")]
-    partial class SchedulerInit
+    [Migration("20220517072811_upgradeSchedulerTask")]
+    partial class upgradeSchedulerTask
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -72,14 +72,11 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.ToTable("IntegrationEventLog", (string)null);
                 });
 
-            modelBuilder.Entity("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Job", b =>
+            modelBuilder.Entity("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.SchedulerJob", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("AlertMessageTemplate")
-                        .HasColumnType("int");
 
                     b.Property<int>("BelongProjectId")
                         .HasColumnType("int");
@@ -93,10 +90,21 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<Guid>("Creator")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CronExpression")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DaprServiceInvocationConfig")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("bit");
 
                     b.Property<int>("FailedRetryCount")
                         .HasColumnType("int");
@@ -107,19 +115,34 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<int>("FailedStrategy")
                         .HasColumnType("int");
 
+                    b.Property<string>("HttpConfig")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsAlertException")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("JobAppConfig")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("JobType")
                         .HasColumnType("int");
 
-                    b.Property<string>("MainFunc")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<DateTimeOffset>("LastRunEndTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("LastRunStartTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("LastRunStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("LastScheduleTime")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTime>("ModificationTime")
                         .HasColumnType("datetime2");
@@ -132,13 +155,15 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Principal")
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Owner")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("RoutingStrategy")
                         .HasColumnType("int");
@@ -158,9 +183,6 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<int>("ScheduleType")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BelongProjectId");
@@ -171,39 +193,9 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .IsUnique()
                         .HasFilter("[IsDeleted] = 0");
 
-                    b.ToTable("Job", "server");
-                });
+                    b.HasIndex("Origin");
 
-            modelBuilder.Entity("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.JobRunDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("FailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("JobId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("LastRunStatus")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("LastRunTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("SuccessCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TimeoutCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobId")
-                        .IsUnique();
-
-                    b.ToTable("JobRunDetail", "server");
+                    b.ToTable("SchedulerJob", "server");
                 });
 
             modelBuilder.Entity("Masa.Scheduler.Services.Server.Domain.Aggregates.Resources.SchedulerResource", b =>
@@ -223,11 +215,6 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("DownloadUrl")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("FilePath")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -235,6 +222,9 @@ namespace Masa.Scheduler.Services.Server.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<int>("JobAppId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ModificationTime")
                         .HasColumnType("datetime2");
@@ -246,8 +236,10 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ResourceType")
-                        .HasColumnType("int");
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -282,11 +274,19 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<Guid>("Modifier")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<int>("RunCount")
                         .HasColumnType("int");
 
                     b.Property<long>("RunTime")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("SchedulerStartTime")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("TaskRunEndTime")
                         .HasColumnType("datetimeoffset");
@@ -297,6 +297,11 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<int>("TaskStatus")
                         .HasColumnType("int");
 
+                    b.Property<string>("WorkerHost")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("JobId");
@@ -304,18 +309,9 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.ToTable("SchedulerTask", "server");
                 });
 
-            modelBuilder.Entity("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.JobRunDetail", b =>
-                {
-                    b.HasOne("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Job", null)
-                        .WithOne("RunDetail")
-                        .HasForeignKey("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.JobRunDetail", "JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Masa.Scheduler.Services.Server.Domain.Aggregates.Tasks.SchedulerTask", b =>
                 {
-                    b.HasOne("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Job", "Job")
+                    b.HasOne("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.SchedulerJob", "Job")
                         .WithMany("SchedulerTasks")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -324,11 +320,8 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Job", b =>
+            modelBuilder.Entity("Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.SchedulerJob", b =>
                 {
-                    b.Navigation("RunDetail")
-                        .IsRequired();
-
                     b.Navigation("SchedulerTasks");
                 });
 #pragma warning restore 612, 618

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Masa.Blazor" Version="0.4.0-preview.1" />
+    <PackageReference Include="MASA.Blazor.Experimental.Components" Version="0.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.2" />
   </ItemGroup>
 	

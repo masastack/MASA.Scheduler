@@ -3,9 +3,10 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum JobTypes
+public enum JobQueryTimeTypes
 {
-    JobApp = 1,
-    Http,
-    DaprServiceInvocation
+    ScheduleTime = 1,
+    RunStartTime,
+    RunEndTime
 }
+

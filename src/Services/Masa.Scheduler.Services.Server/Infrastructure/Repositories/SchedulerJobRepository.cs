@@ -9,10 +9,4 @@ public class SchedulerJobRepository : Repository<SchedulerDbContext, SchedulerJo
         : base(context, unitOfWork)
     {
     }
-
-    public async Task<List<SchedulerJob>> GetListAsync()
-    {
-        var data = new List<SchedulerJob>();
-        return await Task.FromResult(data);
-    }
 }

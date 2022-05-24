@@ -1,0 +1,43 @@
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
+
+public class SchedulerJobHttpConfig : ValueObject
+{
+    public HttpMethods HttpMethod { get; private set; }
+
+    public string RequestUrl { get; private set; } = string.Empty;
+
+    public Dictionary<string, string> HttpParameters { get; private set; } = new();
+
+    public Dictionary<string, string> HttpHeaders { get; private set; } = new();
+
+    public string HttpBody { get; private set; } = string.Empty;
+
+    public HttpVerifyTypes HttpVerifyType { get; private set; }
+
+    public string VerifyContent { get; private set; } = string.Empty;
+
+    public void SetConfig(HttpMethods httpMethod, string requestUrl, Dictionary<string, string> httpParameters, Dictionary<string, string> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
+    {
+        HttpMethod = httpMethod;
+        RequestUrl = requestUrl;
+        HttpParameters = httpParameters;
+        HttpHeaders = httpHeader;
+        HttpBody = httpBody;
+        HttpVerifyType = httpVerifyType;
+        VerifyContent = verityContent;
+    }
+
+    protected override IEnumerable<object> GetEqualityValues()
+    {
+        yield return HttpMethod;
+        yield return RequestUrl;
+        yield return HttpParameters;
+        yield return HttpHeaders;
+        yield return HttpBody;
+        yield return HttpVerifyType;
+        yield return VerifyContent;
+    }
+}

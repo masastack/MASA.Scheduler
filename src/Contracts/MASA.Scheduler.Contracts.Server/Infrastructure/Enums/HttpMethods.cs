@@ -3,9 +3,12 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum JobTypes
+public enum HttpMethods
 {
-    JobApp = 1,
-    Http,
-    DaprServiceInvocation
+    GET = 1,
+    POST,
+    HEAD,
+    PUT,
+    DELETE
 }
+

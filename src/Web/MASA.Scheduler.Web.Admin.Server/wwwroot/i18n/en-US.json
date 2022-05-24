@@ -31,5 +31,16 @@
   "Favorite": "Favorite",
   "Team": "Team",
   "Job": "Job",
-  "Task": "Task"
+  "Task": "Task",
+  "ScheduleTime": "Schedule Time",
+  "RunStartTime": "Run Start Time",
+  "RunEndTime": "Run End Time",
+  "StartTime": "Start Time",
+  "EndTime": "End Time",
+  "Running": "Running",
+  "Success": "Success",
+  "Failure": "Failure",
+  "Timeout": "Timeout",
+  "TimeoutSuccess": "Timeout but success",
+  "Idle":  "Idle"
 }

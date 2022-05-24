@@ -3,9 +3,11 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum JobTypes
+public enum HttpVerifyTypes
 {
-    JobApp = 1,
-    Http,
-    DaprServiceInvocation
+    StatusCode200 = 1,
+    CustomStatusCode,
+    ContentContains,
+    ContentUnContains,
 }
+
