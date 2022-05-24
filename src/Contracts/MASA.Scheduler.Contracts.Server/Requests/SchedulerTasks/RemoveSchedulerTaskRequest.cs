@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerTasks;
 
-public class RemoveSchedulerTaskRequest
+public class RemoveSchedulerTaskRequest : BaseRequest
 {
     public Guid TaskId { get; set; }
 

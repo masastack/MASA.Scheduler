@@ -7,15 +7,15 @@ public class StartTaskDomainEventHandler
 {
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly IEventBus _eventBus;
-    private readonly WorkerManager _workerManager;
+    private readonly SchedulerServerManager _serverManager;
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
 
-    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, WorkerManager workerManager, SchedulerDbContext dbContext, IMapper mapper)
+    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
-        _workerManager = workerManager;
+        _serverManager = serverManager;
         _dbContext = dbContext;
         _mapper = mapper;
     }
@@ -53,16 +53,16 @@ public class StartTaskDomainEventHandler
 
         if (task.Job.RoutingStrategy == RoutingStrategyTypes.Specified)
         {
-            workerModel = await _workerManager.GetWorker(task.Job.SpecifiedWorkerHost);
+            workerModel = await _serverManager.GetWorker(task.Job.SpecifiedWorkerHost);
         }
         else
         {
-            workerModel = await _workerManager.GetWorker(task.Job.RoutingStrategy);
+            workerModel = await _serverManager.GetWorker(task.Job.RoutingStrategy);
         }
 
-        await _workerManager.StartTask(task, workerModel);
+        await _serverManager.StartTask(task, workerModel);
 
-        task.TaskStart(workerModel.Host + ":" + workerModel.Port, @event.Request.OperatorId);
+        task.TaskStart(workerModel.GetWorkerHost(), @event.Request.OperatorId);
 
         await _schedulerTaskRepository.UpdateAsync(task);
     }

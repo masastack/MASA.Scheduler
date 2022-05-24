@@ -1,0 +1,44 @@
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+global using Masa.Scheduler.Contracts.Server.Model;
+global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
+global using Masa.Utils.Caching.Core.Interfaces;
+global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
+global using Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
+global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF;
+global using Masa.Contrib.Data.UoW.EF;
+global using Masa.Contrib.Data.EntityFrameworkCore.SqlServer;
+global using Masa.Scheduler.Services.Worker.Infrastructure;
+global using Masa.Contrib.Isolation.UoW.EF;
+global using Masa.Contrib.Data.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore;
+global using System.Reflection;
+global using Microsoft.AspNetCore.Hosting.Server;
+global using Microsoft.AspNetCore.Hosting.Server.Features;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Managers;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.IntegrationEvents;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Masa.Utils.Caching.Redis.DependencyInjection;
+global using Masa.Contrib.Data.Mapping.Mapster;
+global using Masa.Scheduler.Services.Worker.Managers.Workers;
+global using Microsoft.OpenApi.Models;
+global using FluentValidation.AspNetCore;
+global using Masa.Contrib.Ddd.Domain;
+global using Masa.Contrib.Dispatcher.Events;
+global using Masa.BuildingBlocks.Dispatcher.Events;
+global using FluentValidation;
+global using Masa.Scheduler.Services.Worker.Infrastructure.Middleware;
+global using Masa.Contrib.Isolation.MultiEnvironment;
+global using Masa.Contrib.Data.Contracts.EF;
+global using Masa.Contrib.Ddd.Domain.Repository.EF;
+global using Masa.Contrib.Service.MinimalAPIs;
+global using Masa.Utils.Exceptions.Extensions;
+global using Dapr;
+global using Masa.Scheduler.Contracts.Server.Requests.SchedulerWorker;
+global using Masa.Contrib.ReadWriteSpliting.Cqrs.Commands;
+global using Masa.Scheduler.Services.Worker.Application.Tasks.Commands;
+global using Masa.Scheduler.Contracts.Server.Dtos;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Consts;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
+global using Newtonsoft.Json;

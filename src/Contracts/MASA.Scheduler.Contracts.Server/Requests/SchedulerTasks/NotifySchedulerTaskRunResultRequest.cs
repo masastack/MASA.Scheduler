@@ -3,12 +3,12 @@
 
 namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerTasks;
 
-public class AddSchedulerTaskRequest : BaseRequest
+public class NotifySchedulerTaskRunResultRequest : BaseRequest
 {
-    public Guid JobId { get; set; }
+    public Guid TaskId { get; set; }
 
-    public string Origin { get; set; } = string.Empty;
+    public bool IsSuccess { get; set; }
 
-    public Guid RunUserId { get; set; }
+    public bool IsCancel { get; set; }
 }
 

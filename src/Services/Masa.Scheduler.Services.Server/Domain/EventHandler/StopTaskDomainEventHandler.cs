@@ -7,13 +7,13 @@ public class StopTaskDomainEventHandler
 {
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly IEventBus _eventBus;
-    private readonly WorkerManager _workerManager;
+    private readonly SchedulerServerManager _serverManager;
 
-    public StopTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, WorkerManager workerManager)
+    public StopTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
-        _workerManager = workerManager;
+        _serverManager = serverManager;
     }
 
     [EventHandler(1)]
@@ -31,7 +31,7 @@ public class StopTaskDomainEventHandler
             throw new UserFriendlyException("Only running task can be stop");
         }
 
-        await _workerManager.StopTask(task.Id, task.WorkerHost);
+        await _serverManager.StopTask(task.Id, task.WorkerHost);
 
         if (!@event.IsRestart)
         {

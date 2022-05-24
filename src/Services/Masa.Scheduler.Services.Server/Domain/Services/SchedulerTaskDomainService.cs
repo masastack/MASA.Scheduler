@@ -41,4 +41,9 @@ public class SchedulerTaskDomainService : DomainService
 
         _logger.LogInformation($"User manual delete SchedulerTask, TaskId: {task.Id}, OperatorId: {request.OperatorId}");
     }
+
+    public async Task NotifyTaskRunResultAsync(NotifySchedulerTaskRunResultRequest request)
+    {
+
+    }
 }

@@ -5,6 +5,8 @@ namespace Masa.Scheduler.Contracts.Server.Dtos;
 
 public class SchedulerTaskDto
 {
+    public Guid Id { get; set; }
+
     public int RunCount { get; set; }
 
     public long RunTime { get; set; }

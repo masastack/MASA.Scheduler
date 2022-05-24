@@ -41,4 +41,10 @@ public class SchedulerTaskCommandHandler
     {
         await _schedulerTaskDomainService.RemoveTaskAsync(command.Request);
     }
+
+    [EventHandler]
+    public async Task NotifyTaskRunResultHandleAsync(NotifySchedulerTaskRunResultCommand command)
+    {
+
+    }
 }

@@ -21,6 +21,12 @@ builder.Services.AddMasaRedisCache(builder.Configuration.GetSection("RedisConfig
 builder.Services.AddPmClient(builder.Configuration.GetValue<string>("PmClient:Url"));
 builder.Services.AddMapping();
 builder.Services.AddWorkerManager();
+builder.Services.AddHttpClient();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDaprStarter();
+}
 
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -71,19 +77,18 @@ var app = builder.Services
     })
     .AddServices(builder);
 
-
-//app.UseMasaExceptionHandling(opt =>
-//{
-//    opt.CustomExceptionHandler = exception =>
-//    {
-//        Exception friendlyException = exception;
-//        if (exception is ValidationException validationException)
-//        {
-//            friendlyException = new UserFriendlyException(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
-//        }
-//        return (friendlyException, false);
-//    };
-//});
+app.UseMasaExceptionHandling(opt =>
+{
+    opt.CustomExceptionHandler = exception =>
+    {
+        Exception friendlyException = exception;
+        if (exception is ValidationException validationException)
+        {
+            friendlyException = new UserFriendlyException(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
+        }
+        return (friendlyException, false);
+    };
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
