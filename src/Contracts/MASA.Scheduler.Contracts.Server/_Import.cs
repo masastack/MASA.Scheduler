@@ -16,7 +16,7 @@ global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Microsoft.AspNetCore.Hosting.Server;
 global using Microsoft.AspNetCore.Hosting.Server.Features;
 global using Microsoft.Extensions.DependencyInjection;
-global using Newtonsoft.Json;
+global using System.Text.Json;
 global using Dapr;
 global using Dapr.Client;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.IntegrationEvents;

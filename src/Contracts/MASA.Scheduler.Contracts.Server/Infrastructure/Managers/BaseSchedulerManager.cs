@@ -7,24 +7,24 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Managers;
 
 public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where T : BaseServiceModel, new() where TOnlineEvent : OnlineIntegrationEvent, new() where TMonitorEvent : OnlineIntegrationEvent, new()
 {
-    private readonly static List<T> serviceList = new();
     private readonly IDistributedCacheClientFactory _cacheClientFactory;
     private readonly IDistributedCacheClient _redisCacheClient;
     private readonly IServiceProvider _serviceProvider;
     private readonly IIntegrationEventBus _eventBus;
-    private static List<string> _addressList = new();
     protected readonly IHttpClientFactory _httpClientFactory;
+    private readonly BaseSchedulerManagerData<T> _data;
 
-    public BaseSchedulerManager(IDistributedCacheClientFactory cacheClientFactory, IDistributedCacheClient redisCacheClient, IServiceProvider serviceProvider, IIntegrationEventBus eventBus, IHttpClientFactory httpClientFactory)
+    public BaseSchedulerManager(IDistributedCacheClientFactory cacheClientFactory, IDistributedCacheClient redisCacheClient, IServiceProvider serviceProvider, IIntegrationEventBus eventBus, IHttpClientFactory httpClientFactory, BaseSchedulerManagerData<T> data)
     {
         _cacheClientFactory = cacheClientFactory;
         _redisCacheClient = redisCacheClient;
         _serviceProvider = serviceProvider;
         _eventBus = eventBus;
         _httpClientFactory = httpClientFactory;
+        _data = data;
     }
 
-    public static List<string> AddressList => _addressList;
+    public List<string> AddressList => _data.AddressList;
 
     protected IIntegrationEventBus EventBus => _eventBus;
 
@@ -34,7 +34,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     protected IDistributedCacheClientFactory CacheClientFactory => _cacheClientFactory;
 
-    public static List<T> ServiceList => serviceList;
+    public List<T> ServiceList => _data.ServiceList;
 
     protected abstract string HeartbeatApi { get; set; }
 
@@ -50,11 +50,9 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         {
             if (addressFeature.Addresses.Any())
             {
-                _addressList = addressFeature.Addresses.ToList();
+                _data.AddressList = addressFeature.Addresses.ToList();
 
                 await OnManagerStartAsync();
-
-                await RegisterHeartbeat();
 
                 return;
             }
@@ -65,7 +63,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     private Task RegisterHeartbeat()
     {
-        _ = Task.Run(async () =>
+        Task.Run(async () =>
         {
             while (true)
             {
@@ -79,7 +77,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     private async Task Heartbeat()
     {
-        var checkList = serviceList.FindAll(p => p.Status != ServiceStatuses.Stopped);
+        var checkList = _data.ServiceList.FindAll(p => p.Status != ServiceStatuses.Stopped);
 
         if(!checkList.Any())
         {
@@ -116,24 +114,25 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             }
         }
 
-        serviceList.RemoveAll(p => p.Status == ServiceStatuses.Stopped);
+        _data.ServiceList.RemoveAll(p => p.Status == ServiceStatuses.Stopped);
     }
 
     public virtual async Task OnManagerStartAsync()
     {
         await Online(false);
+        await RegisterHeartbeat();
     }
 
     public async virtual Task Online(bool isResponse = false)
     {
-        if (!_addressList.Any())
+        if (!_data.AddressList.Any())
         {
             return;
         }
 
-        var httpAddress = _addressList.FirstOrDefault(address => address.StartsWith("http://"));
+        var httpAddress = _data.AddressList.FirstOrDefault(address => address.StartsWith("http://"));
 
-        var httpsAddress = _addressList.FirstOrDefault(address => address.StartsWith("https://"));
+        var httpsAddress = _data.AddressList.FirstOrDefault(address => address.StartsWith("https://"));
 
         var @event = new TOnlineEvent();
 
@@ -149,6 +148,8 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
         @event.HeartbeatApi = HeartbeatApi;
 
+        @event.ProgramId = _data.ProgramId;
+
         await _eventBus.PublishAsync(@event);
 
         await _eventBus.CommitAsync();
@@ -161,7 +162,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             return;
         }
 
-        var service = ServiceList.FirstOrDefault(w => w.HttpHost == @event.HttpHost && (w.HttpPort == @event.HttpPort || w.HttpsPort == @event.HttpsPort));
+        var service = ServiceList.FirstOrDefault(w => w.HttpHost == @event.HttpHost && ((w.HttpPort != 0 && w.HttpPort == @event.HttpPort) || (w.HttpsPort != 0 && w.HttpsPort == @event.HttpsPort)));
 
         if (service == null)
         {
@@ -173,11 +174,12 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
                 HttpsPort = @event.HttpsPort,
                 Status = ServiceStatuses.Normal,
                 HeartbeatApi = @event.HeartbeatApi,
+                ProgramId = @event.ProgramId,
             };
             
             model.CallerClient = CreateClient(model);
 
-            serviceList.Add(model);
+            _data.ServiceList.Add(model);
         }
         else
         {
@@ -188,6 +190,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             service.Status = ServiceStatuses.Normal;
             service.HeartbeatApi = @event.HeartbeatApi;
             service.CallerClient = CreateClient(service);
+            service.ProgramId = @event.ProgramId;
         }
 
         if (!@event.IsResponse)
@@ -202,11 +205,6 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         client.BaseAddress = new Uri(model.GetServiceUrl());
         client.Timeout = TimeSpan.FromSeconds(30);
         return client;
-    }
-
-    public virtual Task<IIntegrationEventBus> GetIntegrationEventBus()
-    {
-        return Task.FromResult(_serviceProvider.GetRequiredService<IIntegrationEventBus>());
     }
 
     private static async Task<string> GetCurrentIp()

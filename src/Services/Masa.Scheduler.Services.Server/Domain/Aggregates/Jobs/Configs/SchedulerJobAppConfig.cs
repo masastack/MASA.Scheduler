@@ -5,12 +5,16 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
 
 public class SchedulerJobAppConfig: ValueObject
 {
+    [JsonInclude]
     public string JobEntryAssembly { get; private set; } = string.Empty;
 
+    [JsonInclude]
     public string JobEntryMethod { get; private set; } = string.Empty;
 
+    [JsonInclude]
     public string JobParams { get; private set; } = string.Empty;
 
+    [JsonInclude]
     public string Version { get; private set; } = string.Empty;
 
     public void SetConfig(string jobEntryAssembly, string jobEntryMethod, string jobParams, string version)

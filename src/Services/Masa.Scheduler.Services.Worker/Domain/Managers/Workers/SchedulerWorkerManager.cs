@@ -9,33 +9,91 @@ namespace Masa.Scheduler.Services.Worker.Managers.Workers;
 
 public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>
 {
-    private readonly Dictionary<Guid, CancellationTokenSource> _taskCancellationTokenSources = new Dictionary<Guid, CancellationTokenSource>();
-
-    private readonly Dictionary<Guid, CancellationTokenSource> _internalCancellationTokenSources = new Dictionary<Guid, CancellationTokenSource>();
-
     private ILogger<SchedulerWorkerManager> _logger;
 
-    public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory, IDistributedCacheClient redisCacheClient, IServiceProvider serviceProvider, IIntegrationEventBus eventBus, ILogger<SchedulerWorkerManager> logger, IHttpClientFactory httpClientFactory) : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory)
+    private readonly SchedulerWorkerManagerData _data;
+
+    public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory, IDistributedCacheClient redisCacheClient, IServiceProvider serviceProvider, IIntegrationEventBus eventBus, ILogger<SchedulerWorkerManager> logger, IHttpClientFactory httpClientFactory, SchedulerWorkerManagerData data) : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data)
     {
+        _data = data;
         _logger = logger;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_WORKER_MANAGER_API}/heartbeat";
 
     protected override ILogger<BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>> Logger => _logger;
-
-    public Task StartTaskAsync(Guid taskId, SchedulerJobDto jobDto)
+    
+    public Task EnqueueTask(StartTaskIntegrationEvent @event)
     {
-        if(jobDto is null)
+        if (@event.Job is null)
         {
-            throw new UserFriendlyException("Job dto cannot be null");
+            throw new UserFriendlyException("Job cannot be null");
         }
 
+        if (@event.ProgramId == _data.ProgramId)
+        {
+            _data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId });
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public override async Task OnManagerStartAsync()
+    {
+        try
+        {
+            await base.OnManagerStartAsync();
+
+            await ProcessTaskRun();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "OnManagerStartAsync");
+        }
+    }
+
+    private Task ProcessTaskRun()
+    {
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                try
+                {
+                    if (_data.TaskQueue.Count == 0)
+                    {
+                        await Task.Delay(1000);
+                        continue;
+                    }
+
+                    if (_data.TaskQueue.TryDequeue(out var task))
+                    {
+                        if (_data.StopTask.Any(p => p == task.TaskId))
+                        {
+                            _data.StopTask.Remove(task.TaskId);
+                            continue;
+                        }
+
+                        await StartTaskAsync(task.TaskId, task.Job);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Logger.LogError(ex, "ProcessTaskRunError");
+                }
+            }
+        });
+
+        return Task.CompletedTask;
+    }
+
+    public async Task StartTaskAsync(Guid taskId, SchedulerJobDto job)
+    {
         var cts = new CancellationTokenSource();
 
         cts.Token.Register(() =>
         {
-            if(_internalCancellationTokenSources.TryGetValue(taskId, out cts))
+            if(_data.InternalCancellationTokenSources.TryGetValue(taskId, out cts))
             {
                 cts.Cancel();
             }
@@ -47,44 +105,48 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                 TaskId = taskId
             };
 
-            _taskCancellationTokenSources.Remove(taskId);
-            _internalCancellationTokenSources.Remove(taskId);
+            _data.TaskCancellationTokenSources.Remove(taskId, out _);
+            _data.InternalCancellationTokenSources.Remove(taskId, out _);
             EventBus.PublishAsync(@event);
             EventBus.CommitAsync();
         });
 
-        switch (jobDto.JobType)
+        _data.TaskCancellationTokenSources.TryAdd(taskId, cts);
+
+        await NofityTaskStart(taskId);
+
+        switch (job.JobType)
         {
             case JobTypes.JobApp:
                 break;
             case JobTypes.Http:
-                var task = new Task(async () =>
+                _ = Task.Run(async () =>
                 {
                     var innerCts = new CancellationTokenSource();
-                    _internalCancellationTokenSources.Add(taskId, innerCts);
-
-                    await RunHttpTask(taskId, jobDto, innerCts.Token);
+                    _data.InternalCancellationTokenSources.TryAdd(taskId, innerCts);
+                    await RunHttpTask(taskId, job, innerCts.Token);
 
                 }, cts.Token);
-
-                _taskCancellationTokenSources.Add(taskId, cts);
-                
-                task.Start();
                 break;
             case JobTypes.DaprServiceInvocation:
                 break;
             default:
                 break;
         }
-
-        return Task.CompletedTask;
     }
 
-    public Task StopTaskAsync(Guid taskId)
+    public Task StopTaskAsync(StopTaskIntegrationEvent @event)
     {
-        if(_taskCancellationTokenSources.TryGetValue(taskId, out var task))
+        if(@event.ProgramId == _data.ProgramId)
         {
-            task.Cancel();
+            if (_data.TaskCancellationTokenSources.TryGetValue(@event.TaskId, out var task))
+            {
+                task.Cancel();
+            }
+            else
+            {
+                _data.StopTask.Add(@event.TaskId);
+            }
         }
 
         return Task.CompletedTask;
@@ -156,6 +218,17 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         {
             TaskId = taskId,
             IsSuccess = isSuccess
+        };
+
+        await EventBus.PublishAsync(@event);
+        await EventBus.CommitAsync();
+    }
+
+    private async Task NofityTaskStart(Guid taskId)
+    {
+        var @event = new NotifyTaskStartIntegrationEvent()
+        {
+            TaskId = taskId
         };
 
         await EventBus.PublishAsync(@event);

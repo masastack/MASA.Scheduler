@@ -34,16 +34,20 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
         JobId = jobId;
         Origin = origin;
         RunUserId = runUserId;
-        SchedulerTime = DateTimeOffset.Now;
     }
 
-    public void TaskStart(string workerHost, Guid runUserId)
+    public void TaskSchedule(string workerHost, Guid runUserId)
+    {
+        SchedulerTime = DateTimeOffset.Now;
+        RunUserId = runUserId;
+        WorkerHost = workerHost;
+    }
+
+    public void TaskStart()
     {
         RunCount++;
         TaskRunStartTime = DateTimeOffset.Now;
         TaskStatus = TaskRunStatuses.Running;
-        RunUserId = runUserId;
-        WorkerHost = workerHost;
         RunTime = 0;
     }
 

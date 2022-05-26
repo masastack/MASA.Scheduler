@@ -27,7 +27,7 @@ public class NotifyTaskRunResultDomainEventHandler
         }
 
         var status = @event.Request.IsSuccess ? TaskRunStatuses.Success : TaskRunStatuses.Failure;
-        var message = @event.Request.IsSuccess ? "Task run success" : (@event.Request.IsCancel ? "Task run failure" : "Task run stop");
+        var message = @event.Request.IsSuccess ? "Task run success" : (@event.Request.IsCancel ? "Task run stop" : "Task run failure");
 
         if (task.TaskStatus == TaskRunStatuses.Timeout && @event.Request.IsSuccess)
         {

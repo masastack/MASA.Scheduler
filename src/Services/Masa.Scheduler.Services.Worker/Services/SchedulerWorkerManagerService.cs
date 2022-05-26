@@ -1,41 +1,35 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Scheduler.Contracts.Server.Infrastructure.Consts;
-using Newtonsoft.Json;
-
 namespace Masa.Scheduler.Services.Worker.Services;
 
 public class SchedulerWorkerManagerService : ServiceBase
 {
-    private readonly SchedulerWorkerManager _workerManager;
-
-    public SchedulerWorkerManagerService(IServiceCollection services, SchedulerWorkerManager workerManager) : base(services, ConstStrings.SCHEDULER_WORKER_MANAGER_API)
+    public SchedulerWorkerManagerService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_WORKER_MANAGER_API)
     {
-        _workerManager = workerManager;
         MapPost(MonitorServerOnlineAsync);
         MapGet(OnlineAsync);
         MapGet(ListAsync);
         MapGet(Heartbeat);
+        MapPost(StartTask);
+        MapPost(StopTask);
     }
 
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(SchedulerServerOnlineIntegrationEvent))]
-    public async Task<IResult> MonitorServerOnlineAsync(SchedulerServerOnlineIntegrationEvent @event)
+    public async Task MonitorServerOnlineAsync([FromServices] SchedulerWorkerManager workerManager, SchedulerServerOnlineIntegrationEvent @event)
     {
-        await _workerManager.MonitorHandler(@event);
-
-        return Results.Ok();
+        await workerManager.MonitorHandler(@event);
     }
 
-    public async Task<IResult> OnlineAsync()
+    public async Task<IResult> OnlineAsync([FromServices] SchedulerWorkerManager workerManager)
     {
-        await _workerManager.Online();
+        await workerManager.Online();
         return Results.Ok(); 
     }
 
-    public IResult ListAsync()
+    public IResult ListAsync([FromServices] SchedulerWorkerManager workerManager)
     {
-        return Results.Ok(SchedulerWorkerManager.ServiceList);
+        return Results.Ok(workerManager.ServiceList);
     }
 
     public IResult Heartbeat()
@@ -43,17 +37,15 @@ public class SchedulerWorkerManagerService : ServiceBase
         return Results.Ok("success");
     }
 
-    public async Task<IResult> StartTask(IEventBus eventBus, StartTaskRequest request)
+    [Topic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent))]
+    public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, StartTaskIntegrationEvent @event)
     {
-        var command = new StartTaskCommand(request);
-        await eventBus.PublishAsync(command);
-        return Results.Ok();
+        await workerManager.EnqueueTask(@event);
     }
 
-    public async Task<IResult> StopTask(IEventBus eventBus, StopTaskRequest request)
+    [Topic(ConstStrings.PUB_SUB_NAME, nameof(StopTaskIntegrationEvent))]
+    public async Task StopTask([FromServices] SchedulerWorkerManager workerManager, StopTaskIntegrationEvent @event)
     {
-        var command = new StopTaskCommand(request);
-        await eventBus.PublishAsync(command);
-        return Results.Ok();
+        await workerManager.StopTaskAsync(@event);
     }
 }

@@ -5,35 +5,38 @@ namespace Masa.Scheduler.Services.Server.Services;
 
 public class SchedulerServerManagerService : ServiceBase
 {
-    private SchedulerServerManager _serverManager;
-    private IEventBus _eventBus;
-
-    public SchedulerServerManagerService(IServiceCollection services, SchedulerServerManager serverManager, IEventBus eventBus) : base(services, ConstStrings.SCHEDULER_SERVER_MANAGER_API)
+    public SchedulerServerManagerService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_SERVER_MANAGER_API)
     {
-        _serverManager = serverManager;
         MapPost(MonitorWorkerOnlineAsync);
         MapGet(OnlineAsync);
         MapGet(ListAsync);
         MapGet(Heartbeat);
         MapPost(NotifyTaskRunResultAsync);
-        _eventBus = eventBus;
+        MapPost(MonitorTaskStartAsync);
     }
 
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(SchedulerWorkerOnlineIntegrationEvent))]
-    public async Task MonitorWorkerOnlineAsync(SchedulerWorkerOnlineIntegrationEvent @event)
+    public async Task MonitorWorkerOnlineAsync([FromServices] SchedulerServerManager serverManager, SchedulerWorkerOnlineIntegrationEvent @event)
     {
-        await _serverManager.MonitorHandler(@event);
+        await serverManager.MonitorHandler(@event);
     }
 
-    public async Task<IResult> OnlineAsync()
+    [Topic(ConstStrings.PUB_SUB_NAME, nameof(NotifyTaskStartIntegrationEvent))]
+    public async Task MonitorTaskStartAsync([FromServices] IEventBus eventBus, NotifyTaskStartIntegrationEvent @event)
     {
-        await _serverManager.Online();
+        var command = new SchedulerTaskStartCommand(new SchedulerTaskStartRequest() { TaskId = @event.TaskId });
+        await eventBus.PublishAsync(command);
+    }
+
+    public async Task<IResult> OnlineAsync([FromServices] SchedulerServerManager serverManager)
+    {
+        await serverManager.Online();
         return Results.Ok();
     }
 
-    public IResult ListAsync()
+    public IResult ListAsync([FromServices] SchedulerServerManager serverManager)
     {
-        return Results.Ok(SchedulerServerManager.ServiceList);
+        return Results.Ok(serverManager.ServiceList);
     }
 
     public IResult Heartbeat()
@@ -42,7 +45,7 @@ public class SchedulerServerManagerService : ServiceBase
     }
     
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(NotifyTaskRunResultIntegrationEvent))]
-    public async Task NotifyTaskRunResultAsync(NotifyTaskRunResultIntegrationEvent @event)
+    public async Task NotifyTaskRunResultAsync([FromServices] IEventBus eventBus, NotifyTaskRunResultIntegrationEvent @event)
     {
         var command = new NotifySchedulerTaskRunResultCommand(new NotifySchedulerTaskRunResultRequest() 
         {
@@ -50,6 +53,6 @@ public class SchedulerServerManagerService : ServiceBase
             IsSuccess = @event.IsSuccess,
             TaskId = @event.TaskId
         });
-        await _eventBus.PublishAsync(command);
+        await eventBus.PublishAsync(command);
     }
 }

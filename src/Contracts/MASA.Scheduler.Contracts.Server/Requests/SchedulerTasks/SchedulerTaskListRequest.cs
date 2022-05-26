@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerTasks;
 
-public class SchedulerTaskListRequest : BaseRequest
+public class SchedulerTaskListRequest : PaginationRequest
 {
     public TaskRunStatuses FilterStatus { get; set; }
 
@@ -14,8 +14,4 @@ public class SchedulerTaskListRequest : BaseRequest
     public DateTimeOffset? QueryEndTime { get; set; }
 
     public string Origin { get; set; } = string.Empty;
-
-    public int Page { get; set; }
-
-    public int PageSize { get; set; }
 }

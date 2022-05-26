@@ -47,4 +47,19 @@ public class SchedulerTaskCommandHandler
     {
         await _schedulerTaskDomainService.NotifyTaskRunResultAsync(command.Request);
     }
+
+    [EventHandler]
+    public async Task SchedulerTaskStartHandleAsync(SchedulerTaskStartCommand command)
+    {
+        var task = await _schedulerTaskRepository.FindAsync(t=> t.Id == command.Request.TaskId);
+
+        if (task == null)
+        {
+            throw new UserFriendlyException($"SchedulerTask not found, TaskId: {command.Request.TaskId}");
+        }
+
+        task.TaskStart();
+
+        await _schedulerTaskRepository.UpdateAsync(task);
+    }
 }

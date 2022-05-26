@@ -37,4 +37,8 @@
     <ProjectReference Include="..\..\Contracts\MASA.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\" />
+  </ItemGroup>
+
 </Project>

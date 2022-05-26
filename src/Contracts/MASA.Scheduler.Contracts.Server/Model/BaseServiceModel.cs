@@ -5,6 +5,8 @@ namespace Masa.Scheduler.Contracts.Server.Model;
 
 public class BaseServiceModel
 {
+    public Guid ProgramId { get; set; }
+
     public string HttpHost { get; set; } = string.Empty;
 
     public string HttpsHost { get; set; } = string.Empty;

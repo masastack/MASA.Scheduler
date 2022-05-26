@@ -13,7 +13,7 @@ public class JsonValueConverter<T> : ValueConverter<T, string> where T : class, 
 
     private static string SerializeObject(T obj)
     {
-        return JsonConvert.SerializeObject(obj);
+        return JsonSerializer.Serialize(obj);
     }
 
     private static T DeserializeObject(string json)
@@ -23,6 +23,6 @@ public class JsonValueConverter<T> : ValueConverter<T, string> where T : class, 
             return new T();
         }
 
-        return JsonConvert.DeserializeObject<T>(json)!;
+        return JsonSerializer.Deserialize<T>(json)!;
     }
 }

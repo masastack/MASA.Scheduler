@@ -60,9 +60,10 @@ public class StartTaskDomainEventHandler
             workerModel = await _serverManager.GetWorker(task.Job.RoutingStrategy);
         }
 
-        await _serverManager.StartTask(task, workerModel);
+        await _serverManager.TaskEnqueue(task, workerModel);
 
-        task.TaskStart(workerModel.GetWorkerHost(), @event.Request.OperatorId);
+        task.TaskSchedule(workerModel.GetWorkerHost(), @event.Request.OperatorId);
+        //task.TaskStart();
 
         await _schedulerTaskRepository.UpdateAsync(task);
     }

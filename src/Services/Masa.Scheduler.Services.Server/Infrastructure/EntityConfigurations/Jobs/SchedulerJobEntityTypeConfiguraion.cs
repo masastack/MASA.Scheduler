@@ -9,7 +9,7 @@ public class SchedulerJobEntityTypeConfiguraion : IEntityTypeConfiguration<Sched
     {
         builder.ToTable(nameof(SchedulerJob), SchedulerDbContext.SERVER_SCHEMA);
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => x.Name).IsUnique().HasFilter("[IsDeleted] = 0");
+        builder.HasIndex(x => x.Name);
         builder.HasIndex(x => x.BelongTeamId);
         builder.HasIndex(x => x.BelongProjectId);
         builder.HasIndex(x => x.Origin);

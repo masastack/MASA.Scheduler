@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.IntegrationEvents;
 
-public abstract record OnlineIntegrationEvent : IntegrationEvent
+public abstract record OnlineIntegrationEvent : BaseIntegrationEvent
 {
     public string HttpHost { get; set; } = string.Empty;
 

@@ -8,6 +8,7 @@ public static class SchedulerServerManagerServiceCollectionExtensions
     public static IServiceCollection AddWorkerManager(this IServiceCollection services)
     {
         services.AddScoped<SchedulerServerManager>();
+        services.AddSingleton<SchedulerServerManagerData>();
         
         services.AddHostedService<SchedulerServerManagerBackgroundService>();
 
