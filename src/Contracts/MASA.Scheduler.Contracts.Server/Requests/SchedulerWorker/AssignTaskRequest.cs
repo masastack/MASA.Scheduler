@@ -7,4 +7,3 @@ public class AssignTaskRequest
 {
     public TaskAssignModel Data { get; set; } = default!;
 }
-

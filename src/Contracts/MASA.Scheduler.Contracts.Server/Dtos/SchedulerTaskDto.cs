@@ -29,4 +29,3 @@ public class SchedulerTaskDto
 
     public string WorkerHost { get; set; } = string.Empty;
 }
-

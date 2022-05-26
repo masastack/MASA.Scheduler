@@ -11,4 +11,3 @@ public record StartTaskIntegrationEvent : BaseIntegrationEvent
 
     public Guid TaskId { get; set; }
 }
-

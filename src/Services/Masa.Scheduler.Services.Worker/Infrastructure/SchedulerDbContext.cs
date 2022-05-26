@@ -10,6 +10,7 @@ public class SchedulerDbContext : IsolationDbContext
     public SchedulerDbContext(MasaDbContextOptions options) : base(options)
     {
     }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder
@@ -23,5 +24,4 @@ public class SchedulerDbContext : IsolationDbContext
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreatingExecuting(builder);
     }
-
 }

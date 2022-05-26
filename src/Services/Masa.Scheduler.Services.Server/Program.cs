@@ -77,21 +77,18 @@ var app = builder.Services
     })
     .AddServices(builder);
 
-if (!app.Environment.IsDevelopment())
+app.UseMasaExceptionHandling(opt =>
 {
-    app.UseMasaExceptionHandling(opt =>
+    opt.CustomExceptionHandler = exception =>
     {
-        opt.CustomExceptionHandler = exception =>
+        Exception friendlyException = exception;
+        if (exception is ValidationException validationException)
         {
-            Exception friendlyException = exception;
-            if (exception is ValidationException validationException)
-            {
-                friendlyException = new UserFriendlyException(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
-            }
-            return (friendlyException, false);
-        };
-    });
-}
+            friendlyException = new UserFriendlyException(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
+        }
+        return (friendlyException, false);
+    };
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

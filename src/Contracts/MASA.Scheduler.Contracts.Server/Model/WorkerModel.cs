@@ -12,5 +12,3 @@ public class WorkerModel : BaseServiceModel
         return GetServiceUrl(false);
     }
 }
-
-

@@ -7,4 +7,3 @@ public record SchedulerServerOnlineIntegrationEvent : OnlineIntegrationEvent
 {
     public override string Topic { get; set; } = nameof(SchedulerServerOnlineIntegrationEvent);
 }
-

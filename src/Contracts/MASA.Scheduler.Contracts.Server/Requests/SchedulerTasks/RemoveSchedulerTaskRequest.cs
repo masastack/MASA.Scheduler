@@ -9,4 +9,3 @@ public class RemoveSchedulerTaskRequest : BaseRequest
 
     public Guid OperatorId { get; set; }
 }
-

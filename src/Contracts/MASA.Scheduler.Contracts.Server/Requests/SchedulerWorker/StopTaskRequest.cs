@@ -7,4 +7,3 @@ public class StopTaskRequest : BaseRequest
 {
     public Guid TaskId { get; set; }
 }
-

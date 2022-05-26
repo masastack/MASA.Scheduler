@@ -9,4 +9,3 @@ public class StopSchedulerTaskRequest : BaseRequest
 
     public Guid OperatorId { get; set; }
 }
-

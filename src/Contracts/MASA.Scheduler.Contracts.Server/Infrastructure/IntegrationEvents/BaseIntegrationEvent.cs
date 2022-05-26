@@ -7,4 +7,3 @@ public abstract record BaseIntegrationEvent : IntegrationEvent
 {
     public Guid ProgramId { get; set; }
 }
-

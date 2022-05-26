@@ -9,4 +9,3 @@ public record NotifyTaskStartIntegrationEvent : IntegrationEvent
 
     public Guid TaskId { get; set; }
 }
-

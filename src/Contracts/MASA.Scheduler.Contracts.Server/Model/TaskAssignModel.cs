@@ -9,4 +9,3 @@ public class TaskAssignModel
 
     public SchedulerTaskDto Task { get; set; } = default!;
 }
-

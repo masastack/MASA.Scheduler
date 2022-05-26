@@ -9,4 +9,3 @@ public class StartSchedulerTaskRequest : BaseRequest
 
     public Guid OperatorId { get; set; }
 }
-

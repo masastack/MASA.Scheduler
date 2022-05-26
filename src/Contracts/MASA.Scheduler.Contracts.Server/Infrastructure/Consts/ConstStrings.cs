@@ -5,12 +5,7 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Consts;
 
 public class ConstStrings
 {
-    public const string MANAGER_BASE_GROUP = "ManagerBaseGroup";
-    public const string SERVICE_LIST = "ServiceList";
-    public const string HEARTBEAT = "Heartbeat";
-    public const string HEARTBEAT_TRIGGER = "HeartbeatTrigger";
     public const string SCHEDULER_WORKER_MANAGER_API = "/api/scheduler-worker-manager";
     public const string SCHEDULER_SERVER_MANAGER_API = "/api/scheduler-server-manager";
     public const string PUB_SUB_NAME = "pubsub";
 }
-

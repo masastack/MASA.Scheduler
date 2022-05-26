@@ -17,4 +17,3 @@ public abstract record OnlineIntegrationEvent : BaseIntegrationEvent
 
     public string HeartbeatApi { get; set; } = string.Empty;
 }
-

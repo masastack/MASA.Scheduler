@@ -11,4 +11,3 @@ public class NotifySchedulerTaskRunResultRequest : BaseRequest
 
     public bool IsCancel { get; set; }
 }
-

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Logging;
-
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Managers;
 
 public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where T : BaseServiceModel, new() where TOnlineEvent : OnlineIntegrationEvent, new() where TMonitorEvent : OnlineIntegrationEvent, new()
@@ -14,7 +12,13 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
     protected readonly IHttpClientFactory _httpClientFactory;
     private readonly BaseSchedulerManagerData<T> _data;
 
-    public BaseSchedulerManager(IDistributedCacheClientFactory cacheClientFactory, IDistributedCacheClient redisCacheClient, IServiceProvider serviceProvider, IIntegrationEventBus eventBus, IHttpClientFactory httpClientFactory, BaseSchedulerManagerData<T> data)
+    public BaseSchedulerManager(
+        IDistributedCacheClientFactory cacheClientFactory,
+        IDistributedCacheClient redisCacheClient,
+        IServiceProvider serviceProvider,
+        IIntegrationEventBus eventBus,
+        IHttpClientFactory httpClientFactory,
+        BaseSchedulerManagerData<T> data)
     {
         _cacheClientFactory = cacheClientFactory;
         _redisCacheClient = redisCacheClient;
@@ -23,8 +27,6 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         _httpClientFactory = httpClientFactory;
         _data = data;
     }
-
-    public List<string> AddressList => _data.AddressList;
 
     protected IIntegrationEventBus EventBus => _eventBus;
 
@@ -51,12 +53,9 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             if (addressFeature.Addresses.Any())
             {
                 _data.AddressList = addressFeature.Addresses.ToList();
-
                 await OnManagerStartAsync();
-
                 return;
             }
-
             await Task.Delay(500);
         }
     }
@@ -247,4 +246,3 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         return string.Empty;
     }
 }
-

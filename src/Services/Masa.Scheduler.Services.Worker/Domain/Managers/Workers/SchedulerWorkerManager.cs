@@ -1,10 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-
 namespace Masa.Scheduler.Services.Worker.Managers.Workers;
 
 public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>

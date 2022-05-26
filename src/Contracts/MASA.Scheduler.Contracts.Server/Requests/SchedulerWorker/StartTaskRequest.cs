@@ -6,6 +6,6 @@ namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerWorker;
 public class StartTaskRequest : BaseRequest
 {
     public Guid TaskId { get; set; }
+
     public SchedulerJobDto Job { get; set; } = default!;
 }
-

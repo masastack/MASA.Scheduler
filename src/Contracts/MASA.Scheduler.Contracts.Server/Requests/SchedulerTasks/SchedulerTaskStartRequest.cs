@@ -7,4 +7,3 @@ public class SchedulerTaskStartRequest : BaseRequest
 {
     public Guid TaskId { get; set; }
 }
-

@@ -28,14 +28,8 @@ public class SchedulerTaskService: ServiceBase
         await PutAsync(nameof(StopAsync), request);
     }
 
-    public async Task RestartAsync(RestartSchedulerTaskRequest request)
-    {
-        await PutAsync(nameof(RestartAsync), request);
-    }
-
     public async Task RemoveAsync(RemoveSchedulerTaskRequest request)
     {
         await DeleteAsync(string.Empty, request);
     }
 }
-

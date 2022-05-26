@@ -44,3 +44,5 @@ global using System.Text.Json;
 global using Masa.Scheduler.Services.Worker.Domain.Managers.Workers.Data;
 global using Microsoft.AspNetCore.Mvc;
 global using System.Collections.Concurrent;
+global using System.Net;
+global using System.Text;

@@ -13,4 +13,3 @@ public record NotifyTaskRunResultIntegrationEvent : IntegrationEvent
 
     public bool IsCancel { get; set; }
 }
-

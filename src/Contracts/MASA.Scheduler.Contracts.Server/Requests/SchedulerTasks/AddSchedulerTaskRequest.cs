@@ -11,4 +11,3 @@ public class AddSchedulerTaskRequest : BaseRequest
 
     public Guid RunUserId { get; set; }
 }
-

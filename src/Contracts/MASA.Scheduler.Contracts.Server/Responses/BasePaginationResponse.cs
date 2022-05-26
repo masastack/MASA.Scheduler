@@ -21,4 +21,3 @@ public class BasePaginationResponse<T>: BaseResponse<List<T>>
         Data = result;
     }
 }
-

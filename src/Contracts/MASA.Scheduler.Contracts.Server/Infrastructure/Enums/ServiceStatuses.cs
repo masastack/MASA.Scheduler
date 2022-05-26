@@ -9,4 +9,3 @@ public enum ServiceStatuses
     Error,
     Stopped
 }
-

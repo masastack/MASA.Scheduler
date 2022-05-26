@@ -16,4 +16,3 @@ public class BaseSchedulerManagerData<T> where T : BaseServiceModel
 
     public List<string> AddressList { get; set; } = new();
 }
-

@@ -11,4 +11,3 @@ public class SchedulerTaskListResponse : BasePaginationResponse<SchedulerTaskDto
 
     }
 }
-
