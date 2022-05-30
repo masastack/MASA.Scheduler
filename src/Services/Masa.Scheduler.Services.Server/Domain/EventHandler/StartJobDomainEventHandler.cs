@@ -26,9 +26,9 @@ public class StartJobDomainEventHandler
             throw new UserFriendlyException($"SchedulerJob not found, JobId: {@event.Request.JobId}");
         }
 
-        var runUserId = @event.Request.RunUserId == default ? job.Creator : @event.Request.RunUserId;
+        var operatorId = @event.Request.OperatorId == default ? job.Creator : @event.Request.OperatorId;
 
-        var task = new SchedulerTask(job.Id, job.Origin, runUserId);
+        var task = new SchedulerTask(job.Id, job.Origin, operatorId);
 
         await _schedulerTaskRepository.AddAsync(task);
 
@@ -42,7 +42,7 @@ public class StartJobDomainEventHandler
         var startTaskRequest = new StartSchedulerTaskRequest()
         {
             TaskId = task.Id,
-            OperatorId = runUserId
+            OperatorId = operatorId
         };
 
         await _eventBus.PublishAsync(new StartTaskDomainEvent(startTaskRequest, task));

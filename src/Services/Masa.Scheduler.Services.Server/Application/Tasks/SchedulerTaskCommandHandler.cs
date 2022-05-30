@@ -19,7 +19,7 @@ public class SchedulerTaskCommandHandler
     [EventHandler]
     public async Task AddHandleAsync(AddSchedulerTaskCommand command)
     {
-        var task = new SchedulerTask(command.Request.JobId, command.Request.Origin, command.Request.RunUserId);
+        var task = new SchedulerTask(command.Request.JobId, command.Request.Origin, command.Request.OperatorId);
 
         await _schedulerTaskRepository.AddAsync(task);
     }
@@ -49,7 +49,7 @@ public class SchedulerTaskCommandHandler
     }
 
     [EventHandler]
-    public async Task SchedulerTaskStartHandleAsync(SchedulerTaskStartCommand command)
+    public async Task NotifyTaskStartHandleAsync(NotifyTaskStartCommand command)
     {
         var task = await _schedulerTaskRepository.FindAsync(t=> t.Id == command.Request.TaskId);
 

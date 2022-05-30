@@ -24,7 +24,7 @@ public class SchedulerServerManagerService : ServiceBase
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(NotifyTaskStartIntegrationEvent))]
     public async Task MonitorTaskStartAsync([FromServices] IEventBus eventBus, NotifyTaskStartIntegrationEvent @event)
     {
-        var command = new SchedulerTaskStartCommand(new SchedulerTaskStartRequest() { TaskId = @event.TaskId });
+        var command = new NotifyTaskStartCommand(new NotifyTaskStartRequest() { TaskId = @event.TaskId });
         await eventBus.PublishAsync(command);
     }
 

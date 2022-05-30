@@ -30,19 +30,19 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
 
     public string Message { get; private set; } = string.Empty;
 
-    public Guid RunUserId { get; private set; }
+    public Guid OperatorId { get; private set; }
 
-    public SchedulerTask(Guid jobId, string origin, Guid runUserId)
+    public SchedulerTask(Guid jobId, string origin, Guid operatorId)
     {
         JobId = jobId;
         Origin = origin;
-        RunUserId = runUserId;
+        OperatorId = operatorId;
     }
 
-    public void TaskSchedule(string workerHost, Guid runUserId)
+    public void TaskSchedule(string workerHost, Guid operatorId)
     {
         SchedulerTime = DateTimeOffset.Now;
-        RunUserId = runUserId;
+        OperatorId = operatorId;
         WorkerHost = workerHost;
     }
 

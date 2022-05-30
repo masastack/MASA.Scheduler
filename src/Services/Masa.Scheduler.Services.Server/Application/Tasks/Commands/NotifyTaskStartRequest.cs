@@ -3,4 +3,4 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Tasks.Commands;
 
-public record SchedulerTaskStartCommand(SchedulerTaskStartRequest Request) : Command;
+public record NotifyTaskStartCommand(NotifyTaskStartRequest Request) : Command;

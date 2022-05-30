@@ -9,5 +9,5 @@ public class AddSchedulerTaskRequest : BaseRequest
 
     public string Origin { get; set; } = string.Empty;
 
-    public Guid RunUserId { get; set; }
+    public Guid OperatorId { get; set; }
 }
