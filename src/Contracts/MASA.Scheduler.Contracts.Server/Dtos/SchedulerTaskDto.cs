@@ -14,7 +14,7 @@ public class SchedulerTaskDto
     /// </summary>
     public long RunTime { get; set; }
 
-    public TaskRunStatuses TaskStatus { get; set; }
+    public TaskRunStatus TaskStatus { get; set; }
 
     public DateTimeOffset SchedulerStartTime { get; set; }
 

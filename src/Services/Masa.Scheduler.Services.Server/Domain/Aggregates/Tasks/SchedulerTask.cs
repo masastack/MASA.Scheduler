@@ -12,7 +12,7 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
     /// </summary>
     public long RunTime { get; private set; }
 
-    public TaskRunStatuses TaskStatus { get; private set; }
+    public TaskRunStatus TaskStatus { get; private set; }
 
     public DateTimeOffset SchedulerTime { get; private set; }
 
@@ -50,11 +50,11 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
     {
         RunCount++;
         TaskRunStartTime = DateTimeOffset.Now;
-        TaskStatus = TaskRunStatuses.Running;
+        TaskStatus = TaskRunStatus.Running;
         RunTime = 0;
     }
 
-    public void TaskEnd(TaskRunStatuses taskStatus, string message)
+    public void TaskEnd(TaskRunStatus taskStatus, string message)
     {
         TaskStatus = taskStatus;
         TaskRunEndTime = DateTimeOffset.Now;

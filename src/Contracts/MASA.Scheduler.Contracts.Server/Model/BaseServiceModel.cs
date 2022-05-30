@@ -17,7 +17,7 @@ public class BaseServiceModel
 
     public DateTimeOffset LastResponseTime { get; set; }
 
-    public ServiceStatuses Status { get; set; }
+    public ServiceStatus Status { get; set; }
 
     public int NotResponseCount { get; set; }
 

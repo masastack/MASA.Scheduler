@@ -76,7 +76,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     private async Task Heartbeat()
     {
-        var checkList = _data.ServiceList.FindAll(p => p.Status != ServiceStatuses.Stopped);
+        var checkList = _data.ServiceList.FindAll(p => p.Status != ServiceStatus.Stopped);
 
         if(!checkList.Any())
         {
@@ -90,7 +90,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             try
             {
                 _ = await client.GetAsync(item.GetServiceUrl() + item.HeartbeatApi);
-                item.Status = ServiceStatuses.Normal;
+                item.Status = ServiceStatus.Normal;
                 item.NotResponseCount = 0;
                 item.LastResponseTime = DateTimeOffset.Now;
                 Logger.LogInformation($"Heartbeat request success, {item.GetServiceUrl()}");
@@ -104,16 +104,16 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
                 if (item.NotResponseCount >= 3)
                 {
-                    item.Status = ServiceStatuses.Stopped;
+                    item.Status = ServiceStatus.Stopped;
                 }
                 else
                 {
-                    item.Status = ServiceStatuses.Error;
+                    item.Status = ServiceStatus.Error;
                 }
             }
         }
 
-        _data.ServiceList.RemoveAll(p => p.Status == ServiceStatuses.Stopped);
+        _data.ServiceList.RemoveAll(p => p.Status == ServiceStatus.Stopped);
     }
 
     public virtual async Task OnManagerStartAsync()
@@ -171,7 +171,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
                 HttpsHost = @event.HttpsHost,
                 HttpPort = @event.HttpPort,
                 HttpsPort = @event.HttpsPort,
-                Status = ServiceStatuses.Normal,
+                Status = ServiceStatus.Normal,
                 HeartbeatApi = @event.HeartbeatApi,
                 ServiceId = @event.ServiceId,
             };
@@ -186,7 +186,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             service.HttpsPort = @event.HttpsPort;
             service.HttpHost = @event.HttpHost;
             service.HttpsHost = @event.HttpsHost;
-            service.Status = ServiceStatuses.Normal;
+            service.Status = ServiceStatus.Normal;
             service.HeartbeatApi = @event.HeartbeatApi;
             service.CallerClient = CreateClient(service);
             service.ServiceId = @event.ServiceId;

@@ -25,7 +25,7 @@ public partial class Jobs
 
     private int _projectId;
 
-    private TaskRunStatuses _queryStatus;
+    private TaskRunStatus _queryStatus;
 
     private string _queryJobName = string.Empty;
 
@@ -46,17 +46,17 @@ public partial class Jobs
         await base.OnInitializedAsync();
     }
 
-    private string ComputedStatusColor(TaskRunStatuses status)
+    private string ComputedStatusColor(TaskRunStatus status)
     {
         switch (status)
         {
-            case TaskRunStatuses.Success:
+            case TaskRunStatus.Success:
                 return "#05CD99";
-            case TaskRunStatuses.Failure:
+            case TaskRunStatus.Failure:
                 return "#FF5252";
-            case TaskRunStatuses.Timeout:
+            case TaskRunStatus.Timeout:
                 return "#FF7D00";
-            case TaskRunStatuses.TimeoutSuccess:
+            case TaskRunStatus.TimeoutSuccess:
                 return "#CC9139";
             default:
                 return "#323D6F";

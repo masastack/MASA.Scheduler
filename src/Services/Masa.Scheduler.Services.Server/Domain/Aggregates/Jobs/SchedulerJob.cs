@@ -59,7 +59,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
     public DateTimeOffset LastRunEndTime { get; private set; } = DateTimeOffset.MinValue;
 
-    public TaskRunStatuses LastRunStatus { get; private set; }
+    public TaskRunStatus LastRunStatus { get; private set; }
 
     public SchedulerJobAppConfig JobAppConfig { get => _jobAppConfig; private set => _jobAppConfig = value; }
 
@@ -154,19 +154,19 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         LastScheduleTime = scheduleTime;
     }
 
-    public void UpdateLastRunDetail(TaskRunStatuses taskRunStatus)
+    public void UpdateLastRunDetail(TaskRunStatus taskRunStatus)
     {
         LastRunStatus = taskRunStatus;
 
         switch (taskRunStatus)
         {
-            case TaskRunStatuses.Running:
+            case TaskRunStatus.Running:
                 LastRunStartTime = DateTimeOffset.Now;
                 break;
-            case TaskRunStatuses.Success:
-            case TaskRunStatuses.TimeoutSuccess:
-            case TaskRunStatuses.Timeout:
-            case TaskRunStatuses.Failure:
+            case TaskRunStatus.Success:
+            case TaskRunStatus.TimeoutSuccess:
+            case TaskRunStatus.Timeout:
+            case TaskRunStatus.Failure:
                 LastRunEndTime = DateTimeOffset.Now;
                 break;
         }

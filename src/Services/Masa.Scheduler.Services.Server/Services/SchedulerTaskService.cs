@@ -13,7 +13,7 @@ public class SchedulerTaskService : ServiceBase
         MapDelete(RemoveAsync, string.Empty);
     }
 
-    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] TaskRunStatuses? filterStatus, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize)
+    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize)
     {
         var request = new SchedulerTaskListRequest()
         {

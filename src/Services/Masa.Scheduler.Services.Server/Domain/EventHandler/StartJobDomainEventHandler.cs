@@ -35,7 +35,7 @@ public class StartJobDomainEventHandler
         await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
 
         job.UpdateLastScheduleTime(DateTimeOffset.Now);
-        job.UpdateLastRunDetail(TaskRunStatuses.Running);
+        job.UpdateLastRunDetail(TaskRunStatus.Running);
 
         await _schedulerJobRepository.UpdateAsync(job);
 

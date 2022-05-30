@@ -26,7 +26,7 @@ public class StopTaskDomainEventHandler
             throw new UserFriendlyException($"Scheduler Task not found, Id: {@event.Request.TaskId}");
         }
 
-        if(task.TaskStatus != TaskRunStatuses.Running)
+        if(task.TaskStatus != TaskRunStatus.Running)
         {
             throw new UserFriendlyException("Only running task can be stop");
         }
@@ -35,7 +35,7 @@ public class StopTaskDomainEventHandler
 
         if (!@event.IsRestart)
         {
-            task.TaskEnd(TaskRunStatuses.Failure, $"User manual stop task, OperatorId: {@event.Request.OperatorId}");
+            task.TaskEnd(TaskRunStatus.Failure, $"User manual stop task, OperatorId: {@event.Request.OperatorId}");
             await _schedulerTaskRepository.UpdateAsync(task);
         }
     }

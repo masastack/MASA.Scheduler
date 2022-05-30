@@ -32,7 +32,7 @@ public class SchedulerTaskDomainService : DomainService
             throw new UserFriendlyException($"SchedulerTask not found, taskId: {request.TaskId}");
         }
 
-        if(task.TaskStatus == TaskRunStatuses.Running)
+        if(task.TaskStatus == TaskRunStatus.Running)
         {
             throw new UserFriendlyException($"Task is running, cannot delete, taskId: {request.TaskId}");
         }

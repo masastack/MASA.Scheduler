@@ -49,7 +49,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             case RoutingStrategyTypes.RoundRobin:
                 var currentRunCount = await RedisCacheClient.HashIncrementAsync(CacheKeys.CURRENT_RUN_COUNT);
-                var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % ServiceList.FindAll(w => w.Status == ServiceStatuses.Normal).Count);
+                var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count);
                 worker = ServiceList[currentUesIndex];
                 break;
             case RoutingStrategyTypes.DynamicRatioApm:
@@ -79,7 +79,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         var port = Convert.ToInt32(hostInfo[1]);
 
-        var workerModel = ServiceList.FirstOrDefault(w => w.HttpHost == host && w.HttpPort == port && w.Status == ServiceStatuses.Normal);
+        var workerModel = ServiceList.FirstOrDefault(w => w.HttpHost == host && w.HttpPort == port && w.Status == ServiceStatus.Normal);
 
         CheckWorkerNotNull(workerModel);
 

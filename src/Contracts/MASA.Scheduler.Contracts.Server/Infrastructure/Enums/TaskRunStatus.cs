@@ -3,9 +3,13 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum ServiceStatuses
+public enum TaskRunStatus
 {
-    Normal = 1,
-    Error,
-    Stopped
+    Idle = 1,
+    Running,
+    Success,
+    Failure,
+    Timeout,
+    TimeoutSuccess,
+    Stop
 }

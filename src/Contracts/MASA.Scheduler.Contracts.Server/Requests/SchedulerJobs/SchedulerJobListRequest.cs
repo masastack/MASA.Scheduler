@@ -7,7 +7,7 @@ public class SchedulerJobListRequest: PaginationRequest
 {
     public bool IsCreatedByManual { get; set; }
 
-    public TaskRunStatuses FilterStatus { get; set; }
+    public TaskRunStatus FilterStatus { get; set; }
 
     public string JobName { get; set; } = string.Empty;
 

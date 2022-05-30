@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerTasks;
 
 public class SchedulerTaskListRequest : PaginationRequest
 {
-    public TaskRunStatuses FilterStatus { get; set; }
+    public TaskRunStatus FilterStatus { get; set; }
 
     public JobQueryTimeTypes QueryTimeType { get; set; }
 

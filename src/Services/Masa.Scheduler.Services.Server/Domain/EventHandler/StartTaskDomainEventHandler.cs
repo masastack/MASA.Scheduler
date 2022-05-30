@@ -39,7 +39,7 @@ public class StartTaskDomainEventHandler
             throw new UserFriendlyException($"Scheduler Task not found, Id: {@event.Request.TaskId}");
         }
 
-        if (task.TaskStatus == TaskRunStatuses.Running)
+        if (task.TaskStatus == TaskRunStatus.Running)
         {
             throw new UserFriendlyException($"This task is running now, cannot run again");
         }

@@ -96,7 +96,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
             var @event = new NotifyTaskRunResultIntegrationEvent()
             {
-                Status = TaskRunResultStatuses.Stop,
+                Status = TaskRunStatus.Stop,
                 TaskId = taskId
             };
 
@@ -212,7 +212,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         var @event = new NotifyTaskRunResultIntegrationEvent()
         {
             TaskId = taskId,
-            Status = isSuccess ? TaskRunResultStatuses.Success : TaskRunResultStatuses.Failure
+            Status = isSuccess ? TaskRunStatus.Success : TaskRunStatus.Failure
         };
 
         await EventBus.PublishAsync(@event);
