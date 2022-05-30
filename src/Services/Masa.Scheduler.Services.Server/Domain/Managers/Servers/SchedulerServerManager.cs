@@ -105,7 +105,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             TaskId = taskDto.Id,
             Job = taskDto.Job,
-            ProgramId = worker.ProgramId
+            ServiceId = worker.ServiceId
         };
 
         await EventBus.PublishAsync(@event);
@@ -119,7 +119,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         var @event = new StopTaskIntegrationEvent()
         {
             TaskId = taskId,
-            ProgramId = worker.ProgramId
+            ServiceId = worker.ServiceId
         };
 
         await EventBus.PublishAsync(@event);

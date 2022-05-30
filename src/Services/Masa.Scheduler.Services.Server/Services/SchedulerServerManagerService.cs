@@ -49,8 +49,7 @@ public class SchedulerServerManagerService : ServiceBase
     {
         var command = new NotifySchedulerTaskRunResultCommand(new NotifySchedulerTaskRunResultRequest() 
         {
-            IsCancel = @event.IsCancel,
-            IsSuccess = @event.IsSuccess,
+            Status = @event.Status,
             TaskId = @event.TaskId
         });
         await eventBus.PublishAsync(command);

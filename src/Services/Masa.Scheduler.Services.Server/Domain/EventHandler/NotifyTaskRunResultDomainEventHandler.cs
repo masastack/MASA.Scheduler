@@ -23,13 +23,29 @@ public class NotifyTaskRunResultDomainEventHandler
 
         if (task == null)
         {
-            return;
+            throw new UserFriendlyException($"cannot find task, task Id: {@event.Request.TaskId}");
         }
 
-        var status = @event.Request.IsSuccess ? TaskRunStatuses.Success : TaskRunStatuses.Failure;
-        var message = @event.Request.IsSuccess ? "Task run success" : (@event.Request.IsCancel ? "Task run stop" : "Task run failure");
+        TaskRunStatuses status;
+        string message;
 
-        if (task.TaskStatus == TaskRunStatuses.Timeout && @event.Request.IsSuccess)
+        switch (@event.Request.Status)
+        {
+            case TaskRunResultStatuses.Success:
+                status = TaskRunStatuses.Success;
+                message = "Task run success";
+                break;
+            case TaskRunResultStatuses.Stop:
+                status = TaskRunStatuses.Failure;
+                message = "Task run stop";
+                break;
+            default:
+                status = TaskRunStatuses.Failure;
+                message = "Task run failure";
+                break;
+        }
+
+        if (task.TaskStatus == TaskRunStatuses.Timeout && status == TaskRunStatuses.Success)
         {
             status = TaskRunStatuses.TimeoutSuccess;
 

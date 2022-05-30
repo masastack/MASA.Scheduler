@@ -5,11 +5,11 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Managers;
 
 public class BaseSchedulerManagerData<T> where T : BaseServiceModel
 {
-    public Guid ProgramId { get; private set; }
+    public Guid ServiceId { get; private set; }
 
     public BaseSchedulerManagerData()
     {
-        ProgramId = Guid.NewGuid();
+        ServiceId = Guid.NewGuid();
     }
 
     public List<T> ServiceList { get; set; } = new();

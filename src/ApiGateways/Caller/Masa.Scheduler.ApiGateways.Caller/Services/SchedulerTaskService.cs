@@ -15,7 +15,7 @@ public class SchedulerTaskService: ServiceBase
     public async Task<SchedulerTaskListResponse> GetListAsync(SchedulerTaskListRequest request)
     {
         var result = await GetAsync<SchedulerTaskListRequest, SchedulerTaskListResponse>(string.Empty, request);
-        return result ?? new(0, 0, new());
+        return result ?? new();
     }
 
     public async Task StartAsync(StartSchedulerTaskRequest request)

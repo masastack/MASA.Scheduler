@@ -9,6 +9,9 @@ public class SchedulerTaskDto
 
     public int RunCount { get; set; }
 
+    /// <summary>
+    /// Task run use total time (second)
+    /// </summary>
     public long RunTime { get; set; }
 
     public TaskRunStatuses TaskStatus { get; set; }

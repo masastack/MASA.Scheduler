@@ -13,7 +13,7 @@ public abstract record OnlineIntegrationEvent : BaseIntegrationEvent
 
     public int HttpsPort { get; set; }
 
-    public bool IsResponse { get; set; }
+    public bool IsPong { get; set; }
 
     public string HeartbeatApi { get; set; } = string.Empty;
 }

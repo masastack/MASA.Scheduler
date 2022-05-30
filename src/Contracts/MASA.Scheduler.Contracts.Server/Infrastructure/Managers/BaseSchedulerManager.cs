@@ -143,11 +143,11 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
         @event.HttpsHost = GetAddresssHost(httpsAddress);
 
-        @event.IsResponse = isResponse;
+        @event.IsPong = isResponse;
 
         @event.HeartbeatApi = HeartbeatApi;
 
-        @event.ProgramId = _data.ProgramId;
+        @event.ServiceId = _data.ServiceId;
 
         await _eventBus.PublishAsync(@event);
 
@@ -173,7 +173,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
                 HttpsPort = @event.HttpsPort,
                 Status = ServiceStatuses.Normal,
                 HeartbeatApi = @event.HeartbeatApi,
-                ProgramId = @event.ProgramId,
+                ServiceId = @event.ServiceId,
             };
             
             model.CallerClient = CreateClient(model);
@@ -189,10 +189,10 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             service.Status = ServiceStatuses.Normal;
             service.HeartbeatApi = @event.HeartbeatApi;
             service.CallerClient = CreateClient(service);
-            service.ProgramId = @event.ProgramId;
+            service.ServiceId = @event.ServiceId;
         }
 
-        if (!@event.IsResponse)
+        if (!@event.IsPong)
         {
             await Online(true);
         }

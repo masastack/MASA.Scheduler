@@ -7,6 +7,9 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
 {
     public int RunCount { get; private set; }
 
+    /// <summary>
+    /// Task run use total time (second)
+    /// </summary>
     public long RunTime { get; private set; }
 
     public TaskRunStatuses TaskStatus { get; private set; }

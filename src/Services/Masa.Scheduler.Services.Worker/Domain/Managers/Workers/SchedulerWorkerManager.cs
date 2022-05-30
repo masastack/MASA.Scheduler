@@ -26,7 +26,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             throw new UserFriendlyException("Job cannot be null");
         }
 
-        if (@event.ProgramId == _data.ProgramId)
+        if (@event.ServiceId == _data.ServiceId)
         {
             _data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId });
         }
@@ -96,8 +96,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
             var @event = new NotifyTaskRunResultIntegrationEvent()
             {
-                IsCancel = true,
-                IsSuccess = false,
+                Status = TaskRunResultStatuses.Stop,
                 TaskId = taskId
             };
 
@@ -133,7 +132,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     public Task StopTaskAsync(StopTaskIntegrationEvent @event)
     {
-        if(@event.ProgramId == _data.ProgramId)
+        if(@event.ServiceId == _data.ServiceId)
         {
             if (_data.TaskCancellationTokenSources.TryGetValue(@event.TaskId, out var task))
             {
@@ -213,7 +212,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         var @event = new NotifyTaskRunResultIntegrationEvent()
         {
             TaskId = taskId,
-            IsSuccess = isSuccess
+            Status = isSuccess ? TaskRunResultStatuses.Success : TaskRunResultStatuses.Failure
         };
 
         await EventBus.PublishAsync(@event);

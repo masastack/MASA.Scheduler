@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Contracts.Server.Model;
 
 public class BaseServiceModel
 {
-    public Guid ProgramId { get; set; }
+    public Guid ServiceId { get; set; }
 
     public string HttpHost { get; set; } = string.Empty;
 
@@ -27,15 +27,25 @@ public class BaseServiceModel
 
     public string GetServiceUrl(bool containsScheme = true)
     {
-        if (HttpsPort != 0)
+        if (!string.IsNullOrWhiteSpace(HttpsHost))
         {
             var scheme = containsScheme ? "https://" : "";
 
+            if(HttpsPort == 443)
+            {
+                return $"{scheme}{HttpsHost}";
+            }
+
             return $"{scheme}{HttpsHost}:{HttpsPort}";
         }
-        else if (HttpPort != 0)
+        else if (!string.IsNullOrWhiteSpace(HttpHost))
         {
             var scheme = containsScheme ? "http://" : "";
+
+            if(HttpPort == 80)
+            {
+                return $"{scheme}{HttpHost}";
+            }
 
             return $"{scheme}{HttpHost}:{HttpPort}";
         }

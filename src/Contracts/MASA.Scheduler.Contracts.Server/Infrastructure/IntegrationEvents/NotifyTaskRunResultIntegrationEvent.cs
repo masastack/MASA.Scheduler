@@ -9,7 +9,5 @@ public record NotifyTaskRunResultIntegrationEvent : IntegrationEvent
 
     public Guid TaskId { get; set; }
 
-    public bool IsSuccess { get; set; }
-
-    public bool IsCancel { get; set; }
+    public TaskRunResultStatuses Status { get; set; }
 }

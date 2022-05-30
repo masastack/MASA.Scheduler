@@ -5,6 +5,12 @@ namespace Masa.Scheduler.Contracts.Server.Responses;
 
 public class SchedulerTaskListResponse : BasePaginationResponse<SchedulerTaskDto>
 {
+    public SchedulerTaskListResponse()
+        :base(0, 0, new List<SchedulerTaskDto>())
+    {
+
+    }
+
     public SchedulerTaskListResponse(long total, int totalPages, List<SchedulerTaskDto> result)
         : base(total, totalPages, result)
     {
