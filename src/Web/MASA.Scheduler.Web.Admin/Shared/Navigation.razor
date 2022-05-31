@@ -84,7 +84,7 @@
         GlobalConfig.OnLanguageChanged += base.StateHasChanged;
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         GlobalConfig.OnLanguageChanged -= base.StateHasChanged;
     }

@@ -55,7 +55,7 @@
         return items;
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         GlobalConfig.OnLanguageChanged -= base.StateHasChanged;
         GlobalConfig.OnCurrentNavChanged -= base.StateHasChanged;

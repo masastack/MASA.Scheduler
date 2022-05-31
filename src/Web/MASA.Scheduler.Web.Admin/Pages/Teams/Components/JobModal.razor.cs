@@ -5,9 +5,6 @@ namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
 public partial class JobModal
 {
-    [Inject]
-    public IPopupService PopupService { get; set; } = default!;
-
     [Parameter]
     public bool Visible
     {
@@ -106,7 +103,8 @@ public partial class JobModal
         if(Model.JobType == 0)
         {
             _requireCard = true;
-            PopupService.AlertAsync(T("JobType") + T("IsRequired"), AlertTypes.Error);
+
+            OpenErrorMessage(T("JobType") + T("IsRequired"));
         }
         else
         {

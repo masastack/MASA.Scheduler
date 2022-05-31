@@ -23,12 +23,7 @@ public partial class Jobs : ProCompontentBase
         }
     }
 
-    [Inject]
-    IPopupService PopupService { get; set; } = default!;
-
     private ProjectDto? _project = default!;
-
-    private int _projectId;
 
     private TaskRunStatus _queryStatus;
 
@@ -214,6 +209,8 @@ public partial class Jobs : ProCompontentBase
         await SchedulerServerCaller.JobService.StartJobAsync(startJobRequest);
 
         await PopupService.ToastSuccessAsync("Request success");
+
+        await GetProjectJobs();
     }
 
     private Task AddJob()
@@ -246,6 +243,8 @@ public partial class Jobs : ProCompontentBase
         await SchedulerServerCaller.JobService.ChangeEnableStatusAsync(request);
 
         await PopupService.ToastSuccessAsync("Request success");
+
+        await GetProjectJobs();
     }
 
     private async Task EnabledJob(SchedulerJobDto job)
@@ -259,6 +258,8 @@ public partial class Jobs : ProCompontentBase
         await SchedulerServerCaller.JobService.ChangeEnableStatusAsync(request);
 
         await PopupService.ToastSuccessAsync("Request success");
+
+        await GetProjectJobs();
     }
 
     public async Task OnAfterSubmit()
@@ -266,4 +267,3 @@ public partial class Jobs : ProCompontentBase
         await GetProjectJobs();
     }
 }
-
