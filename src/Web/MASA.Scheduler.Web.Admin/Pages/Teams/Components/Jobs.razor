@@ -82,7 +82,7 @@
             @foreach(var job in _jobs)
             {
                 <MCol Cols="12">
-                    <MCard Height="69" Style="border-radius:10px !important;" Class="@GetJobClass(job.LastRunStatus)">
+                    <MCard Height="69" Style="border-radius:10px !important;" Class="@GetJobClass(job)" Color="@GetJobColor(job)">
                         <MCardTitle Style="padding-top: 6px; padding-left:10px; padding-bottom:6px;">
                             <MChip
                                Class="job-text"

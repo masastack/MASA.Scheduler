@@ -1127,117 +1127,93 @@ tr:hover {
     letter-spacing: 0.25px;
 }
 
-.job-success {
-    background-color: #FFFFFF
+.job-success .job-name {
+    color: #323D6F;
 }
 
-    .job-success .job-name {
-        color: #323D6F;
-    }
-
-    .job-success .run-text {
-        color: #05CD99;
-    }
-
-    .job-success .run-icon {
-        color: #05CD99 !important
-    }
-
-.job-error {
-    background-color: #FF5252
+.job-success .run-text {
+    color: #05CD99;
 }
 
-    .job-error .job-name {
-        color: white;
-    }
-
-    .job-error .run-text {
-        color: white;
-    }
-
-    .job-error .run-icon {
-        color: #B71C1C !important
-    }
-
-.job-timeout {
-    background-color: #FF7D00
+.job-success .run-icon {
+    color: #05CD99 !important
 }
 
-    .job-timeout .job-name {
-        color: white;
-    }
-
-    .job-timeout .run-text{
-        color: white;
-    }
-
-    .job-timeout .run-icon {
-        color: #D25F00 !important
-    }
-
-.job-warning {
-    background-color: #FFF8ED;
+.job-error .job-name {
+    color: white;
 }
 
-    .job-warning .job-name {
-        color: #323D6F;
-    }
-
-    .job-warning .run-text {
-        color: #D25F0000;
-    }
-
-    .job-warning .run-icon {
-        color: #CC9139 !important;
-    }
-
-.job-disabled {
-    background-color: rgba(163, 174, 208, 0.3) !important;
+.job-error .run-text {
+    color: white;
 }
 
-    .job-disabled.job-timeout .run-text {
-        color: #D25F00;
-    }
-
-    .job-disabled.job-timeout .run-icon {
-        color: #D25F00 !important;
-    }
-
-    .job-disabled.job-success .run-text {
-        color: #05CD99;
-    }
-
-    .job-disabled.job-success .run-icon {
-        color: #05CD99 !important;
-    }
-
-    .job-disabled.job-success .run-text {
-        color: #B71C1C;
-    }
-
-    .job-disabled.job-success .run-icon {
-        color: #B71C1C !important;
-    }
-
-    .job-disabled.job-warning .run-text {
-        color: #CC9139;
-    }
-
-    .job-disabled.job-warning .run-icon {
-        color: #CC9139 !important;
-    }
-
-.job-normal {
-    background-color: white;
+.job-error .run-icon {
+    color: #B71C1C !important
 }
 
-    .job-normal .run-icon {
-        color:  #323D6F !important;
-    }
+.job-timeout .job-name {
+    color: white;
+}
 
-    .job-normal .run-text {
-        color: #323D6F;
-    }
+.job-timeout .run-text{
+    color: white;
+}
+
+.job-timeout .run-icon {
+    color: #D25F00 !important
+}
+
+.job-warning .job-name {
+    color: #323D6F;
+}
+
+.job-warning .run-text {
+    color: #D25F0000;
+}
+
+.job-warning .run-icon {
+    color: #CC9139 !important;
+}
+
+.job-disabled.job-timeout .run-text {
+    color: #D25F00;
+}
+
+.job-disabled.job-timeout .run-icon {
+    color: #D25F00 !important;
+}
+
+.job-disabled.job-success .run-text {
+    color: #05CD99;
+}
+
+.job-disabled.job-success .run-icon {
+    color: #05CD99 !important;
+}
+
+.job-disabled.job-success .run-text {
+    color: #B71C1C;
+}
+
+.job-disabled.job-success .run-icon {
+    color: #B71C1C !important;
+}
+
+.job-disabled.job-warning .run-text {
+    color: #CC9139;
+}
+
+.job-disabled.job-warning .run-icon {
+    color: #CC9139 !important;
+}
+
+.job-normal .run-icon {
+    color:  #323D6F !important;
+}
+
+.job-normal .run-text {
+    color: #323D6F;
+}
 
 .m-stepper__wrapper {
     height: 100%;

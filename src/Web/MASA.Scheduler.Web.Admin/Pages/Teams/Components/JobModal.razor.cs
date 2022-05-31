@@ -52,9 +52,6 @@ public partial class JobModal
 
     private int _step = 1;
 
-    private string _tempParameterKey { get; set; } = string.Empty;
-    private string _tempParameterValue { get; set; } = string.Empty;
-
     private HttpParameterTypes _httpParameterTypes = HttpParameterTypes.Parameter;
 
     private ResourceVersionTypes _resourceVersionType;

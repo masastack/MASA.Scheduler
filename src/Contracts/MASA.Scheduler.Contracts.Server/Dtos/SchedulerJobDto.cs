@@ -53,7 +53,7 @@ public class SchedulerJobDto
 
     public DateTimeOffset LastRunEndTime { get; set; } = DateTimeOffset.MinValue;
 
-    public TaskRunStatus LastRunStatus { get; set; }
+    public TaskRunStatus LastRunStatus { get; set; } = TaskRunStatus.Idle;
 
     public SchedulerJobAppConfigDto JobAppConfig { get; set; } = new();
 

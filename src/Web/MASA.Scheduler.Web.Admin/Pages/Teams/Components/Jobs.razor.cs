@@ -145,20 +145,56 @@ public partial class Jobs : ProCompontentBase
         StateHasChanged();
     }
 
-    private string GetJobClass(TaskRunStatus runStatus)
+    private string GetJobClass(SchedulerJobDto job)
     {
-        switch (runStatus)
+        List<string> classList = new();
+
+        if (!job.Enabled)
+        {
+            classList.Add("job-disabled");
+        }
+
+        switch (job.LastRunStatus)
         {
             case TaskRunStatus.Success:
-                return "job-success";
+                classList.Add("job-success");
+                break;
             case TaskRunStatus.Failure:
-                return "job-error";
+                classList.Add("job-error");
+                break;
             case TaskRunStatus.Timeout:
-                return "job-timeout";
+                classList.Add("job-timeout");
+                break;
             case TaskRunStatus.TimeoutSuccess:
-                return "job-warning";
+                classList.Add("job-warning");
+                break;
             default:
-                return "job-normal";
+                classList.Add("job-normal");
+                break;
+        }
+
+        return string.Join(" ", classList);
+    }
+
+    private string GetJobColor(SchedulerJobDto job)
+    {
+        if (!job.Enabled)
+        {
+            return "#a3aed0";
+        }
+
+        switch (job.LastRunStatus)
+        {
+            case TaskRunStatus.Success:
+                return "white";
+            case TaskRunStatus.Failure:
+                return "#FF5252";
+            case TaskRunStatus.Timeout:
+                return "#FF7D00";
+            case TaskRunStatus.TimeoutSuccess:
+                return "#FFF8ED";
+            default:
+                return "white";
         }
     }
 
