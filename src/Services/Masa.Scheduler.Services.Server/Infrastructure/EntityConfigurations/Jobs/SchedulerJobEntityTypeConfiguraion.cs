@@ -9,7 +9,7 @@ public class SchedulerJobEntityTypeConfiguraion : IEntityTypeConfiguration<Sched
     {
         builder.ToTable(nameof(SchedulerJob), SchedulerDbContext.SERVER_SCHEMA);
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => x.Name).IsUnique().HasFilter("[IsDeleted] = 0");
+        builder.HasIndex(x => x.Name);
         builder.HasIndex(x => x.BelongTeamId);
         builder.HasIndex(x => x.BelongProjectId);
         builder.HasIndex(x => x.Origin);
@@ -18,6 +18,7 @@ public class SchedulerJobEntityTypeConfiguraion : IEntityTypeConfiguration<Sched
         builder.Property(x => x.Owner).HasMaxLength(20);
         builder.Property(x => x.Origin).HasMaxLength(50);
         builder.Property(x => x.CronExpression).HasMaxLength(100);
+        builder.Property(x => x.SpecifiedWorkerHost).HasMaxLength(100);
         builder.Property(x => x.JobAppConfig).HasConversion(new JsonValueConverter<SchedulerJobAppConfig>());
         builder.Property(x => x.HttpConfig).HasConversion(new JsonValueConverter<SchedulerJobHttpConfig>());
         builder.Property(x => x.DaprServiceInvocationConfig).HasConversion(new JsonValueConverter<SchedulerJobDaprServiceInvocationConfig>());

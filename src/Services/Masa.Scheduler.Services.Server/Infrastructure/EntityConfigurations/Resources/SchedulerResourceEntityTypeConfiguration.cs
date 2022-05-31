@@ -11,7 +11,7 @@ public class SchedulerResourceEntityTypeConfiguration : IEntityTypeConfiguration
     {
         builder.ToTable(nameof(SchedulerResource), SchedulerDbContext.SERVER_SCHEMA);
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => x.Name).IsUnique().HasFilter("[IsDeleted] = 0");
+        builder.HasIndex(x => x.Name);
         builder.Property(x => x.Description).HasMaxLength(255);
         builder.Property(x => x.FilePath).HasMaxLength(255);
         builder.Property(x => x.Version).HasMaxLength(20);

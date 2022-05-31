@@ -35,6 +35,11 @@ public class SchedulerJobService : ServiceBase
 
     public async Task ChangeEnableStatusAsync(ChangeEnabledStatusRequest request)
     {
-        await PutAsync("ChangeEnableStatus", request);
+        await PutAsync(nameof(ChangeEnableStatusAsync), request);
+    }
+
+    public async Task StartJobAsync(StartSchedulerJobRequest request)
+    {
+        await PutAsync(nameof(StartJobAsync), request);
     }
 }

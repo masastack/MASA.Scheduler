@@ -182,15 +182,18 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<int>("ScheduleType")
                         .HasColumnType("int");
 
+                    b.Property<string>("SpecifiedWorkerHost")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BelongProjectId");
 
                     b.HasIndex("BelongTeamId");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                    b.HasIndex("Name");
 
                     b.HasIndex("Origin");
 
@@ -242,9 +245,7 @@ namespace Masa.Scheduler.Services.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                    b.HasIndex("Name");
 
                     b.ToTable("SchedulerResource", "server");
                 });
@@ -267,6 +268,11 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<Guid>("JobId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<DateTime>("ModificationTime")
                         .HasColumnType("datetime2");
 
@@ -284,7 +290,10 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<long>("RunTime")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("SchedulerStartTime")
+                    b.Property<Guid>("RunUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("SchedulerTime")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("TaskRunEndTime")

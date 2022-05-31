@@ -4,9 +4,9 @@
     <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-4" Style="background:#fff;padding:0 12px;"> 
         <div class="d-flex" style="width:100%; padding-top:5px; padding-bottom:5px">
             <MRadioGroup @bind-Value="_queryStatus" Row Style="margin-top:0px; padding-top:8px;">
-                @foreach (KeyValuePair<string, TaskRunStatuses> pair in GetEnumMap<TaskRunStatuses>())
+                @foreach (KeyValuePair<string, TaskRunStatus> pair in GetEnumMap<TaskRunStatus>())
                 {
-                    <MRadio TValue="TaskRunStatuses" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
+                    <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
                         <LabelContent>
                             <span style="color: @ComputedStatusColor(pair.Value)"> @T(pair.Key) </span>
                         </LabelContent>

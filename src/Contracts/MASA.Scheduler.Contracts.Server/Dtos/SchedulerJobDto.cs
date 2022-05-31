@@ -21,6 +21,8 @@ public class SchedulerJobDto
 
     public RoutingStrategyTypes RoutingStrategy { get; set; }
 
+    public string SpecifiedWorkerHost { get; set; } = string.Empty;
+
     public ScheduleExpiredStrategyTypes ScheduleExpiredStrategy { get; set; }
 
     public ScheduleBlockStrategyTypes ScheduleBlockStrategy { get; set; }
@@ -51,7 +53,7 @@ public class SchedulerJobDto
 
     public DateTimeOffset LastRunEndTime { get; set; } = DateTimeOffset.MinValue;
 
-    public TaskRunStatuses LastRunStatus { get; set; }
+    public TaskRunStatus LastRunStatus { get; set; }
 
     public SchedulerJobAppConfigDto JobAppConfig { get; set; } = new();
 

@@ -5,12 +5,16 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
 
 public class SchedulerJobDaprServiceInvocationConfig : ValueObject
 {
+    [JsonInclude]
     public int DaprServiceAppId { get; private set; }
 
+    [JsonInclude]
     public string MethodName { get; private set; } = string.Empty;
 
+    [JsonInclude]
     public HttpMethods HttpMethod { get; private set; }
 
+    [JsonInclude]
     public string Data { get; private set; } = string.Empty;
 
     public void SetConfig(int daprServiceAppId, string methodName, HttpMethods httpMethod, string data)

@@ -3,16 +3,18 @@
 
 namespace Masa.Scheduler.Contracts.Server.Responses;
 
-public abstract class BaseResponse<T> : BaseMessage where T : class,new()
-{
+public abstract class BaseResponse : BaseMessage
+{ 
     public BaseResponse(Guid correlationId) : base()
     {
         base._correlationId = correlationId;
     }
-
-    public T Data { get; set; } = new();
-
     public BaseResponse()
     {
     }
+}
+
+public abstract class BaseResponse<T> : BaseResponse where T : class, new()
+{
+    public T Data { get; set; } = new();
 }

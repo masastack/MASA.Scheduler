@@ -7,11 +7,13 @@ public class SchedulerJobCommandHandler
 {
     private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly IMapper _mapper;
+    private readonly SchedulerJobDomainService _schedulerJobDomainService;
 
-    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository, IMapper mapper)
+    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository, IMapper mapper, SchedulerJobDomainService schedulerJobDomainService)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _mapper = mapper;
+        _schedulerJobDomainService = schedulerJobDomainService;
     }
 
     [EventHandler]
@@ -65,5 +67,11 @@ public class SchedulerJobCommandHandler
         job.ChangeEnableStatus();
 
         await _schedulerJobRepository.UpdateAsync(job);
+    }
+
+    [EventHandler]
+    public async Task StartJobHandleAsync(StartSchedulerJobCommand command)
+    {
+        await _schedulerJobDomainService.StartJobAsync(command.Request);
     }
 }

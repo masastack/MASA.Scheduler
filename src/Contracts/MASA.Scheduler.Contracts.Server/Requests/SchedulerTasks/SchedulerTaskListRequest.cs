@@ -1,15 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Scheduler.Contracts.Server.Requests;
+namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerTasks;
 
-public class SchedulerJobListRequest: PaginationRequest
+public class SchedulerTaskListRequest : PaginationRequest
 {
-    public bool IsCreatedByManual { get; set; }
-
-    public TaskRunStatuses FilterStatus { get; set; }
-
-    public string JobName { get; set; } = string.Empty;
+    public TaskRunStatus FilterStatus { get; set; }
 
     public JobQueryTimeTypes QueryTimeType { get; set; }
 
@@ -17,8 +13,5 @@ public class SchedulerJobListRequest: PaginationRequest
 
     public DateTimeOffset? QueryEndTime { get; set; }
 
-    public JobTypes JobType { get; set; }
-
     public string Origin { get; set; } = string.Empty;
 }
-

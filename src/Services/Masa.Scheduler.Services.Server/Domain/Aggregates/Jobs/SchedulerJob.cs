@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
-public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
+public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 {
     private List<SchedulerTask> _schedulerTasks = new();
 
@@ -26,6 +26,8 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
     public JobTypes JobType { get; private set; }
 
     public RoutingStrategyTypes RoutingStrategy { get; private set; }
+
+    public string SpecifiedWorkerHost { get; set; } = string.Empty;
 
     public ScheduleExpiredStrategyTypes ScheduleExpiredStrategy { get; private set; }
 
@@ -57,7 +59,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
 
     public DateTimeOffset LastRunEndTime { get; private set; } = DateTimeOffset.MinValue;
 
-    public TaskRunStatuses LastRunStatus { get; private set; }
+    public TaskRunStatus LastRunStatus { get; private set; }
 
     public SchedulerJobAppConfig JobAppConfig { get => _jobAppConfig; private set => _jobAppConfig = value; }
 
@@ -66,8 +68,6 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
     public SchedulerJobHttpConfig HttpConfig { get => _httpConfig; private set => _httpConfig = value; }
 
     public IReadOnlyCollection<SchedulerTask> SchedulerTasks => _schedulerTasks;
-
-    public bool IsDeleted { get; private set; }
 
     public SchedulerJob(JobTypes jobType, string origin)
     {
@@ -84,6 +84,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         string cronExpression,
         JobTypes jobType,
         RoutingStrategyTypes routingStrategy,
+        string specifiedWorkerHost,
         ScheduleExpiredStrategyTypes scheduleExpiredStrategy,
         RunTimeoutStrategyTypes runTimeoutStrategy,
         int runTimeoutSecond,
@@ -101,6 +102,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         CronExpression = cronExpression;
         JobType = jobType;
         RoutingStrategy = routingStrategy;
+        SpecifiedWorkerHost = specifiedWorkerHost;
         ScheduleExpiredStrategy = scheduleExpiredStrategy;
         RunTimeoutStrategy = runTimeoutStrategy;
         RunTimeoutSecond = runTimeoutSecond;
@@ -121,6 +123,7 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         ScheduleType = dto.ScheduleType;
         CronExpression = dto.CronExpression;
         RoutingStrategy = dto.RoutingStrategy;
+        SpecifiedWorkerHost = dto.SpecifiedWorkerHost;
         ScheduleBlockStrategy = dto.ScheduleBlockStrategy;
         ScheduleExpiredStrategy = dto.ScheduleExpiredStrategy;
         RunTimeoutStrategy = dto.RunTimeoutStrategy;
@@ -151,19 +154,19 @@ public class SchedulerJob : AuditAggregateRoot<Guid, Guid>, ISoftDelete
         LastScheduleTime = scheduleTime;
     }
 
-    public void UpdateLastRunDetail(TaskRunStatuses taskRunStatus)
+    public void UpdateLastRunDetail(TaskRunStatus taskRunStatus)
     {
         LastRunStatus = taskRunStatus;
 
         switch (taskRunStatus)
         {
-            case TaskRunStatuses.Running:
+            case TaskRunStatus.Running:
                 LastRunStartTime = DateTimeOffset.Now;
                 break;
-            case TaskRunStatuses.Success:
-            case TaskRunStatuses.TimeoutSuccess:
-            case TaskRunStatuses.Timeout:
-            case TaskRunStatuses.Failure:
+            case TaskRunStatus.Success:
+            case TaskRunStatus.TimeoutSuccess:
+            case TaskRunStatus.Timeout:
+            case TaskRunStatus.Failure:
                 LastRunEndTime = DateTimeOffset.Now;
                 break;
         }

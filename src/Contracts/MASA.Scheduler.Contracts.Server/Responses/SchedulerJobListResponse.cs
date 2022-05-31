@@ -3,7 +3,18 @@
 
 namespace Masa.Scheduler.Contracts.Server.Responses;
 
-public class SchedulerJobListResponse : BaseResponse<List<SchedulerJobDto>>
+public class SchedulerJobListResponse : BasePaginationResponse<SchedulerJobDto>
 {
+    public SchedulerJobListResponse()
+        : base(0, 0, new List<SchedulerJobDto>())
+    {
+
+    }
+
+    public SchedulerJobListResponse(long total, int totalPages, List<SchedulerJobDto> result)
+        :base(total, totalPages, result)
+    {
+
+    }
 }
 
