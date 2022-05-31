@@ -20,3 +20,6 @@ global using Masa.Scheduler.ApiGateways.Caller;
 global using Masa.Scheduler.ApiGateways.Caller.Services;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 global using Masa.Scheduler.Contracts.Server.Dtos;
+global using Masa.Stack.Components;
+global using Masa.Scheduler.Contracts.Server.Requests.SchedulerJobs;
+global using Masa.Scheduler.Contracts.Server.Model;

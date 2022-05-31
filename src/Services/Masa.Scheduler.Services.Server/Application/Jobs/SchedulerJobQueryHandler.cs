@@ -56,6 +56,8 @@ public class SchedulerJobQueryHandler
 
         condition = condition.And(!string.IsNullOrEmpty(request.Origin), job => job.Origin == request.Origin);
 
+        condition = condition.And(job => job.BelongProjectId == request.ProjectId);
+
         var paginatedResult = await _schedulerJobRepository.GetPaginatedListAsync(condition, new PaginatedOptions()
         {
             Page = request.Page,

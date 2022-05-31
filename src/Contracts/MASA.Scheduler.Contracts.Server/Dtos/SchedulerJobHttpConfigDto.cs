@@ -9,9 +9,9 @@ public class SchedulerJobHttpConfigDto
 
     public string RequestUrl { get; set; } = string.Empty;
 
-    public Dictionary<string, string> HttpParameters { get; set; } = new Dictionary<string, string>();
+    public List<KeyValuePair<string, string>> HttpParameters { get; set; } = new List<KeyValuePair<string, string>>();
 
-    public Dictionary<string, string> HttpHeaders { get; set; } = new Dictionary<string, string>();
+    public List<KeyValuePair<string, string>> HttpHeaders { get; set; } = new List<KeyValuePair<string, string>>();
 
     public string HttpBody { get; set; } = string.Empty;
 

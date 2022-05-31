@@ -3,8 +3,9 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum RunTimeoutStrategyTypes
+public enum JobOriginTypes
 {
-    RunFailedStrategy = 1,
-    IgnoreTimeout
+    ManualCreate = 1,
+    ApiCreate
 }
+

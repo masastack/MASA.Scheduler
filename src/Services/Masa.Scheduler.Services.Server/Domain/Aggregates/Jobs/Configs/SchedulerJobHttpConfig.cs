@@ -12,10 +12,10 @@ public class SchedulerJobHttpConfig : ValueObject
     public string RequestUrl { get; private set; } = string.Empty;
 
     [JsonInclude]
-    public Dictionary<string, string> HttpParameters { get; private set; } = new();
+    public List<KeyValuePair<string, string>> HttpParameters { get; private set; } = new();
 
     [JsonInclude]
-    public Dictionary<string, string> HttpHeaders { get; private set; } = new();
+    public List<KeyValuePair<string, string>> HttpHeaders { get; private set; } = new();
 
     [JsonInclude]
     public string HttpBody { get; private set; } = string.Empty;
@@ -26,7 +26,7 @@ public class SchedulerJobHttpConfig : ValueObject
     [JsonInclude]
     public string VerifyContent { get; private set; } = string.Empty;
 
-    public void SetConfig(HttpMethods httpMethod, string requestUrl, Dictionary<string, string> httpParameters, Dictionary<string, string> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
+    public void SetConfig(HttpMethods httpMethod, string requestUrl, List<KeyValuePair<string, string>> httpParameters, List<KeyValuePair<string, string>> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
     {
         HttpMethod = httpMethod;
         RequestUrl = requestUrl;

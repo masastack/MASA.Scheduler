@@ -3,8 +3,9 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum RunTimeoutStrategyTypes
+public enum ResourceVersionTypes
 {
-    RunFailedStrategy = 1,
-    IgnoreTimeout
+    Latest = 1,
+    SpecifiedVersion
 }
+

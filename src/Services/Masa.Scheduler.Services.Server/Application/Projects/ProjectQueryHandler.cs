@@ -21,7 +21,8 @@ public class ProjectQueryHandler
         {
             Name = p.Name,
             Id = p.Id,
-            Identity = p.Identity
+            Identity = p.Identity,
+            ProjectApps = p.Apps.Select(app => new ProjectAppDto() { Id = app.Id, Identity = app.Identity, Name = app.Name, ProjectId = app.ProjectId }).ToList(),
         }).ToList();
     }
 }

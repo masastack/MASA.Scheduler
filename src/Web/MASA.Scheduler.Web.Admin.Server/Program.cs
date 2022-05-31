@@ -2,6 +2,7 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 using Masa.Scheduler.ApiGateways.Caller;
+using Masa.Stack.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 

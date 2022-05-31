@@ -3,8 +3,10 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum RunTimeoutStrategyTypes
+public enum HttpParameterTypes
 {
-    RunFailedStrategy = 1,
-    IgnoreTimeout
+    Parameter = 1,
+    Headers,
+    Body
 }
+

@@ -31,7 +31,7 @@ public class SchedulerJobDto
 
     public int RunTimeoutSecond { get; set; }
 
-    public FailedStrategyTypes FailedStrategy { get; set; }
+    public FailedStrategyTypes FailedStrategy { get; set; } = FailedStrategyTypes.Auto;
 
     public int FailedRetryInterval { get; set; }
 

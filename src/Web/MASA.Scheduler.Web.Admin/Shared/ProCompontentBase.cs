@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Web.Admin;
 
-public abstract class ProCompontentBase : ComponentBase
+public abstract class ProCompontentBase : BDomComponentBase
 {
     private I18n? _languageProvider;
     private SchedulerServerCaller? _schedulerServerCaller;
@@ -63,6 +63,9 @@ public abstract class ProCompontentBase : ComponentBase
 
     }
 
+    [Inject]
+    public IPopupService PopupService { get; set; } = default!;
+
     public List<KeyValuePair<string, TEnum>> GetEnumMap<TEnum>() where TEnum : struct, Enum
     {
         return Enum.GetValues<TEnum>().Select(e => new KeyValuePair<string, TEnum>(e.ToString(), e)).ToList();
@@ -71,5 +74,40 @@ public abstract class ProCompontentBase : ComponentBase
     public string T(string key)
     {
         return LanguageProvider.T(key) ?? key;
+    }
+
+    public async Task<bool> OpenConfirmDialog(string content)
+    {
+        return await PopupService.ConfirmAsync(T("Operation confirmation"), content, AlertTypes.Error);
+    }
+
+    public async Task<bool> OpenConfirmDialog(string title, string content)
+    {
+        return await PopupService.ConfirmAsync(title, content);
+    }
+
+    public async Task<bool> OpenConfirmDialog(string title, string content, AlertTypes type)
+    {
+        return await PopupService.ConfirmAsync(title, content, type);
+    }
+
+    public void OpenInformationMessage(string message)
+    {
+        PopupService.AlertAsync(message, AlertTypes.Info);
+    }
+
+    public void OpenSuccessMessage(string message)
+    {
+        PopupService.AlertAsync(message, AlertTypes.Success);
+    }
+
+    public void OpenWarningMessage(string message)
+    {
+        PopupService.AlertAsync(message, AlertTypes.Warning);
+    }
+
+    public void OpenErrorMessage(string message)
+    {
+        PopupService.AlertAsync(message, AlertTypes.Error);
     }
 }

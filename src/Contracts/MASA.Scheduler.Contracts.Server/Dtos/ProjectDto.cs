@@ -22,5 +22,7 @@ public class ProjectDto
     public Guid Modifier { get; set; }
 
     public DateTime ModificationTime { get; set; }
+
+    public List<ProjectAppDto> ProjectApps { get; set; } = new List<ProjectAppDto>();
 }
 

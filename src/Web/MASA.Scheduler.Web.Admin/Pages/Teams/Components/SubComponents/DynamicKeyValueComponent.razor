@@ -1,0 +1,115 @@
+﻿@for(var i= 0; i< GetValueCount(); i++)
+{
+    var kv = Value[i];
+    var index = i;
+    var length = i + 1;
+    var total = GetValueCount();
+    <MRow Class="mt-2">
+        <MCol Cols="3">
+            <MTextField Value="kv.Key" Label="Key" HideDetails="@("auto")" Outlined ValueChanged="(string key)=> OnModifyKey(index, key)"/>
+        </MCol>
+        <MCol Cols="3">
+            <MTextField Value="kv.Value" Label="Value" HideDetails="@("auto")" Outlined ValueChanged="(string value) => OnModifyValue(index, value)"/>
+        </MCol>
+        <MCol Cols="1">
+            @if(total > 1)
+            {
+                <MButton Icon OnClick="()=> OnRemoveKeyValue(index)">
+                    <MIcon>
+                        mdi-delete-outline
+                    </MIcon>
+                </MButton>
+            }
+            @if (length == total)
+            {
+                <MButton Icon OnClick="OnAddKeyValue">
+                    <MIcon>
+                        mdi-plus-circle
+                    </MIcon>
+                </MButton>
+            }
+        </MCol>
+    </MRow>
+}
+
+@code {
+    [Parameter]
+    public List<KeyValuePair<string, string>> Value
+    {
+        get
+        {
+            return _value;
+        }
+        set
+        {
+            _value = value;
+
+            OnValueChange();
+        }
+    }
+
+    [Parameter]
+    public EventCallback<List<KeyValuePair<string, string>>> ValueChanged { get; set; }
+
+    private List<KeyValuePair<string, string>> _value = new List<KeyValuePair<string, string>>();
+
+    private int GetValueCount()
+    {
+        return _value.Count();
+    }
+
+    private Task OnValueChange()
+    {
+        if(GetValueCount() == 0)
+        {
+            _value.Add(new KeyValuePair<string, string>("", ""));
+        }
+
+        return Task.CompletedTask;
+    }
+
+
+    private async Task OnModifyKey(int index, string key)
+    {
+        var oldKeyValuePair = _value[index];
+
+        _value[index] = new KeyValuePair<string, string>(key, oldKeyValuePair.Value);
+
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(_value);
+        }
+    }
+
+    private async Task OnModifyValue(int index, string value)
+    {
+        var oldKeyValuePair = _value[index];
+
+        _value[index] = new KeyValuePair<string, string>(oldKeyValuePair.Key, value);
+
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(_value);
+        }
+    }
+
+    private async Task OnAddKeyValue()
+    {
+        _value.Add(new KeyValuePair<string, string>("", ""));
+
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(_value);
+        }
+    }
+
+    private async Task OnRemoveKeyValue(int index)
+    {
+        _value.RemoveAt(index);
+
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(_value);
+        }
+    }
+}
