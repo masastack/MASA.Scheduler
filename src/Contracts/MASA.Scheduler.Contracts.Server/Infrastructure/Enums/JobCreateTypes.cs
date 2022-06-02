@@ -3,9 +3,9 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum JobOriginTypes
+public enum JobCreateTypes
 {
-    ManualCreate = 1,
-    ApiCreate
+    Manual = 1,
+    Api
 }
 

@@ -37,7 +37,7 @@ public partial class Jobs : ProCompontentBase
 
     private bool _showFilter;
 
-    private JobOriginTypes _jobOrginType;
+    private JobCreateTypes _jobCreateType;
 
     private int _page = 1;
 
@@ -62,7 +62,7 @@ public partial class Jobs : ProCompontentBase
     protected override async Task OnInitializedAsync()
     {
         JobQueryTimeTypes = GetEnumMap<JobQueryTimeTypes>();
-        _jobOrginType = JobOriginTypes.ManualCreate;
+        _jobCreateType = JobCreateTypes.Manual;
 
         await base.OnInitializedAsync();
     }
@@ -95,9 +95,9 @@ public partial class Jobs : ProCompontentBase
         return Task.CompletedTask;
     }
 
-    private async Task SwitchJobOriginType(JobOriginTypes jobOriginTypes)
+    private async Task SwitchJobOriginType(JobCreateTypes jobOriginTypes)
     {
-        _jobOrginType = jobOriginTypes;
+        _jobCreateType = jobOriginTypes;
 
         await GetProjectJobs();
     }
@@ -109,9 +109,9 @@ public partial class Jobs : ProCompontentBase
         return Task.CompletedTask;
     }
 
-    public async Task OnProjectChanged()
+    public Task OnProjectChanged()
     {
-        await GetProjectJobs();
+        return GetProjectJobs();
     }
 
     private async Task GetProjectJobs()
@@ -124,7 +124,7 @@ public partial class Jobs : ProCompontentBase
         var request = new SchedulerJobListRequest()
         {
             FilterStatus = _queryStatus,
-            IsCreatedByManual = _jobOrginType == JobOriginTypes.ManualCreate,
+            IsCreatedByManual = _jobCreateType == JobCreateTypes.Manual,
             JobName = _queryJobName,
             JobType = _queryJobType,
             Origin = _queryOrigin,

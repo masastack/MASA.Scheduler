@@ -49,8 +49,8 @@
   "Idle": "空闲",
   "StartDate": "开始日期",
   "EndDate": "结束日期",
-  "ManualCreate": "手动创建",
-  "ApiCreate": "Api创建",
+  "JobCreateTypes.Manual": "手动创建",
+  "JobCreateTypes.Api": "Api创建",
   "JobApp": "Job应用",
   "DaprServiceInvocation": "Dapr Service Invocation",
   "AlreadyRun": "已运行",
@@ -105,5 +105,5 @@
   "MethodName": "Method Name",
   "Submit": "提交",
   "JobType": "应用类型",
-  "IsRequired":  "是必填的"
+  "IsRequired": "是必填的"
 }

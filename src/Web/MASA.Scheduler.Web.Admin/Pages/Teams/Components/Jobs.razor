@@ -2,11 +2,11 @@
 
 <div class="pl-6" style="overflow: hidden; display:block;">
     <MRow Class="mx-1 my-2">
-        <MButtonGroup Value="_jobOrginType.ToString()" Class="rounded-lg elevation-tab" Group Tile Dense Mandatory Borderless>
-            @foreach (var (key, value) in GetEnumMap<JobOriginTypes>())
+        <MButtonGroup Value="_jobCreateType.ToString()" Class="rounded-lg elevation-tab" Group Tile Dense Mandatory Borderless>
+            @foreach (var (key, value) in GetEnumMap<JobCreateTypes>())
             {
                 <MButton OnClick="async() => await SwitchJobOriginType(value)" Value="@value.ToString()" Ripple=false Class="rounded-lg" MinWidth=100>
-                    @T(key)
+                    @T(nameof(JobCreateTypes)+"."+key)
                 </MButton>
             }
         </MButtonGroup>
@@ -65,7 +65,7 @@
                     </MSelect>
                 </MCol>
 
-                @if (_jobOrginType == JobOriginTypes.ApiCreate)
+                @if (_jobCreateType == JobCreateTypes.Api)
                 {
                     <MCol Cols="2" Class="pa-2">
                         <MTextField @bind-Value="_queryOrigin" Placeholder="@T("Origin")" HideDetails="@("auto")" Flat Dense Solo Outlined>
