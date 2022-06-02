@@ -6,6 +6,9 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
 public class SchedulerJobAppConfig: ValueObject
 {
     [JsonInclude]
+    public int JobAppId { get; set; }
+
+    [JsonInclude]
     public string JobEntryAssembly { get; private set; } = string.Empty;
 
     [JsonInclude]
@@ -17,8 +20,9 @@ public class SchedulerJobAppConfig: ValueObject
     [JsonInclude]
     public string Version { get; private set; } = string.Empty;
 
-    public void SetConfig(string jobEntryAssembly, string jobEntryMethod, string jobParams, string version)
+    public void SetConfig(int jobAppId, string jobEntryAssembly, string jobEntryMethod, string jobParams, string version)
     {
+        JobAppId = jobAppId;
         JobEntryAssembly = jobEntryAssembly;
         JobEntryMethod = jobEntryMethod;
         JobParams = jobParams;
@@ -27,6 +31,7 @@ public class SchedulerJobAppConfig: ValueObject
 
     protected override IEnumerable<object> GetEqualityValues()
     {
+        yield return JobAppId;
         yield return JobEntryAssembly;
         yield return JobEntryMethod;
         yield return JobParams;

@@ -1,5 +1,8 @@
 {
   "$Text": "English",
+  "$DateTimeFormat": "MM/dd/yyyy HH:mm:ss",
+  "$DateFormat": "MM/dd/yyyy",
+  "$TimeFormat": "HH:mm:ss",
   "Dashboard": "Dashboard",
   "eCommerce": "eCommerce",
   "Analytics": "Analytics",
@@ -42,5 +45,19 @@
   "Failure": "Failure",
   "Timeout": "Timeout",
   "TimeoutSuccess": "Timeout but success",
-  "Idle":  "Idle"
+  "Idle": "Idle",
+  "StartDate": "Start Date",
+  "EndDate": "End Date",
+  "ManualCreate": "Manual Create",
+  "ApiCreate": "Api Create",
+  "JobApp": "Job App",
+  "DaprServiceInvocation": "Dapr Service Invocation",
+  "AlreadyRun": "Already run",
+  "Job.Add": "Add Job",
+  "PleaseInputJobName": "Please input job name",
+  "NextStep": "Next Step",
+  "PreviousStep": "Previous Step",
+  "BasicInformation": "Basic Information",
+  "IsAlertException": "Is Alert Exception",
+  "Job.Update": "Update Job"
 }

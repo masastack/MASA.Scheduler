@@ -5,6 +5,8 @@ namespace Masa.Scheduler.Contracts.Server.Dtos;
 
 public class SchedulerJobAppConfigDto
 {
+    public int JobAppId { get; set; }
+
     public string JobEntryAssembly { get; set; } = string.Empty;
 
     public string JobEntryMethod { get; set; } = string.Empty;

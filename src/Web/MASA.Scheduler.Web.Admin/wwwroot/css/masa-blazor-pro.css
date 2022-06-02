@@ -1075,3 +1075,146 @@ tr:hover {
 .project-list {
     margin: 16px 0 !important;
 }
+
+.elevation-tab {
+    background-color: #F0F3FA !important;
+    padding: 3px;
+}
+
+.m-item-group.elevation-tab .m-btn.m-btn--has-bg.m-btn--active {
+    background-color: white !important;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 16px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.1px;
+    /* text/1-2强调 */
+
+    color: #323D6F;
+}
+
+.elevation-tab .theme--light.m-btn--active:hover::before, .elevation-tab .theme--light.m-btn--active::before {
+    opacity: 0;
+}
+
+.m-item-group.elevation-tab .m-btn.m-btn--has-bg {
+    background-color: #F0F3FA !important;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 21px;
+    /* identical to box height, or 150% */
+
+    display: flex;
+    align-items: center;
+    text-align: center;
+    /* text/2-2正文 */
+
+    color: #7681AB;
+}
+
+.job-text {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+}
+
+.job-success .job-name {
+    color: #323D6F;
+}
+
+.job-success .run-text {
+    color: #05CD99;
+}
+
+.job-success .run-icon {
+    color: #05CD99 !important
+}
+
+.job-error .job-name {
+    color: white;
+}
+
+.job-error .run-text {
+    color: white;
+}
+
+.job-error .run-icon {
+    color: #B71C1C !important
+}
+
+.job-timeout .job-name {
+    color: white;
+}
+
+.job-timeout .run-text{
+    color: white;
+}
+
+.job-timeout .run-icon {
+    color: #D25F00 !important
+}
+
+.job-warning .job-name {
+    color: #323D6F;
+}
+
+.job-warning .run-text {
+    color: #D25F0000;
+}
+
+.job-warning .run-icon {
+    color: #CC9139 !important;
+}
+
+.job-disabled.job-timeout .run-text {
+    color: #D25F00;
+}
+
+.job-disabled.job-timeout .run-icon {
+    color: #D25F00 !important;
+}
+
+.job-disabled.job-success .run-text {
+    color: #05CD99;
+}
+
+.job-disabled.job-success .run-icon {
+    color: #05CD99 !important;
+}
+
+.job-disabled.job-success .run-text {
+    color: #B71C1C;
+}
+
+.job-disabled.job-success .run-icon {
+    color: #B71C1C !important;
+}
+
+.job-disabled.job-warning .run-text {
+    color: #CC9139;
+}
+
+.job-disabled.job-warning .run-icon {
+    color: #CC9139 !important;
+}
+
+.job-normal .run-icon {
+    color:  #323D6F !important;
+}
+
+.job-normal .run-text {
+    color: #323D6F;
+}
+
+.m-stepper__wrapper {
+    height: 100%;
+}

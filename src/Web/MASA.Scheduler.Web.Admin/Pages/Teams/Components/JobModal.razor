@@ -1,0 +1,294 @@
+﻿@inherits ProCompontentBase
+
+<div @ref="Ref">
+    <SheetDialog Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(Model.Id == Guid.Empty? T("Job.Add") : T("Job.Update"))">
+        <MStepper Value="_step" Class="sheetDialogPadding full-height">
+            <MStepperItems Class="full-height">
+                <MStepperContent Step="1" Class="full-height">
+                    <MCard Class="full-height">
+                        <MCardText Class="full-height" Style="overflow-y:auto;">
+                            <MContainer Class="full-height pt-8">
+                                <MRow Class="py-8 full-height" Align="AlignTypes.Center" Justify="JustifyTypes.Center">
+                                    @foreach (var (key, value) in GetEnumMap<JobTypes>())
+                                    {
+                                        <MCol Cols="3" Class="full-height">
+                                            <MCard Outlined Class="d-flex full-height justify-center align-center" Style="@GetStyle(value)" OnClick="()=> SelectJobType(value)">
+                                                <MButton Ripple=false Plain OnClick="()=> SelectJobType(value)">@T(key)</MButton>
+                                            </MCard>
+                                        </MCol>
+                                    }
+                                </MRow>
+                                <div class="d-flex">
+                                    <MSpacer></MSpacer>
+                                    <MButton Color="primary" Class="small-button" OnClick="CheckJobTypeSelect"> @T("NextStep") </MButton>
+                                </div>
+                            </MContainer>
+                        </MCardText>
+                    </MCard>
+                </MStepperContent>
+                <MStepperContent Step="2">
+                    <MForm Model=Model EnableValidation @ref="Form" Class="full-height">
+                        <div class="full-height flex-column">
+                            <div class="d-flex">
+                                <div class="mx-auto text-center" style="width:212px;">
+                                    <MTextField @bind-Value="@Model.Name" Class="mx-auto mt-0" Style="width:220px;" Label="@T("PleaseInputJobName")" HideDetails="@("auto")" />
+                                </div>
+                            </div>
+                            <div class="mt-6 flex-height-auto overflow-y">
+                                <div class="text-subtitle2 neutral-lighten-2--text">@T("BasicInformation")</div>
+                                <MRow Class="mt-1">
+                                    <MCol Cols="2">
+                                        <MTextField @bind-Value="Model.Owner" Label="@T("Owner")" HideDetails="@("auto")" Outlined />
+                                    </MCol>
+                                    <MSpacer></MSpacer>
+                                </MRow>
+                                <MRow Class="mt-1">
+                                    <MCol Cols="2">
+                                        <MSwitch @bind-Value="Model.IsAlertException" Label="@T("IsAlertException")" Style="padding-top: 0px; margin-top:0px;"></MSwitch>
+                                    </MCol>
+                                </MRow>
+                                <MRow Class="mt-1">
+                                    <MCol Cols="2">
+                                        <MSelect @bind-Value="Model.ScheduleType" Label="@T("ScheduleType")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        </MSelect>
+                                    </MCol>
+                                    @if (Model.ScheduleType == ScheduleTypes.Cron)
+                                    {
+                                        <MCol Cols="2">
+                                            <MTextField @bind-Value="Model.CronExpression" Label="@T("CronExpression")" Outlined>
+                                            </MTextField>
+                                        </MCol>
+                                    }
+                                </MRow>
+                                <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("RunStrategy")</div>
+                                <MRow Class="mt-1">
+                                    <MCol Cols="2">
+                                        <MSelect @bind-Value="Model.RoutingStrategy" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        </MSelect>
+                                    </MCol>
+                                    @if (Model.RoutingStrategy == RoutingStrategyTypes.Specified)
+                                    {
+                                        <MCol Cols="2">
+                                            <MSelect @bind-Value="Model.SpecifiedWorkerHost" Label="Worker" HideDetails="@("auto")" Outlined Clearable Items="_workerList" ItemText="worker => worker.GetServiceUrl(false)" ItemValue="worker=> worker.GetServiceUrl(false)">
+                                            </MSelect>
+                                        </MCol>
+                                    }
+                                </MRow>
+                                <MRow Class="mt-1">
+                                    <MCol Cols="2">
+                                        <MSelect @bind-Value="Model.ScheduleExpiredStrategy" Label="@T("ScheduleExpiredStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<ScheduleExpiredStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        </MSelect>
+                                    </MCol>
+                                    <MCol Cols="2">
+                                        <MSelect @bind-Value="Model.ScheduleBlockStrategy" Label="@T("ScheduleBlockStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<ScheduleBlockStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        </MSelect>
+                                    </MCol>
+                                </MRow>
+                                <MRow Class="mt-1">
+                                    <MCol Cols="2">
+                                        <MSelect @bind-Value="Model.RunTimeoutStrategy" Label="@T("RunTimeoutStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<RunTimeoutStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        </MSelect>
+                                    </MCol>
+                                    <MCol Cols="2">
+                                        <MTextField @bind-Value="Model.RunTimeoutSecond" Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" Label="@T("RunTimeoutSecond")" HideDetails="@("auto")" Outlined />
+                                    </MCol>
+                                </MRow>
+                                <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("FailedStrategy")</div>
+                                <MRow Class="mt-1">
+                                    <MCol Cols="2">
+                                        <MButtonGroup Value="Model.FailedStrategy.ToString()" Class="rounded-lg elevation-tab" Group Tile Dense Mandatory Borderless>
+                                            @foreach (var (key, value) in GetEnumMap<FailedStrategyTypes>())
+                                            {
+                                                <MButton OnClick="async() => await SwitchFailedStrategyType(value)" Value="@value.ToString()" Ripple=false Class="rounded-lg" MinWidth=100>
+                                                    @T(key)
+                                                </MButton>
+                                            }
+                                        </MButtonGroup>
+                                    </MCol>
+                                    @if (Model.FailedStrategy == FailedStrategyTypes.Auto)
+                                    {
+                                        <MCol Cols="2">
+                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" @bind-Value="Model.FailedRetryInterval" Label="@T("FailedRetryInterval")" HideDetails="@("auto")" Outlined />
+                                        </MCol>
+                                        <MCol Cols="2">
+                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" @bind-Value="Model.FailedRetryCount" Label="@T("FailedRetryCount")" HideDetails="@("auto")" Outlined />
+                                        </MCol>
+                                    }
+                                </MRow>
+                                <MRow>
+                                    <MCol Cols="12">
+                                        <MTextarea @bind-Value="Model.Description" Label="@T("Description")" HideDetails="@("auto")" Outlined />
+                                    </MCol>
+                                </MRow>
+                            </div>
+                            <div class="d-flex mt-6">
+                                <MSpacer></MSpacer>
+                                <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep" Text>@T("PreviousStep")</MButton>
+                                <MButton Color="primary" Class="small-button ml-6" OnClick="() => NextStep(context)">@T("NextStep")</MButton>
+                            </div>
+                        </div>
+                    </MForm>
+                </MStepperContent>
+                <MStepperContent Step="3">
+                    <div class="full-height flex-column">
+                        <div class="mt-6 flex-height-auto overflow-y">
+                            @if (Model.JobType == JobTypes.Http)
+                            {
+                                <MForm Model=Model.HttpConfig EnableValidation @ref="Form" Class="full-height">
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="2">
+                                            <MSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            </MSelect>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="4">
+                                            <MTextField @bind-Value="Model.HttpConfig.RequestUrl" Label="@T("RequestUrl")" HideDetails="@("auto")" Outlined />
+                                        </MCol>
+                                    </MRow>
+                                    <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("RequestParameters")</div>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="4">
+                                            <MButtonGroup Value="_httpParameterTypes.ToString()" Class="rounded-lg" Color="primary" Group Tile Dense Mandatory Borderless>
+                                                @foreach (var (key, value) in GetEnumMap<HttpParameterTypes>())
+                                                {
+                                                    <MButton OnClick="async() => await SwitchHttpParameterType(value)" Value="@value.ToString()" Ripple=false Class="rounded-lg" MinWidth=100>
+                                                        @T(key)
+                                                    </MButton>
+                                                }
+                                            </MButtonGroup>
+                                        </MCol>
+                                    </MRow>
+                                    @if (_httpParameterTypes == HttpParameterTypes.Parameter)
+                                    {
+                                        <DynamicKeyValueComponent @bind-Value="Model.HttpConfig.HttpParameters">
+                                        </DynamicKeyValueComponent>
+                                    }
+                                    else if (_httpParameterTypes == HttpParameterTypes.Headers)
+                                    {
+                                        <DynamicKeyValueComponent @bind-Value="Model.HttpConfig.HttpHeaders">
+                                        </DynamicKeyValueComponent>
+                                    }
+                                    else
+                                    {
+                                        <MRow Class="mt-2">
+                                            <MCol Cols="12">
+                                                <MTextarea @bind-Value="Model.HttpConfig.HttpBody" Label="@T("HttpBody")" HideDetails="@("auto")" Outlined Rows="10">
+                                                </MTextarea>
+                                            </MCol>
+                                        </MRow>
+                                    }
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="3">
+                                            <MSelect @bind-Value="Model.HttpConfig.HttpVerifyType" Label="@T("HttpVerifyType")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<HttpVerifyTypes>()" ItemText="kv => kv.Key" ItemValue="kv=> kv.Value">
+                                            </MSelect>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="12">
+                                            <MTextarea @bind-Value="Model.HttpConfig.VerifyContent" Label="@T("VerifyContent")" HideDetails="@("auto")" Outlined Rows="10">
+                                            </MTextarea>
+                                        </MCol>
+                                    </MRow>
+                                    <div class="d-flex mt-6">
+                                        <MSpacer></MSpacer>
+                                        <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep">@T("PreviousStep")</MButton>
+                                        <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Submit")</MButton>
+                                    </div>
+                                </MForm>
+                            }
+                            else if (Model.JobType == JobTypes.JobApp)
+                            {
+                                <MForm Model=Model.JobAppConfig EnableValidation @ref="Form" Class="full-height">
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="3">
+                                            <MSelect @bind-Value="Model.JobAppConfig.JobAppId" Label="@T("JobAppId")" HideDetails="@("auto")" Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Id">
+                                            </MSelect>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="4">
+                                            <MTextField @bind-Value="Model.JobAppConfig.JobEntryAssembly" Placeholder="*.dll" Label="@T("JobEntryAssembly")" HideDetails="@("auto")" Outlined>
+                                            </MTextField>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="4">
+                                            <MTextField @bind-Value="Model.JobAppConfig.JobEntryMethod" Placeholder="Namespace.Class.Method" Label="@T("JobEntryMethod")" HideDetails="@("auto")" Outlined>
+                                            </MTextField>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="12">
+                                            <MTextarea @bind-Value="Model.JobAppConfig.JobParams" Label="@T("OptionParams")" HideDetails="@("auto")" Outlined>
+                                            </MTextarea>
+                                        </MCol>
+                                    </MRow>
+                                    <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("ResourceVersion")</div>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="2">
+                                            <MButtonGroup Value="_resourceVersionType.ToString()" Class="rounded-lg elevation-tab" Group Tile Dense Mandatory Borderless>
+                                                @foreach (var (key, value) in GetEnumMap<ResourceVersionTypes>())
+                                                {
+                                                    <MButton OnClick="async() => await SwitchResourceVersionType(value)" Value="@value.ToString()" Ripple=false Class="rounded-lg" MinWidth=100>
+                                                        @T(key)
+                                                    </MButton>
+                                                }
+                                            </MButtonGroup>
+                                        </MCol>
+                                        @if (_resourceVersionType == ResourceVersionTypes.SpecifiedVersion)
+                                        {
+                                            <MCol Cols="2">
+                                                <MSelect @bind-Value="Model.JobAppConfig.Version" Label="@T("ResourceVersion")" HideDetails="@("auto")" Outlined Clearable Items="_versionList" ItemText="version => version" ItemValue="version=> version">
+                                                </MSelect>
+                                            </MCol>
+                                        }
+                                    </MRow>
+                                    <div class="d-flex mt-6">
+                                        <MSpacer></MSpacer>
+                                        <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep">@T("PreviousStep")</MButton>
+                                        <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Submit")</MButton>
+                                    </div>
+                                </MForm>
+                            }
+                            else if (Model.JobType == JobTypes.DaprServiceInvocation)
+                            {
+                                <MForm Model=Model.DaprServiceInvocationConfig EnableValidation @ref="Form" Class="full-height">
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="3">
+                                            <MSelect @bind-Value="Model.DaprServiceInvocationConfig.DaprServiceAppId" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Id">
+                                            </MSelect>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="4">
+                                            <MTextField @bind-Value="Model.DaprServiceInvocationConfig.MethodName" Label="@T("MethodName")" HideDetails="@("auto")" Outlined>
+                                            </MTextField>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="4">
+                                            <MSelect @bind-Value="Model.DaprServiceInvocationConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            </MSelect>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow Class="mt-1">
+                                        <MCol Cols="12">
+                                            <MTextarea @bind-Value="Model.DaprServiceInvocationConfig.Data" Label="@T("Data")" HideDetails="@("auto")" Outlined Rows="10">
+                                            </MTextarea>
+                                        </MCol>
+                                    </MRow>
+                                    <div class="d-flex mt-6">
+                                        <MSpacer></MSpacer>
+                                        <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep">@T("PreviousStep")</MButton>
+                                        <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Submit")</MButton>
+                                    </div>
+                                </MForm>
+                            }
+                        </div>
+                    </div>
+                </MStepperContent>
+            </MStepperItems>
+        </MStepper>
+    </SheetDialog>
+</div>

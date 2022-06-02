@@ -5,6 +5,6 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
 public enum ScheduleTypes
 {
-    None = 1,
+    ManualRun = 1,
     Cron
 }

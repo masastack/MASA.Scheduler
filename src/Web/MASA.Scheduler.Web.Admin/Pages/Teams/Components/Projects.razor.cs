@@ -8,7 +8,7 @@ public partial class Projects
     public Guid TeamId { get; set; }
 
     [Parameter]
-    public EventCallback<int> OnProjectChanged { get; set; }
+    public EventCallback<ProjectDto> OnProjectChanged { get; set; }
 
     private string _projectName = string.Empty;
     private List<ProjectDto> _projects = new();
@@ -29,7 +29,9 @@ public partial class Projects
 
                 if (OnProjectChanged.HasDelegate)
                 {
-                    OnProjectChanged.InvokeAsync(_selectedProjectId.AsT1);
+                    var project = _projects.FirstOrDefault(p => p.Id == _selectedProjectId.AsT1);
+
+                    OnProjectChanged.InvokeAsync(project);
                 }
             }
         }

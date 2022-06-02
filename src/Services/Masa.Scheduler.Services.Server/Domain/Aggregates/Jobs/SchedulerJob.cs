@@ -172,9 +172,9 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         }
     }
 
-    public void ChangeEnableStatus()
+    public void ChangeEnableStatus(bool enabled)
     {
-        Enabled = !Enabled;
+        Enabled = enabled;
     }
 
     public void SetJobAppConfig(SchedulerJobAppConfigDto? dto)
@@ -184,7 +184,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
             return;
         }
         JobAppConfig ??= new();
-        JobAppConfig.SetConfig(dto.JobEntryAssembly, dto.JobEntryMethod, dto.JobParams, dto.Version);
+        JobAppConfig.SetConfig(dto.JobAppId, dto.JobEntryAssembly, dto.JobEntryMethod, dto.JobParams, dto.Version);
     }
 
     public void SetHttpConfig(SchedulerJobHttpConfigDto? dto)

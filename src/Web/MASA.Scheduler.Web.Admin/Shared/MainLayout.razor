@@ -14,8 +14,10 @@
     <Navigation />
 
     <MMain Class="fill-lighten-1" Style="padding-top:60px">
-        <div class="pa-6 max-width">
-            @Body
-        </div>
+        <MErrorHandler>
+            <div class="pa-6 max-width">
+                @Body
+            </div>
+        </MErrorHandler>
     </MMain>
 </MApp>

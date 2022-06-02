@@ -64,7 +64,7 @@ public class SchedulerJobCommandHandler
             throw new UserFriendlyException($"Job id {command.Request.Id}, not found");
         }
 
-        job.ChangeEnableStatus();
+        job.ChangeEnableStatus(command.Request.Enabled);
 
         await _schedulerJobRepository.UpdateAsync(job);
     }

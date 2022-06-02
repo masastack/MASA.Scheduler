@@ -17,6 +17,8 @@ public class SchedulerJobListRequest: PaginationRequest
 
     public DateTimeOffset? QueryEndTime { get; set; }
 
+    public int ProjectId { get; set; }
+
     public JobTypes JobType { get; set; }
 
     public string Origin { get; set; } = string.Empty;

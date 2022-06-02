@@ -31,7 +31,7 @@ public class SchedulerJobDto
 
     public int RunTimeoutSecond { get; set; }
 
-    public FailedStrategyTypes FailedStrategy { get; set; }
+    public FailedStrategyTypes FailedStrategy { get; set; } = FailedStrategyTypes.Auto;
 
     public int FailedRetryInterval { get; set; }
 
@@ -53,7 +53,7 @@ public class SchedulerJobDto
 
     public DateTimeOffset LastRunEndTime { get; set; } = DateTimeOffset.MinValue;
 
-    public TaskRunStatus LastRunStatus { get; set; }
+    public TaskRunStatus LastRunStatus { get; set; } = TaskRunStatus.Idle;
 
     public SchedulerJobAppConfigDto JobAppConfig { get; set; } = new();
 

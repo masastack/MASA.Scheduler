@@ -8,7 +8,7 @@ public partial class Team
     [Parameter]
     public string TeamId { get; set; } = string.Empty;
 
-    private int _projectId;
+    private ProjectDto _project = default!;
     private StringNumber _curTab = 0;
     private Dictionary<StringNumber, string> NavTab => new Dictionary<StringNumber, string>() { { 0, T("Job") }, { 1, T("Task") } };
 
@@ -17,9 +17,9 @@ public partial class Team
         return base.OnAfterRenderAsync(firstRender);
     }
 
-    public Task OnProjectChangedAsync(int projectId)
+    public Task OnProjectChangedAsync(ProjectDto project)
     {
-        _projectId = projectId;
+        _project = project;
         return Task.CompletedTask;
     }
 }

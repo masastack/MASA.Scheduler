@@ -249,7 +249,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         }
     }
 
-    private static void AddHttpHeader(HttpClient client, Dictionary<string,string> httpHeaders)
+    private static void AddHttpHeader(HttpClient client, List<KeyValuePair<string, string>> httpHeaders)
     {
         foreach (var header in httpHeaders)
         {
@@ -257,7 +257,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         }
     }
 
-    private static Uri GetRequestUrl(string requestUrl, Dictionary<string,string> httpParameters)
+    private static Uri GetRequestUrl(string requestUrl, List<KeyValuePair<string, string>> httpParameters)
     {
         var builder = new UriBuilder(requestUrl);
 
