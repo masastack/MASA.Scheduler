@@ -13,6 +13,8 @@
     <PackageReference Include="Masa.Utils.Security.Cryptography" Version="0.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="6.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.5" />
   </ItemGroup>
 
 </Project>

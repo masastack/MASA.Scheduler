@@ -98,11 +98,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-using (var serviceScope = app.Services.CreateScope())
-{
-    var context = serviceScope.ServiceProvider.GetRequiredService<SchedulerDbContext>();
-    context.Database.Migrate();
-}
+app.MigrateDbContext<SchedulerDbContext>((context, services) => { });
 
 app.UseRouting();
 

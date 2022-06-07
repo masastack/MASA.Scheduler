@@ -44,6 +44,11 @@ public class StartTaskDomainEventHandler
             throw new UserFriendlyException("SchedulerJob cannot null");
         }
 
+        if(!task.Job.Enabled || task.Job.IsDeleted)
+        {
+            throw new UserFriendlyException($"SchedulerJob was disabled or deleted");
+        }
+
         if (task.TaskStatus == TaskRunStatus.Running)
         {
             await _serverManager.StopTask(task.Id, task.WorkerHost);

@@ -92,3 +92,4 @@ global using System.Collections.Concurrent;
 global using Microsoft.AspNetCore.SignalR;
 global using Masa.Scheduler.Services.Server.Infrastructure.SignalR.Hubs;
 global using Masa.Scheduler.Services.Server.Infrastructure.SignalR;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Utils;
