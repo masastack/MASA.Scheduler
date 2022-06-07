@@ -5,7 +5,9 @@ namespace Masa.Scheduler.Services.Worker.Services;
 
 public class SchedulerWorkerManagerService : ServiceBase
 {
-    public SchedulerWorkerManagerService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_WORKER_MANAGER_API)
+    private readonly ILogger<SchedulerWorkerManagerService> _logger;
+
+    public SchedulerWorkerManagerService(IServiceCollection services, ILogger<SchedulerWorkerManagerService> logger) : base(services, ConstStrings.SCHEDULER_WORKER_MANAGER_API)
     {
         MapPost(MonitorServerOnlineAsync);
         MapGet(OnlineAsync);
@@ -13,6 +15,9 @@ public class SchedulerWorkerManagerService : ServiceBase
         MapGet(Heartbeat);
         MapPost(StartTask);
         MapPost(StopTask);
+        MapGet(DockerId);
+        MapGet(CurrentAddress);
+        _logger = logger;
     }
 
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(SchedulerServerOnlineIntegrationEvent))]
@@ -40,6 +45,8 @@ public class SchedulerWorkerManagerService : ServiceBase
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent))]
     public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, StartTaskIntegrationEvent @event)
     {
+        _logger.LogWarning($"Start Task, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}");
+
         await workerManager.EnqueueTask(@event);
     }
 
@@ -47,5 +54,16 @@ public class SchedulerWorkerManagerService : ServiceBase
     public async Task StopTask([FromServices] SchedulerWorkerManager workerManager, StopTaskIntegrationEvent @event)
     {
         await workerManager.StopTaskAsync(@event);
+    }
+
+    public IResult DockerId()
+    {
+        var hostname = Environment.GetEnvironmentVariable("HOSTNAME", EnvironmentVariableTarget.Process);
+        return Results.Ok(hostname);
+    }
+
+    public IResult CurrentAddress([FromServices] SchedulerWorkerManagerData data)
+    {
+        return Results.Ok(data.AddressList);
     }
 }

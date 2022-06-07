@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Utils.Security.Cryptography;
+
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Managers;
 
 public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where T : BaseServiceModel, new() where TOnlineEvent : OnlineIntegrationEvent, new() where TMonitorEvent : OnlineIntegrationEvent, new()
@@ -83,37 +85,42 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             return;
         }
 
-        var client = _httpClientFactory.CreateClient();
-
         foreach (var item in checkList)
         {
-            try
-            {
-                _ = await client.GetAsync(item.GetServiceUrl() + item.HeartbeatApi);
-                item.Status = ServiceStatus.Normal;
-                item.NotResponseCount = 0;
-                item.LastResponseTime = DateTimeOffset.Now;
-                Logger.LogInformation($"Heartbeat request success, {item.GetServiceUrl()}");
-            }
-            catch (Exception ex)
-            {
-                var message = $"Heartbeat request error, ServiceUrl: {item.GetServiceUrl()}";
-                Logger.LogError(ex, message);
-
-                item.NotResponseCount++;
-
-                if (item.NotResponseCount >= 3)
-                {
-                    item.Status = ServiceStatus.Stopped;
-                }
-                else
-                {
-                    item.Status = ServiceStatus.Error;
-                }
-            }
+            await CheckHeartbeat(item);
         }
 
         _data.ServiceList.RemoveAll(p => p.Status == ServiceStatus.Stopped);
+    }
+
+    protected async Task CheckHeartbeat(T item)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient();
+
+            _ = await client.GetAsync(item.GetServiceUrl() + item.HeartbeatApi);
+            item.Status = ServiceStatus.Normal;
+            item.NotResponseCount = 0;
+            item.LastResponseTime = DateTimeOffset.Now;
+            Logger.LogInformation($"Heartbeat request success, {item.GetServiceUrl()}");
+        }
+        catch (Exception ex)
+        {
+            var message = $"Heartbeat request error, ServiceUrl: {item.GetServiceUrl()}";
+            Logger.LogError(ex, message);
+
+            item.NotResponseCount++;
+
+            if (item.NotResponseCount >= 3)
+            {
+                item.Status = ServiceStatus.Stopped;
+            }
+            else
+            {
+                item.Status = ServiceStatus.Error;
+            }
+        }
     }
 
     public virtual async Task OnManagerStartAsync()
@@ -135,19 +142,21 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
         var @event = new TOnlineEvent();
 
-        @event.HttpPort = GetAddressPort(httpAddress);
+        var service = new T()
+        {
+            HttpHost = await GetAddresssHost(httpAddress),
+            HttpsHost = await GetAddresssHost(httpsAddress),
+            HttpPort = GetAddressPort(httpAddress),
+            HttpsPort = GetAddressPort(httpsAddress),
+            HeartbeatApi = HeartbeatApi,
+            Status = ServiceStatus.Normal
+        };
 
-        @event.HttpsPort = GetAddressPort(httpsAddress);
-
-        @event.HttpHost = GetAddresssHost(httpAddress);
-
-        @event.HttpsHost = GetAddresssHost(httpsAddress);
+        _data.ServiceId = MD5Utils.Encrypt(EncryptType.Md5, service.GetServiceUrl());
+        service.ServiceId = _data.ServiceId;
 
         @event.IsPong = isResponse;
-
-        @event.HeartbeatApi = HeartbeatApi;
-
-        @event.ServiceId = _data.ServiceId;
+        @event.OnlineService = service;
 
         await _eventBus.PublishAsync(@event);
 
@@ -156,54 +165,48 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     public async virtual Task MonitorHandler(TMonitorEvent @event)
     {
-        if (string.IsNullOrEmpty(@event.HttpHost) || (@event.HttpPort == 0 && @event.HttpsPort == 0))
+        if (@event.OnlineService is null)
         {
             return;
         }
 
-        var service = ServiceList.FirstOrDefault(w => w.HttpHost == @event.HttpHost && ((w.HttpPort != 0 && w.HttpPort == @event.HttpPort) || (w.HttpsPort != 0 && w.HttpsPort == @event.HttpsPort)));
+        if (string.IsNullOrEmpty(@event.OnlineService.HttpHost) || (@event.OnlineService.HttpPort == 0 && @event.OnlineService.HttpsPort == 0))
+        {
+            return;
+        }
+
+        var service = ServiceList.FirstOrDefault(w => w.HttpHost == @event.OnlineService.HttpHost && ((w.HttpPort != 0 && w.HttpPort == @event.OnlineService.HttpPort) || (w.HttpsPort != 0 && w.HttpsPort == @event.OnlineService.HttpsPort)));
 
         if (service == null)
         {
             var model = new T()
             {
-                HttpHost = @event.HttpHost,
-                HttpsHost = @event.HttpsHost,
-                HttpPort = @event.HttpPort,
-                HttpsPort = @event.HttpsPort,
+                HttpHost = @event.OnlineService.HttpHost,
+                HttpsHost = @event.OnlineService.HttpsHost,
+                HttpPort = @event.OnlineService.HttpPort,
+                HttpsPort = @event.OnlineService.HttpsPort,
                 Status = ServiceStatus.Normal,
-                HeartbeatApi = @event.HeartbeatApi,
-                ServiceId = @event.ServiceId,
+                HeartbeatApi = @event.OnlineService.HeartbeatApi,
+                ServiceId = @event.OnlineService.ServiceId,
             };
-            
-            model.CallerClient = CreateClient(model);
 
             _data.ServiceList.Add(model);
         }
         else
         {
-            service.HttpPort = @event.HttpPort;
-            service.HttpsPort = @event.HttpsPort;
-            service.HttpHost = @event.HttpHost;
-            service.HttpsHost = @event.HttpsHost;
+            service.HttpPort = @event.OnlineService.HttpPort;
+            service.HttpsPort = @event.OnlineService.HttpsPort;
+            service.HttpHost = @event.OnlineService.HttpHost;
+            service.HttpsHost = @event.OnlineService.HttpsHost;
             service.Status = ServiceStatus.Normal;
-            service.HeartbeatApi = @event.HeartbeatApi;
-            service.CallerClient = CreateClient(service);
-            service.ServiceId = @event.ServiceId;
+            service.HeartbeatApi = @event.OnlineService.HeartbeatApi;
+            service.ServiceId = MD5Utils.Encrypt(EncryptType.Md5, service.GetServiceUrl());
         }
 
         if (!@event.IsPong)
         {
             await Online(true);
         }
-    }
-
-    private HttpClient CreateClient(T model)
-    {
-        var client = _httpClientFactory.CreateClient();
-        client.BaseAddress = new Uri(model.GetServiceUrl());
-        client.Timeout = TimeSpan.FromSeconds(30);
-        return client;
     }
 
     private static async Task<string> GetCurrentIp()
@@ -235,14 +238,52 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         return 0;
     }
 
-    private string GetAddresssHost(string? address)
+    private async Task<string> GetAddresssHost(string? address)
     {
         if (!string.IsNullOrEmpty(address))
         {
             var uri = new Uri(address);
+
+            var currentIp = await GetCurrentIp();
+
+            var isSuccess = await TryRequestCurrentIp(uri.Scheme, currentIp, uri.Port);
+
+            if (isSuccess)
+            {
+                return currentIp;
+            }
+
             return uri.Host;
         }
 
         return string.Empty;
+    }
+
+    /// <summary>
+    /// Use local IP first, if try request is normal
+    /// </summary>
+    /// <param name="port"></param>
+    /// <returns></returns>
+    private async Task<bool> TryRequestCurrentIp(string scheme, string? currentIp, int port)
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(currentIp))
+            {
+                var client = _httpClientFactory.CreateClient();
+
+                var requestUrl = $"{scheme}://{currentIp}:{port}{HeartbeatApi}";
+
+                var response = await client.GetAsync(requestUrl);
+
+                return response.IsSuccessStatusCode;
+            }
+        }
+        catch(Exception ex)
+        {
+            Logger.LogError(ex, "tryRequestCurrentIp error");
+        }
+
+        return false;
     }
 }

@@ -8,12 +8,14 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly IRepository<SchedulerTask> _schedulerTaskRepository;
     private readonly SchedulerDbContext _dbContext;
     private readonly IRepository<SchedulerJob> _schedulerJobRepository;
+    private readonly IHubContext<NotificationsHub> _hubContext;
 
-    public NotifyTaskRunResultDomainEventHandler(IRepository<SchedulerTask> schedulerTaskRepository, SchedulerDbContext dbContext, IRepository<SchedulerJob> schedulerJobRepository)
+    public NotifyTaskRunResultDomainEventHandler(IRepository<SchedulerTask> schedulerTaskRepository, SchedulerDbContext dbContext, IRepository<SchedulerJob> schedulerJobRepository, IHubContext<NotificationsHub> hubContext)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _dbContext = dbContext;
         _schedulerJobRepository = schedulerJobRepository;
+        _hubContext = hubContext;
     }
 
     [EventHandler]
@@ -34,9 +36,6 @@ public class NotifyTaskRunResultDomainEventHandler
             case TaskRunStatus.Success:
                 message = "Task run success";
                 break;
-            case TaskRunStatus.Stop:
-                message = "Task run stop";
-                break;
             default:
                 message = "Task run failure";
                 break;
@@ -54,7 +53,12 @@ public class NotifyTaskRunResultDomainEventHandler
         task.Job.UpdateLastRunDetail(status);
 
         await _schedulerJobRepository.UpdateAsync(task.Job);
-
         await _schedulerTaskRepository.UpdateAsync(task);
+
+        await _schedulerJobRepository.UnitOfWork.SaveChangesAsync();
+        await _schedulerJobRepository.UnitOfWork.CommitAsync();
+
+        var groupClient = _hubContext.Clients.Groups(ConstStrings.GLOBAL_GROUP);
+        await groupClient.SendAsync(SignalRMethodConsts.GET_NOTIFICATION);
     }
 }

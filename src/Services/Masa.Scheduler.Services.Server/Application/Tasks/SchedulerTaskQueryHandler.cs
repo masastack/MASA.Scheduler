@@ -19,9 +19,9 @@ public class SchedulerTaskQueryHandler
     {
         var request = query.Request;
 
-        Expression<Func<SchedulerTask, bool>> condition = job => true;
+        Expression<Func<SchedulerTask, bool>> condition = t => t.JobId == query.Request.JobId;
 
-        condition = condition.And(request.FilterStatus != 0, job => job.TaskStatus == request.FilterStatus);
+        condition = condition.And(request.FilterStatus != 0, t => t.TaskStatus == request.FilterStatus);
 
         switch (request.QueryTimeType)
         {
@@ -39,7 +39,7 @@ public class SchedulerTaskQueryHandler
                 break;
         }
 
-        condition = condition.And(!string.IsNullOrEmpty(request.Origin), job => job.Origin == request.Origin);
+        condition = condition.And(!string.IsNullOrEmpty(request.Origin), t => t.Origin == request.Origin);
 
         var paginatedResult = await _schedulerTaskRepository.GetPaginatedListAsync(condition, new PaginatedOptions()
         {
@@ -53,6 +53,12 @@ public class SchedulerTaskQueryHandler
         });
 
         var taskDtos = _mapper.Map<List<SchedulerTaskDto>>(paginatedResult.Result);
+
+        foreach (var item in taskDtos)
+        {
+            // todo: get operator name from masa.auth
+            item.OperatorName = "Tester";
+        }
 
         query.Result = new(paginatedResult.Total, paginatedResult.TotalPages, taskDtos);
     }

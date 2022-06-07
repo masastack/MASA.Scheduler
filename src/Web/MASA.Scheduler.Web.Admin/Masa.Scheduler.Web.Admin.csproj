@@ -21,11 +21,23 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\..\ApiGateways\Caller\MASA.Scheduler.ApiGateways.Caller\Masa.Scheduler.ApiGateways.Caller.csproj" />
+    <ProjectReference Include="..\..\ApiGateways\Caller\Masa.Scheduler.ApiGateways.Caller\Masa.Scheduler.ApiGateways.Caller.csproj" />
   </ItemGroup>
 	
   <ItemGroup>
     <Folder Include="Components\" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Content Update="C:\Users\liguanyao\.nuget\packages\masa.blazor.experimental.components\0.2.6\contentFiles\any\net6.0\wwwroot\css\experimental.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\liguanyao\.nuget\packages\masa.blazor.experimental.components\0.2.6\contentFiles\any\net6.0\wwwroot\js\experimental.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\masa-blazor-pro.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

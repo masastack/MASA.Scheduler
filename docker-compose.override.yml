@@ -15,8 +15,8 @@ services:
 
   masa.scheduler.web.admin:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_ENVIRONMENT=Develop
+      - ASPNETCORE_URLS=http://+:80 #;https://+:443 
     ports:
       - "19600:80"
       - "19610:443"
@@ -28,11 +28,16 @@ services:
 
   masa.scheduler.service.server:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80 #https://+:443;
+      - ASPNETCORE_ENVIRONMENT=Develop
+      - ASPNETCORE_URLS=http://+:80 #;https://+:443
+      - DAPR_HTTP_PORT=3600
+      - DAPR_GRPC_PORT=51000
     ports:
       - "19601:80"
       - "19611:443"
+    depends_on:
+      - masa.scheduler.database
+      - redis
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -42,6 +47,8 @@ services:
     command: ["./daprd",
       "-app-id", "masa-scheduler-server",
       "-app-port", "80",
+      "-dapr-http-port", "3600",
+      "-dapr-grpc-port", "51000",
       "-components-path", "/components"
       ]
     depends_on:
@@ -52,11 +59,15 @@ services:
 
   masa.scheduler.service.worker:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80 #https://+:443;
+      - ASPNETCORE_ENVIRONMENT=Develop
+      - ASPNETCORE_URLS=http://+:80 #;https://+:443
+      - DAPR_HTTP_PORT=3601
+      - DAPR_GRPC_PORT=51001
     ports:
       - "19602:80"
       - "19612:443"
+    depends_on:
+      - masa.scheduler.database
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -66,6 +77,8 @@ services:
     command: ["./daprd",
       "-app-id", "masa-scheduler-worker",
       "-app-port", "80",
+      "-dapr-http-port", "3601",
+      "-dapr-grpc-port", "51001",
       "-components-path", "/components"
       ]
     depends_on:

@@ -8,6 +8,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     private readonly ILogger<SchedulerServerManager> _logger;
     private readonly IMapper _mapper;
     private readonly SchedulerServerManagerData _data;
+    private readonly IRepository<SchedulerTask> _repository;
 
     public SchedulerServerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -17,12 +18,13 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         ILogger<SchedulerServerManager> logger,
         IHttpClientFactory httpClientFactory,
         IMapper mapper,
-        SchedulerServerManagerData data)
+        SchedulerServerManagerData data, IRepository<SchedulerTask> repository)
         : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data)
     {
         _logger = logger;
         _mapper = mapper;
         _data = data;
+        _repository = repository;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_SERVER_MANAGER_API}/heartbeat";
@@ -61,40 +63,34 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         return worker!;
     }
 
-    public Task<WorkerModel> GetWorker(string workerHost)
+    public Task<WorkerModel?> GetWorker(string workerHost)
     {
+        WorkerModel? workerModel = null;
+
         if (string.IsNullOrEmpty(workerHost))
         {
-            throw new UserFriendlyException("Worker host cannot empty");
+            return Task.FromResult(workerModel);
         }
 
-        var hostInfo = workerHost.Split(':');
-
-        if (hostInfo.Length != 2)
+        var uri = new Uri(workerHost);
+       
+        if(uri.Scheme == "http")
         {
-            throw new UserFriendlyException("WorkerHost Error");
+            workerModel = ServiceList.FirstOrDefault(w => w.HttpHost == uri.Host && w.HttpPort == uri.Port && w.Status == ServiceStatus.Normal);
         }
-
-        var host = hostInfo[0];
-
-        var port = Convert.ToInt32(hostInfo[1]);
-
-        var workerModel = ServiceList.FirstOrDefault(w => w.HttpHost == host && w.HttpPort == port && w.Status == ServiceStatus.Normal);
-
-        CheckWorkerNotNull(workerModel);
-
-        return Task.FromResult(workerModel!);
+        else
+        {
+            workerModel = ServiceList.FirstOrDefault(w => w.HttpsHost == uri.Host && w.HttpsPort == uri.Port && w.Status == ServiceStatus.Normal);
+        }
+        
+        return Task.FromResult(workerModel);
     }
 
-    public Task TaskEnqueue(SchedulerTask task, WorkerModel worker)
+    public Task TaskEnqueue(SchedulerTask task)
     {
-        var taskAssignModel = new TaskAssignModel()
-        {
-            Task = _mapper.Map<SchedulerTaskDto>(task),
-            Worker = worker
-        };
+        var taskDto = _mapper.Map<SchedulerTaskDto>(task);
 
-        _data.TaskQueue.Enqueue(taskAssignModel);
+        _data.TaskQueue.Enqueue(taskDto);
 
         return Task.CompletedTask;
     }
@@ -114,16 +110,26 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
     public async Task StopTask(Guid taskId, string workerHost)
     {
-        var worker = await GetWorker(workerHost);
-
-        var @event = new StopTaskIntegrationEvent()
+        if(_data.TaskQueue.Any(p => p.Id == taskId))
         {
-            TaskId = taskId,
-            ServiceId = worker.ServiceId
-        };
+            _data.StopTask.Add(taskId);
+        }
+        else
+        {
+            var worker = await GetWorker(workerHost);
 
-        await EventBus.PublishAsync(@event);
-        await EventBus.CommitAsync();
+            if(worker != null)
+            {
+                var @event = new StopTaskIntegrationEvent()
+                {
+                    TaskId = taskId,
+                    ServiceId = worker.ServiceId
+                };
+
+                await EventBus.PublishAsync(@event);
+                await EventBus.CommitAsync();
+            }
+        }
     }
 
     private static void CheckWorkerNotNull(WorkerModel? worker)
@@ -146,11 +152,61 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                     continue;
                 }
 
+                if(!_data.ServiceList.Any())
+                {
+                    await Task.Delay(1000);
+                    continue;
+                }
+
                 try
                 {
-                    if (_data.TaskQueue.TryDequeue(out var task))
+                    if (_data.TaskQueue.TryDequeue(out var taskDto))
                     {
-                        await StartTask(task.Task, task.Worker);
+                        if (_data.StopTask.Any(p => p == taskDto.Id))
+                        {
+                            _data.StopTask.Remove(taskDto.Id);
+                            continue;
+                        }
+
+                        WorkerModel? workerModel;
+
+                        if (taskDto.Job.RoutingStrategy == RoutingStrategyTypes.Specified)
+                        {
+                            workerModel = await GetWorker(taskDto.Job.SpecifiedWorkerHost);
+
+                            if(workerModel == null)
+                            {
+                                Logger.LogError($"Cannot find worker model, workerHost: {taskDto.Job.SpecifiedWorkerHost}");
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            workerModel = await GetWorker(taskDto.Job.RoutingStrategy);
+                        }
+
+                        await CheckHeartbeat(workerModel!);
+
+                        if(workerModel.Status != ServiceStatus.Normal)
+                        {
+                            _data.TaskQueue.Enqueue(taskDto);
+                            await Task.Delay(1000);
+                        }
+
+                        var task = await _repository.FindAsync(p=> p.Id == taskDto.Id);
+
+                        if(task == null)
+                        {
+                            throw new UserFriendlyException($"Task is not found, taskId: {taskDto.Id}");
+                        }
+
+                        task.SetWorkerHost(workerModel.GetServiceUrl());
+
+                        await _repository.UpdateAsync(task);
+
+                        await _repository.UnitOfWork.SaveChangesAsync();
+
+                        await StartTask(taskDto, workerModel);
                     }
                 }
                 catch(Exception ex)

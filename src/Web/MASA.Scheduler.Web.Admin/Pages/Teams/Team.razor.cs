@@ -9,17 +9,21 @@ public partial class Team
     public string TeamId { get; set; } = string.Empty;
 
     private ProjectDto _project = default!;
+    private SchedulerJobDto? _selectedJob;
     private StringNumber _curTab = 0;
     private Dictionary<StringNumber, string> NavTab => new Dictionary<StringNumber, string>() { { 0, T("Job") }, { 1, T("Task") } };
-
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        return base.OnAfterRenderAsync(firstRender);
-    }
 
     public Task OnProjectChangedAsync(ProjectDto project)
     {
         _project = project;
+        _curTab = 0;
+        return Task.CompletedTask;
+    }
+
+    public Task HandleJobSelect(SchedulerJobDto job)
+    {
+        _selectedJob = job;
+        _curTab = 1;
         return Task.CompletedTask;
     }
 }

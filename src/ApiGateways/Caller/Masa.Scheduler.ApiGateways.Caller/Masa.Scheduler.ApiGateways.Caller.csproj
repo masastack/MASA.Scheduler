@@ -11,6 +11,6 @@
   </ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\Contracts\MASA.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
+	  <ProjectReference Include="..\..\..\Contracts\Masa.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
 	</ItemGroup>
 </Project>

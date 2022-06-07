@@ -6,9 +6,4 @@ namespace Masa.Scheduler.Contracts.Server.Model;
 public class WorkerModel : BaseServiceModel
 {
     public int CurrentTaskRunCount { get; set; }
-
-    public string GetWorkerHost()
-    {
-        return GetServiceUrl(false);
-    }
 }

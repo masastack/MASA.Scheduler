@@ -89,3 +89,6 @@ global using System.Text.Json.Serialization;
 global using Masa.Scheduler.Services.Server.Domain.Managers.Servers.Data;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Managers;
 global using System.Collections.Concurrent;
+global using Microsoft.AspNetCore.SignalR;
+global using Masa.Scheduler.Services.Server.Infrastructure.SignalR.Hubs;
+global using Masa.Scheduler.Services.Server.Infrastructure.SignalR;

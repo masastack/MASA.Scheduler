@@ -8,4 +8,5 @@ public class ConstStrings
     public const string SCHEDULER_WORKER_MANAGER_API = "/api/scheduler-worker-manager";
     public const string SCHEDULER_SERVER_MANAGER_API = "/api/scheduler-server-manager";
     public const string PUB_SUB_NAME = "pubsub";
+    public const string GLOBAL_GROUP = "Global";
 }

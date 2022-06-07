@@ -66,6 +66,9 @@ public abstract class ProCompontentBase : BDomComponentBase
     [Inject]
     public IPopupService PopupService { get; set; } = default!;
 
+    [Inject]
+    public MasaSignalRClient MasaSignalRClient { get; set; } = default!;
+
     public List<KeyValuePair<string, TEnum>> GetEnumMap<TEnum>() where TEnum : struct, Enum
     {
         return Enum.GetValues<TEnum>().Select(e => new KeyValuePair<string, TEnum>(e.ToString(), e)).ToList();
@@ -109,5 +112,26 @@ public abstract class ProCompontentBase : BDomComponentBase
     public void OpenErrorMessage(string message)
     {
         PopupService.AlertAsync(message, AlertTypes.Error);
+    }
+
+    protected string GetRunTimeDescription(double runTime)
+    {
+        if (runTime < 0)
+        {
+            return "--";
+        }
+
+        var min = ((int)runTime) / 60;
+
+        var second = runTime % 60;
+
+        if (min > 0)
+        {
+            return $"{min}m {second:0.##}s";
+        }
+        else
+        {
+            return $"{second:0.##}s";
+        }
     }
 }

@@ -23,13 +23,13 @@ services:
     image: ${DOCKER_REGISTRY-}masaschedulerserver
     build:
       context: .
-      dockerfile: src/Services/Masa.Scheduler.Service.Server/Dockerfile
+      dockerfile: src/Services/Masa.Scheduler.Services.Server/Dockerfile
 
   masa.scheduler.service.worker:
     image: ${DOCKER_REGISTRY-}masaschedulerworker
     build:
       context: .
-      dockerfile: src/Services/Masa.Scheduler.Service.Worker/Dockerfile
+      dockerfile: src/Services/Masa.Scheduler.Services.Worker/Dockerfile
 
   dapr-placement:
     image: "daprio/dapr:1.5.1"

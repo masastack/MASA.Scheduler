@@ -23,3 +23,4 @@ global using Masa.Scheduler.Contracts.Server.Infrastructure.IntegrationEvents;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Consts;
 global using Microsoft.Extensions.Logging;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Utils;
+global using Microsoft.AspNetCore.SignalR.Client;

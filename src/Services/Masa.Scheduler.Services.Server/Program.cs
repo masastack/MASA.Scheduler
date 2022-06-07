@@ -22,6 +22,7 @@ builder.Services.AddPmClient(builder.Configuration.GetValue<string>("PmClient:Ur
 builder.Services.AddMapping();
 builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
+builder.Services.AddMasaSignalR();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -96,6 +97,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var context = serviceScope.ServiceProvider.GetRequiredService<SchedulerDbContext>();
+    context.Database.Migrate();
+}
+
 app.UseRouting();
 
 app.UseAuthentication();
@@ -105,6 +113,7 @@ app.UseCloudEvents();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapSubscribeHandler();
+    endpoints.MapHub<NotificationsHub>("/server-hub/notifications");
 });
 app.UseHttpsRedirection();
 

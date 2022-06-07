@@ -9,6 +9,8 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/Web/Masa.Scheduler.Web.Admin.Server/Masa.Scheduler.Web.Admin.Server.csproj", "src/Web/Masa.Scheduler.Web.Admin.Server/"]
 COPY ["src/Web/Masa.Scheduler.Web.Admin/Masa.Scheduler.Web.Admin.csproj", "src/Web/Masa.Scheduler.Web.Admin/"]
+COPY ["src/ApiGateways/Caller/Masa.Scheduler.ApiGateways.Caller/Masa.Scheduler.ApiGateways.Caller.csproj", "src/ApiGateways/Caller/Masa.Scheduler.ApiGateways.Caller/"]
+COPY ["src/Contracts/Masa.Scheduler.Contracts.Server/Masa.Scheduler.Contracts.Server.csproj", "src/Contracts/Masa.Scheduler.Contracts.Server/"]
 RUN dotnet restore "src/Web/Masa.Scheduler.Web.Admin.Server/Masa.Scheduler.Web.Admin.Server.csproj"
 COPY . .
 WORKDIR "/src/src/Web/Masa.Scheduler.Web.Admin.Server"

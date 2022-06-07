@@ -59,5 +59,6 @@
   "PreviousStep": "Previous Step",
   "BasicInformation": "Basic Information",
   "IsAlertException": "Is Alert Exception",
-  "Job.Update": "Update Job"
+  "Job.Update": "Update Job",
+  "PleaseSelectJobType": "Please select job type"
 }

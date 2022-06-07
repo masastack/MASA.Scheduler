@@ -8,4 +8,6 @@ public class TaskRunModel
     public Guid TaskId { get; set; }
 
     public SchedulerJobDto Job { get; set; } = default!;
+
+    public string ServiceId { get; set; } = string.Empty;
 }

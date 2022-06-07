@@ -27,9 +27,12 @@ public partial class JobModal
         }
         set
         {
-            _model = value;
+            if(_model.Id != value.Id || _model.BelongProjectId != value.BelongProjectId)
+            {
+                _model = value;
 
-            OnModelChange();
+                OnModelChange();
+            }
         }
     }
 
@@ -46,7 +49,7 @@ public partial class JobModal
 
     private bool _visible;
 
-    private SchedulerJobDto _model = default!;
+    private SchedulerJobDto _model = new();
 
     private MForm? Form { get; set; }
 
@@ -95,27 +98,11 @@ public partial class JobModal
         return Task.CompletedTask;
     }
 
-    private Task CheckJobTypeSelect()
-    {
-        if(Model.JobType == 0)
-        {
-            _requireCard = true;
-
-            OpenErrorMessage(T("JobType") + T("IsRequired"));
-        }
-        else
-        {
-            _requireCard = false;
-            _step = 2;
-        }
-
-        return Task.CompletedTask;
-    }
-
     private Task SelectJobType(JobTypes jobType)
     {
         Model.JobType = jobType;
         _requireCard = false;
+        _step++;
         return Task.CompletedTask;
     }
 
@@ -171,7 +158,7 @@ public partial class JobModal
                     Data = Model
                 };
 
-                await SchedulerServerCaller.JobService.AddAsync(request);
+                await SchedulerServerCaller.SchedulerJobService.AddAsync(request);
 
                 OpenSuccessMessage("Add job success");
             }
@@ -182,7 +169,7 @@ public partial class JobModal
                     Data = Model
                 };
 
-                await SchedulerServerCaller.JobService.UpdateAsync(request);
+                await SchedulerServerCaller.SchedulerJobService.UpdateAsync(request);
 
                 OpenSuccessMessage("Update job success");
             }

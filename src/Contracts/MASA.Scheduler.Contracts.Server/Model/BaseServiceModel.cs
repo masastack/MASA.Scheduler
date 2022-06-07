@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Contracts.Server.Model;
 
 public class BaseServiceModel
 {
-    public Guid ServiceId { get; set; }
+    public string ServiceId { get; set; } = string.Empty;
 
     public string HttpHost { get; set; } = string.Empty;
 
@@ -23,13 +23,11 @@ public class BaseServiceModel
 
     public string HeartbeatApi { get; set; } = string.Empty;
 
-    public HttpClient CallerClient { get; set; } = default!;
-
-    public string GetServiceUrl(bool containsScheme = true)
+    public string GetServiceUrl()
     {
         if (!string.IsNullOrWhiteSpace(HttpsHost))
         {
-            var scheme = containsScheme ? "https://" : "";
+            var scheme = "https://";
 
             if(HttpsPort == 443)
             {
@@ -40,7 +38,7 @@ public class BaseServiceModel
         }
         else if (!string.IsNullOrWhiteSpace(HttpHost))
         {
-            var scheme = containsScheme ? "http://" : "";
+            var scheme = "http://";
 
             if(HttpPort == 80)
             {

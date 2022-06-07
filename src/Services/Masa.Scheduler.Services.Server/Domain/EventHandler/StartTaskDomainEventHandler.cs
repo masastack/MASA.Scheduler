@@ -39,32 +39,21 @@ public class StartTaskDomainEventHandler
             throw new UserFriendlyException($"Scheduler Task not found, Id: {@event.Request.TaskId}");
         }
 
-        if (task.TaskStatus == TaskRunStatus.Running)
-        {
-            throw new UserFriendlyException($"This task is running now, cannot run again");
-        }
-
         if (task.Job is null)
         {
             throw new UserFriendlyException("SchedulerJob cannot null");
         }
 
-        WorkerModel workerModel;
-
-        if (task.Job.RoutingStrategy == RoutingStrategyTypes.Specified)
+        if (task.TaskStatus == TaskRunStatus.Running)
         {
-            workerModel = await _serverManager.GetWorker(task.Job.SpecifiedWorkerHost);
-        }
-        else
-        {
-            workerModel = await _serverManager.GetWorker(task.Job.RoutingStrategy);
+            await _serverManager.StopTask(task.Id, task.WorkerHost);
         }
 
-        await _serverManager.TaskEnqueue(task, workerModel);
-
-        task.TaskSchedule(workerModel.GetWorkerHost(), @event.Request.OperatorId);
-        //task.TaskStart();
+        task.TaskSchedule(@event.Request.OperatorId);
 
         await _schedulerTaskRepository.UpdateAsync(task);
+        await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
+
+        await _serverManager.TaskEnqueue(task);
     }
 }

@@ -48,8 +48,8 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <ProjectReference Include="..\..\ApiGateways\Caller\MASA.Scheduler.ApiGateways.Caller\Masa.Scheduler.ApiGateways.Caller.csproj" />
-	  <ProjectReference Include="..\..\Contracts\MASA.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
+	  <ProjectReference Include="..\..\ApiGateways\Caller\Masa.Scheduler.ApiGateways.Caller\Masa.Scheduler.ApiGateways.Caller.csproj" />
+	  <ProjectReference Include="..\..\Contracts\Masa.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
 	</ItemGroup>
 	
 	<ItemGroup>

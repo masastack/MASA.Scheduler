@@ -39,10 +39,17 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
         OperatorId = operatorId;
     }
 
-    public void TaskSchedule(string workerHost, Guid operatorId)
+    public void TaskSchedule(Guid operatorId)
     {
         SchedulerTime = DateTimeOffset.Now;
         OperatorId = operatorId;
+        TaskStatus = TaskRunStatus.Running;
+        TaskRunStartTime = DateTimeOffset.MinValue;
+        TaskRunEndTime = DateTimeOffset.MinValue;
+    }
+
+    public void SetWorkerHost(string workerHost)
+    {
         WorkerHost = workerHost;
     }
 

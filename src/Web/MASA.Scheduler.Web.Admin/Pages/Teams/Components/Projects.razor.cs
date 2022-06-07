@@ -5,7 +5,23 @@ namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 public partial class Projects
 {
     [Parameter]
-    public Guid TeamId { get; set; }
+    public Guid? TeamId
+    {
+        get
+        {
+            return _teamId;
+
+
+        }
+        set 
+        { 
+            if(_teamId != value)
+            {
+                _teamId = value;
+                OnTeamChangeAsync();
+            }
+        }
+    }
 
     [Parameter]
     public EventCallback<ProjectDto> OnProjectChanged { get; set; }
@@ -13,7 +29,7 @@ public partial class Projects
     private string _projectName = string.Empty;
     private List<ProjectDto> _projects = new();
     private StringNumber _selectedProjectId = null!;
-    private Guid? prevTeamId;
+    private Guid? _teamId = null;
 
     public StringNumber SelectedProjectId
     {
@@ -37,20 +53,31 @@ public partial class Projects
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private Task OnTeamChangeAsync()
     {
-        if (prevTeamId != TeamId)
-        {
-            await InitDataAsync();
-            prevTeamId = TeamId;
-        }
+        return GetProjectList();
     }
 
-    private async Task InitDataAsync()
+    private async Task GetProjectList()
     {
-        var response = await SchedulerServerCaller.PMService.GetProjectListAsync(TeamId);
+        if(_teamId == null)
+        {
+            _projects = new();
+            return;
+        }
+
+        var response = await SchedulerServerCaller.PMService.GetProjectListAsync(_teamId.Value);
         _projects = response.Data;
-        SelectedProjectId = SelectedProjectId == 0 && _projects.Any() ? _projects.FirstOrDefault()!.Id : SelectedProjectId;
+
+        if (_projects.Any())
+        {
+            SelectedProjectId = _projects.FirstOrDefault()!.Id;
+        }
+        else
+        {
+            SelectedProjectId = 0;
+        }
+
         StateHasChanged();
     }
 }

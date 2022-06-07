@@ -1,12 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Humanizer;
-using System.Globalization;
-
 namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
-public partial class Jobs : ProCompontentBase
+public partial class SchedulerJobs : ProCompontentBase
 {
     [Parameter]
     public ProjectDto? Project
@@ -17,31 +14,73 @@ public partial class Jobs : ProCompontentBase
         }
         set
         {
-            _project = value;
+            if (_project?.Id != value?.Id)
+            {
+                _project = value;
 
-            OnProjectChanged();
+                OnQueryDataChanged();
+            }
         }
     }
 
-    private ProjectDto? _project = default!;
+    [Parameter]
+    public EventCallback<SchedulerJobDto> OnJobSelect { get; set; }
+
+    private ProjectDto? _project = default;
 
     private TaskRunStatus _queryStatus;
+
+    private Task QueryJobNameChanged(string queryJobName)
+    {
+        if (_queryJobName != queryJobName)
+        {
+            _queryJobName = queryJobName;
+
+            return OnQueryDataChanged();
+        }
+
+        return Task.CompletedTask;
+    }
 
     private string _queryJobName = string.Empty;
 
     private JobQueryTimeTypes _queryTimeType;
 
+    private Task QueryStartTimeChanged(DateTime? queryStartTime)
+    {
+        if (_queryStartTime != queryStartTime)
+        {
+            _queryStartTime = queryStartTime;
+
+            return OnQueryDataChanged();
+        }
+
+        return Task.CompletedTask;
+    }
+
     private DateTime? _queryStartTime;
+
+    private Task QueryEndTimeChanged(DateTime? queryEndTime)
+    {
+        if (_queryEndTime != queryEndTime)
+        {
+            _queryEndTime = queryEndTime;
+
+            return OnQueryDataChanged();
+        }
+
+        return Task.CompletedTask;
+    }
 
     private DateTime? _queryEndTime;
 
     private bool _showFilter;
 
-    private JobCreateTypes _jobCreateType;
+    private JobCreateTypes _jobCreateType = JobCreateTypes.Manual;
 
     private int _page = 1;
 
-    private int _pageSize  = 10;
+    private int _pageSize = 10;
 
     private long _total;
 
@@ -57,12 +96,127 @@ public partial class Jobs : ProCompontentBase
 
     private SchedulerJobDto modalModel = new();
 
+    private List<KeyValuePair<string, TaskRunStatus>> _queryStatusList = new();
+
     public List<KeyValuePair<string, JobQueryTimeTypes>> JobQueryTimeTypes { get; set; } = new();
+    public TaskRunStatus QueryStatus
+    {
+        get => _queryStatus;
+        set
+        {
+            if (_queryStatus != value)
+            {
+                _queryStatus = value;
+                OnQueryDataChanged();
+            }
+
+        }
+    }
+
+    public string QueryJobName
+    {
+        get => _queryJobName;
+        set
+        {
+            if (_queryJobName != value)
+            {
+                _queryJobName = value;
+                OnQueryDataChanged();
+            }
+
+        }
+    }
+
+    public DateTime? QueryStartTime
+    {
+        get => _queryStartTime; 
+        set
+        {
+            if (_queryStartTime != value)
+            {
+                _queryStartTime = value;
+                OnQueryDataChanged();
+            }
+        }
+    }
+
+    public DateTime? QueryEndTime
+    {
+        get => _queryEndTime;
+        set
+        {
+            if (_queryEndTime != value)
+            {
+                _queryEndTime = value;
+                OnQueryDataChanged();
+            }
+        }
+    }
+
+    public int Page
+    {
+        get => _page;
+        set
+        {
+            if (_page != value)
+            {
+                _page = value;
+                OnQueryDataChanged();
+            }
+        }
+    }
+
+    public int PageSize
+    {
+        get => _pageSize;
+        set
+        {
+            if (_pageSize != value)
+            {
+                _pageSize = value;
+                OnQueryDataChanged();
+            }
+        }
+    }
+
+    public JobTypes QueryJobType
+    {
+        get => _queryJobType;
+        set
+        {
+            if (_queryJobType != value)
+            {
+                _queryJobType = value;
+                OnQueryDataChanged();
+            }
+        }
+    }
+
+    public string QueryOrigin
+    {
+        get => _queryOrigin;
+        set
+        {
+            if (_queryOrigin != value)
+            {
+                _queryOrigin = value;
+                OnQueryDataChanged();
+            }
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
+        await MasaSignalRClient.HubConnectionBuilder();
+
+        MasaSignalRClient.HubConnection?.On(SignalRMethodConsts.GET_NOTIFICATION, async () =>
+        {
+            await GetProjectJobs();
+        });
+
         JobQueryTimeTypes = GetEnumMap<JobQueryTimeTypes>();
-        _jobCreateType = JobCreateTypes.Manual;
+
+        _queryStatusList = GetEnumMap<TaskRunStatus>();
 
         await base.OnInitializedAsync();
     }
@@ -95,11 +249,14 @@ public partial class Jobs : ProCompontentBase
         return Task.CompletedTask;
     }
 
-    private async Task SwitchJobOriginType(JobCreateTypes jobOriginTypes)
+    private async Task SwitchJobCreateType(JobCreateTypes jobCreateTypes)
     {
-        _jobCreateType = jobOriginTypes;
+        if(_jobCreateType != jobCreateTypes)
+        {
+            _jobCreateType = jobCreateTypes;
 
-        await GetProjectJobs();
+            await GetProjectJobs();
+        }
     }
 
     public Task ShowFilter()
@@ -109,8 +266,9 @@ public partial class Jobs : ProCompontentBase
         return Task.CompletedTask;
     }
 
-    public Task OnProjectChanged()
+    public Task OnQueryDataChanged()
     {
+        Console.WriteLine("OnQueryDataChange Invoke");
         return GetProjectJobs();
     }
 
@@ -118,25 +276,27 @@ public partial class Jobs : ProCompontentBase
     {
         if (Project == null)
         {
+            _jobs = new();
+            _total = 0;
             return;
         }
 
         var request = new SchedulerJobListRequest()
         {
-            FilterStatus = _queryStatus,
+            FilterStatus = QueryStatus,
             IsCreatedByManual = _jobCreateType == JobCreateTypes.Manual,
-            JobName = _queryJobName,
-            JobType = _queryJobType,
-            Origin = _queryOrigin,
-            Page = _page,
-            PageSize = _pageSize,
-            QueryEndTime = _queryEndTime,
-            QueryStartTime = _queryStartTime,
+            JobName = QueryJobName,
+            JobType = QueryJobType,
+            Origin = QueryOrigin,
+            Page = Page,
+            PageSize = PageSize,
+            QueryEndTime = QueryEndTime,
+            QueryStartTime = QueryStartTime,
             QueryTimeType = _queryTimeType,
             ProjectId = Project.Id,
         };
 
-        var jobListResponse = await SchedulerServerCaller.JobService.GetListAsync(request);
+        var jobListResponse = await SchedulerServerCaller.SchedulerJobService.GetListAsync(request);
 
         _total = jobListResponse.Total;
 
@@ -205,7 +365,7 @@ public partial class Jobs : ProCompontentBase
             case TaskRunStatus.Idle:
                 return T("Idle");
             case TaskRunStatus.Running:
-                var runTime =(int) (DateTimeOffset.Now - job.LastRunStartTime).TotalSeconds;
+                var runTime = (DateTimeOffset.Now - job.LastRunStartTime).TotalSeconds;
                 return T("AlreadyRun") + GetRunTimeDescription(runTime);
             case TaskRunStatus.Success:
             case TaskRunStatus.Failure:
@@ -217,22 +377,6 @@ public partial class Jobs : ProCompontentBase
         return "";
     }
 
-    private string GetRunTimeDescription(int runTime)
-    {
-        var min = runTime / 60;
-
-        var second = runTime % 60;
-
-        if(min > 0)
-        {
-            return $"{min}m {second}s";
-        }
-        else
-        {
-            return $"{second}s";
-        }
-    }
-
     private async Task RunJob(SchedulerJobDto dto)
     {
         var startJobRequest = new StartSchedulerJobRequest()
@@ -242,7 +386,7 @@ public partial class Jobs : ProCompontentBase
             OperatorId = Guid.NewGuid()
         };
 
-        await SchedulerServerCaller.JobService.StartJobAsync(startJobRequest);
+        await SchedulerServerCaller.SchedulerJobService.StartJobAsync(startJobRequest);
 
         await PopupService.ToastSuccessAsync("Request success");
 
@@ -251,6 +395,12 @@ public partial class Jobs : ProCompontentBase
 
     private Task AddJob()
     {
+        if(Project == null)
+        {
+            PopupService.ToastAsync("Project is null", AlertTypes.Warning);
+            return Task.CompletedTask;
+        }
+
         modalModel = new();
         modalModel.BelongProjectId = Project!.Id;
         modalModel.BelongTeamId = Project!.TeamId;
@@ -276,7 +426,7 @@ public partial class Jobs : ProCompontentBase
             Enabled = false
         };
 
-        await SchedulerServerCaller.JobService.ChangeEnableStatusAsync(request);
+        await SchedulerServerCaller.SchedulerJobService.ChangeEnableStatusAsync(request);
 
         await PopupService.ToastSuccessAsync("Request success");
 
@@ -291,7 +441,7 @@ public partial class Jobs : ProCompontentBase
             Enabled = true
         };
 
-        await SchedulerServerCaller.JobService.ChangeEnableStatusAsync(request);
+        await SchedulerServerCaller.SchedulerJobService.ChangeEnableStatusAsync(request);
 
         await PopupService.ToastSuccessAsync("Request success");
 
@@ -301,5 +451,13 @@ public partial class Jobs : ProCompontentBase
     public async Task OnAfterSubmit()
     {
         await GetProjectJobs();
+    }
+
+    public async Task HandleJobSelect(SchedulerJobDto job)
+    {
+        if (OnJobSelect.HasDelegate)
+        {
+            await OnJobSelect.InvokeAsync(job);
+        }
     }
 }
