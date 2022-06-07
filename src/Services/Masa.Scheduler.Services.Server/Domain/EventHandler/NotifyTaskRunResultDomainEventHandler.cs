@@ -36,6 +36,9 @@ public class NotifyTaskRunResultDomainEventHandler
             case TaskRunStatus.Success:
                 message = "Task run success";
                 break;
+            case TaskRunStatus.Timeout:
+                message = "Task run timeout";
+                break;
             default:
                 message = "Task run failure";
                 break;
