@@ -18,8 +18,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         ILogger<SchedulerServerManager> logger,
         IHttpClientFactory httpClientFactory,
         IMapper mapper,
-        SchedulerServerManagerData data, IRepository<SchedulerTask> repository)
-        : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data)
+        SchedulerServerManagerData data, IRepository<SchedulerTask> repository, 
+        IHostApplicationLifetime hostApplicationLifetime)
+        : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _logger = logger;
         _mapper = mapper;

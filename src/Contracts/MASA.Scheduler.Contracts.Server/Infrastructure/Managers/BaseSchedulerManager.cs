@@ -13,6 +13,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
     private readonly IIntegrationEventBus _eventBus;
     protected readonly IHttpClientFactory _httpClientFactory;
     private readonly BaseSchedulerManagerData<T> _data;
+    private readonly IHostApplicationLifetime _hostApplicationLifetime;
 
     public BaseSchedulerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -20,7 +21,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         IServiceProvider serviceProvider,
         IIntegrationEventBus eventBus,
         IHttpClientFactory httpClientFactory,
-        BaseSchedulerManagerData<T> data)
+        BaseSchedulerManagerData<T> data, IHostApplicationLifetime hostApplicationLifetime)
     {
         _cacheClientFactory = cacheClientFactory;
         _redisCacheClient = redisCacheClient;
@@ -28,6 +29,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         _eventBus = eventBus;
         _httpClientFactory = httpClientFactory;
         _data = data;
+        _hostApplicationLifetime = hostApplicationLifetime;
     }
 
     protected IIntegrationEventBus EventBus => _eventBus;
@@ -44,21 +46,21 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     protected abstract ILogger<BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent>> Logger { get; }
 
-    public virtual async Task StartManagerAsync()
+    public virtual async Task StartManagerAsync(CancellationToken stoppingToken)
     {
+        if(! await WaitForAppStartup(_hostApplicationLifetime, stoppingToken))
+        {
+            return;
+        }
+
         var _server = ServiceProvider.GetService<IServer>()!;
 
         var addressFeature = _server.Features.Get<IServerAddressesFeature>()!;
 
-        while (true)
+        if (addressFeature.Addresses.Any())
         {
-            if (addressFeature.Addresses.Any())
-            {
-                _data.AddressList = addressFeature.Addresses.ToList();
-                await OnManagerStartAsync();
-                return;
-            }
-            await Task.Delay(500);
+            _data.AddressList = addressFeature.Addresses.ToList();
+            await OnManagerStartAsync();
         }
     }
 
@@ -285,5 +287,19 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         }
 
         return false;
+    }
+
+    static async Task<bool> WaitForAppStartup(IHostApplicationLifetime hostApplicationLifetime, CancellationToken stoppingToken)
+    {
+        var startedSource = new TaskCompletionSource();
+        var cancelledSource = new TaskCompletionSource();
+
+        await using var startedCancellationTokenRegistration =
+            hostApplicationLifetime.ApplicationStarted.Register(() => startedSource.SetResult());
+        await using var cancellationTokenRegistration = stoppingToken.Register(() => cancelledSource.SetResult());
+
+        Task completedTask = await Task.WhenAny(startedSource.Task, cancelledSource.Task).ConfigureAwait(false);
+
+        return completedTask == startedSource.Task;
     }
 }

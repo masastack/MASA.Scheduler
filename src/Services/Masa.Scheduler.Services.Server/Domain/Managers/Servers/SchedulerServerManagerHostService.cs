@@ -15,6 +15,6 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var schedulerWorkerManager = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<SchedulerServerManager>();
-        await schedulerWorkerManager.StartManagerAsync();
+        await schedulerWorkerManager.StartManagerAsync(stoppingToken);
     }
 }

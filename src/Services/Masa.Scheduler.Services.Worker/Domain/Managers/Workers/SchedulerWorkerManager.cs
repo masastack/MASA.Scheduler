@@ -9,7 +9,15 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     private readonly SchedulerWorkerManagerData _data;
 
-    public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory, IDistributedCacheClient redisCacheClient, IServiceProvider serviceProvider, IIntegrationEventBus eventBus, ILogger<SchedulerWorkerManager> logger, IHttpClientFactory httpClientFactory, SchedulerWorkerManagerData data) : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data)
+    public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory, 
+        IDistributedCacheClient redisCacheClient, 
+        IServiceProvider serviceProvider, 
+        IIntegrationEventBus eventBus, 
+        ILogger<SchedulerWorkerManager> logger, 
+        IHttpClientFactory httpClientFactory, 
+        SchedulerWorkerManagerData data,
+        IHostApplicationLifetime hostApplicationLifetime) 
+        : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _data = data;
         _logger = logger;
