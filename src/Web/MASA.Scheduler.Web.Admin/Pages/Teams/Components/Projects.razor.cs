@@ -10,8 +10,6 @@ public partial class Projects
         get
         {
             return _teamId;
-
-
         }
         set 
         { 

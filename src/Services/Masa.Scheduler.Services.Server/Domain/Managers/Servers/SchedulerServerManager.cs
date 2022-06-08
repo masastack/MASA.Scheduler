@@ -75,7 +75,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         var uri = new Uri(workerHost);
        
-        if(uri.Scheme == "http")
+        if(uri.Scheme == Uri.UriSchemeHttp)
         {
             workerModel = ServiceList.FirstOrDefault(w => w.HttpHost == uri.Host && w.HttpPort == uri.Port && w.Status == ServiceStatus.Normal);
         }

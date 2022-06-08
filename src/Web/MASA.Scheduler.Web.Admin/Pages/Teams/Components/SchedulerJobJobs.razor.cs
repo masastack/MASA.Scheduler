@@ -30,47 +30,13 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private TaskRunStatus _queryStatus;
 
-    private Task QueryJobNameChanged(string queryJobName)
-    {
-        if (_queryJobName != queryJobName)
-        {
-            _queryJobName = queryJobName;
-
-            return OnQueryDataChanged();
-        }
-
-        return Task.CompletedTask;
-    }
+    private TaskRunStatus _lastQueryStatus;
 
     private string _queryJobName = string.Empty;
 
     private JobQueryTimeTypes _queryTimeType;
 
-    private Task QueryStartTimeChanged(DateTime? queryStartTime)
-    {
-        if (_queryStartTime != queryStartTime)
-        {
-            _queryStartTime = queryStartTime;
-
-            return OnQueryDataChanged();
-        }
-
-        return Task.CompletedTask;
-    }
-
     private DateTime? _queryStartTime;
-
-    private Task QueryEndTimeChanged(DateTime? queryEndTime)
-    {
-        if (_queryEndTime != queryEndTime)
-        {
-            _queryEndTime = queryEndTime;
-
-            return OnQueryDataChanged();
-        }
-
-        return Task.CompletedTask;
-    }
 
     private DateTime? _queryEndTime;
 
@@ -105,7 +71,7 @@ public partial class SchedulerJobs : ProCompontentBase
         set
         {
             if (_queryStatus != value)
-            {
+            {   
                 _queryStatus = value;
                 OnQueryDataChanged();
             }
@@ -459,5 +425,17 @@ public partial class SchedulerJobs : ProCompontentBase
         {
             await OnJobSelect.InvokeAsync(job);
         }
+    }
+
+    private Task RadioGroupClickHandler()
+    {
+        if(_lastQueryStatus == QueryStatus)
+        {
+            QueryStatus = 0;
+        }
+
+        _lastQueryStatus = QueryStatus;
+
+        return Task.CompletedTask;
     }
 }

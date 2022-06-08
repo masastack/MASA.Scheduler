@@ -24,11 +24,17 @@ public partial class SchedulerTasks
     }
 
     private TaskRunStatus _queryStatus;
+    private TaskRunStatus _lastQueryStatus;
 
     private Task QueryStatusChanged(TaskRunStatus status)
     {
-        _queryStatus = status;
-        return OnQueryDataChanged();
+        if(_queryStatus != status)
+        {
+            _queryStatus = status;
+            return OnQueryDataChanged();
+        }
+
+        return Task.CompletedTask;
     }
 
     private JobQueryTimeTypes _queryTimeType;
@@ -37,16 +43,26 @@ public partial class SchedulerTasks
 
     private Task QueryStartTimeChanged(DateTime? queryStartTime)
     {
-        _queryStartTime = queryStartTime;
-        return OnQueryDataChanged();
+        if(_queryStartTime != queryStartTime)
+        {
+            _queryStartTime = queryStartTime;
+            return OnQueryDataChanged();
+        }
+
+        return Task.CompletedTask;
     }
 
     private DateTime? _queryEndTime;
 
     private Task QueryEndTimeChanged(DateTime? queryEndTime)
     {
-        _queryEndTime = queryEndTime;
-        return OnQueryDataChanged();
+        if(_queryEndTime != queryEndTime)
+        {
+            _queryEndTime = queryEndTime;
+            return OnQueryDataChanged();
+        }
+
+        return Task.CompletedTask;
     }
 
     public int Page
@@ -234,6 +250,18 @@ public partial class SchedulerTasks
         await SchedulerServerCaller.SchedulerTaskService.StopAsync(request);
 
         OpenSuccessMessage("Stop Task Success");
+    }
+
+    private Task RadioGroupClickHandler()
+    {
+        if (_lastQueryStatus == _queryStatus)
+        {
+            QueryStatusChanged(0);
+        }
+
+        _lastQueryStatus = _queryStatus;
+
+        return Task.CompletedTask;
     }
 }
 

@@ -14,7 +14,7 @@
     <div Class="env-toolbar rounded-4" Style="background:#fff;padding:0 12px;">
         <MRow NoGutters Align="AlignTypes.Center">
             <div class="d-flex" style="width:100%; padding-top:5px; padding-bottom:5px">
-                <MRadioGroup @bind-Value="QueryStatus" Row Style="margin-top:0px; padding-top:8px;">
+                <MRadioGroup @bind-Value="QueryStatus" Row Style="margin-top:0px; padding-top:8px;" OnClick="RadioGroupClickHandler">
                     @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
                     {
                         <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
@@ -46,7 +46,7 @@
         @if (_showFilter)
         {
             <MRow NoGutters Align="AlignTypes.Center" >
-                <MCol Cols="2">
+                @*<MCol Cols="2">
                     <MSelect @bind-Value="_queryTimeType" Label="@T("QueryTimeType")" HideDetails="@("auto")" Dense Outlined Clearable Items="JobQueryTimeTypes" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                     </MSelect>
                 </MCol>
@@ -59,7 +59,7 @@
                 <MCol Cols="2" Class="pa-2">
                     <PDateTimePicker @bind-Value="QueryEndTime" Disabled="_queryTimeType == 0" Outlined Dense Label="@T("EndDate")" style="margin-left:10px;">
                     </PDateTimePicker>
-                </MCol>
+                </MCol>*@
                 <MCol Cols="2" Class="pa-2">
                     <MSelect @bind-Value="QueryJobType" HideDetails="@("auto")" Placeholder="@T("JobType")" Outlined Dense Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                     </MSelect>

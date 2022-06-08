@@ -2,7 +2,7 @@
 
 <MCard Class="pa-6">
     <div class="d-flex mb-6">
-        <MRadioGroup Value="_queryStatus" TValue="TaskRunStatus" ValueChanged="QueryStatusChanged" Row Style="margin-top:0px; padding-top:8px;">
+        <MRadioGroup Value="_queryStatus" TValue="TaskRunStatus" ValueChanged="QueryStatusChanged" OnClick="RadioGroupClickHandler" Row Style="margin-top:0px; padding-top:8px;">
             @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
             {
                 <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">

@@ -29,20 +29,15 @@ public class NotifyTaskRunResultDomainEventHandler
         }
 
         TaskRunStatus status = @event.Request.Status;
-        string message;
 
-        switch (@event.Request.Status)
+        string message = @event.Request.Status switch
         {
-            case TaskRunStatus.Success:
-                message = "Task run success";
-                break;
-            case TaskRunStatus.Timeout:
-                message = "Task run timeout";
-                break;
-            default:
-                message = "Task run failure";
-                break;
-        }
+            //todo: i18n
+            TaskRunStatus.Success => "Task run success",
+            TaskRunStatus.Timeout => "Task run timeout",
+            TaskRunStatus.Failure => "Task run failure",
+            _ => ""
+        };
 
         if (task.TaskStatus == TaskRunStatus.Timeout && status == TaskRunStatus.Success)
         {

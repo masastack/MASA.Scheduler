@@ -27,7 +27,7 @@ public class BaseServiceModel
     {
         if (!string.IsNullOrWhiteSpace(HttpsHost))
         {
-            var scheme = "https://";
+            var scheme = Uri.UriSchemeHttps + Uri.SchemeDelimiter;
 
             if(HttpsPort == 443)
             {
@@ -38,7 +38,7 @@ public class BaseServiceModel
         }
         else if (!string.IsNullOrWhiteSpace(HttpHost))
         {
-            var scheme = "http://";
+            var scheme = Uri.UriSchemeHttp + Uri.SchemeDelimiter;
 
             if(HttpPort == 80)
             {

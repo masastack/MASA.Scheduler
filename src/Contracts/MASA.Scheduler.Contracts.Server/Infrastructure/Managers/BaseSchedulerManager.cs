@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Utils.Security.Cryptography;
-
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Managers;
 
 public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where T : BaseServiceModel, new() where TOnlineEvent : OnlineIntegrationEvent, new() where TMonitorEvent : OnlineIntegrationEvent, new()
@@ -138,9 +136,9 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             return;
         }
 
-        var httpAddress = _data.AddressList.FirstOrDefault(address => address.StartsWith("http://"));
+        var httpAddress = _data.AddressList.FirstOrDefault(address => address.StartsWith(Uri.UriSchemeHttp + Uri.SchemeDelimiter));
 
-        var httpsAddress = _data.AddressList.FirstOrDefault(address => address.StartsWith("https://"));
+        var httpsAddress = _data.AddressList.FirstOrDefault(address => address.StartsWith(Uri.UriSchemeHttps + Uri.SchemeDelimiter));
 
         var @event = new TOnlineEvent();
 
