@@ -7,14 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.0.1" />
-    <PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="0.4.0-rc.2" />
-    <PackageReference Include="Masa.Utils.Caching.Core" Version="0.4.0-rc1" />
-    <PackageReference Include="Masa.Utils.Security.Cryptography" Version="0.4.0" />
+    <PackageReference Include="FluentValidation" Version="11.0.2" />
+    <PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="0.4.0" />
+    <PackageReference Include="Masa.Utils.Caching.Core" Version="0.5.0-preview.1" />
+    <PackageReference Include="Masa.Utils.Extensions.Validations.FluentValidation" Version="0.5.0-preview.1" />
+    <PackageReference Include="Masa.Utils.Security.Cryptography" Version="0.5.0-preview.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="6.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.5" />
   </ItemGroup>
 
 </Project>

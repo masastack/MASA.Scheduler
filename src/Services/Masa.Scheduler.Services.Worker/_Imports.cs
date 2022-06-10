@@ -46,4 +46,3 @@ global using Microsoft.AspNetCore.Mvc;
 global using System.Collections.Concurrent;
 global using System.Net;
 global using System.Text;
-global using Masa.Scheduler.Contracts.Server.Infrastructure.Utils;

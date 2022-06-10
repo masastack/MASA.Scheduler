@@ -75,7 +75,6 @@ public partial class SchedulerJobs : ProCompontentBase
                 _queryStatus = value;
                 OnQueryDataChanged();
             }
-
         }
     }
 
@@ -89,7 +88,6 @@ public partial class SchedulerJobs : ProCompontentBase
                 _queryJobName = value;
                 OnQueryDataChanged();
             }
-
         }
     }
 

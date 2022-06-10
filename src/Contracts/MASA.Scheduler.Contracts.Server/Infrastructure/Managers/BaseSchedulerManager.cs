@@ -95,23 +95,22 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     protected async Task CheckHeartbeat(T item)
     {
+        var client = _httpClientFactory.CreateClient();
+        var requestUrl = item.GetHeartbeatApiUrl();
         try
         {
-            var client = _httpClientFactory.CreateClient();
-
-            _ = await client.GetAsync(item.GetServiceUrl() + item.HeartbeatApi);
+            _ = await client.GetAsync(requestUrl);
             item.Status = ServiceStatus.Normal;
             item.NotResponseCount = 0;
             item.LastResponseTime = DateTimeOffset.Now;
-            Logger.LogInformation($"Heartbeat request success, {item.GetServiceUrl()}");
+            Logger.LogInformation($"Heartbeat request success, RequestUrl: {requestUrl}");
         }
         catch (Exception ex)
         {
-            var message = $"Heartbeat request error, ServiceUrl: {item.GetServiceUrl()}";
+            var message = $"Heartbeat request error, RequestUrl: {requestUrl}";
             Logger.LogError(ex, message);
 
             item.NotResponseCount++;
-
             if (item.NotResponseCount >= 3)
             {
                 item.Status = ServiceStatus.Stopped;
@@ -144,10 +143,8 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
         var service = new T()
         {
-            HttpHost = await GetAddresssHost(httpAddress),
-            HttpsHost = await GetAddresssHost(httpsAddress),
-            HttpPort = GetAddressPort(httpAddress),
-            HttpsPort = GetAddressPort(httpsAddress),
+            HttpsServiceUrl = await GetServiceUrl(httpsAddress),
+            HttpServiceUrl = await GetServiceUrl(httpAddress),
             HeartbeatApi = HeartbeatApi,
             Status = ServiceStatus.Normal
         };
@@ -170,21 +167,19 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             return;
         }
 
-        if (string.IsNullOrEmpty(@event.OnlineService.HttpHost) || (@event.OnlineService.HttpPort == 0 && @event.OnlineService.HttpsPort == 0))
+        if (string.IsNullOrEmpty(@event.OnlineService.HttpsServiceUrl) || string.IsNullOrEmpty(@event.OnlineService.HttpServiceUrl))
         {
             return;
         }
 
-        var service = ServiceList.FirstOrDefault(w => w.HttpHost == @event.OnlineService.HttpHost && ((w.HttpPort != 0 && w.HttpPort == @event.OnlineService.HttpPort) || (w.HttpsPort != 0 && w.HttpsPort == @event.OnlineService.HttpsPort)));
+        var service = ServiceList.FirstOrDefault(p => p.HttpServiceUrl == @event.OnlineService.HttpServiceUrl || p.HttpsServiceUrl == @event.OnlineService.HttpsServiceUrl);
 
         if (service == null)
         {
             var model = new T()
             {
-                HttpHost = @event.OnlineService.HttpHost,
-                HttpsHost = @event.OnlineService.HttpsHost,
-                HttpPort = @event.OnlineService.HttpPort,
-                HttpsPort = @event.OnlineService.HttpsPort,
+                HttpServiceUrl = @event.OnlineService.HttpServiceUrl,
+                HttpsServiceUrl = @event.OnlineService.HttpsServiceUrl,
                 Status = ServiceStatus.Normal,
                 HeartbeatApi = @event.OnlineService.HeartbeatApi,
                 ServiceId = @event.OnlineService.ServiceId,
@@ -194,13 +189,11 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         }
         else
         {
-            service.HttpPort = @event.OnlineService.HttpPort;
-            service.HttpsPort = @event.OnlineService.HttpsPort;
-            service.HttpHost = @event.OnlineService.HttpHost;
-            service.HttpsHost = @event.OnlineService.HttpsHost;
+            service.HttpServiceUrl = @event.OnlineService.HttpServiceUrl;
+            service.HttpServiceUrl = @event.OnlineService.HttpServiceUrl;
             service.Status = ServiceStatus.Normal;
             service.HeartbeatApi = @event.OnlineService.HeartbeatApi;
-            service.ServiceId = MD5Utils.Encrypt(EncryptType.Md5, service.GetServiceUrl());
+            service.ServiceId = @event.OnlineService.ServiceId;
         }
 
         if (!@event.IsPong)
@@ -221,39 +214,6 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             {
                 return ip.ToString();
             }
-        }
-
-        return string.Empty;
-    }
-
-    private int GetAddressPort(string? address)
-    {
-        if (!string.IsNullOrEmpty(address))
-        {
-            var uri = new Uri(address);
-
-            return uri.Port;
-        }
-
-        return 0;
-    }
-
-    private async Task<string> GetAddresssHost(string? address)
-    {
-        if (!string.IsNullOrEmpty(address))
-        {
-            var uri = new Uri(address);
-
-            var currentIp = await GetCurrentIp();
-
-            var isSuccess = await TryRequestCurrentIp(uri.Scheme, currentIp, uri.Port);
-
-            if (isSuccess)
-            {
-                return currentIp;
-            }
-
-            return uri.Host;
         }
 
         return string.Empty;
@@ -299,5 +259,40 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         Task completedTask = await Task.WhenAny(startedSource.Task, cancelledSource.Task).ConfigureAwait(false);
 
         return completedTask == startedSource.Task;
+    }
+
+    public async Task<string> GetServiceUrl(string? address)
+    {
+        if (!string.IsNullOrWhiteSpace(address))
+        {
+            var uri = new Uri(address);
+
+            var host = string.Empty;
+
+            if(uri.Host != "localhost" && uri.Host != "127.0.0.1")
+            {
+                var currentIp = await GetCurrentIp();
+                if(await TryRequestCurrentIp(uri.Scheme, currentIp, uri.Port))
+                {
+                    host = currentIp;
+                }
+            }
+
+            if (string.IsNullOrEmpty(host))
+            {
+                host = uri.Host;
+            }
+
+            var scheme = uri.Scheme + Uri.SchemeDelimiter;
+
+            if (uri.IsDefaultPort)
+            {
+                return $"{scheme}{host}";
+            }
+
+            return $"{scheme}{host}:{uri.Port}";
+        }
+
+        return string.Empty;
     }
 }

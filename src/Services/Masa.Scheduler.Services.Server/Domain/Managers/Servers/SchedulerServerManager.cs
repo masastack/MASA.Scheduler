@@ -77,11 +77,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
        
         if(uri.Scheme == Uri.UriSchemeHttp)
         {
-            workerModel = ServiceList.FirstOrDefault(w => w.HttpHost == uri.Host && w.HttpPort == uri.Port && w.Status == ServiceStatus.Normal);
+            workerModel = ServiceList.FirstOrDefault(w => w.HttpServiceUrl == workerHost && w.Status == ServiceStatus.Normal);
         }
         else
         {
-            workerModel = ServiceList.FirstOrDefault(w => w.HttpsHost == uri.Host && w.HttpsPort == uri.Port && w.Status == ServiceStatus.Normal);
+            workerModel = ServiceList.FirstOrDefault(w => w.HttpsServiceUrl == workerHost && w.Status == ServiceStatus.Normal);
         }
         
         return Task.FromResult(workerModel);

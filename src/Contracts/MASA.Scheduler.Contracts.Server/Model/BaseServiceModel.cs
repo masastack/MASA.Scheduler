@@ -7,13 +7,9 @@ public class BaseServiceModel
 {
     public string ServiceId { get; set; } = string.Empty;
 
-    public string HttpHost { get; set; } = string.Empty;
+    public string? HttpServiceUrl { get; set; }
 
-    public string HttpsHost { get; set; } = string.Empty;
-
-    public int HttpPort { get; set; }
-
-    public int HttpsPort { get; set; }
+    public string? HttpsServiceUrl { get; set; }
 
     public DateTimeOffset LastResponseTime { get; set; }
 
@@ -25,29 +21,22 @@ public class BaseServiceModel
 
     public string GetServiceUrl()
     {
-        if (!string.IsNullOrWhiteSpace(HttpsHost))
+        if (!string.IsNullOrWhiteSpace(HttpsServiceUrl))
         {
-            var scheme = Uri.UriSchemeHttps + Uri.SchemeDelimiter;
-
-            if(HttpsPort == 443)
-            {
-                return $"{scheme}{HttpsHost}";
-            }
-
-            return $"{scheme}{HttpsHost}:{HttpsPort}";
+            return HttpsServiceUrl;
         }
-        else if (!string.IsNullOrWhiteSpace(HttpHost))
+        else if (!string.IsNullOrWhiteSpace(HttpServiceUrl))
         {
-            var scheme = Uri.UriSchemeHttp + Uri.SchemeDelimiter;
-
-            if(HttpPort == 80)
-            {
-                return $"{scheme}{HttpHost}";
-            }
-
-            return $"{scheme}{HttpHost}:{HttpPort}";
+            return HttpServiceUrl;
         }
 
         return string.Empty;
+    }
+
+    public string GetHeartbeatApiUrl()
+    {
+        var serviceUrl = GetServiceUrl();
+
+        return serviceUrl + HeartbeatApi;
     }
 }

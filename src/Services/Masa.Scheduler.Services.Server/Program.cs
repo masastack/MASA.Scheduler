@@ -98,8 +98,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MigrateDbContext<SchedulerDbContext>((context, services) => { });
-
 app.UseRouting();
 
 app.UseAuthentication();
