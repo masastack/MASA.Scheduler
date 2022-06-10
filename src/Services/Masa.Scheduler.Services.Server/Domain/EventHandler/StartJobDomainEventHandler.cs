@@ -8,12 +8,14 @@ public class StartJobDomainEventHandler
     private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly IEventBus _eventBus;
+    private readonly IHubContext<NotificationsHub> _hubContext;
 
-    public StartJobDomainEventHandler(IEventBus eventBus, ISchedulerJobRepository schedulerJobRepository, ISchedulerTaskRepository schedulerTaskRepository)
+    public StartJobDomainEventHandler(IEventBus eventBus, ISchedulerJobRepository schedulerJobRepository, ISchedulerTaskRepository schedulerTaskRepository, IHubContext<NotificationsHub> hubContext)
     {
         _eventBus = eventBus;
         _schedulerJobRepository = schedulerJobRepository;
         _schedulerTaskRepository = schedulerTaskRepository;
+        _hubContext = hubContext;
     }
 
     [EventHandler(1)]

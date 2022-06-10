@@ -9,7 +9,15 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     private readonly SchedulerWorkerManagerData _data;
 
-    public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory, IDistributedCacheClient redisCacheClient, IServiceProvider serviceProvider, IIntegrationEventBus eventBus, ILogger<SchedulerWorkerManager> logger, IHttpClientFactory httpClientFactory, SchedulerWorkerManagerData data) : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data)
+    public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory, 
+        IDistributedCacheClient redisCacheClient, 
+        IServiceProvider serviceProvider, 
+        IIntegrationEventBus eventBus, 
+        ILogger<SchedulerWorkerManager> logger, 
+        IHttpClientFactory httpClientFactory, 
+        SchedulerWorkerManagerData data,
+        IHostApplicationLifetime hostApplicationLifetime) 
+        : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _data = data;
         _logger = logger;
@@ -26,10 +34,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             throw new UserFriendlyException("Job cannot be null");
         }
 
-        if (@event.ServiceId == _data.ServiceId)
-        {
-            _data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId });
-        }
+        _data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId });
 
         return Task.CompletedTask;
     }
@@ -56,6 +61,12 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             {
                 try
                 {
+                    if (string.IsNullOrWhiteSpace(_data.ServiceId))
+                    {
+                        await Task.Delay(1000);
+                        continue;
+                    }
+
                     if (_data.TaskQueue.Count == 0)
                     {
                         await Task.Delay(1000);
@@ -64,6 +75,12 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
                     if (_data.TaskQueue.TryDequeue(out var task))
                     {
+                        if(task.ServiceId != _data.ServiceId)
+                        {
+                            Logger.LogWarning($"Get ServiceId: {task.ServiceId}, CurrentServiceId:{_data.ServiceId}");
+                            continue;
+                        }
+
                         if (_data.StopTask.Any(p => p == task.TaskId))
                         {
                             _data.StopTask.Remove(task.TaskId);
@@ -89,21 +106,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         cts.Token.Register(() =>
         {
-            if(_data.InternalCancellationTokenSources.TryGetValue(taskId, out cts))
-            {
-                cts.Cancel();
-            }
-
-            var @event = new NotifyTaskRunResultIntegrationEvent()
-            {
-                Status = TaskRunStatus.Stop,
-                TaskId = taskId
-            };
-
             _data.TaskCancellationTokenSources.Remove(taskId, out _);
-            _data.InternalCancellationTokenSources.Remove(taskId, out _);
-            EventBus.PublishAsync(@event);
-            EventBus.CommitAsync();
         });
 
         _data.TaskCancellationTokenSources.TryAdd(taskId, cts);
@@ -117,9 +120,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             case JobTypes.Http:
                 _ = Task.Run(async () =>
                 {
-                    var innerCts = new CancellationTokenSource();
-                    _data.InternalCancellationTokenSources.TryAdd(taskId, innerCts);
-                    await RunHttpTask(taskId, job, innerCts.Token);
+                    await RunHttpTask(taskId, job, cts.Token);
 
                 }, cts.Token);
                 break;
@@ -156,6 +157,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         var client = _httpClientFactory.CreateClient();
 
+        client.Timeout = TimeSpan.FromSeconds(jobDto.RunTimeoutSecond);
+
         AddHttpHeader(client, jobDto.HttpConfig.HttpHeaders);
 
         var requestMessage = new HttpRequestMessage()
@@ -165,54 +168,66 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             Content = ConvertHttpContent(jobDto.HttpConfig.HttpBody)
         };
 
-        var response = await client.SendAsync(requestMessage, token);
+        TaskRunStatus runSucess = TaskRunStatus.Failure;
 
-        var isSucess = false;
-
-        string? content;
-
-        switch (jobDto.HttpConfig.HttpVerifyType)
+        try
         {
-            case HttpVerifyTypes.StatusCode200:
-                if(response.StatusCode == HttpStatusCode.OK)
-                {
-                    isSucess = true;
-                }
-                break;
-            case HttpVerifyTypes.CustomStatusCode:
-                if(string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || response.StatusCode.ToString("d") == jobDto.HttpConfig.VerifyContent)
-                {
-                    isSucess = true;
-                }
-                break;
-            case HttpVerifyTypes.ContentContains:
-                content = await response.Content.ReadAsStringAsync();
-                if(string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || content.Contains(jobDto.HttpConfig.VerifyContent))
-                {
-                    isSucess = true;
-                }
-                break;
-            case HttpVerifyTypes.ContentUnContains:
-                content = await response.Content.ReadAsStringAsync();
-                if (string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || !content.Contains(jobDto.HttpConfig.VerifyContent))
-                {
-                    isSucess = true;
-                }
-                break;
-            default:
-                isSucess = response.IsSuccessStatusCode;
-                break;
+            var response = await client.SendAsync(requestMessage, token);
+
+            string? content;
+
+            switch (jobDto.HttpConfig.HttpVerifyType)
+            {
+                case HttpVerifyTypes.StatusCode200:
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        runSucess = TaskRunStatus.Success;
+                    }
+                    break;
+                case HttpVerifyTypes.CustomStatusCode:
+                    if (string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || response.StatusCode.ToString("d") == jobDto.HttpConfig.VerifyContent)
+                    {
+                        runSucess = TaskRunStatus.Success;
+                    }
+                    break;
+                case HttpVerifyTypes.ContentContains:
+                    content = await response.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || content.Contains(jobDto.HttpConfig.VerifyContent))
+                    {
+                        runSucess = TaskRunStatus.Success;
+                    }
+                    break;
+                case HttpVerifyTypes.ContentUnContains:
+                    content = await response.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || !content.Contains(jobDto.HttpConfig.VerifyContent))
+                    {
+                        runSucess = TaskRunStatus.Success;
+                    }
+                    break;
+                default:
+                    runSucess = response.IsSuccessStatusCode ? TaskRunStatus.Success : TaskRunStatus.Failure;
+                    break;
+            }
+        }
+        catch(TimeoutException ex)
+        {
+            runSucess = TaskRunStatus.Timeout;
+            Logger.LogError(ex, "HttpRequestTimeout");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "HttpRequestError");
         }
 
-        await NotifyTaskRunResult(isSucess, taskId);
+        await NotifyTaskRunResult(runSucess, taskId);
     }
 
-    private async Task NotifyTaskRunResult(bool isSuccess, Guid taskId)
+    private async Task NotifyTaskRunResult(TaskRunStatus runStatus, Guid taskId)
     {
         var @event = new NotifyTaskRunResultIntegrationEvent()
         {
             TaskId = taskId,
-            Status = isSuccess ? TaskRunStatus.Success : TaskRunStatus.Failure
+            Status = runStatus
         };
 
         await EventBus.PublishAsync(@event);

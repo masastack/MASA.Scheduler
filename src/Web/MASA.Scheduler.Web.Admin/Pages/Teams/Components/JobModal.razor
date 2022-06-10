@@ -7,8 +7,14 @@
                 <MStepperContent Step="1" Class="full-height">
                     <MCard Class="full-height">
                         <MCardText Class="full-height" Style="overflow-y:auto;">
-                            <MContainer Class="full-height pt-8">
-                                <MRow Class="py-8 full-height" Align="AlignTypes.Center" Justify="JustifyTypes.Center">
+                            <MContainer Class="full-height pt-2">
+                                <MRow>
+                                    <MCol Cols="3" Offset="1">
+                                        @T("PleaseSelectJobType")
+                                    </MCol>
+                                </MRow>
+                                
+                                <MRow Class="py-4" Style="height:90%" Align="AlignTypes.Center" Justify="JustifyTypes.Center">
                                     @foreach (var (key, value) in GetEnumMap<JobTypes>())
                                     {
                                         <MCol Cols="3" Class="full-height">
@@ -18,10 +24,6 @@
                                         </MCol>
                                     }
                                 </MRow>
-                                <div class="d-flex">
-                                    <MSpacer></MSpacer>
-                                    <MButton Color="primary" Class="small-button" OnClick="CheckJobTypeSelect"> @T("NextStep") </MButton>
-                                </div>
                             </MContainer>
                         </MCardText>
                     </MCard>
@@ -34,13 +36,21 @@
                                     <MTextField @bind-Value="@Model.Name" Class="mx-auto mt-0" Style="width:220px;" Label="@T("PleaseInputJobName")" HideDetails="@("auto")" />
                                 </div>
                             </div>
-                            <div class="mt-6 flex-height-auto overflow-y">
+                            <div class="mt-2" style="overflow-y: auto;overflow-x: hidden;max-height: 740px;">
                                 <div class="text-subtitle2 neutral-lighten-2--text">@T("BasicInformation")</div>
+                                 <MRow Class="mt-1">
+                                    @if (!_isAdd)
+                                    {
+                                        <MCol Cols="2">
+                                            <MSelect @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            </MSelect>
+                                        </MCol>
+                                    }
+                                </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
                                         <MTextField @bind-Value="Model.Owner" Label="@T("Owner")" HideDetails="@("auto")" Outlined />
                                     </MCol>
-                                    <MSpacer></MSpacer>
                                 </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
@@ -69,7 +79,7 @@
                                     @if (Model.RoutingStrategy == RoutingStrategyTypes.Specified)
                                     {
                                         <MCol Cols="2">
-                                            <MSelect @bind-Value="Model.SpecifiedWorkerHost" Label="Worker" HideDetails="@("auto")" Outlined Clearable Items="_workerList" ItemText="worker => worker.GetServiceUrl(false)" ItemValue="worker=> worker.GetServiceUrl(false)">
+                                            <MSelect @bind-Value="Model.SpecifiedWorkerHost" Label="Worker" HideDetails="@("auto")" Outlined Clearable Items="_workerList" ItemText="worker => worker.GetServiceUrl()" ItemValue="worker=> worker.GetServiceUrl()">
                                             </MSelect>
                                         </MCol>
                                     }
@@ -121,7 +131,7 @@
                                     </MCol>
                                 </MRow>
                             </div>
-                            <div class="d-flex mt-6">
+                            <div class="d-flex mt-2">
                                 <MSpacer></MSpacer>
                                 <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep" Text>@T("PreviousStep")</MButton>
                                 <MButton Color="primary" Class="small-button ml-6" OnClick="() => NextStep(context)">@T("NextStep")</MButton>

@@ -7,16 +7,17 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["src/Services/Masa.Scheduler.Worker/Masa.Scheduler.Worker.csproj", "src/Services/Masa.Scheduler.Worker/"]
-RUN dotnet restore "src/Services/Masa.Scheduler.Worker/Masa.Scheduler.Worker.csproj"
+COPY ["src/Services/Masa.Scheduler.Services.Worker/Masa.Scheduler.Services.Worker.csproj", "src/Services/Masa.Scheduler.Services.Worker/"]
+COPY ["src/Contracts/Masa.Scheduler.Contracts.Server/Masa.Scheduler.Contracts.Server.csproj", "src/Contracts/Masa.Scheduler.Contracts.Server/"]
+RUN dotnet restore "src/Services/Masa.Scheduler.Services.Worker/Masa.Scheduler.Services.Worker.csproj"
 COPY . .
-WORKDIR "/src/src/Services/Masa.Scheduler.Worker"
-RUN dotnet build "Masa.Scheduler.Worker.csproj" -c Release -o /app/build
+WORKDIR "/src/src/Services/Masa.Scheduler.Services.Worker"
+RUN dotnet build "Masa.Scheduler.Services.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Masa.Scheduler.Worker.csproj" -c Release -o /app/publish
+RUN dotnet publish "Masa.Scheduler.Services.Worker.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Masa.Scheduler.Worker.dll"]
+ENTRYPOINT ["dotnet", "Masa.Scheduler.Services.Worker.dll"]

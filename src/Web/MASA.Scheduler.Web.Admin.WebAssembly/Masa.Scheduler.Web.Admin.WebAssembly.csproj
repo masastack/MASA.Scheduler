@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MASA.Scheduler.Web.Admin\Masa.Scheduler.Web.Admin.csproj" />
+    <ProjectReference Include="..\Masa.Scheduler.Web.Admin\Masa.Scheduler.Web.Admin.csproj" />
   </ItemGroup>
 
 </Project>

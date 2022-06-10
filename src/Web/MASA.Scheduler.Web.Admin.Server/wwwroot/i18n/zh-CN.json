@@ -104,6 +104,18 @@
   "DaprServiceAppId": "Service应用",
   "MethodName": "Method Name",
   "Submit": "提交",
-  "JobType": "应用类型",
-  "IsRequired": "是必填的"
+  "JobType": "Job类型",
+  "IsRequired": "是必填的",
+  "SchedulerTime": "调度时间",
+  "TaskRunStartTime": "任务开始时间",
+  "TaskRunEndTime": "任务结束时间",
+  "TaskStatus": "任务状态",
+  "RunTime": "运行时长",
+  "RunCount": "运行次数",
+  "Origin": "来源",
+  "SchedulerTask.OperatorId": "运行用户",
+  "Action": "操作",
+  "PleaseSelectJobType": "请选择Job类型",
+  "NotRunning": "未运行",
+  "QueryTimeType":  "查询时间类型"
 }

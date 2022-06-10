@@ -5,13 +5,15 @@ namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerTasks;
 
 public class SchedulerTaskListRequest : PaginationRequest
 {
+    public Guid JobId { get; set; }
+
     public TaskRunStatus FilterStatus { get; set; }
 
     public JobQueryTimeTypes QueryTimeType { get; set; }
 
-    public DateTimeOffset? QueryStartTime { get; set; }
+    public DateTime? QueryStartTime { get; set; }
 
-    public DateTimeOffset? QueryEndTime { get; set; }
+    public DateTime? QueryEndTime { get; set; }
 
     public string Origin { get; set; } = string.Empty;
 }

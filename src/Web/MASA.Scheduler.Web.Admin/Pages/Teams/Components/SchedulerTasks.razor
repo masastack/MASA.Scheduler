@@ -1,0 +1,116 @@
+﻿@inherits ProCompontentBase
+
+<MCard Class="pa-6">
+    <div class="d-flex mb-6">
+        <MRadioGroup Value="_queryStatus" TValue="TaskRunStatus" ValueChanged="QueryStatusChanged" OnClick="RadioGroupClickHandler" Row Style="margin-top:0px; padding-top:8px;">
+            @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
+            {
+                <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
+                    <LabelContent>
+                        <span style="color: @ComputedStatusColor(pair.Value)"> @T(pair.Key) </span>
+                    </LabelContent>
+                </MRadio>
+            }
+        </MRadioGroup>
+        <MSpacer />
+        <MSelect @bind-Value="_queryTimeType" Label="@T("QueryTimeType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<JobQueryTimeTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+        </MSelect>
+        <PDateTimePicker Value="_queryStartTime" TValue="DateTime?" Disabled="_queryTimeType == 0" ValueChanged="QueryStartTimeChanged" Outlined Dense Label="@T("StartDate")" Clearable style="margin-left:10px;">
+        </PDateTimePicker>
+        <PDateTimePicker Value="_queryEndTime" TValue="DateTime?" Disabled="_queryTimeType == 0" ValueChanged="QueryEndTimeChanged" Outlined Dense Label="@T("EndDate")" Clearable style="margin-left:10px;">
+        </PDateTimePicker>
+        <MTextField Value="_queryOrigin" TValue="string" ValueChanged="QueryOriginChanged" Placeholder="@T("Origin")" HideDetails="@("auto")" Flat Dense Solo Outlined>
+        </MTextField>
+    </div>
+    <MDataTable Headers="Headers" Items="_tasks" TItem="SchedulerTaskDto" ItemsPerPage="_pageSize" HideDefaultFooter Class="user table-border-none">
+        <HeaderColContent Context="header">
+            <span class="text-btn">@header.Text</span>
+        </HeaderColContent>
+        <ItemColContent>
+            @switch (context.Header.Value)
+            {
+                case nameof(SchedulerTaskDto.SchedulerTime):
+                    <span class="text-body3 neutral--text">@context.Item.SchedulerTime.ToString(T("$DateTimeFormat"))</span>
+                    break;
+                case (nameof(SchedulerTaskDto.TaskRunStartTime)):
+                    <span class="text-body4 neutral-lighten-2--text">@(context.Item.TaskRunStartTime == DateTimeOffset.MinValue? "": context.Item.TaskRunStartTime.ToString(T("$DateTimeFormat")))</span>
+                    break;
+                case nameof(SchedulerTaskDto.TaskRunEndTime):
+                    <span class="text-body4 neutral-lighten-2--text">@(context.Item.TaskRunEndTime == DateTimeOffset.MinValue? "": context.Item.TaskRunEndTime.ToString(T("$DateTimeFormat")))</span>
+                    break;
+                case (nameof(SchedulerTaskDto.TaskStatus)):
+                    <span class="text-body4 neutral-lighten-2--text d-flex">
+                        <MButton Icon XSmall Style="cursor:default" Color="@ComputedStatusColor(context.Item.TaskStatus)">
+                            <MIcon>mdi-checkbox-blank-circle</MIcon>
+                        </MButton>
+                        <div style="padding-left:4px; color: @ComputedStatusColor(context.Item.TaskStatus)">
+                            @(context.Item.TaskStatus == 0? @T("NotRunning") : @T(context.Item.TaskStatus.ToString()))
+                        </div>
+                    </span>
+                    break;
+                case (nameof(SchedulerTaskDto.RunTime)):
+                    var runtime = GetRunTime(context.Item.TaskRunStartTime, context.Item.TaskRunEndTime);
+                    <span class="text-body4 neutral-lighten-2--text">@runtime</span>
+                    break;
+                case nameof(SchedulerTaskDto.RunCount):
+                    <span class="text-body4 neutral-lighten-2--text">@context.Item.RunCount</span>
+                    break;
+                case nameof(SchedulerTaskDto.Origin):
+                    <span class="text-body4 neutral-lighten-2--text">@context.Item.Origin</span>
+                    break;
+                case nameof(SchedulerTaskDto.OperatorId):
+                    <span class="text-body4 neutral-lighten-2--text">@context.Item.OperatorName</span>
+                    break;
+                case "Action":
+                    <MIcon Small Color="neutral-lighten-2">mdi-message-text</MIcon>
+                    <MIcon Small Color="neutral-lighten-2" Class="ml-2">mdi-message-text</MIcon>
+                    <MMenu Bottom Left Class="ml-2">
+                        <ActivatorContent Context="menuContext">
+                            <MButton Icon @attributes="@menuContext.Attrs" Width="24" Height="24" StopPropagation>
+                                <MIcon>mdi-dots-horizontal</MIcon>
+                            </MButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <MList>
+                                <MListItem Link OnClick="()=> StartTask(context.Item.Id)">
+                                    <MListItemContent>
+                                        <MListItemTitle>
+                                            重跑
+                                        </MListItemTitle>
+                                    </MListItemContent>
+                                </MListItem>
+                                @if (@context.Item.TaskStatus == TaskRunStatus.Running)
+                                {
+                                    <MListItem Link OnClick="()=> StopTask(context.Item.Id)">
+                                        <MListItemContent>
+                                            <MListItemTitle>
+                                                中断任务
+                                            </MListItemTitle>
+                                        </MListItemContent>
+                                    </MListItem>
+                                }
+                                else
+                                {
+                                    <MListItem Link OnClick="()=> DeleteTask(context.Item.Id)">
+                                        <MListItemContent>
+                                            <MListItemTitle>
+                                                删除
+                                            </MListItemTitle>
+                                        </MListItemContent>
+                                    </MListItem>
+                                }
+                            </MList>
+                        </ChildContent>
+                    </MMenu>
+                    break;
+                default:
+                    <span class="text-body3">@context.Value</span>
+                    break;
+            }
+        </ItemColContent>
+        <FooterContent>
+            <DataTableFooter Page="@Page" PageSize="@_pageSize" Total="@_total" Style="padding-top: 15px;">
+            </DataTableFooter>
+        </FooterContent>
+    </MDataTable>
+</MCard>

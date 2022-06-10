@@ -33,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Web.Admin.We
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{F17CC0A5-E77B-48A8-907C-90CB0020F869}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Contracts.Server", "src\Contracts\MASA.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj", "{DC9C8596-4BEE-4C45-87F5-24A1A33E7D4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Contracts.Server", "src\Contracts\Masa.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj", "{DC9C8596-4BEE-4C45-87F5-24A1A33E7D4C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Web.Admin", "src\Web\MASA.Scheduler.Web.Admin\Masa.Scheduler.Web.Admin.csproj", "{305FE577-BDE7-4EBA-95D5-1C8D4EA06453}"
 EndProject

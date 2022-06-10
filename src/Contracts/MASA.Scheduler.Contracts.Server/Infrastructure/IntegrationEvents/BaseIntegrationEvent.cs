@@ -5,5 +5,5 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.IntegrationEvents;
 
 public abstract record BaseIntegrationEvent : IntegrationEvent
 {
-    public Guid ServiceId { get; set; }
+    public string ServiceId { get; set; } = string.Empty;
 }

@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="0.4.0-rc1" />
+    <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="0.4.0" />
   </ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\Contracts\MASA.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
+	  <ProjectReference Include="..\..\..\Contracts\Masa.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
 	</ItemGroup>
 </Project>

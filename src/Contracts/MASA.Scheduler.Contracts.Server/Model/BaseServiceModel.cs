@@ -5,15 +5,11 @@ namespace Masa.Scheduler.Contracts.Server.Model;
 
 public class BaseServiceModel
 {
-    public Guid ServiceId { get; set; }
+    public string ServiceId { get; set; } = string.Empty;
 
-    public string HttpHost { get; set; } = string.Empty;
+    public string? HttpServiceUrl { get; set; }
 
-    public string HttpsHost { get; set; } = string.Empty;
-
-    public int HttpPort { get; set; }
-
-    public int HttpsPort { get; set; }
+    public string? HttpsServiceUrl { get; set; }
 
     public DateTimeOffset LastResponseTime { get; set; }
 
@@ -23,33 +19,24 @@ public class BaseServiceModel
 
     public string HeartbeatApi { get; set; } = string.Empty;
 
-    public HttpClient CallerClient { get; set; } = default!;
-
-    public string GetServiceUrl(bool containsScheme = true)
+    public string GetServiceUrl()
     {
-        if (!string.IsNullOrWhiteSpace(HttpsHost))
+        if (!string.IsNullOrWhiteSpace(HttpsServiceUrl))
         {
-            var scheme = containsScheme ? "https://" : "";
-
-            if(HttpsPort == 443)
-            {
-                return $"{scheme}{HttpsHost}";
-            }
-
-            return $"{scheme}{HttpsHost}:{HttpsPort}";
+            return HttpsServiceUrl;
         }
-        else if (!string.IsNullOrWhiteSpace(HttpHost))
+        else if (!string.IsNullOrWhiteSpace(HttpServiceUrl))
         {
-            var scheme = containsScheme ? "http://" : "";
-
-            if(HttpPort == 80)
-            {
-                return $"{scheme}{HttpHost}";
-            }
-
-            return $"{scheme}{HttpHost}:{HttpPort}";
+            return HttpServiceUrl;
         }
 
         return string.Empty;
+    }
+
+    public string GetHeartbeatApiUrl()
+    {
+        var serviceUrl = GetServiceUrl();
+
+        return serviceUrl + HeartbeatApi;
     }
 }

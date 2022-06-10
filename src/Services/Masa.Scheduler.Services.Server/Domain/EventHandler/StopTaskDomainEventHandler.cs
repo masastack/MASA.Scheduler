@@ -6,14 +6,18 @@ namespace Masa.Scheduler.Services.Server.Domain.EventHandler;
 public class StopTaskDomainEventHandler
 {
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
+    private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly IEventBus _eventBus;
     private readonly SchedulerServerManager _serverManager;
+    private readonly IHubContext<NotificationsHub> _hubContext;
 
-    public StopTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager)
+    public StopTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, IHubContext<NotificationsHub> hubContext, ISchedulerJobRepository schedulerJobRepository)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
         _serverManager = serverManager;
+        _hubContext = hubContext;
+        _schedulerJobRepository = schedulerJobRepository;
     }
 
     [EventHandler(1)]
@@ -36,7 +40,22 @@ public class StopTaskDomainEventHandler
         if (!@event.IsRestart)
         {
             task.TaskEnd(TaskRunStatus.Failure, $"User manual stop task, OperatorId: {@event.Request.OperatorId}");
+
             await _schedulerTaskRepository.UpdateAsync(task);
+
+            var job = await _schedulerJobRepository.FindAsync(j => j.Id == task.JobId);
+
+            if(job != null)
+            {
+                job.UpdateLastRunDetail(TaskRunStatus.Failure);
+                await _schedulerJobRepository.UpdateAsync(job);
+            }
+       
+            await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
+            await _schedulerTaskRepository.UnitOfWork.CommitAsync();
+
+            var groupClient = _hubContext.Clients.Group(ConstStrings.GLOBAL_GROUP);
+            await groupClient.SendAsync(SignalRMethodConsts.GET_NOTIFICATION);
         }
     }
 }

@@ -16,7 +16,7 @@ public class SchedulerTaskDto
 
     public TaskRunStatus TaskStatus { get; set; }
 
-    public DateTimeOffset SchedulerStartTime { get; set; }
+    public DateTimeOffset SchedulerTime { get; set; }
 
     public DateTimeOffset TaskRunStartTime { get; set; } = DateTimeOffset.MinValue;
 
@@ -31,4 +31,8 @@ public class SchedulerTaskDto
     public string Origin { get; set; } = string.Empty;
 
     public string WorkerHost { get; set; } = string.Empty;
+
+    public Guid OperatorId { get; set; }
+
+    public string OperatorName { get; set; } = String.Empty;
 }

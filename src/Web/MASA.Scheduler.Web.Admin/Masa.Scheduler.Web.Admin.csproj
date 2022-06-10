@@ -5,8 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
-
+	
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
@@ -21,11 +20,10 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\..\ApiGateways\Caller\MASA.Scheduler.ApiGateways.Caller\Masa.Scheduler.ApiGateways.Caller.csproj" />
+    <ProjectReference Include="..\..\ApiGateways\Caller\Masa.Scheduler.ApiGateways.Caller\Masa.Scheduler.ApiGateways.Caller.csproj" />
   </ItemGroup>
 	
   <ItemGroup>
     <Folder Include="Components\" />
   </ItemGroup>
-
 </Project>
