@@ -15,8 +15,6 @@ public class SchedulerWorkerManagerService : ServiceBase
         MapGet(Heartbeat);
         MapPost(StartTask);
         MapPost(StopTask);
-        MapGet(DockerId);
-        MapGet(CurrentAddress);
         _logger = logger;
     }
 
@@ -54,16 +52,5 @@ public class SchedulerWorkerManagerService : ServiceBase
     public async Task StopTask([FromServices] SchedulerWorkerManager workerManager, StopTaskIntegrationEvent @event)
     {
         await workerManager.StopTaskAsync(@event);
-    }
-
-    public IResult DockerId()
-    {
-        var hostname = Environment.GetEnvironmentVariable("HOSTNAME", EnvironmentVariableTarget.Process);
-        return Results.Ok(hostname);
-    }
-
-    public IResult CurrentAddress([FromServices] SchedulerWorkerManagerData data)
-    {
-        return Results.Ok(data.AddressList);
     }
 }

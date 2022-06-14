@@ -41,7 +41,7 @@ public class NavHelper
 
                 teamList.Data.ForEach(team =>
                 {
-                    teamChild.Add(new NavModel(childId, $"/team/{team.Id}", team.Avatar, team.Name, new NavModel[] { }));
+                    teamChild.Add(new NavModel(childId, $"/pages/team/{team.Id}", team.Avatar, team.Name, new NavModel[] { }));
                     childId++;
                 });
 

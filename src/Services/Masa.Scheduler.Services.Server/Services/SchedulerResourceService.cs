@@ -1,0 +1,48 @@
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+namespace Masa.Scheduler.Services.Server.Services;
+
+public class SchedulerResourceService : ServiceBase
+{
+    public SchedulerResourceService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_RESOURCE_API)
+    {
+        MapGet(ListAsync, string.Empty);
+        MapPost(AddAsync, string.Empty);
+        MapPut(UpdateAsync, string.Empty);
+        MapDelete(DeleteAsync, "{id}");
+    }
+
+    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] int jobAppId)
+    {
+        var request = new SchedulerResourceListRequest()
+        {
+            JobAppId = jobAppId
+        };
+
+        var query = new SchedulerResourceQuery(request);
+        await eventBus.PublishAsync(query);
+        return Results.Ok(query.Result);
+    }
+
+    public async Task<IResult> AddAsync(IEventBus eventBus, [FromBody] AddSchedulerResourceRequest requset)
+    {
+        var command = new AddSchedulerResourceCommand(requset);
+        await eventBus.PublishAsync(command);
+        return Results.Ok();
+    }
+
+    public async Task<IResult> UpdateAsync(IEventBus eventBus, [FromBody] UpdateSchedulerResourceRequest requset)
+    {
+        var command = new UpdateSchedulerResourceCommand(requset);
+        await eventBus.PublishAsync(command);
+        return Results.Ok();
+    }
+
+    public async Task<IResult> DeleteAsync(IEventBus eventBus, Guid id)
+    {
+        var command = new RemoveSchedulerResourceCommand(id);
+        await eventBus.PublishAsync(command);
+        return Results.Ok();
+    }
+}

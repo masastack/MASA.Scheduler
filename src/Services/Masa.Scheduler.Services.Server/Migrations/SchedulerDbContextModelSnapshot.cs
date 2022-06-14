@@ -238,6 +238,9 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTimeOffset>("UploadTime")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasMaxLength(20)

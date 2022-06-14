@@ -7,35 +7,9 @@
     ]
   },
   {
-    "Id": 27,
-    "Title": "Others",
-    "Icon": "mdi-dots-horizontal",
-    "Children": [
-      {
-        "Id": 28,
-        "Hide": true,
-        "Title": "Account Settings",
-        "Icon": "mdi-circle",
-        "Href": "pages/others/account-settings"
-      },
-      {
-        "Id": 29,
-        "Title": "500",
-        "Icon": "mdi-circle",
-        "Href": "pages/others/500"
-      },
-      {
-        "Id": 30,
-        "Title": "401",
-        "Icon": "mdi-circle",
-        "Href": "pages/others/401"
-      },
-      {
-        "Id": 31,
-        "Title": "404",
-        "Icon": "mdi-circle",
-        "Href": "pages/others/404"
-      }
-    ]
+    "Id": 2,
+    "Title": "ResourceFiles",
+    "Icon": "mdi-file-document-outline",
+    "Href": "pages/resource"
   }
 ]

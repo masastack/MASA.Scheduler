@@ -24,6 +24,22 @@ builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR();
 
+builder.Services.AddAliyunStorage(serviceProvider =>
+{
+    var daprClient = serviceProvider.GetRequiredService<DaprClient>();
+    var accessId = daprClient.GetSecretAsync("localsecretstore", "access_id").Result.First().Value;
+    var accessSecret = daprClient.GetSecretAsync("localsecretstore", "access_secret").Result.First().Value;
+    var endpoint = daprClient.GetSecretAsync("localsecretstore", "endpoint").Result.First().Value;
+    var roleArn = daprClient.GetSecretAsync("localsecretstore", "roleArn").Result.First().Value;
+    return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
+    {
+        Sts = new AliyunStsOptions()
+        {
+            RegionId = "cn-hangzhou"
+        }
+    };
+});
+
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter();

@@ -30,7 +30,7 @@ public class SchedulerJobService : ServiceBase
 
     public async Task DeleteAsync(Guid id)
     {
-        await DeleteAsync(string.Empty, id);
+        await DeleteAsync($"{id}");
     }
 
     public async Task ChangeEnableStatusAsync(ChangeEnabledStatusRequest request)

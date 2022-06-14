@@ -1218,3 +1218,7 @@ tr:hover {
 .m-stepper__wrapper {
     height: 100%;
 }
+
+.scheduler-list .m-list-group__header__prepend-icon{
+    margin-right: 5px !important;
+}

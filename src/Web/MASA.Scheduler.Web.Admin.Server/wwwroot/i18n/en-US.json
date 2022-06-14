@@ -60,5 +60,11 @@
   "BasicInformation": "Basic Information",
   "IsAlertException": "Is Alert Exception",
   "Job.Update": "Update Job",
-  "PleaseSelectJobType": "Please select job type"
+  "PleaseSelectJobType": "Please select job type",
+  "ResourceFiles": "Resouce Files",
+  "PleaseUploadFiles": "Please Upload files",
+  "AddResourceFiles": "Add resource files",
+  "Explain": "Explain",
+  "UploadFiles.Tips": "Only accept .zip, .dll files, the fiels max size is 100M",
+  "ResourceFileUploadDescription": "{0} upload resource file at {1}"
 }

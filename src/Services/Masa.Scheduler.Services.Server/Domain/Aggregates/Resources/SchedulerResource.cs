@@ -15,13 +15,16 @@ public class SchedulerResource : FullAggregateRoot<Guid, Guid>
 
     public int JobAppId { get; private set; }
 
-    public SchedulerResource(int jobAppId, string name, string description, string filePath, string version)
+    public DateTimeOffset UploadTime { get; private set; } = DateTimeOffset.MinValue;
+
+    public SchedulerResource(int jobAppId, string name, string description, string filePath, string version, DateTimeOffset uploadTime)
     {
         JobAppId = jobAppId;
         Name = name;
         Description = description;
         FilePath = filePath;
         Version = version;
+        UploadTime = uploadTime;
     }
 
     public void UpdateResouce(string name, string description, string version, string filePath)
