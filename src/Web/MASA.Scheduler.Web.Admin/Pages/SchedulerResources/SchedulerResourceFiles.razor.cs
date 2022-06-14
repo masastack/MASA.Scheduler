@@ -5,6 +5,10 @@ namespace Masa.Scheduler.Web.Admin.Pages.SchedulerResources;
 
 public partial class SchedulerResourceFiles
 {
+    private const string PROJECT_PREFIX = "Project_";
+
+    private const string APP_PREFIX = "App_";
+
     private StringNumber _selectedProjectId = null!;
 
     public StringNumber SelectedProjectId
@@ -74,10 +78,6 @@ public partial class SchedulerResourceFiles
     private List<SideBarItem> _projects = new();
 
     private List<SchedulerResourceDto> _resources = new();
-
-    private const string PROJECT_PREFIX = "Project_";
-
-    private const string APP_PREFIX = "App_";
 
     private string Color { get; set; } = "#4318FF";
 

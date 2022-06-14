@@ -20,7 +20,7 @@ public class SchedulerResourceService : ServiceBase
             JobAppId = jobAppId
         };
 
-        var query = new SchedulerResourceQuery(request);
+        var query = new SchedulerResourceListQuery(request);
         await eventBus.PublishAsync(query);
         return Results.Ok(query.Result);
     }

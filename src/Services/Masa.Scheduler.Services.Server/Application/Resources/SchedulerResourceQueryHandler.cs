@@ -15,7 +15,7 @@ public class SchedulerResourceQueryHandler
     }
 
     [EventHandler]
-    public async Task SchedulerResourceListQueryHandle(SchedulerResourceQuery query)
+    public async Task SchedulerResourceListQueryHandle(SchedulerResourceListQuery query)
     {
         var request = query.Request;
 

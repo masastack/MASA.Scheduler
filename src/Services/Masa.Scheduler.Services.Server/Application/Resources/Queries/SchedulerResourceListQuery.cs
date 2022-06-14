@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Resources.Queries;
 
-public record SchedulerResourceQuery(SchedulerResourceListRequest Request) : Query<SchedulerResourceListResponse>
+public record SchedulerResourceListQuery(SchedulerResourceListRequest Request) : Query<SchedulerResourceListResponse>
 {
-    public override SchedulerResourceListResponse Result { get; set; } = null!;
+    public override SchedulerResourceListResponse Result { get; set; } = new();
 }
