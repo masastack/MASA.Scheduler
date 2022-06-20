@@ -7,7 +7,7 @@ public class SchedulerServerCaller : HttpClientCallerBase
 {
     SchedulerJobService? _schedulerJobService;
     AuthService? _authService;
-    PMService? _pmService;
+    PmService? _pmService;
     SchedulerTaskService? _schedulerTaskService;
     SchedulerResourceService? _schedulerResourceService;
     OssService? _ossService;
@@ -16,7 +16,7 @@ public class SchedulerServerCaller : HttpClientCallerBase
 
     public AuthService AuthService => _authService ??= new(CallerProvider);
 
-    public PMService PMService => _pmService ??= new(CallerProvider);
+    public PmService PmService => _pmService ??= new(CallerProvider);
 
     public SchedulerTaskService SchedulerTaskService => _schedulerTaskService ??= new(CallerProvider);
 

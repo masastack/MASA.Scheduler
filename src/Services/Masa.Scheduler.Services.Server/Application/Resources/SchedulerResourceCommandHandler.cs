@@ -31,7 +31,7 @@ public class SchedulerResourceCommandHandler
 
         if (resource is null)
         {
-            throw new UserFriendlyException($"The current resource does not exist");
+            throw new UserFriendlyException("Current resource does not exist");
         }
 
         resource.UpdateResouce(resourceDto.Name, resourceDto.Description, resourceDto.Version, resourceDto.FilePath);

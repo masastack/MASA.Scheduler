@@ -128,7 +128,7 @@ public partial class SchedulerResourceFiles
     {
         try
         {
-            var response = await SchedulerServerCaller.PMService.GetProjectListAsync(null);
+            var response = await SchedulerServerCaller.PmService.GetProjectListAsync(null);
 
             foreach (var project in response.Data)
             {

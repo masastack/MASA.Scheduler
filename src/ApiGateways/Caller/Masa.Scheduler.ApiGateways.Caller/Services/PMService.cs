@@ -3,11 +3,11 @@
 
 namespace Masa.Scheduler.ApiGateways.Caller.Services;
 
-public class PMService: ServiceBase
+public class PmService: ServiceBase
 {
     protected override string BaseUrl { get; set; }
 
-    public PMService(ICallerProvider provider) : base(provider)
+    public PmService(ICallerProvider provider) : base(provider)
     {
         BaseUrl = "api/pm";
     }
