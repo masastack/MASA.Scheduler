@@ -6,4 +6,5 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Common;
 public class CacheKeys
 {
     public const string CURRENT_RUN_COUNT = nameof(CURRENT_RUN_COUNT);
+    public const string TASK_RETRY_COUNT = nameof(TASK_RETRY_COUNT);
 }

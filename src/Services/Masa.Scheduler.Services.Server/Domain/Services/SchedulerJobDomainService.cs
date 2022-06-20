@@ -18,4 +18,9 @@ public class SchedulerJobDomainService : DomainService
     {
         await EventBus.PublishAsync(new StartJobDomainEvent(request));
     }
+
+    public async Task RegisterCronJobAsync(RegisterCronJobRequest request)
+    {
+
+    }
 }

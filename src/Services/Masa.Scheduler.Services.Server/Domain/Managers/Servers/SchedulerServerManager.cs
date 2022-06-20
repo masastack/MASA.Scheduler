@@ -10,6 +10,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     private readonly SchedulerServerManagerData _data;
     private readonly IRepository<SchedulerTask> _repository;
     private readonly IRepository<SchedulerResource> _resourceRepository;
+    private readonly IRepository<SchedulerJob> _jobRepository;
+    private readonly QuartzUtils _quartzUtils;
 
     public SchedulerServerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -20,7 +22,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         IHttpClientFactory httpClientFactory,
         IMapper mapper,
         SchedulerServerManagerData data, IRepository<SchedulerTask> repository,
-        IHostApplicationLifetime hostApplicationLifetime, IRepository<SchedulerResource> resourceRepository)
+        IHostApplicationLifetime hostApplicationLifetime, IRepository<SchedulerResource> resourceRepository, IRepository<SchedulerJob> jobRepository)
         : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _logger = logger;
@@ -28,6 +30,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         _data = data;
         _repository = repository;
         _resourceRepository = resourceRepository;
+        _jobRepository = jobRepository;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_SERVER_MANAGER_API}/heartbeat";
@@ -39,6 +42,20 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         await base.OnManagerStartAsync();
 
         await StartAssignAsync();
+
+        await RegisterCronJob();
+    }
+
+    private async Task RegisterCronJob()
+    {
+        var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression));
+
+        foreach (var cronJob in cronJobList)
+        {
+            await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(cronJob.Id, cronJob.CronExpression);
+        }
+
+        await _quartzUtils.StartQuartzScheduler();
     }
 
     public async Task<WorkerModel> GetWorker(RoutingStrategyTypes routingType)

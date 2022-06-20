@@ -9,13 +9,17 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly SchedulerDbContext _dbContext;
     private readonly IRepository<SchedulerJob> _schedulerJobRepository;
     private readonly IHubContext<NotificationsHub> _hubContext;
+    private readonly IDistributedCacheClient _distributedCacheClient;
+    private readonly QuartzUtils _quartzUtils;
 
-    public NotifyTaskRunResultDomainEventHandler(IRepository<SchedulerTask> schedulerTaskRepository, SchedulerDbContext dbContext, IRepository<SchedulerJob> schedulerJobRepository, IHubContext<NotificationsHub> hubContext)
+    public NotifyTaskRunResultDomainEventHandler(IRepository<SchedulerTask> schedulerTaskRepository, SchedulerDbContext dbContext, IRepository<SchedulerJob> schedulerJobRepository, IHubContext<NotificationsHub> hubContext, IDistributedCacheClient distributedCacheClient, QuartzUtils quartzUtils)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _dbContext = dbContext;
         _schedulerJobRepository = schedulerJobRepository;
         _hubContext = hubContext;
+        _distributedCacheClient = distributedCacheClient;
+        _quartzUtils = quartzUtils;
     }
 
     [EventHandler]
@@ -30,12 +34,25 @@ public class NotifyTaskRunResultDomainEventHandler
 
         TaskRunStatus status = @event.Request.Status;
 
+        if(status == TaskRunStatus.Failure && task.Job.FailedStrategy == FailedStrategyTypes.Auto)
+        {
+            var retryCount = await _distributedCacheClient.HashIncrementAsync($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
+
+            if(retryCount <= task.Job.FailedRetryCount)
+            {
+                status = TaskRunStatus.WaitForRetry;
+
+                await _quartzUtils.AddDelayTask<StartSchedulerTaskQuartzJob>(task.Id, task.Job.Id, TimeSpan.FromSeconds(task.Job.FailedRetryInterval));
+            }
+        }
+
         string message = @event.Request.Status switch
         {
             //todo: i18n
             TaskRunStatus.Success => "Task run success",
             TaskRunStatus.Timeout => "Task run timeout",
             TaskRunStatus.Failure => "Task run failure",
+            TaskRunStatus.WaitForRetry => "Wait for auto retry",
             _ => ""
         };
 

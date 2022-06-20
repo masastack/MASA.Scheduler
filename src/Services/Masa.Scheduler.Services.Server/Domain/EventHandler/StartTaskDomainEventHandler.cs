@@ -10,14 +10,18 @@ public class StartTaskDomainEventHandler
     private readonly SchedulerServerManager _serverManager;
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly QuartzUtils _quartzUtils;
+    private readonly IDistributedCacheClient _distributedCacheClient;
 
-    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper)
+    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper, QuartzUtils quartzUtils, IDistributedCacheClient distributedCacheClient)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
         _serverManager = serverManager;
         _dbContext = dbContext;
         _mapper = mapper;
+        _quartzUtils = quartzUtils;
+        _distributedCacheClient = distributedCacheClient;
     }
 
     [EventHandler(1)]
@@ -52,6 +56,12 @@ public class StartTaskDomainEventHandler
         if (task.TaskStatus == TaskRunStatus.Running)
         {
             await _serverManager.StopTask(task.Id, task.WorkerHost);
+        }
+
+        if(task.TaskStatus == TaskRunStatus.WaitForRetry)
+        {
+            await _quartzUtils.RemoveDelayTask(task.Id, task.Job.Id);
+            await _distributedCacheClient.RemoveAsync<int>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
         }
 
         task.TaskSchedule(@event.Request.OperatorId);

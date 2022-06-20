@@ -10,5 +10,6 @@ public enum TaskRunStatus
     Success,
     Failure,
     Timeout,
-    TimeoutSuccess
+    TimeoutSuccess,
+    WaitForRetry
 }
