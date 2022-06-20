@@ -14,7 +14,7 @@ variables:
   
   NEW_IMAGE_Scheduler_Server_Dev: $NEW_ALI_REGISTRY/masa/masa-scheduler-services-server:dev-$CI_PIPELINE_ID
   NEW_IMAGE_Scheduler_Worker_Dev: $NEW_ALI_REGISTRY/masa/masa-scheduler-services-worker:dev-$CI_PIPELINE_ID
-  NEW_IMAGE_Scheduler_Web_Admin_Server_DEV: $NEW_ALI_REGISTRY/masa/masa-scheduler-web-admin-server:dev-$CI_COMMIT_TAG
+  NEW_IMAGE_Scheduler_Web_Admin_Server_DEV: $NEW_ALI_REGISTRY/masa/masa-scheduler-web-admin-server:dev-$CI_PIPELINE_ID
 
 
   DOCKER_Scheduler_Server_PATH: ./src/Services/Masa.Scheduler.Services.Server/Dockerfile
