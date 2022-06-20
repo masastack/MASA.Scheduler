@@ -11,9 +11,10 @@ variables:
   NEW_IMAGE_Scheduler_Server: $NEW_ALI_REGISTRY/masa/masa-scheduler-services-server:$CI_COMMIT_TAG
   NEW_IMAGE_Scheduler_Worker: $NEW_ALI_REGISTRY/masa/masa-scheduler-services-worker:$CI_COMMIT_TAG
   NEW_IMAGE_Scheduler_Web_Admin_Server: $NEW_ALI_REGISTRY/masa/masa-scheduler-web-admin-server:$CI_COMMIT_TAG
+  
   NEW_IMAGE_Scheduler_Server_Dev: $NEW_ALI_REGISTRY/masa/masa-scheduler-services-server:dev-$CI_PIPELINE_ID
   NEW_IMAGE_Scheduler_Worker_Dev: $NEW_ALI_REGISTRY/masa/masa-scheduler-services-worker:dev-$CI_PIPELINE_ID
-  NEW_IMAGE_Scheduler_Web_Admin_Server_DEV: $NEW_ALI_REGISTRY/masa/masa-scheduler-web-admin-server:$dev-CI_COMMIT_TAG
+  NEW_IMAGE_Scheduler_Web_Admin_Server_DEV: $NEW_ALI_REGISTRY/masa/masa-scheduler-web-admin-server:dev-$CI_COMMIT_TAG
 
 
   DOCKER_Scheduler_Server_PATH: ./src/Services/Masa.Scheduler.Services.Server/Dockerfile
