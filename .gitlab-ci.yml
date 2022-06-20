@@ -34,6 +34,8 @@ docker-build-dev:
     - docker push $NEW_IMAGE_Scheduler_Server_Dev 
     - docker build -f $DOCKER_Scheduler_Worker_PATH -t $NEW_IMAGE_Scheduler_Worker_Dev .
     - docker push $NEW_IMAGE_Scheduler_Worker_Dev
+    - cat ./src/Services/Masa.Scheduler.Services.Worker/Dockerfile
+    - ls ./src/Web/MASA.Scheduler.Web.Admin.Server
     - cat ./src/Web/MASA.Scheduler.Web.Admin.Server/Dockerfile
     - docker build -f ./src/Web/MASA.Scheduler.Web.Admin.Server/Dockerfile -t $NEW_IMAGE_Scheduler_Web_Admin_Server_DEV .
     - docker push $NEW_IMAGE_Scheduler_Web_Admin_Server_DEV
