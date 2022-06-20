@@ -9,6 +9,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     private readonly IMapper _mapper;
     private readonly SchedulerServerManagerData _data;
     private readonly IRepository<SchedulerTask> _repository;
+    private readonly IRepository<SchedulerResource> _resourceRepository;
 
     public SchedulerServerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -18,14 +19,15 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         ILogger<SchedulerServerManager> logger,
         IHttpClientFactory httpClientFactory,
         IMapper mapper,
-        SchedulerServerManagerData data, IRepository<SchedulerTask> repository, 
-        IHostApplicationLifetime hostApplicationLifetime)
+        SchedulerServerManagerData data, IRepository<SchedulerTask> repository,
+        IHostApplicationLifetime hostApplicationLifetime, IRepository<SchedulerResource> resourceRepository)
         : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _logger = logger;
         _mapper = mapper;
         _data = data;
         _repository = repository;
+        _resourceRepository = resourceRepository;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_SERVER_MANAGER_API}/heartbeat";
@@ -87,13 +89,23 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         return Task.FromResult(workerModel);
     }
 
-    public Task TaskEnqueue(SchedulerTask task)
+    public async Task TaskEnqueue(SchedulerTask task)
     {
         var taskDto = _mapper.Map<SchedulerTaskDto>(task);
 
-        _data.TaskQueue.Enqueue(taskDto);
+        if(taskDto.Job.JobType == JobTypes.JobApp && taskDto.Job.JobAppConfig != null)
+        {
+            var resourceList = await _resourceRepository.GetListAsync(r => r.JobAppId == taskDto.Job.JobAppConfig.JobAppId, nameof(SchedulerResource.CreationTime));
 
-        return Task.CompletedTask;
+            var resource = !string.IsNullOrEmpty(taskDto.Job.JobAppConfig.Version) ? resourceList.FirstOrDefault(r => r.Version == taskDto.Job.JobAppConfig.Version) : resourceList.FirstOrDefault();
+
+            if(resource != null)
+            {
+                taskDto.Job.JobAppConfig.SchedulerResourceDto = _mapper.Map<SchedulerResourceDto>(resource);
+            }
+        }
+
+        _data.TaskQueue.Enqueue(taskDto);
     }
 
     public async Task StartTask(SchedulerTaskDto taskDto, WorkerModel worker)

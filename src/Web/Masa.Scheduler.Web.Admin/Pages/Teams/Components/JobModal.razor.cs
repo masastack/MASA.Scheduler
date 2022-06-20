@@ -65,10 +65,13 @@ public partial class JobModal
 
     private bool _isAdd = false;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         _isAdd = Model.Id == Guid.Empty;
-        return base.OnInitializedAsync();
+
+        await GetWorkerList();
+
+        await base.OnInitializedAsync();
     }
 
     private Task HandleVisibleChanged()
@@ -106,6 +109,48 @@ public partial class JobModal
         return Task.CompletedTask;
     }
 
+    private async Task OnJobAppChanged(int jobAppId)
+    {
+        if (Model.JobAppConfig.JobAppId != jobAppId)
+        {
+            Model.JobAppConfig.JobAppId = jobAppId;
+
+            await GetVersionList(jobAppId);
+        }
+    }
+
+    private async Task GetVersionList(int jobAppId)
+    {
+        var request = new SchedulerResourceListRequest()
+        {
+            JobAppId = jobAppId
+        };
+
+        var resourceList = await SchedulerServerCaller.SchedulerResourceService.GetListAsync(request);
+
+        _versionList = resourceList.Data.Select(x => x.Version).ToList();
+    }
+
+    private Task OnRoutingStrategyChanged(RoutingStrategyTypes routingStrategyType)
+    {
+        if (Model.RoutingStrategy != routingStrategyType)
+        {
+            Model.RoutingStrategy = routingStrategyType;
+
+            if (routingStrategyType == RoutingStrategyTypes.Specified)
+            {
+                return GetWorkerList();
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task GetWorkerList()
+    {
+        _workerList = await SchedulerServerCaller.SchedulerServerManagerService.GetWorkerListAsync();
+    }
+
     private string GetStyle(JobTypes type)
     {
         var defaultStyle = "border-style: dashed;";
@@ -138,6 +183,12 @@ public partial class JobModal
     private Task SwitchResourceVersionType(ResourceVersionTypes resourceVersionType)
     {
         _resourceVersionType = resourceVersionType;
+
+        if(_resourceVersionType == ResourceVersionTypes.Latest)
+        {
+            Model.JobAppConfig.Version = string.Empty;
+        }
+
         return Task.CompletedTask;
     }
 
@@ -201,6 +252,23 @@ public partial class JobModal
         if (Form is not null)
         {
             Form.ResetValidationAsync();
+        }
+
+        if (Model.JobType == JobTypes.JobApp && Model.JobAppConfig.JobAppId != 0)
+        {
+            return GetVersionList(Model.JobAppConfig.JobAppId);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task DaprServiceAppChange(int daprServiceAppId)
+    {
+        if(daprServiceAppId != Model.DaprServiceInvocationConfig.DaprServiceAppId)
+        {
+            Model.DaprServiceInvocationConfig.DaprServiceAppId = daprServiceAppId;
+            var app = Project.ProjectApps.FirstOrDefault(x => x.Id == daprServiceAppId)!;
+            Model.DaprServiceInvocationConfig.DaprServiceIdentity = app.Identity;
         }
 
         return Task.CompletedTask;

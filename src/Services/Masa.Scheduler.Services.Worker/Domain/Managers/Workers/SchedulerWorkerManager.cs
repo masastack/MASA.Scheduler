@@ -9,18 +9,21 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     private readonly SchedulerWorkerManagerData _data;
 
-    public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory, 
-        IDistributedCacheClient redisCacheClient, 
-        IServiceProvider serviceProvider, 
-        IIntegrationEventBus eventBus, 
-        ILogger<SchedulerWorkerManager> logger, 
-        IHttpClientFactory httpClientFactory, 
+    private readonly TaskHanlderFactory _taskHandlerFactory;
+
+    public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory,
+        IDistributedCacheClient redisCacheClient,
+        IServiceProvider serviceProvider,
+        IIntegrationEventBus eventBus,
+        ILogger<SchedulerWorkerManager> logger,
+        IHttpClientFactory httpClientFactory,
         SchedulerWorkerManagerData data,
-        IHostApplicationLifetime hostApplicationLifetime) 
+        IHostApplicationLifetime hostApplicationLifetime, TaskHanlderFactory taskHandlerFactory)
         : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _data = data;
         _logger = logger;
+        _taskHandlerFactory = taskHandlerFactory;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_WORKER_MANAGER_API}/heartbeat";
@@ -103,32 +106,62 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
     public async Task StartTaskAsync(Guid taskId, SchedulerJobDto job)
     {
         var cts = new CancellationTokenSource();
-
-        cts.Token.Register(() =>
-        {
-            _data.TaskCancellationTokenSources.Remove(taskId, out _);
-        });
+        var internalCts = new CancellationTokenSource();
 
         _data.TaskCancellationTokenSources.TryAdd(taskId, cts);
 
+        _data.InternalCancellationTokenSources.TryAdd(taskId, internalCts);
+
         await NofityTaskStart(taskId);
 
-        switch (job.JobType)
-        {
-            case JobTypes.JobApp:
-                break;
-            case JobTypes.Http:
-                _ = Task.Run(async () =>
-                {
-                    await RunHttpTask(taskId, job, cts.Token);
+        var taskHandler = _taskHandlerFactory.GetTaskHandler(job.JobType);
 
-                }, cts.Token);
-                break;
-            case JobTypes.DaprServiceInvocation:
-                break;
-            default:
-                break;
-        }
+        var startTime = DateTime.Now;
+
+        cts.Token.Register(async () =>
+        {
+            _data.TaskCancellationTokenSources.Remove(taskId, out var cancellationTokenSource);
+
+            cancellationTokenSource?.Dispose();
+
+            _data.InternalCancellationTokenSources.Remove(taskId, out var internalCancellationToken);
+
+            if ((DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
+            {
+                await NotifyTaskRunResult(TaskRunStatus.Timeout, taskId);
+            }
+            else
+            {
+                internalCancellationToken?.Cancel();
+                internalCancellationToken?.Dispose();
+                await NotifyTaskRunResult(TaskRunStatus.Failure, taskId);
+            }
+        });
+
+        cts.CancelAfter(TimeSpan.FromSeconds(job.RunTimeoutSecond));
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var runStatus = await taskHandler.RunTask(taskId, job, internalCts.Token);
+
+                await NotifyTaskRunResult(runStatus, taskId);
+            }
+            catch
+            {
+                await NotifyTaskRunResult(TaskRunStatus.Failure, taskId);
+                throw;
+            }
+            finally
+            {
+                cts?.Dispose();
+                internalCts?.Dispose();
+
+                _data.TaskCancellationTokenSources.Remove(taskId, out _);
+                _data.InternalCancellationTokenSources.Remove(taskId, out _);
+            }
+        }, cts.Token);
     }
 
     public Task StopTaskAsync(StopTaskIntegrationEvent @event)
@@ -139,87 +172,13 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             {
                 task.Cancel();
             }
-            else
+            else if(_data.TaskQueue.Any(t=> t.TaskId == @event.TaskId))
             {
                 _data.StopTask.Add(@event.TaskId);
             }
         }
 
         return Task.CompletedTask;
-    }
-
-    private async Task RunHttpTask(Guid taskId, SchedulerJobDto jobDto, CancellationToken token)
-    {
-        if(jobDto.HttpConfig is null)
-        {
-            throw new UserFriendlyException("HttpConfig is required in Http Task");
-        }
-
-        var client = _httpClientFactory.CreateClient();
-
-        client.Timeout = TimeSpan.FromSeconds(jobDto.RunTimeoutSecond);
-
-        AddHttpHeader(client, jobDto.HttpConfig.HttpHeaders);
-
-        var requestMessage = new HttpRequestMessage()
-        {
-            Method = ConvertHttpMethod(jobDto.HttpConfig.HttpMethod),
-            RequestUri = GetRequestUrl(jobDto.HttpConfig.RequestUrl, jobDto.HttpConfig.HttpParameters),
-            Content = ConvertHttpContent(jobDto.HttpConfig.HttpBody)
-        };
-
-        TaskRunStatus runSucess = TaskRunStatus.Failure;
-
-        try
-        {
-            var response = await client.SendAsync(requestMessage, token);
-
-            string? content;
-
-            switch (jobDto.HttpConfig.HttpVerifyType)
-            {
-                case HttpVerifyTypes.StatusCode200:
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        runSucess = TaskRunStatus.Success;
-                    }
-                    break;
-                case HttpVerifyTypes.CustomStatusCode:
-                    if (string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || response.StatusCode.ToString("d") == jobDto.HttpConfig.VerifyContent)
-                    {
-                        runSucess = TaskRunStatus.Success;
-                    }
-                    break;
-                case HttpVerifyTypes.ContentContains:
-                    content = await response.Content.ReadAsStringAsync();
-                    if (string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || content.Contains(jobDto.HttpConfig.VerifyContent))
-                    {
-                        runSucess = TaskRunStatus.Success;
-                    }
-                    break;
-                case HttpVerifyTypes.ContentUnContains:
-                    content = await response.Content.ReadAsStringAsync();
-                    if (string.IsNullOrWhiteSpace(jobDto.HttpConfig.VerifyContent) || !content.Contains(jobDto.HttpConfig.VerifyContent))
-                    {
-                        runSucess = TaskRunStatus.Success;
-                    }
-                    break;
-                default:
-                    runSucess = response.IsSuccessStatusCode ? TaskRunStatus.Success : TaskRunStatus.Failure;
-                    break;
-            }
-        }
-        catch(TimeoutException ex)
-        {
-            runSucess = TaskRunStatus.Timeout;
-            Logger.LogError(ex, "HttpRequestTimeout");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "HttpRequestError");
-        }
-
-        await NotifyTaskRunResult(runSucess, taskId);
     }
 
     private async Task NotifyTaskRunResult(TaskRunStatus runStatus, Guid taskId)
@@ -243,62 +202,5 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         await EventBus.PublishAsync(@event);
         await EventBus.CommitAsync();
-    }
-
-    private static HttpMethod ConvertHttpMethod(Contracts.Server.Infrastructure.Enums.HttpMethods methods)
-    {
-        switch (methods)
-        {
-            case Contracts.Server.Infrastructure.Enums.HttpMethods.GET:
-                return HttpMethod.Get;
-            case Contracts.Server.Infrastructure.Enums.HttpMethods.POST:
-                return HttpMethod.Post;
-            case Contracts.Server.Infrastructure.Enums.HttpMethods.HEAD:
-                return HttpMethod.Head;
-            case Contracts.Server.Infrastructure.Enums.HttpMethods.PUT:
-                return HttpMethod.Put;
-            case Contracts.Server.Infrastructure.Enums.HttpMethods.DELETE:
-                return HttpMethod.Delete;
-            default:
-                throw new UserFriendlyException($"Cannot convert method: {methods}");
-        }
-    }
-
-    private static void AddHttpHeader(HttpClient client, List<KeyValuePair<string, string>> httpHeaders)
-    {
-        foreach (var header in httpHeaders)
-        {
-            client.DefaultRequestHeaders.Add(header.Key, header.Value);
-        }
-    }
-
-    private static Uri GetRequestUrl(string requestUrl, List<KeyValuePair<string, string>> httpParameters)
-    {
-        var builder = new UriBuilder(requestUrl);
-
-        builder.Query = string.Join("&", httpParameters.Select(p => $"{p.Key}={p.Value}"));
-
-        return builder.Uri;
-    }
-
-    private static HttpContent? ConvertHttpContent(string content)
-    {
-        if(string.IsNullOrEmpty(content))
-        {
-            return null;
-        }
-
-        var contentType = "text/plain";
-
-        if ((content.StartsWith("{") && content.EndsWith("}")) || content.StartsWith("[") && content.EndsWith("]"))
-        {
-            contentType = "application/json";
-        }
-        else if (content.StartsWith("<") && content.EndsWith(">"))
-        {
-            contentType = "application/xml";
-        }
-
-        return new StringContent(content, Encoding.UTF8, contentType);
     }
 }

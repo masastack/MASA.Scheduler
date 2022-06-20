@@ -73,7 +73,7 @@
                                 <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("RunStrategy")</div>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MSelect @bind-Value="Model.RoutingStrategy" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        <MSelect Value="Model.RoutingStrategy" ValueChanged="OnRoutingStrategyChanged" TValue="RoutingStrategyTypes" TItem="KeyValuePair<string, RoutingStrategyTypes>" TItemValue="RoutingStrategyTypes" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                         </MSelect>
                                     </MCol>
                                     @if (Model.RoutingStrategy == RoutingStrategyTypes.Specified)
@@ -212,7 +212,7 @@
                                 <MForm Model=Model.JobAppConfig EnableValidation @ref="Form" Class="full-height">
                                     <MRow Class="mt-1">
                                         <MCol Cols="3">
-                                            <MSelect @bind-Value="Model.JobAppConfig.JobAppId" Label="@T("JobAppId")" HideDetails="@("auto")" Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Id">
+                                            <MSelect Value="Model.JobAppConfig.JobAppId" TValue="int" TItem="ProjectAppDto" TItemValue="int" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Id">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
@@ -266,7 +266,7 @@
                                 <MForm Model=Model.DaprServiceInvocationConfig EnableValidation @ref="Form" Class="full-height">
                                     <MRow Class="mt-1">
                                         <MCol Cols="3">
-                                            <MSelect @bind-Value="Model.DaprServiceInvocationConfig.DaprServiceAppId" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Id">
+                                            <MSelect Value="Model.DaprServiceInvocationConfig.DaprServiceAppId" TValue="int" TItemValue="int" TItem="ProjectAppDto"  ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Id">
                                             </MSelect>
                                         </MCol>
                                     </MRow>

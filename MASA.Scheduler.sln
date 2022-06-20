@@ -43,6 +43,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Services.Wor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.ApiGateways.Caller", "src\ApiGateways\Caller\MASA.Scheduler.ApiGateways.Caller\Masa.Scheduler.ApiGateways.Caller.csproj", "{66B81B22-5356-4274-8735-20BE00846209}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shells", "Shells", "{9DE805E7-2CDC-43E0-A7DA-D5586DDAD260}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Scheduler.Shells.JobShell", "src\Shells\Masa.Scheduler.Shells.JobShell\Masa.Scheduler.Shells.JobShell.csproj", "{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +118,14 @@ Global
 		{66B81B22-5356-4274-8735-20BE00846209}.Release|Any CPU.Build.0 = Release|Any CPU
 		{66B81B22-5356-4274-8735-20BE00846209}.Release|x86.ActiveCfg = Release|Any CPU
 		{66B81B22-5356-4274-8735-20BE00846209}.Release|x86.Build.0 = Release|Any CPU
+		{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}.Debug|x86.Build.0 = Debug|Any CPU
+		{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}.Release|x86.ActiveCfg = Release|Any CPU
+		{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +143,8 @@ Global
 		{EFCB6CEB-3CD3-4A5F-A736-576C04E29F70} = {4A1D2DFA-D091-4CD2-B9CB-D7AAA795ABD9}
 		{65C78DF1-C46A-4C26-B402-12038D60D3DD} = {4A1D2DFA-D091-4CD2-B9CB-D7AAA795ABD9}
 		{66B81B22-5356-4274-8735-20BE00846209} = {32774681-0D67-48A6-A379-D57015094F85}
+		{9DE805E7-2CDC-43E0-A7DA-D5586DDAD260} = {92F40AFA-8416-40BE-9893-D35E1924C69D}
+		{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3} = {9DE805E7-2CDC-43E0-A7DA-D5586DDAD260}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B83BA2BA-19E5-41FB-A92A-16A03DA229E4}

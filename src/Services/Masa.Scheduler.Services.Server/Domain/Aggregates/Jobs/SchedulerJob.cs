@@ -205,6 +205,6 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
             return;
         }
         DaprServiceInvocationConfig ??= new();
-        DaprServiceInvocationConfig.SetConfig(dto.DaprServiceAppId, dto.MethodName, dto.HttpMethod, dto.Data);
+        DaprServiceInvocationConfig.SetConfig(dto.DaprServiceAppId, dto.MethodName, dto.HttpMethod, dto.Data, dto.DaprServiceIdentity);
     }
 }

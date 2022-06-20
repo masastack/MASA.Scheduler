@@ -8,8 +8,11 @@ public static class SchedulerWorkerManagerServiceCollectionExtensions
     public static IServiceCollection AddServerManager(this IServiceCollection services)
     {
         services.AddScoped<SchedulerWorkerManager>();
+        services.AddScoped<TaskHanlderFactory>();
+        services.AddScoped<HttpTaskHandler>();
+        services.AddScoped<JobAppTaskHandler>();
+        services.AddScoped<DaprServiceInvocationTaskHanlder>();
         services.AddSingleton<SchedulerWorkerManagerData>();
-
         services.AddHostedService<SchedulerWorkerManagerHostService>();
 
         return services;

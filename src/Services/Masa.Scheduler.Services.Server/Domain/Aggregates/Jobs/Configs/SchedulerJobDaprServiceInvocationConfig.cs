@@ -9,6 +9,9 @@ public class SchedulerJobDaprServiceInvocationConfig : ValueObject
     public int DaprServiceAppId { get; private set; }
 
     [JsonInclude]
+    public string DaprServiceIdentity { get; private set; } = string.Empty;
+
+    [JsonInclude]
     public string MethodName { get; private set; } = string.Empty;
 
     [JsonInclude]
@@ -17,12 +20,13 @@ public class SchedulerJobDaprServiceInvocationConfig : ValueObject
     [JsonInclude]
     public string Data { get; private set; } = string.Empty;
 
-    public void SetConfig(int daprServiceAppId, string methodName, HttpMethods httpMethod, string data)
+    public void SetConfig(int daprServiceAppId, string methodName, HttpMethods httpMethod, string data, string daprServiceIdentity)
     {
         DaprServiceAppId = daprServiceAppId;
         MethodName = methodName;
         HttpMethod = httpMethod;
         Data = data;
+        DaprServiceIdentity = daprServiceIdentity;
     }
 
     protected override IEnumerable<object> GetEqualityValues()
@@ -31,5 +35,6 @@ public class SchedulerJobDaprServiceInvocationConfig : ValueObject
         yield return MethodName;
         yield return HttpMethod;
         yield return Data;
+        yield return DaprServiceIdentity;
     }
 }
