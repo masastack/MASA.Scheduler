@@ -1,0 +1,73 @@
+﻿@inherits ProCompontentBase
+@page "/pages/resource"
+
+<div class="d-flex">
+    <MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 165px );">
+        <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 165px );">
+            <MList Width="194" Dense>
+                <MListItemGroup Class="rounded-2 scheduler-list"
+                                @bind-Value="@SelectedId"
+                                Mandatory
+                                Color="@Color">
+                    <Search @bind-Value="SearchName" Class="pb-4"></Search>
+                    @foreach (var project in _projects)
+                    {
+                        @if (project.Children.Any())
+                        {
+                            <MListGroup @bind-Value="project.Expanded" SubGroup NoAction>
+                                <ActivatorContent>
+                                    <MListItemTitle>@project.Title</MListItemTitle>
+                                </ActivatorContent>
+                                <ChildContent>
+                                    @foreach (var subitem in project.Children)
+                                    {
+                                        <MListItem Link Value="@subitem.Id" Style="padding-left:50px;" Class="rounded-2 project-list">
+                                            <MListItemTitle>@subitem.Title</MListItemTitle>
+                                        </MListItem>
+                                    }
+                                </ChildContent>
+                            </MListGroup>
+                        }
+                    }
+                </MListItemGroup>
+            </MList>
+        </div>
+    </MNavigationDrawer>
+
+    @if (LastSelectedAppId != 0)
+    {
+        <MNavigationDrawer Permanent Class="rounded-4 ml-6" Width="242" Style="height:calc(100vh - 165px );">
+            <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 165px );">
+                <MList Width="194">
+                    <MListItemGroup Class="rounded-2"
+                                @bind-Value="@SelectedResourceId"
+                                Mandatory
+                                Color="#A3AED0">
+                        <MButton Rounded Color="primary" Dark Class="full-width mb-4" OnClick="AddResourceFile"> @T("AddResourceFiles") </MButton>
+                        @foreach (var resouce in _resources)
+                        {
+                            <MListItem Class="rounded-2 project-list" Value="resouce.Id.ToString()" Dense>
+                                <MListItemTitle>
+                                    @resouce.Version
+                                </MListItemTitle>
+                                 <MListItemIcon>
+                                    <MIcon OnClick="()=> DeleteResourceFiles(resouce.Id)"> mdi-delete-outline </MIcon>
+                                </MListItemIcon>
+                            </MListItem>
+                        }
+                    </MListItemGroup>
+                </MList>
+            </div>
+        </MNavigationDrawer>
+    }
+
+    @if (_isAdd)
+    {
+        <AddSchedulerResourceFiles Model="Model" OnAfterSubmit="AfterSubmit">
+        </AddSchedulerResourceFiles>
+    }
+    else if(_selectedResourceDto != null)
+    {
+        <SchedulerResourceFilesInformation Model="_selectedResourceDto"></SchedulerResourceFilesInformation>
+    }
+</div>

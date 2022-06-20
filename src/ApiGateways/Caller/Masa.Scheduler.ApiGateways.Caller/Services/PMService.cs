@@ -3,17 +3,24 @@
 
 namespace Masa.Scheduler.ApiGateways.Caller.Services;
 
-public class PMService: ServiceBase
+public class PmService: ServiceBase
 {
     protected override string BaseUrl { get; set; }
 
-    public PMService(ICallerProvider provider) : base(provider)
+    public PmService(ICallerProvider provider) : base(provider)
     {
         BaseUrl = "api/pm";
     }
-    public async Task<ProjectListResponse> GetProjectListAsync(Guid teamId)
+    public async Task<ProjectListResponse> GetProjectListAsync(Guid? teamId, string environment = "development")
     {
-        var result = await GetAsync<List<ProjectDto>>($"{nameof(GetProjectListAsync)}?teamId={teamId}");
+        var requestUrl = nameof(GetProjectListAsync) + $"?environment={environment}";
+
+        if (teamId.HasValue)
+        {
+            requestUrl += $"&teamId={teamId.Value}";
+        }
+
+        var result = await GetAsync<List<ProjectDto>>(requestUrl);
 
         var response = new ProjectListResponse()
         {

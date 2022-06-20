@@ -5,11 +5,14 @@ namespace Masa.Scheduler.Services.Server.Application.Projects.Queries;
 
 public record ProjectQuery: Query<List<ProjectDto>>
 {
-    public Guid TeamId { get; set; }
+    public Guid? TeamId { get; set; }
 
-    public ProjectQuery(Guid teamId)
+    public string Environment { get; set; } = "development";
+
+    public ProjectQuery(Guid? teamId, string enviroment)
     {
         TeamId = teamId;
+        Environment = enviroment;
     }
 
     public override List<ProjectDto> Result { get; set; } = new();

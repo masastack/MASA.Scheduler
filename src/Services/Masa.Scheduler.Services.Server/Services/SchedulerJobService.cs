@@ -4,12 +4,12 @@ namespace Masa.Scheduler.Services.Server.Server.Services;
 
 public class SchedulerJobService : ServiceBase
 {
-    public SchedulerJobService(IServiceCollection services) : base(services, "api/scheduler-job")
+    public SchedulerJobService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_JOB_API)
     {
         MapGet(ListAsync, string.Empty);
         MapPost(AddAsync, string.Empty);
         MapPut(UpdateAsync, string.Empty);
-        MapDelete(DeleteAsync, string.Empty);
+        MapDelete(DeleteAsync, "{id}");
         MapPut(ChangeEnableStatusAsync);
         MapPut(StartJobAsync);
     }
@@ -50,9 +50,9 @@ public class SchedulerJobService : ServiceBase
         return Results.Ok();
     }
 
-    public async Task<IResult> DeleteAsync(IEventBus eventBus, [FromQuery] Guid jobId)
+    public async Task<IResult> DeleteAsync(IEventBus eventBus, Guid id)
     {
-        var command = new RemoveSchedulerJobCommand(jobId);
+        var command = new RemoveSchedulerJobCommand(id);
         await eventBus.PublishAsync(command);
         return Results.Ok();
     }

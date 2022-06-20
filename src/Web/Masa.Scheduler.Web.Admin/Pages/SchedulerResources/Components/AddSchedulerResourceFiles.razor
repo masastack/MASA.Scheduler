@@ -1,0 +1,41 @@
+﻿@inherits ProCompontentBase
+
+<div Class="env-toolbar ml-4 rounded-4" Style="background:#fff; width:66%">
+    <MForm Model=Model EnableValidation @ref="_form" Class="full-height">
+        <div class="full-height flex-column">
+            <div class="mt-2 pl-4 pr-4 full-height">
+            <MRow Class="my-1">
+                <MCol Cols="4">
+                    <MFileInput TValue="IBrowserFile"
+                                @ref="_ref"
+                                Dense
+                                Outlined
+                                Accept=".zip, .dll"
+                                Rules="_rules"
+                                Value="_browserFile"
+                                Label="@T("PleaseUploadFiles")"
+                                Placeholder="@T("PleaseUploadFiles")" OnChange="HandleFileChange"></MFileInput>
+                </MCol>
+            </MRow>
+            <div class="pl-2">
+                <p class="mb-0">@T("Explain"):</p>
+                <p>@T("UploadFiles.Tips")</p>
+            </div>
+            <MRow Class="mt-1">
+                <MCol Cols="4">
+                    <MTextField @bind-Value="Model.Version" Label="@T(nameof(Model.Version))" HideDetails="@("auto")" Outlined />
+                </MCol>
+            </MRow>
+            <MRow>
+                <MCol Cols="12">
+                    <MTextarea @bind-Value="Model.Description" Label="@T(nameof(Model.Description))" HideDetails="@("auto")" Outlined />
+                </MCol>
+            </MRow>
+            <div class="d-flex mt-4">
+                <MSpacer></MSpacer>
+                <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Submit")</MButton>
+            </div>
+            </div>
+        </div>
+    </MForm>
+</div>

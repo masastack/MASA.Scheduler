@@ -13,16 +13,21 @@ public class ProjectQueryHandler
     }
 
     [EventHandler]
-    public async Task TeamListHandleAsync(ProjectQuery query)
+    public async Task ProjectListHandleAsync(ProjectQuery query)
     {
-        var projectList = await _pmClient.ProjectService.GetProjectAppsAsync("development");
+        var projectList = await _pmClient.ProjectService.GetProjectAppsAsync(query.Environment);
 
-        query.Result = projectList.FindAll(p => p.TeamId == query.TeamId).Select(p => new ProjectDto()
+        if (query.TeamId.HasValue)
+        {
+            projectList = projectList.FindAll(p => p.TeamId == query.TeamId.Value);
+        }
+
+        query.Result = projectList.Select(p => new ProjectDto()
         {
             Name = p.Name,
             Id = p.Id,
             Identity = p.Identity,
-            ProjectApps = p.Apps.Select(app => new ProjectAppDto() { Id = app.Id, Identity = app.Identity, Name = app.Name, ProjectId = app.ProjectId }).ToList(),
+            ProjectApps = p.Apps.DistinctBy(p=> p.Identity).Select(app => new ProjectAppDto() { Id = app.Id, Identity = app.Identity, Name = app.Name, ProjectId = app.ProjectId }).ToList(),
         }).ToList();
     }
 }
