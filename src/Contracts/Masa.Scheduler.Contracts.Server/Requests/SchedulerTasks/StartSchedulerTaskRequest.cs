@@ -7,5 +7,7 @@ public class StartSchedulerTaskRequest : BaseRequest
 {
     public Guid TaskId { get; set; }
 
+    public bool IsManual { get; set; }
+
     public Guid OperatorId { get; set; }
 }

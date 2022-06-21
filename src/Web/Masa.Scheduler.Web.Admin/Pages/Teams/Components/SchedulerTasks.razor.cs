@@ -137,6 +137,8 @@ public partial class SchedulerTasks
 
         _queryStatusList = GetEnumMap<TaskRunStatus>();
 
+        _queryStatusList.RemoveAll(p => p.Value == TaskRunStatus.Idle);
+
         await base.OnInitializedAsync();
     }
 
@@ -216,6 +218,7 @@ public partial class SchedulerTasks
         {
             //todo: use current login user
             OperatorId = Guid.Empty,
+            IsManual = true,
             TaskId = taskId
         };
 
@@ -261,6 +264,27 @@ public partial class SchedulerTasks
 
         _lastQueryStatus = _queryStatus;
 
+        return Task.CompletedTask;
+    }
+
+    private Task OnPrevHandler()
+    {
+        if(Page > 1)
+        {
+            Page--;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task OnNextHandler()
+    {
+        Page++;
+        return Task.CompletedTask;
+    }
+
+    private Task OnPageSizeChanged(int pageSize)
+    {
+        PageSize = pageSize;
         return Task.CompletedTask;
     }
 }

@@ -11,6 +11,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     private readonly IRepository<SchedulerTask> _repository;
     private readonly IRepository<SchedulerResource> _resourceRepository;
     private readonly IRepository<SchedulerJob> _jobRepository;
+    private readonly SchedulerDbContext _dbContext;
     private readonly QuartzUtils _quartzUtils;
 
     public SchedulerServerManager(
@@ -22,7 +23,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         IHttpClientFactory httpClientFactory,
         IMapper mapper,
         SchedulerServerManagerData data, IRepository<SchedulerTask> repository,
-        IHostApplicationLifetime hostApplicationLifetime, IRepository<SchedulerResource> resourceRepository, IRepository<SchedulerJob> jobRepository)
+        IHostApplicationLifetime hostApplicationLifetime, IRepository<SchedulerResource> resourceRepository, IRepository<SchedulerJob> jobRepository, QuartzUtils quartzUtils, SchedulerDbContext dbContext)
         : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _logger = logger;
@@ -31,6 +32,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         _repository = repository;
         _resourceRepository = resourceRepository;
         _jobRepository = jobRepository;
+        _quartzUtils = quartzUtils;
+        _dbContext = dbContext;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_SERVER_MANAGER_API}/heartbeat";
@@ -44,18 +47,44 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         await StartAssignAsync();
 
         await RegisterCronJob();
+
+        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry).ToListAsync();
+
+        await LoadRunningTask(allTask);
+
+        await LoadRetryTask(allTask);
     }
 
     private async Task RegisterCronJob()
     {
+        await _quartzUtils.StartQuartzScheduler();
+
         var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression));
 
         foreach (var cronJob in cronJobList)
         {
             await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(cronJob.Id, cronJob.CronExpression);
         }
+    }
 
-        await _quartzUtils.StartQuartzScheduler();
+    private async Task LoadRunningTask(List<SchedulerTask> allTask)
+    {
+        var runningTaskList = allTask.FindAll(t => t.TaskStatus == TaskRunStatus.Running);
+
+        foreach (var runningTask in runningTaskList)
+        {
+            await TaskEnqueue(runningTask);
+        }
+    }
+
+    private async Task LoadRetryTask(List<SchedulerTask> allTask)
+    {
+        var retryTaskList = allTask.FindAll(t => t.TaskStatus == TaskRunStatus.WaitToRetry);
+
+        foreach (var retryTask in retryTaskList)
+        {
+            await _quartzUtils.AddDelayTask<StartSchedulerTaskQuartzJob>(retryTask.Id, retryTask.Job.Id, TimeSpan.FromSeconds(retryTask.Job.FailedRetryInterval));
+        }
     }
 
     public async Task<WorkerModel> GetWorker(RoutingStrategyTypes routingType)
@@ -230,6 +259,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                             throw new UserFriendlyException($"Task is not found, taskId: {taskDto.Id}");
                         }
 
+                        task.TaskStart();
                         task.SetWorkerHost(workerModel.GetServiceUrl());
 
                         await _repository.UpdateAsync(task);

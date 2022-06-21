@@ -44,6 +44,8 @@
   "Success": "Success",
   "Failure": "Failure",
   "Timeout": "Timeout",
+  "WaitToRetry": "Wait to retry",
+  "WaitToRun":  "Wait to run",
   "TimeoutSuccess": "Timeout but success",
   "Idle": "Idle",
   "StartDate": "Start Date",

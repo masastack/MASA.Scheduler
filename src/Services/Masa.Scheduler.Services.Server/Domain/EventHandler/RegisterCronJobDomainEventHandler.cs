@@ -12,6 +12,7 @@ public class RegisterCronJobDomainEventHandler
         _quartzUtils = quartzUtils;
     }
 
+    [EventHandler]
     public async Task RegisterCronJobAsync(RegisterCronJobDomainEvent @event)
     {
         if(@event.Request.Data.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(@event.Request.Data.CronExpression))

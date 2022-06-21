@@ -112,7 +112,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         _data.InternalCancellationTokenSources.TryAdd(taskId, internalCts);
 
-        await NofityTaskStart(taskId);
+        //await NofityTaskStart(taskId);
 
         var taskHandler = _taskHandlerFactory.GetTaskHandler(job.JobType);
 

@@ -331,6 +331,8 @@ public partial class SchedulerJobs : ProCompontentBase
             case TaskRunStatus.Running:
                 var runTime = (DateTimeOffset.Now - job.LastRunStartTime).TotalSeconds;
                 return T("AlreadyRun") + GetRunTimeDescription(runTime);
+            case TaskRunStatus.WaitToRun:
+                return T("WaitToRun");
             case TaskRunStatus.Success:
             case TaskRunStatus.Failure:
             case TaskRunStatus.Timeout:
@@ -434,6 +436,27 @@ public partial class SchedulerJobs : ProCompontentBase
 
         _lastQueryStatus = QueryStatus;
 
+        return Task.CompletedTask;
+    }
+
+    private Task OnPrevHandler()
+    {
+        if (Page > 1)
+        {
+            Page--;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task OnNextHandler()
+    {
+        Page++;
+        return Task.CompletedTask;
+    }
+
+    private Task OnPageSizeChanged(int pageSize)
+    {
+        PageSize = pageSize;
         return Task.CompletedTask;
     }
 }

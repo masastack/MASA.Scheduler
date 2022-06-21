@@ -5,15 +5,17 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Quartz;
 
 public class QuartzUtils
 {
-    private readonly IScheduler _scheduler;
-    public QuartzUtils(IScheduler scheduler)
+    private readonly ISchedulerFactory _schedulerFactory;
+    private IScheduler _scheduler = default!;
+    public QuartzUtils(ISchedulerFactory schedulerFactory)
     {
-        _scheduler = scheduler;
+        _schedulerFactory = schedulerFactory;
     }
 
-    public Task StartQuartzScheduler()
+    public async Task StartQuartzScheduler()
     {
-        return _scheduler.Start();
+        _scheduler = await _schedulerFactory.GetScheduler();
+        await _scheduler.Start();
     }
 
     public Task AddDelayTask<T>(Guid taskId, Guid jobId, TimeSpan timeSpan) where T : IJob
@@ -40,7 +42,7 @@ public class QuartzUtils
             throw new UserFriendlyException("JobId is empty");
         }
 
-        if (!string.IsNullOrEmpty(cron))
+        if (string.IsNullOrEmpty(cron))
         {
             throw new UserFriendlyException("cron is empty");
         }

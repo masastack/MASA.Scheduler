@@ -22,7 +22,7 @@
         <MTextField Value="_queryOrigin" TValue="string" ValueChanged="QueryOriginChanged" Placeholder="@T("Origin")" HideDetails="@("auto")" Flat Dense Solo Outlined>
         </MTextField>
     </div>
-    <MDataTable Headers="Headers" Items="_tasks" TItem="SchedulerTaskDto" ItemsPerPage="_pageSize" HideDefaultFooter Class="user table-border-none">
+    <MDataTable Headers="Headers" Items="_tasks" TItem="SchedulerTaskDto" ItemsPerPage="_pageSize" HideDefaultFooter Class="table-border-none">
         <HeaderColContent Context="header">
             <span class="text-btn">@header.Text</span>
         </HeaderColContent>
@@ -109,7 +109,7 @@
             }
         </ItemColContent>
         <FooterContent>
-            <DataTableFooter Page="@Page" PageSize="@_pageSize" Total="@_total" Style="padding-top: 15px;">
+            <DataTableFooter Page="@Page" PageSize="@PageSize" Total="@_total" Style="padding-top: 15px;" OnPrev="OnPrevHandler" OnNext="OnNextHandler" OnPageSzieChanged="OnPageSizeChanged">
             </DataTableFooter>
         </FooterContent>
     </MDataTable>

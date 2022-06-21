@@ -53,6 +53,16 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
         WorkerHost = workerHost;
     }
 
+    public void Wait()
+    {
+        TaskStatus = TaskRunStatus.WaitToRun;
+    }
+
+    public void Discard()
+    {
+        TaskStatus = TaskRunStatus.Failure;
+    }
+
     public void TaskStart()
     {
         RunCount++;

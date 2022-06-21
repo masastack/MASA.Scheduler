@@ -167,8 +167,7 @@
                 </MCol>
             }
         </MRow>
-        <DataTableFooter Page="@Page" PageSize="@PageSize" Total="@_total" Style="padding-top: 15px;">
-
+        <DataTableFooter Page="@Page" PageSize="@PageSize" Total="@_total" Style="padding-top: 15px;" OnPrev="OnPrevHandler" OnNext="OnNextHandler" OnPageSzieChanged="OnPageSizeChanged">
         </DataTableFooter>
 
         <JobModal Visible="_modalVisible" Model="modalModel" VisibleChanged="OnVisibleChanged" Project="Project" OnAfterSubmit="OnAfterSubmit"></JobModal>
