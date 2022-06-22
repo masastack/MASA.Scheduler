@@ -232,7 +232,6 @@ public partial class SchedulerJobs : ProCompontentBase
 
     public Task OnQueryDataChanged()
     {
-        Console.WriteLine("OnQueryDataChange Invoke");
         return GetProjectJobs();
     }
 

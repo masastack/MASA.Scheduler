@@ -55,11 +55,13 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
 
     public void Wait()
     {
+        SchedulerTime = DateTimeOffset.Now;
         TaskStatus = TaskRunStatus.WaitToRun;
     }
 
     public void Discard()
     {
+        SchedulerTime = DateTimeOffset.Now;
         TaskStatus = TaskRunStatus.Failure;
     }
 

@@ -61,7 +61,5 @@ public class SchedulerTaskCommandHandler
         task.TaskStart();
 
         await _schedulerTaskRepository.UpdateAsync(task);
-
-        Console.WriteLine($"Notify Task Start, TaskId: {task.Id}");
     }
 }

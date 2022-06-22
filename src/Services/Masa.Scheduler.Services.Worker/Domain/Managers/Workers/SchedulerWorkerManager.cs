@@ -18,7 +18,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         ILogger<SchedulerWorkerManager> logger,
         IHttpClientFactory httpClientFactory,
         SchedulerWorkerManagerData data,
-        IHostApplicationLifetime hostApplicationLifetime, TaskHanlderFactory taskHandlerFactory)
+        IHostApplicationLifetime hostApplicationLifetime, 
+        TaskHanlderFactory taskHandlerFactory)
         : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _data = data;
