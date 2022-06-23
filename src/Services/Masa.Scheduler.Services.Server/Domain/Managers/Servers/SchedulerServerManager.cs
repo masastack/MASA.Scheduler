@@ -22,8 +22,13 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         ILogger<SchedulerServerManager> logger,
         IHttpClientFactory httpClientFactory,
         IMapper mapper,
-        SchedulerServerManagerData data, IRepository<SchedulerTask> repository,
-        IHostApplicationLifetime hostApplicationLifetime, IRepository<SchedulerResource> resourceRepository, IRepository<SchedulerJob> jobRepository, QuartzUtils quartzUtils, SchedulerDbContext dbContext)
+        SchedulerServerManagerData data,
+        IRepository<SchedulerTask> repository,
+        IHostApplicationLifetime hostApplicationLifetime,
+        IRepository<SchedulerResource> resourceRepository,
+        IRepository<SchedulerJob> jobRepository,
+        QuartzUtils quartzUtils,
+        SchedulerDbContext dbContext)
         : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _logger = logger;
@@ -46,16 +51,16 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         await StartAssignAsync();
 
-        await RegisterCronJob();
+        await RegisterCronJobAsync();
 
         var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry).ToListAsync();
 
-        await LoadRunningTask(allTask);
+        await LoadRunningTaskAsync(allTask);
 
-        await LoadRetryTask(allTask);
+        await LoadRetryTaskAsync(allTask);
     }
 
-    private async Task RegisterCronJob()
+    private async Task RegisterCronJobAsync()
     {
         await _quartzUtils.StartQuartzScheduler();
 
@@ -67,7 +72,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         }
     }
 
-    private async Task LoadRunningTask(List<SchedulerTask> allTask)
+    private async Task LoadRunningTaskAsync(List<SchedulerTask> allTask)
     {
         var runningTaskList = allTask.FindAll(t => t.TaskStatus == TaskRunStatus.Running);
 
@@ -77,7 +82,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         }
     }
 
-    private async Task LoadRetryTask(List<SchedulerTask> allTask)
+    private async Task LoadRetryTaskAsync(List<SchedulerTask> allTask)
     {
         var retryTaskList = allTask.FindAll(t => t.TaskStatus == TaskRunStatus.WaitToRetry);
 

@@ -31,13 +31,6 @@ catch (Exception ex)
     return;
 }
 
-if(assembly == null)
-{
-    result.Message = $"Assembly not found, Path: {path}";
-    Console.WriteLine(JsonSerializer.Serialize(result));
-    return;
-}
-
 var assemblyType = assembly.GetType(className);
 
 if(assemblyType == null)

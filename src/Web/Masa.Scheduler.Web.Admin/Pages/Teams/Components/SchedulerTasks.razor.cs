@@ -65,6 +65,15 @@ public partial class SchedulerTasks
         return Task.CompletedTask;
     }
 
+    private int TotalPage
+    {
+        get
+        {
+            var totalPage = (int)((_total + PageSize - 1) / PageSize);
+            return totalPage == 0 ? 1 : totalPage;
+        }
+    }
+
     public int Page
     {
         get => _page; 
@@ -278,7 +287,10 @@ public partial class SchedulerTasks
 
     private Task OnNextHandler()
     {
-        Page++;
+        if (Page < TotalPage)
+        {
+            Page++;
+        }
         return Task.CompletedTask;
     }
 

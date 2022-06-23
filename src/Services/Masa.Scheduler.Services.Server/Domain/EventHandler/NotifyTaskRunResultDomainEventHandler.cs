@@ -13,7 +13,14 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly QuartzUtils _quartzUtils;
     private readonly IIntegrationEventBus _eventBus;
 
-    public NotifyTaskRunResultDomainEventHandler(IRepository<SchedulerTask> schedulerTaskRepository, SchedulerDbContext dbContext, IRepository<SchedulerJob> schedulerJobRepository, IHubContext<NotificationsHub> hubContext, IDistributedCacheClient distributedCacheClient, QuartzUtils quartzUtils, IIntegrationEventBus eventBus)
+    public NotifyTaskRunResultDomainEventHandler(
+        IRepository<SchedulerTask> schedulerTaskRepository,
+        SchedulerDbContext dbContext,
+        IRepository<SchedulerJob> schedulerJobRepository,
+        IHubContext<NotificationsHub> hubContext,
+        IDistributedCacheClient distributedCacheClient,
+        QuartzUtils quartzUtils,
+        IIntegrationEventBus eventBus)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _dbContext = dbContext;
@@ -83,7 +90,7 @@ public class NotifyTaskRunResultDomainEventHandler
 
             if (waitForRunTask != null)
             {
-                var startWaittingTaskevent = new StartWaittingTaskIntergrationEvent()
+                var startWaittingTaskevent = new StartWaitingTaskIntergrationEvent()
                 {
                     TaskId = waitForRunTask.Id,
                     OperatorId = task.OperatorId,

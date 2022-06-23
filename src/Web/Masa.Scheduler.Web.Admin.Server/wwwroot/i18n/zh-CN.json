@@ -45,7 +45,7 @@
   "Success": "成功",
   "Failure": "失败",
   "Timeout": "超时",
-  "TimeoutSuccess": "超时成功",
+  "TimeoutSuccess": "超时后成功",
   "WaitToRetry": "等待自动重试",
   "WaitToRun": "等待运行",
   "Idle": "空闲",

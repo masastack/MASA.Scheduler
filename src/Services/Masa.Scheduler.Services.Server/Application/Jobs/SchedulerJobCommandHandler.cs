@@ -8,14 +8,12 @@ public class SchedulerJobCommandHandler
     private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly IMapper _mapper;
     private readonly SchedulerJobDomainService _schedulerJobDomainService;
-    private readonly QuartzUtils _quartzUtils;
 
-    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository, IMapper mapper, SchedulerJobDomainService schedulerJobDomainService, QuartzUtils quartzUtils)
+    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository, IMapper mapper, SchedulerJobDomainService schedulerJobDomainService)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _mapper = mapper;
         _schedulerJobDomainService = schedulerJobDomainService;
-        _quartzUtils = quartzUtils;
     }
 
     [EventHandler]
@@ -69,7 +67,7 @@ public class SchedulerJobCommandHandler
 
         await _schedulerJobRepository.RemoveAsync(job);
 
-        await _quartzUtils.RemoveCronJob(job.Id);
+        await _schedulerJobDomainService.RemoveCronJobAsync(new RemoveCronJobRequest() { JobId = job.Id });
     }
 
     [EventHandler]

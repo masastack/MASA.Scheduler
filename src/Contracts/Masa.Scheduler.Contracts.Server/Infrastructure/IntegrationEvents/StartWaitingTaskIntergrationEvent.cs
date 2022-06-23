@@ -3,9 +3,9 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.IntegrationEvents;
 
-public record StartWaittingTaskIntergrationEvent : IntegrationEvent
+public record StartWaitingTaskIntergrationEvent : IntegrationEvent
 {
-    public override string Topic { get; set; } = nameof(StartWaittingTaskIntergrationEvent);
+    public override string Topic { get; set; } = nameof(StartWaitingTaskIntergrationEvent);
 
     public Guid TaskId { get; set; }
 

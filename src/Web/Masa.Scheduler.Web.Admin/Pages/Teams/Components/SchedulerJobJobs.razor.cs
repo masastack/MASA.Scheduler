@@ -117,6 +117,15 @@ public partial class SchedulerJobs : ProCompontentBase
         }
     }
 
+    private int TotalPage
+    {
+        get
+        {
+            var totalPage = (int)((_total + PageSize - 1) / PageSize);
+            return totalPage == 0 ? 1 : totalPage;
+        }
+    }
+
     public int Page
     {
         get => _page;
@@ -449,7 +458,10 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private Task OnNextHandler()
     {
-        Page++;
+        if (Page < TotalPage)
+        {
+            Page++;
+        }
         return Task.CompletedTask;
     }
 

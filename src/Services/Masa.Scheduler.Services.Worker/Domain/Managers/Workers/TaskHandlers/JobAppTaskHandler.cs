@@ -53,8 +53,8 @@ public class JobAppTaskHandler : ITaskHandler
 
         var processUtils = new ProcessUtils(_loggerFactory);
 
-        processUtils.OutputDataReceived += JobApp_OutputDataReceived;
-        processUtils.ErrorDataReceived += JobApp_ErrorDataReceived;
+        processUtils.OutputDataReceived += JobAppOutputDataReceived;
+        processUtils.ErrorDataReceived += JobAppErrorDataReceived;
         processUtils.Exit += JobApp_Exit;
 
         try
@@ -99,7 +99,7 @@ public class JobAppTaskHandler : ITaskHandler
         return string.Join(" ", parameterList);
     }
 
-    private void JobApp_ErrorDataReceived(object? sender, System.Diagnostics.DataReceivedEventArgs e)
+    private void JobAppErrorDataReceived(object? sender, System.Diagnostics.DataReceivedEventArgs e)
     {
         if (e.Data == null)
         {
@@ -111,7 +111,7 @@ public class JobAppTaskHandler : ITaskHandler
         _runStatus = TaskRunStatus.Failure;
     }
 
-    private void JobApp_OutputDataReceived(object? sender, System.Diagnostics.DataReceivedEventArgs e)
+    private void JobAppOutputDataReceived(object? sender, System.Diagnostics.DataReceivedEventArgs e)
     {
         if (e.Data == null)
         {

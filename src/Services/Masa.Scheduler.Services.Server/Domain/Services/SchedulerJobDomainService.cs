@@ -23,4 +23,9 @@ public class SchedulerJobDomainService : DomainService
     {
         await EventBus.PublishAsync(new RegisterCronJobDomainEvent(request));
     }
+
+    public async Task RemoveCronJobAsync(RemoveCronJobRequest request)
+    {
+        await EventBus.PublishAsync(new RemoveCronJobDomainEvent(request));
+    }
 }

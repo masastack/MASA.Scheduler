@@ -15,7 +15,7 @@ public class RegisterCronJobDomainEventHandler
     [EventHandler]
     public async Task RegisterCronJobAsync(RegisterCronJobDomainEvent @event)
     {
-        if(@event.Request.Data.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(@event.Request.Data.CronExpression))
+        if(@event.Request.Data.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(@event.Request.Data.CronExpression))
         {
             await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(@event.Request.Data.Id, @event.Request.Data.CronExpression);
         }
