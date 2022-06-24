@@ -4,6 +4,7 @@ using Masa.Scheduler.Services.Server.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masa.Scheduler.Services.Server.Migrations
 {
     [DbContext(typeof(SchedulerDbContext))]
-    partial class SchedulerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220622095650_SchedulerTaskAddExcuteTime")]
+    partial class SchedulerTaskAddExcuteTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,9 +189,6 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTimeOffset>("UpdateExpiredStrategyTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BelongProjectId");
@@ -267,6 +266,9 @@ namespace Masa.Scheduler.Services.Server.Migrations
 
                     b.Property<Guid>("Creator")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ExcuteTime")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");

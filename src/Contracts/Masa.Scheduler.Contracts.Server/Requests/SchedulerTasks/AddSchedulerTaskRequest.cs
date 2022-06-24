@@ -10,4 +10,6 @@ public class AddSchedulerTaskRequest : BaseRequest
     public string Origin { get; set; } = string.Empty;
 
     public Guid OperatorId { get; set; }
+
+    public DateTimeOffset ExcuteTime { get; set; }
 }

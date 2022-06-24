@@ -9,5 +9,7 @@ public class StartSchedulerTaskRequest : BaseRequest
 
     public bool IsManual { get; set; }
 
+    public DateTimeOffset ExcuteTime { get; set; } = DateTimeOffset.MinValue;
+
     public Guid OperatorId { get; set; }
 }

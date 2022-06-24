@@ -47,6 +47,8 @@ public class SchedulerJobDto
 
     public string Origin { get; set; } = string.Empty;
 
+    public DateTimeOffset UpdateExpiredStrategyTime { get; set; }
+
     public DateTimeOffset LastScheduleTime { get; set; } = DateTimeOffset.MinValue;
 
     public DateTimeOffset LastRunStartTime { get; set; } = DateTimeOffset.MinValue;

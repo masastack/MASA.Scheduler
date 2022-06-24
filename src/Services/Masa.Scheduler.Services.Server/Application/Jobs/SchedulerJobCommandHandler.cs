@@ -19,6 +19,8 @@ public class SchedulerJobCommandHandler
     [EventHandler]
     public async Task AddHandleAsync(AddSchedulerJobCommand command)
     {
+        command.Request.Data.UpdateExpiredStrategyTime = DateTimeOffset.Now;
+
         var job = _mapper.Map<SchedulerJob>(command.Request.Data);
 
         await _schedulerJobRepository.AddAsync(job);
@@ -41,6 +43,11 @@ public class SchedulerJobCommandHandler
         if(job is null)
         {
             throw new UserFriendlyException($"The current job does not exist");
+        }
+
+        if(job.ScheduleExpiredStrategy != jobDto.ScheduleExpiredStrategy || job.CronExpression != jobDto.CronExpression)
+        {
+            jobDto.UpdateExpiredStrategyTime = DateTimeOffset.Now;
         }
 
         job.UpdateJob(jobDto);
@@ -88,6 +95,7 @@ public class SchedulerJobCommandHandler
     [EventHandler]
     public async Task StartJobHandleAsync(StartSchedulerJobCommand command)
     {
+        command.Request.ExcuteTime = DateTimeOffset.Now;
         await _schedulerJobDomainService.StartJobAsync(command.Request);
     }
 }

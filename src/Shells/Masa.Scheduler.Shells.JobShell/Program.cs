@@ -40,6 +40,13 @@ if(assemblyType == null)
     return;
 }
 
+if (assemblyType.GetInterface(typeof(ISchedulerJob).Name) == null)
+{
+    result.Message = $"Class: {assemblyType.Name} not implement ISchedulerJob";
+    Console.WriteLine(JsonSerializer.Serialize(result));
+    return;
+}
+
 string[]? parameterArr = null;
 
 if (args.Length >= 4)
@@ -49,7 +56,26 @@ if (args.Length >= 4)
     parameterArr = parameter.Split(";");
 }
 
-var instance = Activator.CreateInstance(assemblyType);
+var excuteTime = DateTimeOffset.Now;
+
+if (args.Length >= 5)
+{
+    DateTimeOffset parseExcuteTime = Convert.ToDateTime(args[4]);
+
+    if(parseExcuteTime != DateTimeOffset.MinValue)
+    {
+        excuteTime = parseExcuteTime;
+    }
+}
+
+var instance = Activator.CreateInstance(assemblyType) as ISchedulerJob;
+
+if(instance == null)
+{
+    result.Message = $"Cannot create ISchedulerJob instance";
+    Console.WriteLine(JsonSerializer.Serialize(result));
+    return;
+}
 
 var method = assemblyType.GetMethod(methodName);
 
@@ -62,7 +88,15 @@ if(method == null)
 
 try
 {
+    var jobContext = new JobContext() { ExcuteMethodName = methodName, ExecutionTime = excuteTime, ExcuteParameters = parameterArr == null ? new() : parameterArr.ToList() };
+
+    await instance.BeforeExcuteAsync(jobContext);
+
     var methodResult = method.Invoke(instance, parameterArr);
+
+    jobContext.ExcuteResult = methodResult;
+
+    await instance.AfterExcuteAsync(jobContext);
 
     result.IsSuccess = true;
 

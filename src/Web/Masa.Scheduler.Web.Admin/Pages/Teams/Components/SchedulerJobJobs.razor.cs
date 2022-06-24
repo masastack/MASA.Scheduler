@@ -17,14 +17,43 @@ public partial class SchedulerJobs : ProCompontentBase
             if (_project?.Id != value?.Id)
             {
                 _project = value;
-
+                _projectChange = true;
                 OnQueryDataChanged();
+            }
+            else
+            {
+                _projectChange = false;
             }
         }
     }
 
     [Parameter]
     public EventCallback<SchedulerJobDto> OnJobSelect { get; set; }
+
+    [Parameter]
+    public bool Visible
+    {
+        get
+        {
+            return _visible;
+        }
+        set
+        {
+            if (_visible != value)
+            {
+                _visible = value;
+
+                if (_visible && !_projectChange)
+                {
+                    OnQueryDataChanged();
+                }
+            }
+        }
+    }
+
+    private bool _projectChange;
+
+    private bool _visible;
 
     private ProjectDto? _project = default;
 
@@ -191,6 +220,8 @@ public partial class SchedulerJobs : ProCompontentBase
 
         _queryStatusList = GetEnumMap<TaskRunStatus>();
 
+        _queryStatusList.RemoveAll(p=> p.Value == TaskRunStatus.WaitToRun);
+
         await base.OnInitializedAsync();
     }
 
@@ -339,8 +370,8 @@ public partial class SchedulerJobs : ProCompontentBase
             case TaskRunStatus.Running:
                 var runTime = (DateTimeOffset.Now - job.LastRunStartTime).TotalSeconds;
                 return T("AlreadyRun") + GetRunTimeDescription(runTime);
-            case TaskRunStatus.WaitToRun:
-                return T("WaitToRun");
+            case TaskRunStatus.WaitToRetry:
+                return T("WaitToRetry");
             case TaskRunStatus.Success:
             case TaskRunStatus.Failure:
             case TaskRunStatus.Timeout:

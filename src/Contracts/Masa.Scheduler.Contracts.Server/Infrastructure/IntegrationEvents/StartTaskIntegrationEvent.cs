@@ -10,4 +10,6 @@ public record StartTaskIntegrationEvent : BaseIntegrationEvent
     public SchedulerJobDto Job { get; set; } = default!;
 
     public Guid TaskId { get; set; }
+
+    public DateTimeOffset ExcuteTime { get; set; }
 }

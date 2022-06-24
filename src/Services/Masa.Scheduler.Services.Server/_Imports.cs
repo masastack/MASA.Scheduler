@@ -103,3 +103,4 @@ global using Masa.Scheduler.Services.Server.Infrastructure.Quartz;
 global using Masa.Scheduler.Services.Server.Domain.QuartzJob;
 global using Quartz.Spi;
 global using Quartz.Impl;
+global using System.Runtime;

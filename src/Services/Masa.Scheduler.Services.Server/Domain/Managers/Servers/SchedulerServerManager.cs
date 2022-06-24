@@ -13,6 +13,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     private readonly IRepository<SchedulerJob> _jobRepository;
     private readonly SchedulerDbContext _dbContext;
     private readonly QuartzUtils _quartzUtils;
+    private readonly IDomainEventBus _domainEventBus;
 
     public SchedulerServerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -28,7 +29,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         IRepository<SchedulerResource> resourceRepository,
         IRepository<SchedulerJob> jobRepository,
         QuartzUtils quartzUtils,
-        SchedulerDbContext dbContext)
+        SchedulerDbContext dbContext,
+        IDomainEventBus domainEventBus)
         : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
     {
         _logger = logger;
@@ -39,6 +41,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         _jobRepository = jobRepository;
         _quartzUtils = quartzUtils;
         _dbContext = dbContext;
+        _domainEventBus = domainEventBus;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_SERVER_MANAGER_API}/heartbeat";
@@ -51,21 +54,23 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         await StartAssignAsync();
 
-        await RegisterCronJobAsync();
+        await _quartzUtils.StartQuartzScheduler();
 
-        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry).ToListAsync();
+        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry).AsNoTracking().ToListAsync();
 
         await LoadRunningTaskAsync(allTask);
 
         await LoadRetryTaskAsync(allTask);
-    }
-
-    private async Task RegisterCronJobAsync()
-    {
-        await _quartzUtils.StartQuartzScheduler();
 
         var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression));
 
+        await RegisterCronJobAsync(cronJobList);
+
+        await CheckSchedulerExpiredJobAsync(cronJobList);
+    }
+
+    private async Task RegisterCronJobAsync(IEnumerable<SchedulerJob> cronJobList)
+    {
         foreach (var cronJob in cronJobList)
         {
             await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(cronJob.Id, cronJob.CronExpression);
@@ -79,6 +84,49 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         foreach (var runningTask in runningTaskList)
         {
             await TaskEnqueue(runningTask);
+        }
+    }
+
+    private async Task CheckSchedulerExpiredJobAsync(IEnumerable<SchedulerJob> cronJobList)
+    {
+        foreach (var cronJob in cronJobList)
+        {
+            var request = new StartSchedulerJobRequest()
+            {
+                JobId = cronJob.Id,
+                OperatorId = Guid.Empty
+            };
+
+            var calcStartTime = cronJob.UpdateExpiredStrategyTime;
+
+            var lastTask = await _dbContext.Tasks.OrderByDescending(t => t.SchedulerTime).AsNoTracking().FirstOrDefaultAsync();
+
+            if(lastTask != null && calcStartTime < lastTask.SchedulerTime)
+            {
+                calcStartTime = lastTask.SchedulerTime;
+            }
+
+            var excuteTimeList = await _quartzUtils.GetCronExcuteTimeByTimeRange(cronJob.CronExpression, calcStartTime, DateTimeOffset.Now);
+
+            switch (cronJob.ScheduleExpiredStrategy)
+            {
+                case ScheduleExpiredStrategyTypes.ExecuteImmediately:
+                    if (excuteTimeList.Any())
+                    {
+                        request.ExcuteTime = DateTimeOffset.Now;
+                        await _domainEventBus.PublishAsync(new StartJobDomainEvent(request));
+                    }
+                    break;
+                case ScheduleExpiredStrategyTypes.AutoCompensation:
+                    foreach (var excuteTime in excuteTimeList)
+                    {
+                        request.ExcuteTime = excuteTime;
+                        await _domainEventBus.PublishAsync(new StartJobDomainEvent(request));
+                    }
+                    break;
+                default:
+                    continue;
+            }
         }
     }
 
@@ -165,7 +213,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             TaskId = taskDto.Id,
             Job = taskDto.Job,
-            ServiceId = worker.ServiceId
+            ServiceId = worker.ServiceId,
+            ExcuteTime = taskDto.SchedulerTime
         };
 
         await EventBus.PublishAsync(@event);
@@ -184,6 +233,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
             if(worker != null)
             {
+                _data.StopByManual.Add(taskId);
+
                 var @event = new StopTaskIntegrationEvent()
                 {
                     TaskId = taskId,
@@ -222,9 +273,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                     continue;
                 }
 
+                SchedulerTaskDto? taskDto = null;
+
                 try
                 {
-                    if (_data.TaskQueue.TryDequeue(out var taskDto))
+                    if (_data.TaskQueue.TryDequeue(out taskDto))
                     {
                         if (_data.StopTask.Any(p => p == taskDto.Id))
                         {
@@ -276,6 +329,10 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 }
                 catch(Exception ex)
                 {
+                    if(taskDto != null)
+                    {
+                        _data.TaskQueue.Enqueue(taskDto);
+                    }
                     Logger.LogError(ex, "StartAssignAsync");
                 }
             }

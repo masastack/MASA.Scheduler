@@ -53,6 +53,8 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
     public string Origin { get; private set; } = string.Empty;
 
+    public DateTimeOffset UpdateExpiredStrategyTime { get; private set; } = DateTimeOffset.MinValue;
+
     public DateTimeOffset LastScheduleTime { get; private set; } = DateTimeOffset.MinValue;
 
     public DateTimeOffset LastRunStartTime { get; private set; } = DateTimeOffset.MinValue;
@@ -132,6 +134,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         FailedRetryInterval = dto.FailedRetryInterval;
         FailedRetryCount = dto.FailedRetryCount;
         Description = dto.Description;
+        UpdateExpiredStrategyTime = dto.UpdateExpiredStrategyTime;
 
         switch (dto.JobType)
         {
@@ -151,7 +154,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
     public void UpdateLastScheduleTime(DateTimeOffset scheduleTime)
     {
-        LastScheduleTime = scheduleTime;
+        LastScheduleTime = scheduleTime == DateTimeOffset.MinValue ? DateTimeOffset.Now : scheduleTime;
     }
 
     public void UpdateLastRunDetail(TaskRunStatus taskRunStatus)
