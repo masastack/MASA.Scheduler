@@ -6,6 +6,7 @@ namespace Masa.Scheduler.Services.Server.Domain.QuartzJob;
 public class StartSchedulerJobQuartzJob : IJob
 {
     private readonly IDomainEventBus _eventBus;
+
     public StartSchedulerJobQuartzJob(IDomainEventBus eventBus)
     {
         _eventBus = eventBus;

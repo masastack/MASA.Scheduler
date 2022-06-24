@@ -7,6 +7,7 @@ public class QuartzUtils
 {
     private readonly ISchedulerFactory _schedulerFactory;
     private IScheduler _scheduler = default!;
+
     public QuartzUtils(ISchedulerFactory schedulerFactory)
     {
         _schedulerFactory = schedulerFactory;
