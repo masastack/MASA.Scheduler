@@ -65,6 +65,15 @@ public partial class SchedulerTasks
         return Task.CompletedTask;
     }
 
+    private int TotalPage
+    {
+        get
+        {
+            var totalPage = (int)((_total + PageSize - 1) / PageSize);
+            return totalPage == 0 ? 1 : totalPage;
+        }
+    }
+
     public int Page
     {
         get => _page; 
@@ -136,6 +145,8 @@ public partial class SchedulerTasks
         };
 
         _queryStatusList = GetEnumMap<TaskRunStatus>();
+
+        _queryStatusList.RemoveAll(p => p.Value == TaskRunStatus.Idle);
 
         await base.OnInitializedAsync();
     }
@@ -216,6 +227,7 @@ public partial class SchedulerTasks
         {
             //todo: use current login user
             OperatorId = Guid.Empty,
+            IsManual = true,
             TaskId = taskId
         };
 
@@ -261,6 +273,30 @@ public partial class SchedulerTasks
 
         _lastQueryStatus = _queryStatus;
 
+        return Task.CompletedTask;
+    }
+
+    private Task OnPrevHandler()
+    {
+        if(Page > 1)
+        {
+            Page--;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task OnNextHandler()
+    {
+        if (Page < TotalPage)
+        {
+            Page++;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task OnPageSizeChanged(int pageSize)
+    {
+        PageSize = pageSize;
         return Task.CompletedTask;
     }
 }

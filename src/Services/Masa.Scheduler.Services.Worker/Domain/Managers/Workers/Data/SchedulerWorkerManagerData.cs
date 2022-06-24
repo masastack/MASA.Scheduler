@@ -8,4 +8,6 @@ public class SchedulerWorkerManagerData : BaseSchedulerManagerData<ServerModel>
     public Queue<TaskRunModel> TaskQueue { get; set; } = new Queue<TaskRunModel>();
 
     public Dictionary<Guid, CancellationTokenSource> TaskCancellationTokenSources = new Dictionary<Guid, CancellationTokenSource>();
+
+    public Dictionary<Guid, CancellationTokenSource> InternalCancellationTokenSources = new Dictionary<Guid, CancellationTokenSource>();
 }

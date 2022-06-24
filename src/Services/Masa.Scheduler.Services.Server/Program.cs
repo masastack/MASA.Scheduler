@@ -23,6 +23,8 @@ builder.Services.AddMapping();
 builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR();
+builder.Services.AddQuartzUtils();
+//builder.Services.AddQuartzJob();
 
 builder.Services.AddAliyunStorage(serviceProvider =>
 {

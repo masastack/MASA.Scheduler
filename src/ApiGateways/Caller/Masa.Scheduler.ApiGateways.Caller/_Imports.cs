@@ -12,3 +12,4 @@ global using Masa.Scheduler.Contracts.Server.Dtos;
 global using Masa.Scheduler.Contracts.Server.Requests.SchedulerJobs;
 global using Masa.Scheduler.Contracts.Server.Requests.SchedulerTasks;
 global using Masa.Scheduler.Contracts.Server.Requests.SchedulerResources;
+global using Masa.Scheduler.Contracts.Server.Model;

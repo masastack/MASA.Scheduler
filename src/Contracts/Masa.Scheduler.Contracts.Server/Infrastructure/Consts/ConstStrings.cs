@@ -15,4 +15,6 @@ public class ConstStrings
     public const string PUB_SUB_NAME = "pubsub";
     public const string GLOBAL_GROUP = "Global";
     public const string OSS_API = "api/oss";
+    public const string JOB_ID = "JobId";
+    public const string TASK_ID = "TaskId";
 }

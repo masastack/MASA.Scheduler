@@ -25,3 +25,5 @@ global using Microsoft.Extensions.Logging;
 global using Microsoft.AspNetCore.SignalR.Client;
 global using Microsoft.Extensions.Hosting;
 global using Masa.Utils.Security.Cryptography;
+global using System.Diagnostics;
+global using System.Text;

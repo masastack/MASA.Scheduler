@@ -11,6 +11,7 @@ public class SchedulerTaskService : ServiceBase
         MapPut(StartAsync);
         MapPut(StopAsync);
         MapDelete(RemoveAsync, string.Empty);
+        MapPost(StartWaitingTask);
     }
 
     public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] Guid jobId, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTime? queryStartTime, [FromQuery] DateTime? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize)
@@ -30,6 +31,18 @@ public class SchedulerTaskService : ServiceBase
         var query = new SchedulerTaskQuery(request);
         await eventBus.PublishAsync(query);
         return Results.Ok(query.Result);
+    }
+
+    [Topic(ConstStrings.PUB_SUB_NAME, nameof(StartWaitingTaskIntergrationEvent))]
+    public async Task StartWaitingTask([FromServices] IEventBus eventBus, StartWaitingTaskIntergrationEvent @event)
+    {
+        var request = new StartSchedulerTaskRequest()
+        {
+            TaskId = @event.TaskId,
+            OperatorId = @event.OperatorId
+        };
+        var comman = new StartSchedulerTaskCommand(request);
+        await eventBus.PublishAsync(comman);
     }
 
     public async Task<IResult> StartAsync(IEventBus eventBus, [FromBody] StartSchedulerTaskRequest request)

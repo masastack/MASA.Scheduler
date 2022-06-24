@@ -22,6 +22,13 @@ public class SchedulerJobCommandHandler
         var job = _mapper.Map<SchedulerJob>(command.Request.Data);
 
         await _schedulerJobRepository.AddAsync(job);
+
+        var request = new RegisterCronJobRequest()
+        {
+            Data = command.Request.Data
+        };
+
+        await _schedulerJobDomainService.RegisterCronJobAsync(request);
     }
 
     [EventHandler]
@@ -39,6 +46,13 @@ public class SchedulerJobCommandHandler
         job.UpdateJob(jobDto);
 
         await _schedulerJobRepository.UpdateAsync(job);
+
+        var request = new RegisterCronJobRequest()
+        {
+            Data = jobDto
+        };
+
+        await _schedulerJobDomainService.RegisterCronJobAsync(request);
     }
 
     [EventHandler]
@@ -52,6 +66,8 @@ public class SchedulerJobCommandHandler
         }
 
         await _schedulerJobRepository.RemoveAsync(job);
+
+        await _schedulerJobDomainService.RemoveCronJobAsync(new RemoveCronJobRequest() { JobId = job.Id });
     }
 
     [EventHandler]

@@ -12,5 +12,7 @@ public class SchedulerJobDaprServiceInvocationConfigDto
     public HttpMethods HttpMethod { get; set; }
 
     public string Data { get; set; } = string.Empty;
+
+    public string DaprServiceIdentity { get; set; } = string.Empty;
 }
 

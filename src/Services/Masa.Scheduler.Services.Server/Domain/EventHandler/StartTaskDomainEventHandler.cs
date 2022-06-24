@@ -10,14 +10,18 @@ public class StartTaskDomainEventHandler
     private readonly SchedulerServerManager _serverManager;
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly QuartzUtils _quartzUtils;
+    private readonly IDistributedCacheClient _distributedCacheClient;
 
-    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper)
+    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper, QuartzUtils quartzUtils, IDistributedCacheClient distributedCacheClient)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
         _serverManager = serverManager;
         _dbContext = dbContext;
         _mapper = mapper;
+        _quartzUtils = quartzUtils;
+        _distributedCacheClient = distributedCacheClient;
     }
 
     [EventHandler(1)]
@@ -49,16 +53,71 @@ public class StartTaskDomainEventHandler
             throw new UserFriendlyException($"SchedulerJob was disabled or deleted");
         }
 
+        // When task is running, restart will stop task first
         if (task.TaskStatus == TaskRunStatus.Running)
         {
             await _serverManager.StopTask(task.Id, task.WorkerHost);
         }
 
-        task.TaskSchedule(@event.Request.OperatorId);
+        // When task run by manual, remove FailedStrategy delay task
+        if (task.TaskStatus == TaskRunStatus.WaitToRetry && @event.Request.IsManual)
+        {
+            await _quartzUtils.RemoveDelayTask(task.Id, task.Job.Id);
+            await _distributedCacheClient.RemoveAsync<int>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
+        }
+
+        var filterStatus = new List<TaskRunStatus>() { TaskRunStatus.Running, TaskRunStatus.WaitToRetry, TaskRunStatus.Idle };
+
+        var otherRunningTaskList = await _schedulerTaskRepository.GetListAsync(t => filterStatus.Contains(t.TaskStatus) && t.JobId == task.JobId && t.Id != task.Id);
+
+        var allowEnqueue = true;
+
+        if (otherRunningTaskList.Any())
+        {
+            switch (task.Job.ScheduleBlockStrategy)
+            {
+                case ScheduleBlockStrategyTypes.Serial:
+                    task.Wait();
+                    allowEnqueue = false;
+                    break;
+                case ScheduleBlockStrategyTypes.Discard:
+                    task.Discard();
+                    allowEnqueue = false;
+                    break;
+                case ScheduleBlockStrategyTypes.Cover:
+                    foreach (var otherRunningTask in otherRunningTaskList)
+                    {
+                        if (otherRunningTask.TaskStatus == TaskRunStatus.Running)
+                        {
+                            await _serverManager.StopTask(otherRunningTask.Id, otherRunningTask.WorkerHost);
+                        }
+                        else
+                        {
+                            await _quartzUtils.RemoveDelayTask(otherRunningTask.Id, task.Job.Id);
+                        }
+
+                        otherRunningTask.TaskEnd(TaskRunStatus.Failure, "Stop by SchedulerBlockStrategy");
+                        await _schedulerTaskRepository.UpdateAsync(otherRunningTask);
+                    }
+                    task.TaskSchedule(@event.Request.OperatorId);
+                    break;
+                default:
+                    task.TaskSchedule(@event.Request.OperatorId);
+                    break;
+            }
+        }
+        else
+        {
+            task.TaskSchedule(@event.Request.OperatorId);
+        }
 
         await _schedulerTaskRepository.UpdateAsync(task);
         await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
+        await _schedulerTaskRepository.UnitOfWork.CommitAsync();
 
-        await _serverManager.TaskEnqueue(task);
+        if (allowEnqueue)
+        {
+            await _serverManager.TaskEnqueue(task);
+        }
     }
 }

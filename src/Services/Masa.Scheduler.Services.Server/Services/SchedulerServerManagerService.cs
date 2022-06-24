@@ -9,7 +9,7 @@ public class SchedulerServerManagerService : ServiceBase
     {
         MapPost(MonitorWorkerOnlineAsync);
         MapGet(OnlineAsync);
-        MapGet(ListAsync);
+        MapGet(GetWorkerListAsync);
         MapGet(Heartbeat);
         MapPost(NotifyTaskRunResultAsync);
         MapPost(MonitorTaskStartAsync);
@@ -34,7 +34,7 @@ public class SchedulerServerManagerService : ServiceBase
         return Results.Ok();
     }
 
-    public IResult ListAsync([FromServices] SchedulerServerManager serverManager)
+    public IResult GetWorkerListAsync([FromServices] SchedulerServerManager serverManager)
     {
         return Results.Ok(serverManager.ServiceList);
     }

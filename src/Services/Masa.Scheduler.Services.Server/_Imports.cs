@@ -98,3 +98,8 @@ global using Dapr.Client;
 global using Masa.BuildingBlocks.Storage.ObjectStorage;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;
+global using Quartz;
+global using Masa.Scheduler.Services.Server.Infrastructure.Quartz;
+global using Masa.Scheduler.Services.Server.Domain.QuartzJob;
+global using Quartz.Spi;
+global using Quartz.Impl;

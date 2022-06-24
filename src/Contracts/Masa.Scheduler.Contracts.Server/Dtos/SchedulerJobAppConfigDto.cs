@@ -14,5 +14,7 @@ public class SchedulerJobAppConfigDto
     public string JobParams { get; set; } = string.Empty;
 
     public string Version { get; set; } = string.Empty;
+
+    public SchedulerResourceDto? SchedulerResourceDto { get; set; }
 }
 
