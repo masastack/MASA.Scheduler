@@ -427,7 +427,7 @@ public partial class SchedulerJobs : ProCompontentBase
     {
         var request = new ChangeEnabledStatusRequest()
         {
-            Id = job.Id,
+            JobId = job.Id,
             Enabled = false
         };
 
@@ -442,7 +442,7 @@ public partial class SchedulerJobs : ProCompontentBase
     {
         var request = new ChangeEnabledStatusRequest()
         {
-            Id = job.Id,
+            JobId = job.Id,
             Enabled = true
         };
 
