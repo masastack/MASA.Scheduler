@@ -15,7 +15,7 @@ public class SchedulerJobService : ServiceBase
         MapPost(AddSchedulerJobBySdkAsync);
     }
 
-    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string projectIdentity)
+    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string belongProjectIdentity)
     {
         var request = new SchedulerJobListRequest()
         {
@@ -29,7 +29,7 @@ public class SchedulerJobService : ServiceBase
             QueryEndTime = queryEndTime,
             Page = page,
             PageSize = pageSize,
-            BelongProjectIdentity = projectIdentity
+            BelongProjectIdentity = belongProjectIdentity
         };
 
         var query = new SchedulerJobQuery(request);
