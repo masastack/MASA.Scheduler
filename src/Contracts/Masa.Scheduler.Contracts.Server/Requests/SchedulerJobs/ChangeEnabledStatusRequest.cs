@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerJobs;
 
 public class ChangeEnabledStatusRequest : BaseRequest
 {
-    public Guid Id { get; set; }
+    public Guid JobId { get; set; }
 
     public Guid OperatorId { get; set; }
 
