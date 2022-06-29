@@ -68,6 +68,13 @@ if (args.Length >= 5)
     }
 }
 
+var jobId = Guid.Empty;
+
+if(args.Length >= 6 && args[5] != null)
+{
+    jobId = new Guid(args[5].ToString());
+}
+
 var instance = Activator.CreateInstance(assemblyType) as ISchedulerJob;
 
 if(instance == null)
@@ -88,7 +95,7 @@ if(method == null)
 
 try
 {
-    var jobContext = new JobContext() { ExcuteMethodName = methodName, ExecutionTime = excuteTime, ExcuteParameters = parameterArr == null ? new() : parameterArr.ToList() };
+    var jobContext = new JobContext() { TaskId = result.TaskId, JobId = jobId, ExcuteMethodName = methodName, ExecutionTime = excuteTime, ExcuteParameters = parameterArr == null ? new() : parameterArr.ToList() };
 
     await instance.BeforeExcuteAsync(jobContext);
 
