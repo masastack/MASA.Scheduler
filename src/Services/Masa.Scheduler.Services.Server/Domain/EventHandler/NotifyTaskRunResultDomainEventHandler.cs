@@ -12,6 +12,7 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly IDistributedCacheClient _distributedCacheClient;
     private readonly QuartzUtils _quartzUtils;
     private readonly IIntegrationEventBus _eventBus;
+    private readonly SchedulerServerManagerData _data;
 
     public NotifyTaskRunResultDomainEventHandler(
         IRepository<SchedulerTask> schedulerTaskRepository,
@@ -20,7 +21,8 @@ public class NotifyTaskRunResultDomainEventHandler
         IHubContext<NotificationsHub> hubContext,
         IDistributedCacheClient distributedCacheClient,
         QuartzUtils quartzUtils,
-        IIntegrationEventBus eventBus)
+        IIntegrationEventBus eventBus,
+        SchedulerServerManagerData data)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _dbContext = dbContext;
@@ -29,6 +31,7 @@ public class NotifyTaskRunResultDomainEventHandler
         _distributedCacheClient = distributedCacheClient;
         _quartzUtils = quartzUtils;
         _eventBus = eventBus;
+        _data = data;
     }
 
     [EventHandler]
@@ -39,6 +42,12 @@ public class NotifyTaskRunResultDomainEventHandler
         if (task == null)
         {
             throw new UserFriendlyException($"cannot find task, task Id: {@event.Request.TaskId}");
+        }
+
+        if (_data.StopByManual.Contains(@event.Request.TaskId))
+        {
+            _data.StopByManual.Remove(@event.Request.TaskId);
+            return;
         }
 
         TaskRunStatus status = @event.Request.Status;
@@ -104,6 +113,5 @@ public class NotifyTaskRunResultDomainEventHandler
 
         var groupClient = _hubContext.Clients.Groups(ConstStrings.GLOBAL_GROUP);
         await groupClient.SendAsync(SignalRMethodConsts.GET_NOTIFICATION);
-
     }
 }

@@ -26,24 +26,24 @@ public partial class Projects
 
     private string _projectName = string.Empty;
     private List<ProjectDto> _projects = new();
-    private StringNumber _selectedProjectId = null!;
+    private StringNumber _selectedProjectIdentity = null!;
     private Guid? _teamId = null;
 
-    public StringNumber SelectedProjectId
+    public StringNumber SelectedProjectIdentity
     {
         get 
         { 
-            return _selectedProjectId; 
+            return _selectedProjectIdentity; 
         }
         set
         {
-            if(_selectedProjectId != value)
+            if(_selectedProjectIdentity != value)
             {
-                _selectedProjectId = value;
+                _selectedProjectIdentity = value;
 
                 if (OnProjectChanged.HasDelegate)
                 {
-                    var project = _projects.FirstOrDefault(p => p.Id == _selectedProjectId.AsT1);
+                    var project = _projects.FirstOrDefault(p => p.Identity == _selectedProjectIdentity.AsT0);
 
                     OnProjectChanged.InvokeAsync(project);
                 }
@@ -69,11 +69,11 @@ public partial class Projects
 
         if (_projects.Any())
         {
-            SelectedProjectId = _projects.FirstOrDefault()!.Id;
+            SelectedProjectIdentity = _projects.FirstOrDefault()!.Identity;
         }
         else
         {
-            SelectedProjectId = 0;
+            SelectedProjectIdentity = string.Empty;
         }
 
         StateHasChanged();

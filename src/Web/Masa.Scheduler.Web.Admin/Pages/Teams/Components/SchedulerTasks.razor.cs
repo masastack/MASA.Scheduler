@@ -14,15 +14,42 @@ public partial class SchedulerTasks
         }
         set
         {
-            if(_job?.Id != value?.Id)
+            if (_job?.Id != value?.Id)
             {
                 _job = value;
-
+                _jobChange = true;
                 OnQueryDataChanged();
+            }
+            else
+            {
+                _jobChange = false;
             }
         }
     }
 
+    [Parameter]
+    public bool Visible
+    {
+        get
+        {
+            return _visible;
+        }
+        set
+        {
+            if(_visible != value)
+            {
+                _visible = value;
+
+                if (_visible && !_jobChange)
+                {
+                    OnQueryDataChanged();
+                }
+            }
+        }
+    }
+
+    private bool _jobChange;
+    private bool _visible;
     private TaskRunStatus _queryStatus;
     private TaskRunStatus _lastQueryStatus;
 

@@ -1,9 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Scheduler.Services.Server.Application.Teams;
+using Masa.Scheduler.Services.Server.Application.Auths.Queries;
 
-public class TeamQueryHandler
+namespace Masa.Scheduler.Services.Server.Application.Auths;
+
+public class AuthQueryHandler
 {
     [EventHandler]
     public Task TeamListHandleAsync(TeamQuery query)
@@ -31,6 +33,19 @@ public class TeamQueryHandler
                 Description ="SEC 团队",
                 MemberCount = 3,
             }
+        };
+
+        return Task.CompletedTask;
+    }
+
+    [EventHandler]
+    public Task GetUserAsync(UserQuery query)
+    {
+        query.Result = new UserDto()
+        {
+            Account = "Tester",
+            Id = Guid.Empty,
+            Name = "Tester"
         };
 
         return Task.CompletedTask;

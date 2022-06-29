@@ -28,7 +28,7 @@ public class JobAppTaskHandler : ITaskHandler
 
     TaskRunStatus _runStatus = TaskRunStatus.Failure;
 
-    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, CancellationToken token)
+    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime ,CancellationToken token)
     {
         if (jobDto.JobAppConfig is null)
         {
@@ -59,7 +59,7 @@ public class JobAppTaskHandler : ITaskHandler
 
         try
         {
-            var process = processUtils.Run("dotnet ", GetJobShellRunParameter(jobDto, resourcePath, taskId));
+            var process = processUtils.Run("dotnet ", GetJobShellRunParameter(jobDto, resourcePath, taskId, excuteTime));
 
             token.Register(() =>
             {
@@ -85,7 +85,7 @@ public class JobAppTaskHandler : ITaskHandler
         _logger.LogInformation("Job Exits");
     }
 
-    private string GetJobShellRunParameter(SchedulerJobDto dto, string resourcePath, Guid taskId)
+    private string GetJobShellRunParameter(SchedulerJobDto dto, string resourcePath, Guid taskId, DateTimeOffset excuteTime)
     {
         var parameterList = new List<string>()
         {
@@ -93,7 +93,8 @@ public class JobAppTaskHandler : ITaskHandler
             taskId.ToString(),
             Path.Combine(resourcePath, dto.JobAppConfig.JobEntryAssembly),
             dto.JobAppConfig.JobEntryMethod,
-            dto.JobAppConfig.JobParams
+            dto.JobAppConfig.JobParams,
+            excuteTime.ToString(),
         };
 
         return string.Join(" ", parameterList);

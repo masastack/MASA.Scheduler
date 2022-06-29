@@ -3,8 +3,8 @@
 
 namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerJobs;
 
-public class RemoveCronJobRequest : BaseRequest
+public class UpdateCronJobRequest : BaseRequest
 {
-    public Guid JobId { get; set; }
+    public SchedulerJobDto Data { get; set; } = new();
 }
 

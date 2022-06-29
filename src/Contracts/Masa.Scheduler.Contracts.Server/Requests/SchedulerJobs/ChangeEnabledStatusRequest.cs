@@ -7,6 +7,8 @@ public class ChangeEnabledStatusRequest : BaseRequest
 {
     public Guid Id { get; set; }
 
+    public Guid OperatorId { get; set; }
+
     public bool Enabled { get; set; }
 }
 

@@ -56,7 +56,7 @@ deploy-dev:
     - kubectl --kubeconfig ./config set image deployment/masa-scheduler-web-admin-server masa-scheduler-web-admin-server=$NEW_IMAGE_Scheduler_Web_Admin_Server_DEV -n masa-scheduler-dev
   retry: 2
 
-deploy-test:
+deploy-staging:
   stage: deploy-test
   tags:
     - linux-shell
@@ -66,9 +66,9 @@ deploy-test:
     - main  
   script:
     - echo $KUBE_CONFIG_DEV | base64 -d > ./config
-    - kubectl --kubeconfig ./config set image deployment/masa-scheduler-services-server masa-scheduler-services-server=$NEW_IMAGE_Scheduler_Server_Dev -n masa-scheduler-test
-    - kubectl --kubeconfig ./config set image deployment/masa-scheduler-services-worker masa-scheduler-services-worker=$NEW_IMAGE_Scheduler_Worker_Dev -n masa-scheduler-test
-    - kubectl --kubeconfig ./config set image deployment/masa-scheduler-web-admin-server masa-scheduler-web-admin-server=$NEW_IMAGE_Scheduler_Web_Admin_Server_DEV -n masa-scheduler-test
+    - kubectl --kubeconfig ./config set image deployment/masa-scheduler-services-server masa-scheduler-services-server=$NEW_IMAGE_Scheduler_Server_Dev -n masa-scheduler-staging
+    - kubectl --kubeconfig ./config set image deployment/masa-scheduler-services-worker masa-scheduler-services-worker=$NEW_IMAGE_Scheduler_Worker_Dev -n masa-scheduler-staging
+    - kubectl --kubeconfig ./config set image deployment/masa-scheduler-web-admin-server masa-scheduler-web-admin-server=$NEW_IMAGE_Scheduler_Web_Admin_Server_DEV -n masa-scheduler-staging
   retry: 2
   when: manual
 

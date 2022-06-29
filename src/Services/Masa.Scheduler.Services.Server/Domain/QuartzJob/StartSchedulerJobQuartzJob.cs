@@ -24,7 +24,8 @@ public class StartSchedulerJobQuartzJob : IJob
         var @event = new StartJobDomainEvent(new StartSchedulerJobRequest()
         {
             JobId = new Guid(jobId.ToString()!),
-            OperatorId = Guid.Empty
+            OperatorId = Guid.Empty,
+            ExcuteTime = DateTimeOffset.Now
         });
 
         await _eventBus.PublishAsync(@event);

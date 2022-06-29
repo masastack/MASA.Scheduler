@@ -43,9 +43,11 @@ public class SchedulerJobDto
 
     public Guid BelongTeamId { get; set; }
 
-    public int BelongProjectId { get; set; }
+    public string BelongProjectIdentity { get; set; } = string.Empty;
 
     public string Origin { get; set; } = string.Empty;
+
+    public DateTimeOffset UpdateExpiredStrategyTime { get; set; }
 
     public DateTimeOffset LastScheduleTime { get; set; } = DateTimeOffset.MinValue;
 

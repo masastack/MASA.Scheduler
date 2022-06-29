@@ -5,8 +5,6 @@ namespace Masa.Scheduler.Contracts.Server.Dtos;
 
 public class SchedulerJobDaprServiceInvocationConfigDto
 {
-    public int DaprServiceAppId { get; set; }
-
     public string MethodName { get; set; } = string.Empty;
 
     public HttpMethods HttpMethod { get; set; }

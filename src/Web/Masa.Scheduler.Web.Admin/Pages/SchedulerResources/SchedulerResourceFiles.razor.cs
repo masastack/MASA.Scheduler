@@ -26,24 +26,24 @@ public partial class SchedulerResourceFiles
         }
     }
 
-    private StringNumber? _selectedId;
-    private int _lastSelectedAppId;
+    private StringNumber? _selectedIdentity;
+    private string _lastSelectedAppIdentity = string.Empty;
 
     public StringNumber? SelectedId
     {
         get
         {
-            return _selectedId;
+            return _selectedIdentity;
         }
         set
         {
-            if (_selectedId != value)
+            if (_selectedIdentity != value)
             {
-                _selectedId = value;
+                _selectedIdentity = value;
 
-                if (_selectedId != null && _selectedId.IsT0 && _selectedId.AsT0.StartsWith(APP_PREFIX))
+                if (_selectedIdentity != null && _selectedIdentity.IsT0 && _selectedIdentity.AsT0.StartsWith(APP_PREFIX))
                 {
-                    LastSelectedAppId = int.Parse(_selectedId.AsT0.Replace(APP_PREFIX, ""));
+                    LastSelectedAppIdentity = _selectedIdentity.AsT0.Replace(APP_PREFIX, "");
 
                     SelectedResourceId = Guid.Empty.ToString();
 
@@ -91,14 +91,14 @@ public partial class SchedulerResourceFiles
 
     private MForm? _form;
 
-    public int LastSelectedAppId
+    public string LastSelectedAppIdentity
     {
-        get => _lastSelectedAppId;
+        get => _lastSelectedAppIdentity;
         set
         {
-            if (_lastSelectedAppId != value)
+            if (_lastSelectedAppIdentity != value)
             {
-                _lastSelectedAppId = value;
+                _lastSelectedAppIdentity = value;
                 OnSelectedAppIdChanged();
             }
         }
@@ -151,12 +151,12 @@ public partial class SchedulerResourceFiles
 
     private async Task GetResourceList()
     {
-        if (_lastSelectedAppId == 0)
+        if (string.IsNullOrWhiteSpace(_lastSelectedAppIdentity))
         {
             return;
         }
 
-        var request = new SchedulerResourceListRequest() { JobAppId = _lastSelectedAppId };
+        var request = new SchedulerResourceListRequest() { JobAppIdentity = _lastSelectedAppIdentity };
 
         var response = await SchedulerServerCaller.SchedulerResourceService.GetListAsync(request);
 
@@ -230,7 +230,7 @@ public partial class SchedulerResourceFiles
     private async Task AddResourceFile()
     {
         Model = new();
-        Model.JobAppId = LastSelectedAppId;
+        Model.JobAppIdentity = LastSelectedAppIdentity;
         Model.Version = await GetDefaultVersion();
         _isAdd = true;
     }

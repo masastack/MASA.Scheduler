@@ -9,7 +9,7 @@ public class SchedulerResourceDtoValidator : AbstractValidator<SchedulerResource
     {
         RuleFor(x=> x.FilePath).Required();
         RuleFor(x=> x.Name).Required();
-        RuleFor(x => x.JobAppId).NotEqual(0);
+        RuleFor(x => x.JobAppIdentity).Required();
         RuleFor(x => x.Version).Required();
     }
 }

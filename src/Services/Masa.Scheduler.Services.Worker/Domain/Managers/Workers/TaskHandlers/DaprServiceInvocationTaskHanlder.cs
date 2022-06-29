@@ -15,12 +15,14 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
         _logger = logger;
     }
 
-    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, CancellationToken token)
+    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, CancellationToken token)
     {
         if (jobDto.DaprServiceInvocationConfig is null)
         {
             throw new UserFriendlyException("DaprServiceInvocationConfig is required in Dapr Service Invocation Task");
         }
+
+        //todo add excuteTime parameter to data;
 
         var runStatus = TaskRunStatus.Failure;
 

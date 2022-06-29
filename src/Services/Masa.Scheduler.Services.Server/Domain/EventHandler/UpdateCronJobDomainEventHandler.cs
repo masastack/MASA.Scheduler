@@ -3,21 +3,25 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.EventHandler;
 
-public class RegisterCronJobDomainEventHandler
+public class UpdateCronJobDomainEventHandler
 {
     private readonly QuartzUtils _quartzUtils;
 
-    public RegisterCronJobDomainEventHandler(QuartzUtils quartzUtils)
+    public UpdateCronJobDomainEventHandler(QuartzUtils quartzUtils)
     {
         _quartzUtils = quartzUtils;
     }
 
     [EventHandler]
-    public async Task RegisterCronJobAsync(RegisterCronJobDomainEvent @event)
+    public async Task UpdateCronJobAsync(UpdateCronJobDomainEvent @event)
     {
-        if(@event.Request.Data.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(@event.Request.Data.CronExpression))
+        if(@event.Request.Data.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(@event.Request.Data.CronExpression) && @event.Request.Data.Enabled)
         {
             await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(@event.Request.Data.Id, @event.Request.Data.CronExpression);
+        }
+        else
+        {
+            await _quartzUtils.RemoveCronJob(@event.Request.Data.Id);
         }
     }
 }

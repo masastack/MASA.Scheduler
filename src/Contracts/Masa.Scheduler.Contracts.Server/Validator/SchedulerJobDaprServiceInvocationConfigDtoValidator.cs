@@ -7,9 +7,9 @@ public class SchedulerJobDaprServiceInvocationConfigDtoValidator: AbstractValida
 {
     public SchedulerJobDaprServiceInvocationConfigDtoValidator()
     {
-        RuleFor(config => config.DaprServiceAppId).Required();
         RuleFor(config => config.MethodName).Required();
         RuleFor(config => config.HttpMethod).Required();
+        RuleFor(config => config.DaprServiceIdentity).Required();
     }
 }
 

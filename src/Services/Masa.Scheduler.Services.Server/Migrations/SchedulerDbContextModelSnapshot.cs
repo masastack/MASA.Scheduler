@@ -76,8 +76,10 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("BelongProjectId")
-                        .HasColumnType("int");
+                    b.Property<string>("BelongProjectIdentity")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("BelongTeamId")
                         .HasColumnType("uniqueidentifier");
@@ -187,9 +189,12 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTimeOffset>("UpdateExpiredStrategyTime")
+                        .HasColumnType("datetimeoffset");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BelongProjectId");
+                    b.HasIndex("BelongProjectIdentity");
 
                     b.HasIndex("BelongTeamId");
 
@@ -225,8 +230,10 @@ namespace Masa.Scheduler.Services.Server.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("JobAppId")
-                        .HasColumnType("int");
+                    b.Property<string>("JobAppIdentity")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("ModificationTime")
                         .HasColumnType("datetime2");

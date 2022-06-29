@@ -5,6 +5,13 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <BaseOutputPath></BaseOutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Masa.BuildingBlocks.BasicAbility.Scheduler">
+      <HintPath>temp\Masa.BuildingBlocks.BasicAbility.Scheduler.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>

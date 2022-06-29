@@ -39,9 +39,13 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
         OperatorId = operatorId;
     }
 
+    public void UpdateTaskSchedulerTime(DateTimeOffset excuteTime)
+    {
+        SchedulerTime = excuteTime == DateTimeOffset.MinValue ? DateTimeOffset.Now : excuteTime;
+    }
+
     public void TaskSchedule(Guid operatorId)
     {
-        SchedulerTime = DateTimeOffset.Now;
         OperatorId = operatorId;
         TaskStatus = TaskRunStatus.Running;
         TaskRunStartTime = DateTimeOffset.MinValue;
@@ -55,13 +59,11 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
 
     public void Wait()
     {
-        SchedulerTime = DateTimeOffset.Now;
         TaskStatus = TaskRunStatus.WaitToRun;
     }
 
     public void Discard()
     {
-        SchedulerTime = DateTimeOffset.Now;
         TaskStatus = TaskRunStatus.Failure;
     }
 
