@@ -49,7 +49,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
     public Guid BelongTeamId { get; private set; }
 
-    public int BelongProjectId { get; private set; }
+    public string BelongProjectIdentity { get; private set; } = string.Empty;
 
     public string Origin { get; private set; } = string.Empty;
 
@@ -95,7 +95,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         int failedRetryCount,
         string description,
         Guid belongTeamId,
-        int belongProjectId)
+        string belongProjectIdentity)
     {
         Name = name;
         Owner = owner;
@@ -113,7 +113,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         FailedRetryCount = failedRetryCount;
         Description = description;
         Enabled = true;
-        BelongProjectId = belongProjectId;
+        BelongProjectIdentity = belongProjectIdentity;
         BelongTeamId = belongTeamId;
     }
 
@@ -187,7 +187,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
             return;
         }
         JobAppConfig ??= new();
-        JobAppConfig.SetConfig(dto.JobAppId, dto.JobEntryAssembly, dto.JobEntryMethod, dto.JobParams, dto.Version);
+        JobAppConfig.SetConfig(dto.JobAppIdentity, dto.JobEntryAssembly, dto.JobEntryMethod, dto.JobParams, dto.Version);
     }
 
     public void SetHttpConfig(SchedulerJobHttpConfigDto? dto)
@@ -208,6 +208,6 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
             return;
         }
         DaprServiceInvocationConfig ??= new();
-        DaprServiceInvocationConfig.SetConfig(dto.DaprServiceAppId, dto.MethodName, dto.HttpMethod, dto.Data, dto.DaprServiceIdentity);
+        DaprServiceInvocationConfig.SetConfig(dto.MethodName, dto.HttpMethod, dto.Data, dto.DaprServiceIdentity);
     }
 }

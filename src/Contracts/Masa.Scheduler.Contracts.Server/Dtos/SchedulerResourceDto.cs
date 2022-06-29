@@ -15,7 +15,7 @@ public class SchedulerResourceDto
 
     public string Version { get; set; } = string.Empty;
 
-    public int JobAppId { get; set; }
+    public string JobAppIdentity { get; set; } = string.Empty;
 
     public DateTimeOffset UploadTime { get; set; }
 

@@ -27,7 +27,7 @@ public partial class JobModal
         }
         set
         {
-            if(_model.Id != value.Id || _model.BelongProjectId != value.BelongProjectId)
+            if(_model.Id != value.Id || _model.BelongProjectIdentity != value.BelongProjectIdentity)
             {
                 _model = value;
 
@@ -109,21 +109,21 @@ public partial class JobModal
         return Task.CompletedTask;
     }
 
-    private async Task OnJobAppChanged(int jobAppId)
+    private async Task OnJobAppChanged(string jobAppIdentity)
     {
-        if (Model.JobAppConfig.JobAppId != jobAppId)
+        if (Model.JobAppConfig.JobAppIdentity != jobAppIdentity)
         {
-            Model.JobAppConfig.JobAppId = jobAppId;
+            Model.JobAppConfig.JobAppIdentity = jobAppIdentity;
 
-            await GetVersionList(jobAppId);
+            await GetVersionList(jobAppIdentity);
         }
     }
 
-    private async Task GetVersionList(int jobAppId)
+    private async Task GetVersionList(string jobAppIdentity)
     {
         var request = new SchedulerResourceListRequest()
         {
-            JobAppId = jobAppId
+            JobAppIdentity = jobAppIdentity
         };
 
         var resourceList = await SchedulerServerCaller.SchedulerResourceService.GetListAsync(request);
@@ -254,21 +254,19 @@ public partial class JobModal
             Form.ResetValidationAsync();
         }
 
-        if (Model.JobType == JobTypes.JobApp && Model.JobAppConfig.JobAppId != 0)
+        if (Model.JobType == JobTypes.JobApp && !string.IsNullOrEmpty(Model.JobAppConfig.JobAppIdentity))
         {
-            return GetVersionList(Model.JobAppConfig.JobAppId);
+            return GetVersionList(Model.JobAppConfig.JobAppIdentity);
         }
 
         return Task.CompletedTask;
     }
 
-    private Task DaprServiceAppChange(int daprServiceAppId)
+    private Task DaprServiceAppChange(string daprServiceAppIdentity)
     {
-        if(daprServiceAppId != Model.DaprServiceInvocationConfig.DaprServiceAppId)
+        if(daprServiceAppIdentity != Model.DaprServiceInvocationConfig.DaprServiceIdentity)
         {
-            Model.DaprServiceInvocationConfig.DaprServiceAppId = daprServiceAppId;
-            var app = Project.ProjectApps.FirstOrDefault(x => x.Id == daprServiceAppId)!;
-            Model.DaprServiceInvocationConfig.DaprServiceIdentity = app.Identity;
+            Model.DaprServiceInvocationConfig.DaprServiceIdentity = daprServiceAppIdentity;
         }
 
         return Task.CompletedTask;

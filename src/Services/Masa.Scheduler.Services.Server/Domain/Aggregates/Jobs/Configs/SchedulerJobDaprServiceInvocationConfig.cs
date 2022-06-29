@@ -6,9 +6,6 @@ namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs.Configs;
 public class SchedulerJobDaprServiceInvocationConfig : ValueObject
 {
     [JsonInclude]
-    public int DaprServiceAppId { get; private set; }
-
-    [JsonInclude]
     public string DaprServiceIdentity { get; private set; } = string.Empty;
 
     [JsonInclude]
@@ -20,9 +17,8 @@ public class SchedulerJobDaprServiceInvocationConfig : ValueObject
     [JsonInclude]
     public string Data { get; private set; } = string.Empty;
 
-    public void SetConfig(int daprServiceAppId, string methodName, HttpMethods httpMethod, string data, string daprServiceIdentity)
+    public void SetConfig(string methodName, HttpMethods httpMethod, string data, string daprServiceIdentity)
     {
-        DaprServiceAppId = daprServiceAppId;
         MethodName = methodName;
         HttpMethod = httpMethod;
         Data = data;
@@ -31,7 +27,6 @@ public class SchedulerJobDaprServiceInvocationConfig : ValueObject
 
     protected override IEnumerable<object> GetEqualityValues()
     {
-        yield return DaprServiceAppId;
         yield return MethodName;
         yield return HttpMethod;
         yield return Data;

@@ -194,7 +194,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         if(taskDto.Job.JobType == JobTypes.JobApp && taskDto.Job.JobAppConfig != null)
         {
-            var resourceList = await _resourceRepository.GetListAsync(r => r.JobAppId == taskDto.Job.JobAppConfig.JobAppId, nameof(SchedulerResource.CreationTime));
+            var resourceList = await _resourceRepository.GetListAsync(r => r.JobAppIdentity == taskDto.Job.JobAppConfig.JobAppIdentity, nameof(SchedulerResource.CreationTime));
 
             var resource = !string.IsNullOrEmpty(taskDto.Job.JobAppConfig.Version) ? resourceList.FirstOrDefault(r => r.Version == taskDto.Job.JobAppConfig.Version) : resourceList.FirstOrDefault();
 

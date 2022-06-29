@@ -19,13 +19,13 @@ public class SchedulerJobDomainService : DomainService
         await EventBus.PublishAsync(new StartJobDomainEvent(request));
     }
 
-    public async Task RegisterCronJobAsync(RegisterCronJobRequest request)
+    public async Task UpdateCronJobAsync(UpdateCronJobRequest request)
     {
-        await EventBus.PublishAsync(new RegisterCronJobDomainEvent(request));
+        await EventBus.PublishAsync(new UpdateCronJobDomainEvent(request));
     }
 
-    public async Task RemoveCronJobAsync(RemoveCronJobRequest request)
+    public async Task RemoveSchedulerJobAsync(RemoveSchedulerJobRequest request)
     {
-        await EventBus.PublishAsync(new RemoveCronJobDomainEvent(request));
+        await EventBus.PublishAsync(new RemoveSchedulerJobDomainEvent(request));
     }
 }

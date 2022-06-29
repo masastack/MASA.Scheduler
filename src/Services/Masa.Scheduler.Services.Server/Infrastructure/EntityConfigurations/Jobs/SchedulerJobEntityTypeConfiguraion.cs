@@ -11,7 +11,7 @@ public class SchedulerJobEntityTypeConfiguraion : IEntityTypeConfiguration<Sched
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.Name);
         builder.HasIndex(x => x.BelongTeamId);
-        builder.HasIndex(x => x.BelongProjectId);
+        builder.HasIndex(x => x.BelongProjectIdentity);
         builder.HasIndex(x => x.Origin);
         builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
         builder.Property(x => x.Description).HasMaxLength(255);

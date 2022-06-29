@@ -5,5 +5,5 @@ namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerResources;
 
 public class SchedulerResourceListRequest
 {
-    public int JobAppId { get; set; }
+    public string JobAppIdentity { get; set; } = string.Empty;
 }

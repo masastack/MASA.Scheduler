@@ -9,12 +9,13 @@ public class SchedulerJobService : ServiceBase
         MapGet(ListAsync, string.Empty);
         MapPost(AddAsync, string.Empty);
         MapPut(UpdateAsync, string.Empty);
-        MapDelete(DeleteAsync, "{id}");
+        MapDelete(DeleteAsync, string.Empty);
         MapPut(ChangeEnableStatusAsync);
         MapPut(StartJobAsync);
+        MapPost(AddSchedulerJobBySdkAsync);
     }
 
-    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize, [FromQuery] int projectId)
+    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string projectIdentity)
     {
         var request = new SchedulerJobListRequest()
         {
@@ -28,7 +29,7 @@ public class SchedulerJobService : ServiceBase
             QueryEndTime = queryEndTime,
             Page = page,
             PageSize = pageSize,
-            ProjectId = projectId
+            BelongProjectIdentity = projectIdentity
         };
 
         var query = new SchedulerJobQuery(request);
@@ -50,9 +51,9 @@ public class SchedulerJobService : ServiceBase
         return Results.Ok();
     }
 
-    public async Task<IResult> DeleteAsync(IEventBus eventBus, Guid id)
+    public async Task<IResult> DeleteAsync(IEventBus eventBus, [FromBody] RemoveSchedulerJobRequest request)
     {
-        var command = new RemoveSchedulerJobCommand(id);
+        var command = new RemoveSchedulerJobCommand(request);
         await eventBus.PublishAsync(command);
         return Results.Ok();
     }
@@ -69,5 +70,12 @@ public class SchedulerJobService : ServiceBase
         var command = new StartSchedulerJobCommand(request);
         await eventBus.PublishAsync(command);
         return Results.Ok();
+    }
+    
+    public async Task<IResult> AddSchedulerJobBySdkAsync(IEventBus eventBus, [FromBody] AddSchedulerJobBySdkRequest request)
+    {
+        var command = new AddSchedulerJobBySdkCommand(request);
+        await eventBus.PublishAsync(command);
+        return Results.Ok(command.Result.Id);
     }
 }

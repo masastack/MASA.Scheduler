@@ -19,7 +19,7 @@ public class SchedulerResourceQueryHandler
     {
         var request = query.Request;
 
-        var list = await _repository.GetListAsync(p => p.JobAppId == request.JobAppId, "CreationTime", true);
+        var list = await _repository.GetListAsync(p => p.JobAppIdentity == request.JobAppIdentity, "CreationTime", true);
 
         var dtoList = _mapper.Map<List<SchedulerResourceDto>>(list);
 

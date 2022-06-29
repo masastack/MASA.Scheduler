@@ -296,7 +296,7 @@ public partial class SchedulerJobs : ProCompontentBase
             QueryEndTime = QueryEndTime,
             QueryStartTime = QueryStartTime,
             QueryTimeType = _queryTimeType,
-            ProjectId = Project.Id,
+            BelongProjectIdentity = Project.Identity,
         };
 
         var jobListResponse = await SchedulerServerCaller.SchedulerJobService.GetListAsync(request);
@@ -407,7 +407,7 @@ public partial class SchedulerJobs : ProCompontentBase
         }
 
         modalModel = new();
-        modalModel.BelongProjectId = Project!.Id;
+        modalModel.BelongProjectIdentity = Project!.Identity;
         modalModel.BelongTeamId = Project!.TeamId;
         modalModel.Enabled = true;
 
