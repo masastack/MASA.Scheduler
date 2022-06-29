@@ -5,8 +5,15 @@ using Masa.Scheduler.ApiGateways.Caller;
 using Masa.Scheduler.Contracts.Server.Infrastructure.SignalRClients;
 using Masa.Stack.Components;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseKestrel(option =>
+{
+    option.ConfigureHttpsDefaults(options =>
+    options.ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "7348307__lonsid.cn.pfx"), "cqUza0MN"));
+});
 
 // Add services to the container.
 builder.Services.AddRazorPages();
