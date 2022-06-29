@@ -14,7 +14,7 @@ public class HttpTaskHandler : ITaskHandler
         _logger = logger;
     }
 
-    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, CancellationToken token)
+    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, CancellationToken token)
     {
         if (jobDto.HttpConfig is null)
         {
@@ -23,9 +23,9 @@ public class HttpTaskHandler : ITaskHandler
 
         var client = _httpClientFactory.CreateClient();
 
-        client.Timeout = TimeSpan.FromSeconds(jobDto.RunTimeoutSecond);
-
         HttpUtils.AddHttpHeader(client, jobDto.HttpConfig.HttpHeaders);
+
+        jobDto.HttpConfig.HttpParameters.Add(new("excuteTime", excuteTime.ToString()));
 
         var requestMessage = new HttpRequestMessage()
         {

@@ -8,4 +8,6 @@ public class StartSchedulerJobRequest
     public Guid JobId { get; set; }
 
     public Guid OperatorId { get; set; }
+
+    public DateTimeOffset ExcuteTime { get; set; } = DateTimeOffset.MinValue;
 }

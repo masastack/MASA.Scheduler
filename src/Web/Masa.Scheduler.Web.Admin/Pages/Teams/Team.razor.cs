@@ -8,6 +8,10 @@ public partial class Team
     [Parameter]
     public string TeamId { get; set; } = string.Empty;
 
+    private bool JobVisible => _curTab == 0;
+
+    private bool TaskVisible => _curTab == 1;
+
     private ProjectDto _project = default!;
     private SchedulerJobDto? _selectedJob;
     private StringNumber _curTab = 0;

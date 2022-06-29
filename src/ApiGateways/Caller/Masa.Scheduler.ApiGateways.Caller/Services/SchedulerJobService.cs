@@ -28,9 +28,9 @@ public class SchedulerJobService : ServiceBase
         await PutAsync(string.Empty, request);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(RemoveSchedulerJobRequest request)
     {
-        await DeleteAsync($"{id}");
+        await DeleteAsync(string.Empty, request);
     }
 
     public async Task ChangeEnableStatusAsync(ChangeEnabledStatusRequest request)

@@ -72,6 +72,8 @@ public class StartTaskDomainEventHandler
 
         var allowEnqueue = true;
 
+        task.UpdateTaskSchedulerTime(@event.Request.ExcuteTime);
+
         if (otherRunningTaskList.Any())
         {
             switch (task.Job.ScheduleBlockStrategy)

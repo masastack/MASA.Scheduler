@@ -34,7 +34,7 @@
         </div>
     </MNavigationDrawer>
 
-    @if (LastSelectedAppId != 0)
+    @if (!string.IsNullOrWhiteSpace(LastSelectedAppIdentity))
     {
         <MNavigationDrawer Permanent Class="rounded-4 ml-6" Width="242" Style="height:calc(100vh - 165px );">
             <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 165px );">
@@ -50,7 +50,7 @@
                                 <MListItemTitle>
                                     @resouce.Version
                                 </MListItemTitle>
-                                 <MListItemIcon>
+                                <MListItemIcon>
                                     <MIcon OnClick="()=> DeleteResourceFiles(resouce.Id)"> mdi-delete-outline </MIcon>
                                 </MListItemIcon>
                             </MListItem>

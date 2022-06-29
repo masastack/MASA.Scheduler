@@ -3,4 +3,4 @@
 
 namespace Masa.Scheduler.Services.Server.Domain.Events;
 
-public record RemoveCronJobDomainEvent(RemoveCronJobRequest Request) : Event;
+public record UpdateCronJobDomainEvent(UpdateCronJobRequest Request) : Event;

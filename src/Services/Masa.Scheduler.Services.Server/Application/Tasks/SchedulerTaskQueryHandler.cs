@@ -47,8 +47,7 @@ public class SchedulerTaskQueryHandler
             PageSize = request.PageSize,
             Sorting = new Dictionary<string, bool>()
             {
-                [nameof(SchedulerJob.ModificationTime)] = true,
-                [nameof(SchedulerJob.CreationTime)] = true,
+                [nameof(SchedulerJob.CreationTime)] = true
             }
         });
 

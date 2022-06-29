@@ -4,12 +4,12 @@
     <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 165px );">
         <MList Width="194">
             <MListItemGroup Class="rounded-2"
-                            @bind-Value="@SelectedProjectId"
+                            @bind-Value="@SelectedProjectIdentity"
                             Mandatory
                             Color="#A3AED0">
                 @foreach (var project in _projects)
                 {
-                    <MListItem Class="rounded-2 project-list" Value="project.Id" Dense>
+                    <MListItem Class="rounded-2 project-list" Value="project.Identity" Dense>
                         <ItemContent>
                             <MListItemContent>
                                 <MListItemTitle>@project.Name</MListItemTitle>

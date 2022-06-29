@@ -38,7 +38,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             throw new UserFriendlyException("Job cannot be null");
         }
 
-        _data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId });
+        _data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime });
 
         return Task.CompletedTask;
     }
@@ -91,7 +91,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                             continue;
                         }
 
-                        await StartTaskAsync(task.TaskId, task.Job);
+                        await StartTaskAsync(task.TaskId, task.Job, task.ExcuteTime);
                     }
                 }
                 catch(Exception ex)
@@ -104,7 +104,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         return Task.CompletedTask;
     }
 
-    public async Task StartTaskAsync(Guid taskId, SchedulerJobDto job)
+    public async Task StartTaskAsync(Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
     {
         var cts = new CancellationTokenSource();
         var internalCts = new CancellationTokenSource();
@@ -113,29 +113,27 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         _data.InternalCancellationTokenSources.TryAdd(taskId, internalCts);
 
-        //await NofityTaskStart(taskId);
-
         var taskHandler = _taskHandlerFactory.GetTaskHandler(job.JobType);
 
         var startTime = DateTime.Now;
 
         cts.Token.Register(async () =>
         {
-            _data.TaskCancellationTokenSources.Remove(taskId, out var cancellationTokenSource);
-
-            cancellationTokenSource?.Dispose();
-
-            _data.InternalCancellationTokenSources.Remove(taskId, out var internalCancellationToken);
-
-            if ((DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
+            try
             {
-                await NotifyTaskRunResult(TaskRunStatus.Timeout, taskId);
+                if ((DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
+                {
+                    await NotifyTaskRunResult(TaskRunStatus.Timeout, taskId);
+                }
+                else
+                {
+                    _data.InternalCancellationTokenSources.TryGetValue(taskId, out var internalCancellationToken);
+                    internalCancellationToken?.Cancel();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                internalCancellationToken?.Cancel();
-                internalCancellationToken?.Dispose();
-                await NotifyTaskRunResult(TaskRunStatus.Failure, taskId);
+                _logger.LogError(ex, "TokenRegisterError");
             }
         });
 
@@ -145,8 +143,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         {
             try
             {
-                var runStatus = await taskHandler.RunTask(taskId, job, internalCts.Token);
-
+                var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, internalCts.Token);
                 await NotifyTaskRunResult(runStatus, taskId);
             }
             catch

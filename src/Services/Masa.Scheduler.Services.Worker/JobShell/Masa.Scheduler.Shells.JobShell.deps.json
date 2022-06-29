@@ -7,8 +7,19 @@
   "targets": {
     ".NETCoreApp,Version=v6.0": {
       "Masa.Scheduler.Shells.JobShell/1.0.0": {
+        "dependencies": {
+          "Masa.BuildingBlocks.BasicAbility.Scheduler": "1.0.0.0"
+        },
         "runtime": {
           "Masa.Scheduler.Shells.JobShell.dll": {}
+        }
+      },
+      "Masa.BuildingBlocks.BasicAbility.Scheduler/1.0.0.0": {
+        "runtime": {
+          "Masa.BuildingBlocks.BasicAbility.Scheduler.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }
@@ -16,6 +27,11 @@
   "libraries": {
     "Masa.Scheduler.Shells.JobShell/1.0.0": {
       "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Masa.BuildingBlocks.BasicAbility.Scheduler/1.0.0.0": {
+      "type": "reference",
       "serviceable": false,
       "sha512": ""
     }

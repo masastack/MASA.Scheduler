@@ -3,4 +3,4 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Jobs.Commands;
 
-public record RemoveSchedulerJobCommand(Guid JobId) : Command;
+public record RemoveSchedulerJobCommand(RemoveSchedulerJobRequest Request) : Command;

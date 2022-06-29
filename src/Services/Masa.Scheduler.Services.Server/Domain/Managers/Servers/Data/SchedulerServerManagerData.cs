@@ -6,4 +6,6 @@ namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers.Data;
 public class SchedulerServerManagerData : BaseSchedulerManagerData<WorkerModel>
 {
     public Queue<SchedulerTaskDto> TaskQueue { get; set; } = new();
+
+    public List<Guid> StopByManual { get; set; } = new();
 }

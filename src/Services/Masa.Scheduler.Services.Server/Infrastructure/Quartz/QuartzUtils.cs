@@ -95,4 +95,28 @@ public class QuartzUtils
             await _scheduler.UnscheduleJob(triggerKey);
         }
     }
+
+    public Task<List<DateTimeOffset>> GetCronExcuteTimeByTimeRange(string cron, DateTimeOffset startTime, DateTimeOffset endTime)
+    {
+        List<DateTimeOffset> excuteTimeList = new();
+
+        var cronExpression = new CronExpression(cron);
+
+        while (startTime < endTime)
+        {
+            var nextExcuteTime = cronExpression.GetNextValidTimeAfter(startTime);
+
+            if (nextExcuteTime != null)
+            {
+                startTime = nextExcuteTime.Value;
+
+                if(nextExcuteTime < endTime)
+                {
+                    excuteTimeList.Add(nextExcuteTime.Value.ToLocalTime());
+                }
+            }
+        }
+
+        return Task.FromResult(excuteTimeList);
+    }
 }

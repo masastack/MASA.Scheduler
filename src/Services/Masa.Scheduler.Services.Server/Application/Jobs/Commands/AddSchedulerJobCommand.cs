@@ -3,4 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Jobs.Commands;
 
-public record AddSchedulerJobCommand(AddSchedulerJobRequest Request) : Command;
+public record AddSchedulerJobCommand(AddSchedulerJobRequest Request) : Command
+{
+    public SchedulerJobDto Result { get; set; } = new();
+}

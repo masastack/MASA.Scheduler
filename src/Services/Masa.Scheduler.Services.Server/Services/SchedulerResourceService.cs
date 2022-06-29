@@ -13,11 +13,11 @@ public class SchedulerResourceService : ServiceBase
         MapDelete(DeleteAsync, "{id}");
     }
 
-    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] int jobAppId)
+    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] string jobAppIdentity)
     {
         var request = new SchedulerResourceListRequest()
         {
-            JobAppId = jobAppId
+            JobAppIdentity = jobAppIdentity
         };
 
         var query = new SchedulerResourceListQuery(request);

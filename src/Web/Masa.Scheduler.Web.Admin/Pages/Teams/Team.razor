@@ -20,13 +20,13 @@
             <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="new Guid(TeamId)">
             </Projects>
             <div class="pl-6" style="width: calc(100% - 242px); overflow: hidden; display:block;">
-                <SchedulerJobs Project="_project" OnJobSelect="HandleJobSelect">
+                <SchedulerJobs Project="_project" OnJobSelect="HandleJobSelect" Visible="JobVisible">
                 </SchedulerJobs>
             </div>
         </div>
     </MTabItem>
     <MTabItem>
-        <SchedulerTasks SelectedJob="_selectedJob">
+        <SchedulerTasks SelectedJob="_selectedJob" Visible="TaskVisible">
         </SchedulerTasks>
     </MTabItem>
 </MTabsItems>

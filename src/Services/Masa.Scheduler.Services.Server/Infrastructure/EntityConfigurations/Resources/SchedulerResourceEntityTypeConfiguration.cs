@@ -15,5 +15,6 @@ public class SchedulerResourceEntityTypeConfiguration : IEntityTypeConfiguration
         builder.Property(x => x.Description).HasMaxLength(255);
         builder.Property(x => x.FilePath).HasMaxLength(255);
         builder.Property(x => x.Version).HasMaxLength(20);
+        builder.Property(x => x.JobAppIdentity).HasMaxLength(100);
     }
 }
