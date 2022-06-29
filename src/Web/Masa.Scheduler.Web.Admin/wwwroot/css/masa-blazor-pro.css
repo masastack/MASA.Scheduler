@@ -1191,11 +1191,11 @@ tr:hover {
     color: #05CD99 !important;
 }
 
-.job-disabled.job-success .run-text {
+.job-disabled.job-error .run-text {
     color: #B71C1C;
 }
 
-.job-disabled.job-success .run-icon {
+.job-disabled.job-error .run-icon {
     color: #B71C1C !important;
 }
 

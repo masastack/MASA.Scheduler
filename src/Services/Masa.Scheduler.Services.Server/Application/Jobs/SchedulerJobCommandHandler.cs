@@ -77,11 +77,11 @@ public class SchedulerJobCommandHandler
     [EventHandler]
     public async Task ChangeEnabledStatusHandleAsync(ChangeEnableStatusSchedulerJobCommand command)
     {
-        var job = await _schedulerJobRepository.FindAsync(command.Request.Id);
+        var job = await _schedulerJobRepository.FindAsync(command.Request.JobId);
 
         if (job is null)
         {
-            throw new UserFriendlyException($"Job id {command.Request.Id}, not found");
+            throw new UserFriendlyException($"Job id {command.Request.JobId}, not found");
         }
 
         job.ChangeEnableStatus(command.Request.Enabled);
@@ -134,6 +134,7 @@ public class SchedulerJobCommandHandler
 
         var projectDetailsQuery = new ProjectDetailsQuery()
         {
+            ProjectId = 1,
             ProjectIdentity = request.ProjectIdentity
         };
 
@@ -145,6 +146,8 @@ public class SchedulerJobCommandHandler
         }
 
         var schedulerJobDto = _mapper.Map<SchedulerJobDto>(request);
+
+        schedulerJobDto.BelongProjectIdentity = request.ProjectIdentity;
 
         schedulerJobDto.BelongTeamId = projectDetailsQuery.Result.TeamId;
 
@@ -171,6 +174,12 @@ public class SchedulerJobCommandHandler
         schedulerJobDto.RoutingStrategy = RoutingStrategyTypes.RoundRobin;
 
         schedulerJobDto.Enabled = true;
+
+        schedulerJobDto.HttpConfig = schedulerJobDto.HttpConfig ?? new();
+
+        schedulerJobDto.JobAppConfig = schedulerJobDto.JobAppConfig ?? new();
+
+        schedulerJobDto.DaprServiceInvocationConfig = schedulerJobDto.DaprServiceInvocationConfig ?? new();
 
         var addCommand = new AddSchedulerJobCommand(new AddSchedulerJobRequest()
         {
