@@ -29,7 +29,7 @@ public partial class SchedulerResourceFiles
     private StringNumber? _selectedIdentity;
     private string _lastSelectedAppIdentity = string.Empty;
 
-    public StringNumber? SelectedId
+    public StringNumber? SelectedIdentity
     {
         get
         {
@@ -134,10 +134,10 @@ public partial class SchedulerResourceFiles
             {
                 _projects.Add(new SideBarItem()
                 {
-                    Id = PROJECT_PREFIX + Id,
+                    Identity = PROJECT_PREFIX + project.Identity,
                     Title = project.Name,
                     IsProject = true,
-                    Children = project.ProjectApps.Select(app => new SideBarItem() { Id = APP_PREFIX + app.Id, Title = app.Name, IsProject = false }).ToList()
+                    Children = project.ProjectApps.Select(app => new SideBarItem() { Identity = APP_PREFIX + app.Identity, Title = app.Name, IsProject = false }).ToList()
                 });
             }
 
@@ -176,11 +176,11 @@ public partial class SchedulerResourceFiles
 
         if (item.IsProject)
         {
-            key = PROJECT_PREFIX + item.Id;
+            key = PROJECT_PREFIX + item.Identity;
         }
         else
         {
-            key = APP_PREFIX + item.Id;
+            key = APP_PREFIX + item.Identity;
         }
 
         return key;
@@ -202,14 +202,14 @@ public partial class SchedulerResourceFiles
             {
                 if (child.Title.Contains(SearchName))
                 {
-                    var parent = parentList.FirstOrDefault(p => p.Id == item.Id);
+                    var parent = parentList.FirstOrDefault(p => p.Identity == item.Identity);
 
                     if(parent == null)
                     {
                         parent = new SideBarItem()
                         {
                             Title = item.Title,
-                            Id = item.Id,
+                            Identity = item.Identity,
                             Expanded = item.Expanded,
                             IsProject = item.IsProject
                         };

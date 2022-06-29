@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Web.Admin.Model;
 
 public class SideBarItem
 {
-    public StringNumber Id { get; set; } = default!;
+    public StringNumber Identity { get; set; } = default!;
 
     public string Title { get; set; } = string.Empty;
 

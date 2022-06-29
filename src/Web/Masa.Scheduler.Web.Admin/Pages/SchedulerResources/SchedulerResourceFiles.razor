@@ -6,7 +6,7 @@
         <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 165px );">
             <MList Width="194" Dense>
                 <MListItemGroup Class="rounded-2 scheduler-list"
-                                @bind-Value="@SelectedId"
+                                @bind-Value="@SelectedIdentity"
                                 Mandatory
                                 Color="@Color">
                     <Search @bind-Value="SearchName" Class="pb-4"></Search>
@@ -21,7 +21,7 @@
                                 <ChildContent>
                                     @foreach (var subitem in project.Children)
                                     {
-                                        <MListItem Link Value="@subitem.Id" Style="padding-left:50px;" Class="rounded-2 project-list">
+                                        <MListItem Link Value="@subitem.Identity" Style="padding-left:50px;" Class="rounded-2 project-list">
                                             <MListItemTitle>@subitem.Title</MListItemTitle>
                                         </MListItem>
                                     }
