@@ -97,6 +97,7 @@ public class JobAppTaskHandler : ITaskHandler
             excuteTime.Ticks.ToString(),
             excuteTime.Offset.Ticks.ToString(),
             dto.Id.ToString(),
+            dto.Id.ToString(),
         };
 
         return string.Join(" ", parameterList);
