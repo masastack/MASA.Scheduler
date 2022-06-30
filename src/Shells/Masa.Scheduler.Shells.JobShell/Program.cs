@@ -58,9 +58,14 @@ if (args.Length >= 4)
 
 var excuteTime = DateTimeOffset.Now;
 
-if (args.Length >= 5)
+if (args.Length >= 6)
 {
-    DateTimeOffset parseExcuteTime = Convert.ToDateTime(args[4]);
+    var tick = Convert.ToInt64(args[4]);
+    var tickOffset = Convert.ToInt64(args[5]);
+
+    DateTimeOffset parseExcuteTime = new DateTimeOffset(tick, new TimeSpan(tickOffset));
+
+    Console.WriteLine($"parseExcuteTime: {parseExcuteTime}");
 
     if(parseExcuteTime != DateTimeOffset.MinValue)
     {
@@ -70,9 +75,9 @@ if (args.Length >= 5)
 
 var jobId = Guid.Empty;
 
-if(args.Length >= 6 && args[5] != null)
+if(args.Length >= 7 && args[6] != null)
 {
-    jobId = new Guid(args[5].ToString());
+    jobId = new Guid(args[6].ToString());
 }
 
 var instance = Activator.CreateInstance(assemblyType) as ISchedulerJob;
