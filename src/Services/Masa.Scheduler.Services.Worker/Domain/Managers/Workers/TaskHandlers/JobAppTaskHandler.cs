@@ -94,7 +94,9 @@ public class JobAppTaskHandler : ITaskHandler
             Path.Combine(resourcePath, dto.JobAppConfig.JobEntryAssembly),
             dto.JobAppConfig.JobEntryMethod,
             dto.JobAppConfig.JobParams,
-            excuteTime.ToString(),
+            excuteTime.Ticks.ToString(),
+            excuteTime.Offset.Ticks.ToString(),
+            dto.Id.ToString(),
             dto.Id.ToString(),
         };
 
