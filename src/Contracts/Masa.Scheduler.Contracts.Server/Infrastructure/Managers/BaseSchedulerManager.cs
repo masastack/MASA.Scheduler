@@ -167,7 +167,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             return;
         }
 
-        if (string.IsNullOrEmpty(@event.OnlineService.HttpsServiceUrl) || string.IsNullOrEmpty(@event.OnlineService.HttpServiceUrl))
+        if (string.IsNullOrEmpty(@event.OnlineService.HttpsServiceUrl) && string.IsNullOrEmpty(@event.OnlineService.HttpServiceUrl))
         {
             return;
         }
