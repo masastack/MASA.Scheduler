@@ -30,26 +30,18 @@ var secretStoreName = builder.Configuration.GetValue<string>("SecretStoreName");
 
 builder.Services.AddAliyunStorage(serviceProvider =>
 {
-    try
+    var daprClient = serviceProvider.GetRequiredService<DaprClient>();
+    var accessId = daprClient.GetSecretAsync(secretStoreName, "access_id").Result.First().Value;
+    var accessSecret = daprClient.GetSecretAsync(secretStoreName, "access_secret").Result.First().Value;
+    var endpoint = daprClient.GetSecretAsync(secretStoreName, "endpoint").Result.First().Value;
+    var roleArn = daprClient.GetSecretAsync(secretStoreName, "roleArn").Result.First().Value;
+    return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
     {
-        var daprClient = serviceProvider.GetRequiredService<DaprClient>();
-        var accessId = daprClient.GetSecretAsync(secretStoreName, "access_id").Result.First().Value;
-        var accessSecret = daprClient.GetSecretAsync(secretStoreName, "access_secret").Result.First().Value;
-        var endpoint = daprClient.GetSecretAsync(secretStoreName, "endpoint").Result.First().Value;
-        var roleArn = daprClient.GetSecretAsync(secretStoreName, "roleArn").Result.First().Value;
-        return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
+        Sts = new AliyunStsOptions()
         {
-            Sts = new AliyunStsOptions()
-            {
-                RegionId = "cn-hangzhou"
-            }
-        };
-    }
-    catch(Exception ex)
-    {
-        throw;
-    }
-    
+            RegionId = "cn-hangzhou"
+        }
+    };
 });
 
 if (builder.Environment.IsDevelopment())
