@@ -26,13 +26,15 @@ builder.Services.AddMasaSignalR();
 builder.Services.AddQuartzUtils();
 //builder.Services.AddQuartzJob();
 
+var secretStoreName = builder.Configuration.GetValue<string>("SecretStoreName");
+
 builder.Services.AddAliyunStorage(serviceProvider =>
 {
     var daprClient = serviceProvider.GetRequiredService<DaprClient>();
-    var accessId = daprClient.GetSecretAsync("localsecretstore", "access_id").Result.First().Value;
-    var accessSecret = daprClient.GetSecretAsync("localsecretstore", "access_secret").Result.First().Value;
-    var endpoint = daprClient.GetSecretAsync("localsecretstore", "endpoint").Result.First().Value;
-    var roleArn = daprClient.GetSecretAsync("localsecretstore", "roleArn").Result.First().Value;
+    var accessId = daprClient.GetSecretAsync(secretStoreName, "access_id").Result.First().Value;
+    var accessSecret = daprClient.GetSecretAsync(secretStoreName, "access_secret").Result.First().Value;
+    var endpoint = daprClient.GetSecretAsync(secretStoreName, "endpoint").Result.First().Value;
+    var roleArn = daprClient.GetSecretAsync(secretStoreName, "roleArn").Result.First().Value;
     return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
     {
         Sts = new AliyunStsOptions()
