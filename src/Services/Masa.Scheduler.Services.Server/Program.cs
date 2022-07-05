@@ -27,14 +27,37 @@ builder.Services.AddQuartzUtils();
 //builder.Services.AddQuartzJob();
 
 var secretStoreName = builder.Configuration.GetValue<string>("SecretStoreName");
-
+var isDevelopment = builder.Environment.IsDevelopment();
 builder.Services.AddAliyunStorage(serviceProvider =>
 {
     var daprClient = serviceProvider.GetRequiredService<DaprClient>();
-    var accessId = daprClient.GetSecretAsync(secretStoreName, "access_id").Result.First().Value;
-    var accessSecret = daprClient.GetSecretAsync(secretStoreName, "access_secret").Result.First().Value;
-    var endpoint = daprClient.GetSecretAsync(secretStoreName, "endpoint").Result.First().Value;
-    var roleArn = daprClient.GetSecretAsync(secretStoreName, "roleArn").Result.First().Value;
+
+    var accessId = string.Empty;
+    var accessSecret = string.Empty;
+    var endpoint = string.Empty;
+    var roleArn = string.Empty;
+
+    var accessIdKey = "access_id";
+    var accessSecretKey = "access_secret";
+    var endpointKey = "endpoint";
+    var roleArnKey = "roleArn";
+
+    if (isDevelopment)
+    {
+        accessId = daprClient.GetSecretAsync(secretStoreName, accessIdKey).Result.First().Value;
+        accessSecret = daprClient.GetSecretAsync(secretStoreName, accessSecretKey).Result.First().Value;
+        endpoint = daprClient.GetSecretAsync(secretStoreName, endpointKey).Result.First().Value;
+        roleArn = daprClient.GetSecretAsync(secretStoreName, roleArnKey).Result.First().Value;
+    }
+    else
+    {
+        var k8sSecret = daprClient.GetSecretAsync(secretStoreName, "masa-scheduler-secret").Result;
+        k8sSecret.TryGetValue(accessIdKey, out accessId!);
+        k8sSecret.TryGetValue(accessSecretKey, out accessSecret!);
+        k8sSecret.TryGetValue(endpointKey, out endpoint!);
+        k8sSecret.TryGetValue(roleArnKey, out roleArn!);
+    }
+
     return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
     {
         Sts = new AliyunStsOptions()
