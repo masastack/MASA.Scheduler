@@ -44,14 +44,14 @@ builder.Services.AddAliyunStorage(serviceProvider =>
 
     if (isDevelopment)
     {
-        accessId = daprClient.GetSecretAsync(secretStoreName, accessIdKey).Result.First().Value;
-        accessSecret = daprClient.GetSecretAsync(secretStoreName, accessSecretKey).Result.First().Value;
-        endpoint = daprClient.GetSecretAsync(secretStoreName, endpointKey).Result.First().Value;
-        roleArn = daprClient.GetSecretAsync(secretStoreName, roleArnKey).Result.First().Value;
+        accessId = daprClient.GetSecretAsync(secretStoreName, accessIdKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+        accessSecret = daprClient.GetSecretAsync(secretStoreName, accessSecretKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+        endpoint = daprClient.GetSecretAsync(secretStoreName, endpointKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+        roleArn = daprClient.GetSecretAsync(secretStoreName, roleArnKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
     }
     else
     {
-        var k8sSecret = daprClient.GetSecretAsync(secretStoreName, "masa-scheduler-secret").Result;
+        var k8sSecret = daprClient.GetSecretAsync(secretStoreName, "masa-scheduler-secret").ConfigureAwait(false).GetAwaiter().GetResult();
         k8sSecret.TryGetValue(accessIdKey, out accessId!);
         k8sSecret.TryGetValue(accessSecretKey, out accessSecret!);
         k8sSecret.TryGetValue(endpointKey, out endpoint!);
