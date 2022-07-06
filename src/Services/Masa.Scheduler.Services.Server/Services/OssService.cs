@@ -20,8 +20,10 @@ public class OssService : ServiceBase
         var accessSecret = response.AccessKeySecret;
 
         var secretStoreName = configuration.GetValue<string>("SecretStoreName");
-        var bucket = (await daprClient.GetSecretAsync(secretStoreName, "bucket")).First().Value;
-        
+        var secretName = configuration.GetValue<string>("SecretName");
+        var secrets = await daprClient.GetSecretAsync(secretStoreName, secretName);
+        var bucket = secrets.GetValueOrDefault("bucket", string.Empty);
+
         return await Task.FromResult(new GetSecurityTokenDto(region, accessId, accessSecret, stsToken, bucket));
     }
 

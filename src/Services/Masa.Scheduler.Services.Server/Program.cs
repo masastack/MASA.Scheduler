@@ -26,16 +26,20 @@ builder.Services.AddMasaSignalR();
 builder.Services.AddQuartzUtils();
 //builder.Services.AddQuartzJob();
 
-var secretStoreName = builder.Configuration.GetValue<string>("SecretStoreName");
 builder.Services.AddAliyunStorage(serviceProvider =>
 {
     var daprClient = serviceProvider.GetRequiredService<DaprClient>();
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
-    var accessId = daprClient.GetSecretAsync(secretStoreName, "access-id").ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-    var accessSecret = daprClient.GetSecretAsync(secretStoreName, "access-secret").ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-    var endpoint = daprClient.GetSecretAsync(secretStoreName, "endpoint").ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-    var roleArn = daprClient.GetSecretAsync(secretStoreName, "role-arn").ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-    
+    var secretStoreName = configuration.GetValue<string>("SecretStoreName");
+    var secretName = configuration.GetValue<string>("SecretName");
+
+    var secrets = daprClient.GetSecretAsync(secretStoreName, secretName).ConfigureAwait(false).GetAwaiter().GetResult();
+    var accessId = secrets.GetValueOrDefault("access_id", string.Empty);
+    var accessSecret = secrets.GetValueOrDefault("access_secret", string.Empty);
+    var endpoint = secrets.GetValueOrDefault("endpoint", string.Empty);
+    var roleArn = secrets.GetValueOrDefault("roleArn", string.Empty);
+
     return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
     {
         Sts = new AliyunStsOptions()
