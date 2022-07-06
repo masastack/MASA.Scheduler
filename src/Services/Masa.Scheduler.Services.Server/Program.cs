@@ -31,20 +31,10 @@ builder.Services.AddAliyunStorage(serviceProvider =>
 {
     var daprClient = serviceProvider.GetRequiredService<DaprClient>();
 
-    var accessId = string.Empty;
-    var accessSecret = string.Empty;
-    var endpoint = string.Empty;
-    var roleArn = string.Empty;
-
-    var accessIdKey = "access-id";
-    var accessSecretKey = "access-secret";
-    var endpointKey = "endpoint";
-    var roleArnKey = "role-arn";
-
-    accessId = daprClient.GetSecretAsync(secretStoreName, accessIdKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-    accessSecret = daprClient.GetSecretAsync(secretStoreName, accessSecretKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-    endpoint = daprClient.GetSecretAsync(secretStoreName, endpointKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-    roleArn = daprClient.GetSecretAsync(secretStoreName, roleArnKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+    var accessId = daprClient.GetSecretAsync(secretStoreName, "access-id").ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+    var accessSecret = daprClient.GetSecretAsync(secretStoreName, "access-secret").ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+    var endpoint = daprClient.GetSecretAsync(secretStoreName, "endpoint").ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+    var roleArn = daprClient.GetSecretAsync(secretStoreName, "role-arn").ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
     
     return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
     {
