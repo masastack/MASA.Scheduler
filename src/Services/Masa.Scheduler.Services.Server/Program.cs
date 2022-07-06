@@ -27,7 +27,6 @@ builder.Services.AddQuartzUtils();
 //builder.Services.AddQuartzJob();
 
 var secretStoreName = builder.Configuration.GetValue<string>("SecretStoreName");
-var useK8sSecret = builder.Configuration.GetValue<bool>("UseK8sSecret");
 builder.Services.AddAliyunStorage(serviceProvider =>
 {
     var daprClient = serviceProvider.GetRequiredService<DaprClient>();
@@ -37,27 +36,16 @@ builder.Services.AddAliyunStorage(serviceProvider =>
     var endpoint = string.Empty;
     var roleArn = string.Empty;
 
-    var accessIdKey = "access_id";
-    var accessSecretKey = "access_secret";
+    var accessIdKey = "access-id";
+    var accessSecretKey = "access-secret";
     var endpointKey = "endpoint";
-    var roleArnKey = "roleArn";
+    var roleArnKey = "role-arn";
 
-    if (useK8sSecret)
-    {
-        var k8sSecret = daprClient.GetSecretAsync(secretStoreName, "masa-scheduler-secret").ConfigureAwait(false).GetAwaiter().GetResult();
-        k8sSecret.TryGetValue(accessIdKey, out accessId!);
-        k8sSecret.TryGetValue(accessSecretKey, out accessSecret!);
-        k8sSecret.TryGetValue(endpointKey, out endpoint!);
-        k8sSecret.TryGetValue(roleArnKey, out roleArn!);
-    }
-    else
-    {
-        accessId = daprClient.GetSecretAsync(secretStoreName, accessIdKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-        accessSecret = daprClient.GetSecretAsync(secretStoreName, accessSecretKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-        endpoint = daprClient.GetSecretAsync(secretStoreName, endpointKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-        roleArn = daprClient.GetSecretAsync(secretStoreName, roleArnKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
-    }
-
+    accessId = daprClient.GetSecretAsync(secretStoreName, accessIdKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+    accessSecret = daprClient.GetSecretAsync(secretStoreName, accessSecretKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+    endpoint = daprClient.GetSecretAsync(secretStoreName, endpointKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+    roleArn = daprClient.GetSecretAsync(secretStoreName, roleArnKey).ConfigureAwait(false).GetAwaiter().GetResult().First().Value;
+    
     return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
     {
         Sts = new AliyunStsOptions()

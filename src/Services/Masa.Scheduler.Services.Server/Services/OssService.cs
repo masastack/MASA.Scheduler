@@ -19,19 +19,8 @@ public class OssService : ServiceBase
         var accessId = response.AccessKeyId;
         var accessSecret = response.AccessKeySecret;
 
-        var bucketKey = "bucket";
-        var bucket = string.Empty;
         var secretStoreName = configuration.GetValue<string>("SecretStoreName");
-
-        if (configuration.GetValue<bool>("UseK8sSecret"))
-        {
-            var k8sSecret = await daprClient.GetSecretAsync(secretStoreName, "masa-scheduler-secret");
-            k8sSecret.TryGetValue(bucketKey, out bucket!);
-        }
-        else
-        {
-            bucket = daprClient.GetSecretAsync(secretStoreName, bucketKey).Result.First().Value;
-        }
+        var bucket = (await daprClient.GetSecretAsync(secretStoreName, "bucket")).First().Value;
         
         return await Task.FromResult(new GetSecurityTokenDto(region, accessId, accessSecret, stsToken, bucket));
     }
