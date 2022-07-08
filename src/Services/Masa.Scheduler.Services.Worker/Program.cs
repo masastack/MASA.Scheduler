@@ -20,7 +20,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddMasaRedisCache(builder.Configuration.GetSection("RedisConfig"));
-builder.Services.AddMapping();
+builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
 

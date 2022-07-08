@@ -33,3 +33,4 @@ global using Microsoft.AspNetCore.SignalR.Client;
 global using Masa.Scheduler.Contracts.Server.Requests.SchedulerResources;
 global using Masa.Scheduler.Web.Admin.Model;
 global using Microsoft.JSInterop;
+global using Microsoft.Extensions.DependencyInjection;

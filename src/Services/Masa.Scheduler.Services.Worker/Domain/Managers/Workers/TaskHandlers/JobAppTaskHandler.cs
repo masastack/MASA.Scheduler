@@ -7,9 +7,9 @@ namespace Masa.Scheduler.Services.Worker.Domain.Managers.Workers.TaskHandlers;
 
 public class JobAppTaskHandler : ITaskHandler
 {
-    const string RESOURCE_PATH = "/ResourceFiles";
-    const string EXTRACT_PATH = "/ExtractFiles";
-    const string JOB_SHELL_PATH = "/JobShell/Masa.Scheduler.Shells.JobShell.dll";
+    const string RESOURCE_PATH = "ResourceFiles";
+    const string EXTRACT_PATH = "ExtractFiles";
+    const string JOB_SHELL_PATH = "JobShell/Masa.Scheduler.Shells.JobShell.dll";
     const string DLL_EXTENSION = ".dll";
     const string ZIP_EXTENSION = ".zip";
 
@@ -59,7 +59,7 @@ public class JobAppTaskHandler : ITaskHandler
 
         try
         {
-            var process = processUtils.Run("dotnet ", GetJobShellRunParameter(jobDto, resourcePath, taskId, excuteTime));
+            var process = processUtils.Run("dotnet", GetJobShellRunParameter(jobDto, resourcePath, taskId, excuteTime));
 
             token.Register(() =>
             {

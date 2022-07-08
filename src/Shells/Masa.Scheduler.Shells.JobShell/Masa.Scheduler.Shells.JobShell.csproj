@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Masa.BuildingBlocks.BasicAbility.Scheduler" Version="0.5.0-preview.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Masa.BuildingBlocks.BasicAbility.Scheduler">
       <HintPath>temp\Masa.BuildingBlocks.BasicAbility.Scheduler.dll</HintPath>
     </Reference>

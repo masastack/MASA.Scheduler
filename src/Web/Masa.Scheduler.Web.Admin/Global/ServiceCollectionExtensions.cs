@@ -7,7 +7,14 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddGlobalForServer(this IServiceCollection services)
     {
-        services.AddMasaI18nForServer("wwwroot/i18n");
+        services.AddMasaBlazor(builder =>
+        {
+            builder.UseTheme(option =>
+            {
+                option.Primary = "#4318FF";
+                option.Accent = "#4318FF";
+            });
+        }).AddI18nForServer("wwwroot/i18n");
         var basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception("Get the assembly root directory exception!");
         services.AddNav(Path.Combine(basePath, $"wwwroot/nav/nav.json"));
         services.AddScoped<GlobalConfig>();
@@ -17,7 +24,14 @@ public static class ServiceCollectionExtensions
 
     public static async Task<IServiceCollection> AddGlobalForWasmAsync(this IServiceCollection services, string baseUri)
     {
-        await services.AddMasaI18nForWasmAsync(Path.Combine(baseUri, $"i18n"));
+        await services.AddMasaBlazor(builder =>
+        {
+            builder.UseTheme(option =>
+            {
+                option.Primary = "#4318FF";
+                option.Accent = "#4318FF";
+            });
+        }).AddI18nForWasmAsync(Path.Combine(baseUri, $"i18n"));
         using var httpclient = new HttpClient();
         var navList = await httpclient.GetFromJsonAsync<List<NavModel>>(Path.Combine(baseUri, $"nav/nav.json")) ?? throw new Exception("please configure the Navigation!");
         services.AddNav(navList);
