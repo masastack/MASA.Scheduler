@@ -9,12 +9,12 @@ public class JobAppTaskHandler : ITaskHandler
 {
     const string RESOURCE_PATH = "ResourceFiles";
     const string EXTRACT_PATH = "ExtractFiles";
-    const string JOB_SHELL_PATH = "JobShell/Masa.Scheduler.Shells.JobShell.dll";
+    const string JOB_SHELL_SOURCE_PATH = "JobShell";
+    const string JOB_SHELL_NAME = "Masa.Scheduler.Shells.JobShell.dll";
     const string DLL_EXTENSION = ".dll";
     const string ZIP_EXTENSION = ".zip";
 
     private string _rootPath = PlatformServices.Default.Application.ApplicationBasePath;
-
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<JobAppTaskHandler> _logger;
@@ -49,7 +49,10 @@ public class JobAppTaskHandler : ITaskHandler
 
         _runStatus = TaskRunStatus.Failure;
 
-        var resourcePath = await GetResourceFullPath(resource);
+        var jobExtractPath = GetJobExtractPath(jobDto.Id, resource);
+        var jobResoucePath = GetJobResourcePath(jobDto.Id, resource);
+
+        await ProcessResource(resource, jobExtractPath, jobResoucePath);
 
         var processUtils = new ProcessUtils(_loggerFactory);
 
@@ -59,7 +62,7 @@ public class JobAppTaskHandler : ITaskHandler
 
         try
         {
-            var process = processUtils.Run("dotnet", GetJobShellRunParameter(jobDto, resourcePath, taskId, excuteTime));
+            var process = processUtils.Run("dotnet", GetJobShellRunParameter(jobDto, jobExtractPath, taskId, excuteTime));
 
             token.Register(() =>
             {
@@ -85,22 +88,40 @@ public class JobAppTaskHandler : ITaskHandler
         _logger.LogInformation("Job Exits");
     }
 
-    private string GetJobShellRunParameter(SchedulerJobDto dto, string resourcePath, Guid taskId, DateTimeOffset excuteTime)
+    private string GetJobShellRunParameter(SchedulerJobDto dto, string jobExtractPath, Guid taskId, DateTimeOffset excuteTime)
     {
+        var jobShellFullPath = Path.Combine(jobExtractPath, JOB_SHELL_SOURCE_PATH, JOB_SHELL_NAME);
+
         var parameterList = new List<string>()
         {
-            _rootPath + JOB_SHELL_PATH,
+            //jobShellFullPath,
+            _rootPath + Path.Combine(JOB_SHELL_SOURCE_PATH, JOB_SHELL_NAME),
             taskId.ToString(),
-            Path.Combine(resourcePath, dto.JobAppConfig.JobEntryAssembly),
+            Path.Combine(jobExtractPath, dto.JobAppConfig.JobEntryAssembly),
             dto.JobAppConfig.JobEntryMethod,
             dto.JobAppConfig.JobParams,
             excuteTime.Ticks.ToString(),
             excuteTime.Offset.Ticks.ToString(),
             dto.Id.ToString(),
-            dto.Id.ToString(),
         };
 
         return string.Join(" ", parameterList);
+    }
+
+    private string GetJobExtractPath(Guid jobId, SchedulerResourceDto resouce)
+    {
+        var version = resouce.Version;
+
+        var jobExtractPath = _rootPath + Path.Combine(EXTRACT_PATH, jobId.ToString(), version);
+
+        if (!Directory.Exists(jobExtractPath))
+        {
+            Directory.CreateDirectory(jobExtractPath);
+        }
+
+        Console.WriteLine("JobExtractPath:" + jobExtractPath);
+
+        return jobExtractPath;
     }
 
     private void JobAppErrorDataReceived(object? sender, System.Diagnostics.DataReceivedEventArgs e)
@@ -146,13 +167,13 @@ public class JobAppTaskHandler : ITaskHandler
         }
     }
 
-    private async Task<string> GetResourceFullPath(SchedulerResourceDto resource)
+    private async Task ProcessResource(SchedulerResourceDto resource, string jobExtractPath, string resourcePath)
     {
-        var filePath = Path.Combine(GetResourceFilePath(resource), resource.Name);
-        
+        var filePath = Path.Combine(resourcePath, resource.Name);
+
         if (!File.Exists(filePath))
         {
-           await DownloadResource(resource);
+            await DownloadResource(resource, resourcePath);
         }
 
         if (!File.Exists(filePath))
@@ -162,31 +183,48 @@ public class JobAppTaskHandler : ITaskHandler
 
         if (resource.Name.EndsWith(DLL_EXTENSION))
         {
-            return GetResourceFilePath(resource);
+            await CopyFolder(resourcePath, jobExtractPath);
         }
         else
         {
-            var extractPath = GetExtractFilePath(resource);
+            DeCompressFile(resource, resourcePath, jobExtractPath);
 
-            if (!Directory.Exists(extractPath))
-            {
-                DeCompressFile(resource);
-            }
-
-            if (!Directory.Exists(extractPath))
+            if (!Directory.Exists(jobExtractPath))
             {
                 throw new UserFriendlyException("Cannot found decompress folder");
             }
-
-            return extractPath;
         }
     }
 
-    private async Task DownloadResource(SchedulerResourceDto resource)
+    private Task CopyFolder(string sources, string dest)
+    {
+        DirectoryInfo dinfo = new DirectoryInfo(sources);
+        foreach (var f in dinfo.GetFileSystemInfos())
+        {
+            string destName = Path.Combine(dest, f.Name);
+            if (f is FileInfo)
+            {
+                File.Copy(f.FullName, destName, true);
+            }
+            else
+            {
+                if (!Directory.Exists(destName))
+                {
+                    Directory.CreateDirectory(destName);
+                }
+               
+                CopyFolder(f.FullName, destName);
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task DownloadResource(SchedulerResourceDto resource, string resourcePath)
     {
         try
         {
-            var path = GetResourceFilePath(resource);
+            var path = resourcePath;
 
             if (!Directory.Exists(path))
             {
@@ -216,34 +254,22 @@ public class JobAppTaskHandler : ITaskHandler
         }
     }
 
-    private string GetResourceFilePath(SchedulerResourceDto resource)
+    private string GetJobResourcePath(Guid jobId, SchedulerResourceDto resource)
     {
-        var fileInfo = new FileInfo(resource.Name);
-
-        var fileName = fileInfo.Name.Replace(fileInfo.Extension, "");
-
-        var path = Path.Combine(_rootPath + RESOURCE_PATH, resource.Version + fileName);
+        //  /root/ResourcesFiles/0D627EA9-8656-4797-C4FE-08DA62E10FEE/1.0.0
+        var path = Path.Combine(_rootPath + RESOURCE_PATH, jobId.ToString(), resource.Version);
 
         return path;
     }
 
-    private string GetExtractFilePath(SchedulerResourceDto resource)
-    {
-        var fileInfo = new FileInfo(resource.Name);
-
-        var fileName = fileInfo.Name.Replace(fileInfo.Extension, "");
-
-        return Path.Combine(_rootPath + EXTRACT_PATH, resource.Version + fileName);
-    }
-
-    private void DeCompressFile(SchedulerResourceDto resource)
+    private void DeCompressFile(SchedulerResourceDto resource, string resourcePath, string jobExtractPath)
     {
         if (!resource.Name.EndsWith(ZIP_EXTENSION))
         {
             throw new UserFriendlyException("only support zip files");
         }
 
-        var zipFilePath = Path.Combine(GetResourceFilePath(resource), resource.Name);
+        var zipFilePath = Path.Combine(resourcePath, resource.Name);
 
         if (!File.Exists(zipFilePath))
         {
@@ -252,7 +278,7 @@ public class JobAppTaskHandler : ITaskHandler
 
         try
         {
-            ZipFile.ExtractToDirectory(zipFilePath, GetExtractFilePath(resource));
+            ZipFile.ExtractToDirectory(zipFilePath, jobExtractPath, true);
         }
         catch(Exception ex)
         {

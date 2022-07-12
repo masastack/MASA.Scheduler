@@ -18,7 +18,7 @@ public class ProcessUtils
         bool createNoWindow = true,
         bool isWait = false)
     {
-        _logger?.LogDebug("FileName: {FileName}, Arguments: {Arguments}", fileName, arguments);
+        _logger?.LogInformation("FileName: {FileName}, Arguments: {Arguments}", fileName, arguments);
         var processStartInfo = new ProcessStartInfo
         {
             FileName = fileName,

@@ -19,8 +19,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddMasaRedisCache(builder.Configuration.GetSection("RedisConfig"));
 builder.Services.AddPmClient(builder.Configuration.GetValue<string>("PmClient:Url"));
-builder.Services.AddMapping();
-builder.Services.AddWorkerManager();
+builder.Services.AddMapster();
+builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR();
 builder.Services.AddQuartzUtils();

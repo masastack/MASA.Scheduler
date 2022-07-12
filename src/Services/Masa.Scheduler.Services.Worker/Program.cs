@@ -21,7 +21,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddMasaRedisCache(builder.Configuration.GetSection("RedisConfig"));
 builder.Services.AddMapster();
-builder.Services.AddServerManager();
+builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
 
 if (builder.Environment.IsDevelopment())
