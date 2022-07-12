@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
 
 public static class SchedulerServerManagerServiceCollectionExtensions
 {
-    public static IServiceCollection AddWorkerManager(this IServiceCollection services)
+    public static IServiceCollection AddServerManager(this IServiceCollection services)
     {
         services.AddScoped<SchedulerServerManager>();
         services.AddSingleton<SchedulerServerManagerData>();

@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Services.Worker.Managers.Workers;
 
 public static class SchedulerWorkerManagerServiceCollectionExtensions
 {
-    public static IServiceCollection AddServerManager(this IServiceCollection services)
+    public static IServiceCollection AddWorkerManager(this IServiceCollection services)
     {
         services.AddScoped<SchedulerWorkerManager>();
         services.AddScoped<TaskHanlderFactory>();

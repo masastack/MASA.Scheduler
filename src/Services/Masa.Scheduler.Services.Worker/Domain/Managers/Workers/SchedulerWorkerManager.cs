@@ -146,10 +146,10 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                 var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, internalCts.Token);
                 await NotifyTaskRunResult(runStatus, taskId);
             }
-            catch
+            catch (Exception ex)
             {
                 await NotifyTaskRunResult(TaskRunStatus.Failure, taskId);
-                throw;
+                _logger.LogError(ex, "TaskHandler RunTask Error");
             }
             finally
             {

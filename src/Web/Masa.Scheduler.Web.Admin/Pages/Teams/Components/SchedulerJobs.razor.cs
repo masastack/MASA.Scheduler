@@ -376,7 +376,7 @@ public partial class SchedulerJobs : ProCompontentBase
             case TaskRunStatus.Failure:
             case TaskRunStatus.Timeout:
             case TaskRunStatus.TimeoutSuccess:
-                return job.LastRunEndTime.Humanize(culture: new CultureInfo(LanguageProvider.CurrentLanguage)) + T(job.LastRunStatus.ToString());
+                return job.LastRunEndTime.Humanize(culture: LanguageProvider.Culture) + T(job.LastRunStatus.ToString());
         }
 
         return "";

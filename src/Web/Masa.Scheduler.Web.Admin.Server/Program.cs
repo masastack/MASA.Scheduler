@@ -18,15 +18,6 @@ builder.WebHost.UseKestrel(option =>
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddMasaBlazor(builder =>
-{
-    builder.UseTheme(option =>
-    {
-        option.Primary = "#4318FF";
-        option.Accent = "#4318FF";
-    }
-    );
-});
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGlobalForServer();
 builder.Services.AddMasaSignalRClient(options=> options.SignalRServiceUrl = builder.Configuration["SignalRServiceUrl"]);

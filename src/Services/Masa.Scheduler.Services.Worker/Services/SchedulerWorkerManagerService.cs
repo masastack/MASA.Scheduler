@@ -43,7 +43,7 @@ public class SchedulerWorkerManagerService : ServiceBase
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent))]
     public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, StartTaskIntegrationEvent @event)
     {
-        _logger.LogWarning($"Start Task, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}");
+        _logger.LogInformation($"Start Task, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}");
 
         await workerManager.EnqueueTask(@event);
     }
