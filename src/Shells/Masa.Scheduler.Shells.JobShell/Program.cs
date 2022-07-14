@@ -5,17 +5,9 @@ var taskId = args[0];
 
 var assemblyName = args[1];
 
-var entryMethod = args[2];
+var className = args[2];
 
-Console.WriteLine($"Get args, TaskId: {taskId}, assemblyName: {assemblyName}, entryMethod: {entryMethod}");
-
-var lastIndex = entryMethod.LastIndexOf('.');
-
-var className = entryMethod.Substring(0, lastIndex);
-
-var methodName = entryMethod.Substring(lastIndex + 1);
-
-var path = Path.Combine(Environment.CurrentDirectory, assemblyName);
+Console.WriteLine($"Get args, TaskId: {taskId}, assemblyName: {assemblyName}, className: {className}");
 
 Assembly assembly;
 
@@ -23,11 +15,12 @@ var result = new RunResult() { TaskId = new Guid(taskId) };
 
 try
 {
-    assembly = Assembly.LoadFrom(path);
+    assembly = Assembly.LoadFrom(assemblyName);
 }
 catch (Exception ex)
 {
     result.Message = "Load Assembly Error, Exception Message: " + ex.Message;
+    Console.WriteLine(JsonSerializer.Serialize(result));
     return;
 }
 
@@ -74,8 +67,7 @@ if (args.Length >= 6)
 }
 
 var jobId = Guid.Empty;
-
-if(args.Length >= 7 && args[6] != null)
+if (args.Length >= 7 && args[6] != null)
 {
     jobId = new Guid(args[6].ToString());
 }
@@ -89,22 +81,13 @@ if(instance == null)
     return;
 }
 
-var method = assemblyType.GetMethod(methodName);
-
-if(method == null)
-{
-    result.Message = $"Method not found, MethodName: {methodName}";
-    Console.WriteLine(JsonSerializer.Serialize(result));
-    return;
-}
-
 try
 {
-    var jobContext = new JobContext() { TaskId = result.TaskId, JobId = jobId, ExcuteMethodName = methodName, ExecutionTime = excuteTime, ExcuteParameters = parameterArr == null ? new() : parameterArr.ToList() };
+    var jobContext = new JobContext() { TaskId = result.TaskId, JobId = jobId, ExcuteClassName = className, ExecutionTime = excuteTime, ExcuteParameters = parameterArr == null ? new() : parameterArr.ToList() };
 
     await instance.BeforeExcuteAsync(jobContext);
 
-    var methodResult = method.Invoke(instance, parameterArr);
+    var methodResult = await instance.ExcuteAsync(jobContext);
 
     jobContext.ExcuteResult = methodResult;
 

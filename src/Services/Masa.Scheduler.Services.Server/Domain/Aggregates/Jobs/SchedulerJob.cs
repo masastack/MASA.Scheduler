@@ -187,7 +187,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
             return;
         }
         JobAppConfig ??= new();
-        JobAppConfig.SetConfig(dto.JobAppIdentity, dto.JobEntryAssembly, dto.JobEntryMethod, dto.JobParams, dto.Version);
+        JobAppConfig.SetConfig(dto.JobAppIdentity, dto.JobEntryAssembly, dto.JobEntryClassName, dto.JobParams, dto.Version);
     }
 
     public void SetHttpConfig(SchedulerJobHttpConfigDto? dto)

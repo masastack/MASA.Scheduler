@@ -12,7 +12,7 @@ public class SchedulerJobAppConfig: ValueObject
     public string JobEntryAssembly { get; private set; } = string.Empty;
 
     [JsonInclude]
-    public string JobEntryMethod { get; private set; } = string.Empty;
+    public string JobEntryClassName { get; private set; } = string.Empty;
 
     [JsonInclude]
     public string JobParams { get; private set; } = string.Empty;
@@ -20,11 +20,11 @@ public class SchedulerJobAppConfig: ValueObject
     [JsonInclude]
     public string Version { get; private set; } = string.Empty;
 
-    public void SetConfig(string jobAppIdentity, string jobEntryAssembly, string jobEntryMethod, string jobParams, string version)
+    public void SetConfig(string jobAppIdentity, string jobEntryAssembly, string jobEntryClassName, string jobParams, string version)
     {
         JobAppIdentity = jobAppIdentity;
         JobEntryAssembly = jobEntryAssembly;
-        JobEntryMethod = jobEntryMethod;
+        JobEntryClassName = jobEntryClassName;
         JobParams = jobParams;
         Version = version;
     }
@@ -33,7 +33,7 @@ public class SchedulerJobAppConfig: ValueObject
     {
         yield return JobAppIdentity;
         yield return JobEntryAssembly;
-        yield return JobEntryMethod;
+        yield return JobEntryClassName;
         yield return JobParams;
         yield return Version;
     }

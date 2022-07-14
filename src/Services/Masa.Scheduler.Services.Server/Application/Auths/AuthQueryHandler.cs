@@ -15,15 +15,15 @@ public class AuthQueryHandler
             new TeamDto()
             {
                 Id = new Guid("00000000-0000-0000-0000-000000000000"),
-                Name = "Masa团队",
-                Description = "Masa 团队",
+                Name = "默认团队",
+                Description = "默认团队",
                 MemberCount = 1,
             },
             new TeamDto()
             {
-                Id = new Guid("D0643F37-8202-45FF-D53C-08DA1D3F3845"),
-                Name = "IoT团队",
-                Description = "IoT 团队",
+                Id = new Guid("713334DC-F91E-4ADA-9B16-C2D0881DC2F2"),
+                Name = "Masa团队",
+                Description = "Masa团队",
                 MemberCount =2,
             },
             new TeamDto()

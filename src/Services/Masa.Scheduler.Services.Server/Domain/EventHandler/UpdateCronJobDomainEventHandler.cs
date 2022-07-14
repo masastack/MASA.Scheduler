@@ -15,13 +15,13 @@ public class UpdateCronJobDomainEventHandler
     [EventHandler]
     public async Task UpdateCronJobAsync(UpdateCronJobDomainEvent @event)
     {
-        if(@event.Request.Data.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(@event.Request.Data.CronExpression) && @event.Request.Data.Enabled)
+        if(@event.Request.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(@event.Request.CronExpression) && @event.Request.Enabled)
         {
-            await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(@event.Request.Data.Id, @event.Request.Data.CronExpression);
+            await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(@event.Request.JobId, @event.Request.CronExpression);
         }
         else
         {
-            await _quartzUtils.RemoveCronJob(@event.Request.Data.Id);
+            await _quartzUtils.RemoveCronJob(@event.Request.JobId);
         }
     }
 }

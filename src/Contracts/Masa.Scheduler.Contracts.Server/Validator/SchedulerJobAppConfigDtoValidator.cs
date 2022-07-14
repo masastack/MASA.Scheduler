@@ -9,7 +9,7 @@ public class SchedulerJobAppConfigDtoValidator: AbstractValidator<SchedulerJobAp
     {
         RuleFor(config => config.JobAppIdentity).Required();
         RuleFor(config => config.JobEntryAssembly).Required();
-        RuleFor(config => config.JobEntryMethod).Required();
+        RuleFor(config => config.JobEntryClassName).Required();
     }
 }
 

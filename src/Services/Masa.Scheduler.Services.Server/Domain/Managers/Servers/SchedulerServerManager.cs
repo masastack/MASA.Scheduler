@@ -56,13 +56,13 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         await _quartzUtils.StartQuartzScheduler();
 
-        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry).AsNoTracking().ToListAsync();
+        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => (t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry) && t.Job.Enabled).AsNoTracking().ToListAsync();
 
         await LoadRunningTaskAsync(allTask);
 
         await LoadRetryTaskAsync(allTask);
 
-        var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression));
+        var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression) && job.Enabled);
 
         await RegisterCronJobAsync(cronJobList);
 
@@ -73,7 +73,14 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     {
         foreach (var cronJob in cronJobList)
         {
-            await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(cronJob.Id, cronJob.CronExpression);
+            try
+            {
+                await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(cronJob.Id, cronJob.CronExpression);
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, $"RegisterCronJob Error, JobId: {cronJob.Id}, CronExpression: {cronJob.CronExpression}");
+            }
         }
     }
 
@@ -207,7 +214,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         _data.TaskQueue.Enqueue(taskDto);
     }
 
-    public async Task StartTask(SchedulerTaskDto taskDto, WorkerModel worker)
+    public async Task StartTask(IServiceProvider provider, SchedulerTaskDto taskDto, WorkerModel worker)
     {
         var @event = new StartTaskIntegrationEvent()
         {
@@ -217,8 +224,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
             ExcuteTime = taskDto.SchedulerTime
         };
 
-        await EventBus.PublishAsync(@event);
-        await EventBus.CommitAsync();
+        var eventBus = provider.GetRequiredService<IIntegrationEventBus>();
+        await eventBus.PublishAsync(@event);
+        await eventBus.CommitAsync();
     }
 
     public async Task StopTask(Guid taskId, string workerHost)
@@ -261,6 +269,10 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             while (true)
             {
+                await using var scope = ServiceProvider.CreateAsyncScope();
+
+                var provider = scope.ServiceProvider;
+
                 if (_data.TaskQueue.Count == 0)
                 {
                     await Task.Delay(1000);
@@ -310,7 +322,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                             await Task.Delay(1000);
                         }
 
-                        var task = await _repository.FindAsync(p=> p.Id == taskDto.Id);
+                        var repository = provider.GetRequiredService<IRepository<SchedulerTask>>();
+
+                        var task = await repository.FindAsync(p=> p.Id == taskDto.Id);
 
                         if(task == null)
                         {
@@ -320,11 +334,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                         task.TaskStart();
                         task.SetWorkerHost(workerModel.GetServiceUrl());
 
-                        await _repository.UpdateAsync(task);
+                        await repository.UpdateAsync(task);
 
-                        await _repository.UnitOfWork.SaveChangesAsync();
+                        await repository.UnitOfWork.SaveChangesAsync();
 
-                        await StartTask(taskDto, workerModel);
+                        await StartTask(provider, taskDto, workerModel);
                     }
                 }
                 catch(Exception ex)

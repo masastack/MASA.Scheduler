@@ -121,7 +121,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         {
             try
             {
-                if ((DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
+                if (job.RunTimeoutSecond > 0 && (DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
                 {
                     await NotifyTaskRunResult(TaskRunStatus.Timeout, taskId);
                 }
@@ -137,7 +137,10 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             }
         });
 
-        cts.CancelAfter(TimeSpan.FromSeconds(job.RunTimeoutSecond));
+        if(job.RunTimeoutSecond > 0)
+        {
+            cts.CancelAfter(TimeSpan.FromSeconds(job.RunTimeoutSecond));
+        }
 
         _ = Task.Run(async () =>
         {
@@ -187,18 +190,11 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             Status = runStatus
         };
 
-        await EventBus.PublishAsync(@event);
-        await EventBus.CommitAsync();
-    }
+        await using var scope = ServiceProvider.CreateAsyncScope();
 
-    private async Task NofityTaskStart(Guid taskId)
-    {
-        var @event = new NotifyTaskStartIntegrationEvent()
-        {
-            TaskId = taskId
-        };
+        var eventBus = scope.ServiceProvider.GetRequiredService<IIntegrationEventBus>();
 
-        await EventBus.PublishAsync(@event);
-        await EventBus.CommitAsync();
+        await eventBus.PublishAsync(@event);
+        await eventBus.CommitAsync();
     }
 }

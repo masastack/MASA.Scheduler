@@ -98,7 +98,7 @@
   "VerifyContent": "校验内容",
   "JobAppId": "Job应用",
   "JobEntryAssembly": "程序集",
-  "JobEntryMethod": "入口点",
+  "JobEntryClass": "执行类",
   "OptionParams": "参数(选填)",
   "ResourceVersion": "源文件版本",
   "Latest": "最新版本",
