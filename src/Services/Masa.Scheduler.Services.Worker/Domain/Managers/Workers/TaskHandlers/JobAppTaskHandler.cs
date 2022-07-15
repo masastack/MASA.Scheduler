@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.PlatformAbstractions;
-
 namespace Masa.Scheduler.Services.Worker.Domain.Managers.Workers.TaskHandlers;
 
 public class JobAppTaskHandler : ITaskHandler
@@ -14,7 +12,7 @@ public class JobAppTaskHandler : ITaskHandler
     const string DLL_EXTENSION = ".dll";
     const string ZIP_EXTENSION = ".zip";
 
-    private string _rootPath = PlatformServices.Default.Application.ApplicationBasePath;
+    private string _rootPath = Environment.CurrentDirectory;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<JobAppTaskHandler> _logger;
@@ -32,19 +30,19 @@ public class JobAppTaskHandler : ITaskHandler
     {
         if (jobDto.JobAppConfig is null)
         {
-            throw new UserFriendlyException("JobAppConfig is required in JobApp Task");
+            throw new UserFriendlyException("JobAppConfig is required in JobApp Task, jobId: " + jobDto.Id);
         }
 
         if(jobDto.JobAppConfig.SchedulerResourceDto is null)
         {
-            throw new UserFriendlyException("Scheduler Resource cannot be null");
+            throw new UserFriendlyException("Scheduler Resource cannot be null, jobId: " + jobDto.Id);
         }
 
         var resource = jobDto.JobAppConfig.SchedulerResourceDto;
 
         if (string.IsNullOrEmpty(resource.FilePath))
         {
-            throw new UserFriendlyException("Scheduler Resource FilePath cannot empty");
+            throw new UserFriendlyException("Scheduler Resource FilePath cannot empty, jobId: " + jobDto.Id);
         }
 
         _runStatus = TaskRunStatus.Failure;

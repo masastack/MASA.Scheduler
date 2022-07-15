@@ -147,7 +147,6 @@ public class SchedulerJobCommandHandler
 
         var projectDetailsQuery = new ProjectDetailsQuery()
         {
-            ProjectId = 1,
             ProjectIdentity = request.ProjectIdentity
         };
 

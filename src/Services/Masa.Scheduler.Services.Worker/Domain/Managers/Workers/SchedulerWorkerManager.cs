@@ -63,40 +63,46 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         {
             while (true)
             {
+                await using var scope = ServiceProvider.CreateAsyncScope();
+
+                var provider = scope.ServiceProvider;
+
+                var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
+
                 try
                 {
-                    if (string.IsNullOrWhiteSpace(_data.ServiceId))
+                    if (string.IsNullOrWhiteSpace(data.ServiceId))
                     {
                         await Task.Delay(1000);
                         continue;
                     }
 
-                    if (_data.TaskQueue.Count == 0)
+                    if (data.TaskQueue.Count == 0)
                     {
                         await Task.Delay(1000);
                         continue;
                     }
 
-                    if (_data.TaskQueue.TryDequeue(out var task))
+                    if (data.TaskQueue.TryDequeue(out var task))
                     {
-                        if(task.ServiceId != _data.ServiceId)
+                        if(task.ServiceId != data.ServiceId)
                         {
-                            Logger.LogWarning($"Get ServiceId: {task.ServiceId}, CurrentServiceId:{_data.ServiceId}");
+                            _logger.LogWarning($"Get ServiceId: {task.ServiceId}, CurrentServiceId:{data.ServiceId}");
                             continue;
                         }
 
-                        if (_data.StopTask.Any(p => p == task.TaskId))
+                        if (data.StopTask.Any(p => p == task.TaskId))
                         {
-                            _data.StopTask.Remove(task.TaskId);
+                            data.StopTask.Remove(task.TaskId);
                             continue;
                         }
 
-                        await StartTaskAsync(task.TaskId, task.Job, task.ExcuteTime);
+                        await StartTaskAsync(data, task.TaskId, task.Job, task.ExcuteTime);
                     }
                 }
                 catch(Exception ex)
                 {
-                    Logger.LogError(ex, "ProcessTaskRunError");
+                    _logger.LogError(ex, "ProcessTaskRunError");
                 }
             }
         });
@@ -104,14 +110,14 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         return Task.CompletedTask;
     }
 
-    public async Task StartTaskAsync(Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
+    public async Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
     {
         var cts = new CancellationTokenSource();
         var internalCts = new CancellationTokenSource();
 
-        _data.TaskCancellationTokenSources.TryAdd(taskId, cts);
+        data.TaskCancellationTokenSources.TryAdd(taskId, cts);
 
-        _data.InternalCancellationTokenSources.TryAdd(taskId, internalCts);
+        data.InternalCancellationTokenSources.TryAdd(taskId, internalCts);
 
         var taskHandler = _taskHandlerFactory.GetTaskHandler(job.JobType);
 
@@ -127,7 +133,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                 }
                 else
                 {
-                    _data.InternalCancellationTokenSources.TryGetValue(taskId, out var internalCancellationToken);
+                    data.InternalCancellationTokenSources.TryGetValue(taskId, out var internalCancellationToken);
                     internalCancellationToken?.Cancel();
                 }
             }
@@ -144,6 +150,10 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         _ = Task.Run(async () =>
         {
+            await using var scope = ServiceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
+            var managerData = provider.GetRequiredService<SchedulerWorkerManagerData>();
+
             try
             {
                 var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, internalCts.Token);
@@ -159,8 +169,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                 cts?.Dispose();
                 internalCts?.Dispose();
 
-                _data.TaskCancellationTokenSources.Remove(taskId, out _);
-                _data.InternalCancellationTokenSources.Remove(taskId, out _);
+                managerData.TaskCancellationTokenSources.Remove(taskId, out _);
+                managerData.InternalCancellationTokenSources.Remove(taskId, out _);
             }
         }, cts.Token);
     }
@@ -191,9 +201,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         };
 
         await using var scope = ServiceProvider.CreateAsyncScope();
-
         var eventBus = scope.ServiceProvider.GetRequiredService<IIntegrationEventBus>();
-
         await eventBus.PublishAsync(@event);
         await eventBus.CommitAsync();
     }

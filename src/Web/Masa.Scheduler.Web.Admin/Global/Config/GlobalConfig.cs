@@ -14,6 +14,7 @@ public class GlobalConfig
     private string? _favorite;
     private NavModel? _currentNav;
     private CookieStorage? _cookieStorage;
+    private bool _loading;
 
     #endregion
 
@@ -79,6 +80,20 @@ public class GlobalConfig
             OnCurrentNavChanged?.Invoke();
         }
     }
+    public bool Loading
+    {
+        get => _loading;
+        set
+        {
+            if (_loading != value)
+            {
+                _loading = value;
+                OnLoadingChanged?.Invoke(_loading, LoadingText);
+            }
+        }
+    }
+
+    public string LoadingText { get; set; } = "Loading";
 
     #endregion
 
@@ -91,8 +106,11 @@ public class GlobalConfig
     #region event
 
     public delegate void GlobalConfigChanged();
+    public delegate void LoadingChanged(bool loading, string loadingText);
+
     public event GlobalConfigChanged? OnCurrentNavChanged;
     public event GlobalConfigChanged? OnLanguageChanged;
+    public event LoadingChanged? OnLoadingChanged;
 
     #endregion
 

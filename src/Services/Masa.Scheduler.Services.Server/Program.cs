@@ -3,28 +3,52 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDaprClient();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDaprStarter(opt =>
+    {
+        opt.DaprHttpPort = 10602;
+        opt.DaprGrpcPort = 10601;
+    });
+}
+
+builder.Services.AddMasaIdentityModel(IdentityType.MultiEnvironment, options =>
+{
+    options.Environment = "environment";
+    options.UserName = "name";
+    options.UserId = "sub";
+});
+
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options =>
+.AddJwtBearer("Bearer", options =>
 {
-    options.Authority = "";
+    options.Authority = builder.GetMasaConfiguration().ConfigurationApi.GetDefault().GetValue<string>("AppSettings:IdentityServerUrl");
     options.RequireHttpsMetadata = false;
-    options.Audience = "";
+    options.TokenValidationParameters.ValidateAudience = false;
+    options.MapInboundClaims = false;
 });
-
-builder.Services.AddMasaRedisCache(builder.Configuration.GetSection("RedisConfig"));
-builder.Services.AddPmClient(builder.Configuration.GetValue<string>("PmClient:Url"));
+builder.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+});
+var configuration = builder.GetMasaConfiguration().ConfigurationApi.GetDefault();
+builder.Services.AddAuthClient(configuration.GetValue<string>("AppSettings:AuthClient:Url"));
+builder.Services.AddMasaRedisCache(configuration.GetSection("RedisConfig").Get<RedisConfigurationOptions>()).AddMasaMemoryCache();
+builder.Services.AddPmClient(configuration.GetValue<string>("AppSettings:PmClient:Url"));
 builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR();
 builder.Services.AddQuartzUtils();
-//builder.Services.AddQuartzJob();
+
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
+    .AddDbContextCheck<SchedulerDbContext>();
 
 builder.Services.AddAliyunStorage(serviceProvider =>
 {
@@ -48,11 +72,6 @@ builder.Services.AddAliyunStorage(serviceProvider =>
         }
     };
 });
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddDaprStarter();
-}
 
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -90,29 +109,26 @@ var app = builder.Services
     .AddDomainEventBus(options =>
     {
         options
-        .UseDaprEventBus<IntegrationEventLogService>(options => options.UseEventLog<SchedulerDbContext>())
+        .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseDapr().UseEventLog<SchedulerDbContext>())
         .UseEventBus(eventBusBuilder =>
         {
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
-            eventBusBuilder.UseMiddleware(typeof(LogMiddleware<>));
         })
         .UseIsolationUoW<SchedulerDbContext>(
-            isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
+            isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
             dbOptions => dbOptions.UseSqlServer().UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder);
 
-app.UseMasaExceptionHandling(opt =>
+app.UseMasaExceptionHandler(opt =>
 {
-    opt.CustomExceptionHandler = exception =>
+    opt.ExceptionHandler = context =>
     {
-        Exception friendlyException = exception;
-        if (exception is ValidationException validationException)
+        if (context.Exception is ValidationException validationException)
         {
-            friendlyException = new UserFriendlyException(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
+            context.ToResult(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
         }
-        return (friendlyException, false);
     };
 });
 

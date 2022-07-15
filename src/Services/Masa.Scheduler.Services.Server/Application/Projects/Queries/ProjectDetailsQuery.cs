@@ -5,8 +5,6 @@ namespace Masa.Scheduler.Services.Server.Application.Projects.Queries;
 
 public record ProjectDetailsQuery : Query<ProjectDto>
 {
-    public int ProjectId { get; set; }
-
     public string ProjectIdentity { get; set; } = string.Empty;
 
     public override ProjectDto Result { get; set; } = new();

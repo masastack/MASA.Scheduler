@@ -22,7 +22,7 @@ public class NavHelper
         _navigationManager = navigationManager;
         _globalConfig = globalConfig;
         _authService = schedulerCaller.AuthService;
-        Initialization();
+        //Initialization();
     }
 
     private void Initialization()

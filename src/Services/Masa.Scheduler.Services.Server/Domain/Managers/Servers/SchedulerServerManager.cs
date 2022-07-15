@@ -273,13 +273,15 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                 var provider = scope.ServiceProvider;
 
-                if (_data.TaskQueue.Count == 0)
+                var data = provider.GetRequiredService<SchedulerServerManagerData>();
+
+                if (data.TaskQueue.Count == 0)
                 {
                     await Task.Delay(1000);
                     continue;
                 }
 
-                if(!_data.ServiceList.Any())
+                if(!data.ServiceList.Any())
                 {
                     await Task.Delay(1000);
                     continue;
@@ -289,11 +291,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                 try
                 {
-                    if (_data.TaskQueue.TryDequeue(out taskDto))
+                    if (data.TaskQueue.TryDequeue(out taskDto))
                     {
-                        if (_data.StopTask.Any(p => p == taskDto.Id))
+                        if (data.StopTask.Any(p => p == taskDto.Id))
                         {
-                            _data.StopTask.Remove(taskDto.Id);
+                            data.StopTask.Remove(taskDto.Id);
                             continue;
                         }
 
@@ -318,7 +320,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                         if(workerModel.Status != ServiceStatus.Normal)
                         {
-                            _data.TaskQueue.Enqueue(taskDto);
+                            data.TaskQueue.Enqueue(taskDto);
                             await Task.Delay(1000);
                         }
 

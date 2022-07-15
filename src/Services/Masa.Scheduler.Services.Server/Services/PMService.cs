@@ -10,7 +10,7 @@ public class PMService : ServiceBase
         MapGet(GetProjectListAsync);
     }
 
-    public async Task<IResult> GetProjectListAsync(IEventBus eventBus, Guid? teamId, string environment = "development")
+    public async Task<IResult> GetProjectListAsync(IEventBus eventBus, Guid? teamId, string environment = "")
     {
         var query = new ProjectQuery(teamId, environment);
         await eventBus.PublishAsync(query);

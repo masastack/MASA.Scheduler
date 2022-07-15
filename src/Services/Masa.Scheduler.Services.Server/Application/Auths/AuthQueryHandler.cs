@@ -1,15 +1,41 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.BasicAbility.Auth;
 using Masa.Scheduler.Services.Server.Application.Auths.Queries;
 
 namespace Masa.Scheduler.Services.Server.Application.Auths;
 
 public class AuthQueryHandler
 {
-    [EventHandler]
-    public Task TeamListHandleAsync(TeamQuery query)
+    private IUserContext _userContext;
+    private IAuthClient _authClient;
+
+    public AuthQueryHandler(IUserContext userContext, IAuthClient authClient)
     {
+        _userContext = userContext;
+        _authClient = authClient;
+    }
+
+    [EventHandler]
+    public async Task TeamListHandleAsync(TeamQuery query)
+    {
+        //var currentUserId = _userContext.GetUserId<Guid>();
+
+        //var teamList = await _authClient.TeamService.GetUserTeamsAsync();
+
+        //var userInfos = await _authClient.UserService.GetUserPortraitsAsync(new Guid[] { currentUserId });
+
+        //query.Result = teamList.Select(p => new TeamDto()
+        //{
+        //    Id = p.Id,
+        //    Name = p.Name,
+        //    Description = p.Description,
+        //    Avatar = p.Avatar,
+        //    MemberCount = p.MemberCount
+
+        //}).ToList();
+
         query.Result = new List<TeamDto>()
         {
             new TeamDto()
@@ -35,12 +61,30 @@ public class AuthQueryHandler
             }
         };
 
-        return Task.CompletedTask;
+        //return Task.CompletedTask;
     }
 
     [EventHandler]
-    public Task GetUserAsync(UserQuery query)
+    public async Task GetUserAsync(UserQuery query)
     {
+        //var userInfos = await _authClient.UserService.GetUserPortraitsAsync(query.UserId);
+
+        //var userInfo = userInfos.FirstOrDefault();
+
+        //if (userInfo != null)
+        //{
+        //    var useDto = new UserDto()
+        //    {
+        //        Account = userInfo.Account,
+        //        Id = userInfo.Id,
+        //        Name = userInfo.Name,
+        //        Avatar = userInfo.Avatar,
+        //        DisplayName = userInfo.DisplayName
+        //    };
+
+        //    query.Result = useDto;
+        //}
+
         query.Result = new UserDto()
         {
             Account = "Tester",
@@ -48,6 +92,6 @@ public class AuthQueryHandler
             Name = "Tester"
         };
 
-        return Task.CompletedTask;
+        //return Task.CompletedTask;
     }
 }

@@ -92,15 +92,6 @@ public partial class SchedulerTasks
         return Task.CompletedTask;
     }
 
-    private int TotalPage
-    {
-        get
-        {
-            var totalPage = (int)((_total + PageSize - 1) / PageSize);
-            return totalPage == 0 ? 1 : totalPage;
-        }
-    }
-
     public int Page
     {
         get => _page; 
@@ -183,15 +174,15 @@ public partial class SchedulerTasks
         switch (status)
         {
             case TaskRunStatus.Success:
-                return "#05CD99";
+                return "#05CD99 !important";
             case TaskRunStatus.Failure:
-                return "#FF5252";
+                return "#FF5252 !important";
             case TaskRunStatus.Timeout:
-                return "#FF7D00";
+                return "#FF7D00 !important";
             case TaskRunStatus.TimeoutSuccess:
-                return "#CC9139";
+                return "#CC9139 !important";
             default:
-                return "#323D6F";
+                return "#323D6F !important";
         }
     }
 
@@ -300,30 +291,6 @@ public partial class SchedulerTasks
 
         _lastQueryStatus = _queryStatus;
 
-        return Task.CompletedTask;
-    }
-
-    private Task OnPrevHandler()
-    {
-        if(Page > 1)
-        {
-            Page--;
-        }
-        return Task.CompletedTask;
-    }
-
-    private Task OnNextHandler()
-    {
-        if (Page < TotalPage)
-        {
-            Page++;
-        }
-        return Task.CompletedTask;
-    }
-
-    private Task OnPageSizeChanged(int pageSize)
-    {
-        PageSize = pageSize;
         return Task.CompletedTask;
     }
 }

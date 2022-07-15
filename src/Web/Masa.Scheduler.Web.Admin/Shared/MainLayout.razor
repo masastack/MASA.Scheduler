@@ -1,23 +1,55 @@
-﻿@using Microsoft.AspNetCore.Components.Rendering
+﻿@using Masa.Stack.Components.Models
+@using Microsoft.AspNetCore.Components.Rendering
 @inherits LayoutComponentBase
 @inject GlobalConfig GlobalConfig
+@inject NavigationManager Navigation
 
-<MApp>
-    <MAppBar Elevation=0 App MaxHeight=60 Class="mx-6 rounded-b-4">
-        <MSpacer />
-        <Search />
-        <MIcon Size=20 Class="ml-5" Color="neutral-lighten-3">mdi-message-processing-outline</MIcon>
-        <Language />
-        <Login />
-    </MAppBar>
+<Layout AppId="masa-scheduler-web-admin" OnSignOut="SignOut" OnErrorAsync="OnError" OnAfterNavItemsLoadAsync="OnAfterNavItemsLoadAsync"
+        Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
+        MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg">
+    @Body
+</Layout>
 
-    <Navigation />
 
-    <MMain Class="fill-lighten-1" Style="padding-top:60px">
-        <MErrorHandler>
-            <div class="pa-6 max-width">
-                @Body
-            </div>
-        </MErrorHandler>
-    </MMain>
-</MApp>
+@code{
+    [Inject]
+    public IPopupService PopupService { get; set; } = default!;
+
+    [Inject]
+    public SchedulerServerCaller SchedulerServerCaller { get; set; } = default!;
+
+    private Task OnError(Exception exception)
+    {
+        PopupService.AlertAsync(exception.Message, AlertTypes.Error);
+        GlobalConfig.Loading = false;
+        return Task.CompletedTask;
+    }
+
+    private void SignOut()
+    {
+        Navigation.NavigateTo("/Logout",true);
+    }
+
+    private async Task OnAfterNavItemsLoadAsync(List<Nav> navItems)
+    {
+        var teamNav = navItems.FirstOrDefault(p=> p.Code == "scheduler.team");
+
+        if(teamNav != null)
+        {
+            var teamList = await SchedulerServerCaller.AuthService.GetTeamListAsync();
+
+            foreach(var team in teamList.Data)
+            {
+                var newNavItem = new Nav()
+                {
+                    Code = $"{teamNav.Code}.{team.Id}",
+                    Name = team.Name,
+                    ParentCode = teamNav.Code,
+                    Url =$"{teamNav.Url}/{team.Id}",
+                };
+
+                teamNav.Children.Add(newNavItem);
+            }
+        }
+    }
+}
