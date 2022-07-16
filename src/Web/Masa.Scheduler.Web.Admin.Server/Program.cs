@@ -2,12 +2,15 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 using Masa.Scheduler.ApiGateways.Caller;
+using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
 using Masa.Scheduler.Contracts.Server.Infrastructure.SignalRClients;
 using Masa.Stack.Components;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddObservability(true);
 
 builder.WebHost.UseKestrel(option =>
 {

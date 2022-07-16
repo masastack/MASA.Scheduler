@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
 
 public static class ObservabilityExtensions
 {
-    public static void AddObservability(this WebApplicationBuilder builder)
+    public static void AddObservability(this WebApplicationBuilder builder, bool isBlazor = false)
     {
         var endPoint = builder.Configuration.GetValue<string>("OTLP:Endpoint");
         var serviceName = builder.Configuration.GetValue<string>("OTLP:ServiceName");
@@ -33,7 +33,15 @@ public static class ObservabilityExtensions
         //tracing
         builder.Services.AddMasaTracing(options =>
         {
-            options.AspNetCoreInstrumentationOptions.AppendDefaultFilter(options);
+            if (isBlazor)
+            {
+                options.AspNetCoreInstrumentationOptions.AppendBlazorFilter(options);
+            }
+            else
+            {
+                options.AspNetCoreInstrumentationOptions.AppendDefaultFilter(options);
+            }
+           
             options.BuildTraceCallback = builder =>
             {
                 builder.SetResourceBuilder(resources);
