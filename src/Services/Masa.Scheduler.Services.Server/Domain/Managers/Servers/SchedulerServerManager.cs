@@ -147,9 +147,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         }
     }
 
-    public async Task<WorkerModel> GetWorker(RoutingStrategyTypes routingType)
+    public async Task<WorkerModel> GetWorker(SchedulerServerManagerData data,RoutingStrategyTypes routingType)
     {
-        if (!ServiceList.Any())
+        if (!data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Any())
         {
             throw new UserFriendlyException("WorkerList is empty");
         }
@@ -160,7 +160,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             case RoutingStrategyTypes.RoundRobin:
                 var currentRunCount = await RedisCacheClient.HashIncrementAsync(CacheKeys.CURRENT_RUN_COUNT);
-                var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count);
+                var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count);
                 worker = ServiceList[currentUesIndex];
                 break;
             case RoutingStrategyTypes.DynamicRatioApm:
@@ -210,6 +210,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 taskDto.Job.JobAppConfig.SchedulerResourceDto = _mapper.Map<SchedulerResourceDto>(resource);
             }
         }
+
+        _logger.LogInformation($"SchedulerServerManager: TaskEnqueue, JobId: {task.JobId}, TaskId: {task.Id}");
 
         _data.TaskQueue.Enqueue(taskDto);
     }
@@ -293,8 +295,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 {
                     if (data.TaskQueue.TryDequeue(out taskDto))
                     {
+                        _logger.LogInformation($"SchedulerServerManager: TaskDequeue, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
+
                         if (data.StopTask.Any(p => p == taskDto.Id))
                         {
+                            _logger.LogInformation($"SchedulerServerManager: TaskStop, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                             data.StopTask.Remove(taskDto.Id);
                             continue;
                         }
@@ -307,19 +312,20 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                             if(workerModel == null)
                             {
-                                Logger.LogError($"Cannot find worker model, workerHost: {taskDto.Job.SpecifiedWorkerHost}");
+                                _logger.LogError($"SchedulerServerManager: Cannot find worker model, workerHost: {taskDto.Job.SpecifiedWorkerHost}, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                                 continue;
                             }
                         }
                         else
                         {
-                            workerModel = await GetWorker(taskDto.Job.RoutingStrategy);
+                            workerModel = await GetWorker(data, taskDto.Job.RoutingStrategy);
                         }
 
                         await CheckHeartbeat(workerModel!);
 
                         if(workerModel.Status != ServiceStatus.Normal)
                         {
+                            _logger.LogInformation($"SchedulerServerManager: WorkerModel Status is not Normal, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                             data.TaskQueue.Enqueue(taskDto);
                             await Task.Delay(1000);
                         }
@@ -330,6 +336,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                         if(task == null)
                         {
+                            _logger.LogError($"SchedulerServerManager:Task is not found, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                             throw new UserFriendlyException($"Task is not found, taskId: {taskDto.Id}");
                         }
 
@@ -347,9 +354,13 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 {
                     if(taskDto != null)
                     {
+                        _logger.LogError(ex, $"SchedulerServerManager:Task Assign Error, Exception Message: {ex.Message}, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                         _data.TaskQueue.Enqueue(taskDto);
                     }
-                    Logger.LogError(ex, "StartAssignAsync");
+                    else
+                    {
+                        Logger.LogError(ex, "StartAssignAsync");
+                    }
                 }
             }
         });

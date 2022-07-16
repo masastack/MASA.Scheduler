@@ -49,7 +49,7 @@ public class SchedulerWorkerManagerService : ServiceBase
             return;
         }
 
-        _logger.LogInformation($"Start Task, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}");
+        _logger.LogInformation($"SchedulerWorker: Receive Start Task Event, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}");
 
         await workerManager.EnqueueTask(@event);
     }

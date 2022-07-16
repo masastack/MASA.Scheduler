@@ -20,11 +20,8 @@ public class AuthQueryHandler
     [EventHandler]
     public async Task TeamListHandleAsync(TeamQuery query)
     {
-        //var currentUserId = _userContext.GetUserId<Guid>();
-
+        // todo: use auth sdk get team list, when auth sdk is ok
         //var teamList = await _authClient.TeamService.GetUserTeamsAsync();
-
-        //var userInfos = await _authClient.UserService.GetUserPortraitsAsync(new Guid[] { currentUserId });
 
         //query.Result = teamList.Select(p => new TeamDto()
         //{
@@ -36,6 +33,7 @@ public class AuthQueryHandler
 
         //}).ToList();
 
+        // use mock team list
         query.Result = new List<TeamDto>()
         {
             new TeamDto()
@@ -60,13 +58,12 @@ public class AuthQueryHandler
                 MemberCount = 3,
             }
         };
-
-        //return Task.CompletedTask;
     }
 
     [EventHandler]
     public async Task GetUserAsync(UserQuery query)
     {
+        // todo: use auth sdk to get use information, when auth sdk is ok
         //var userInfos = await _authClient.UserService.GetUserPortraitsAsync(query.UserId);
 
         //var userInfo = userInfos.FirstOrDefault();
@@ -85,6 +82,7 @@ public class AuthQueryHandler
         //    query.Result = useDto;
         //}
 
+        //use mock use info
         query.Result = new UserDto()
         {
             Account = "Tester",

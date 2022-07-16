@@ -109,3 +109,4 @@ global using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
 global using Masa.Utils.Caching.Redis.Models;
 global using Masa.BuildingBlocks.Identity.IdentityModel;
 global using Microsoft.Extensions.Diagnostics.HealthChecks;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;

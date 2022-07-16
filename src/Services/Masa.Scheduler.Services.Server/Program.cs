@@ -12,6 +12,8 @@ if (builder.Environment.IsDevelopment())
     });
 }
 
+builder.AddObservability();
+
 builder.Services.AddMasaIdentityModel(IdentityType.MultiEnvironment, options =>
 {
     options.Environment = "environment";
@@ -52,25 +54,34 @@ builder.Services.AddHealthChecks()
 
 builder.Services.AddAliyunStorage(serviceProvider =>
 {
-    var daprClient = serviceProvider.GetRequiredService<DaprClient>();
-    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-
-    var secretStoreName = configuration.GetValue<string>("SecretStoreName");
-    var secretName = configuration.GetValue<string>("SecretName");
-
-    var secrets = daprClient.GetSecretAsync(secretStoreName, secretName).ConfigureAwait(false).GetAwaiter().GetResult();
-    var accessId = secrets.GetValueOrDefault("access_id", string.Empty);
-    var accessSecret = secrets.GetValueOrDefault("access_secret", string.Empty);
-    var endpoint = secrets.GetValueOrDefault("endpoint", string.Empty);
-    var roleArn = secrets.GetValueOrDefault("roleArn", string.Empty);
-
-    return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
+    try
     {
-        Sts = new AliyunStsOptions()
+        var daprClient = serviceProvider.GetService<DaprClient>();
+
+        if(daprClient == null)
         {
-            RegionId = "cn-hangzhou"
+            throw new UserFriendlyException("dapr client is null");
         }
-    };
+
+        var bulk = daprClient.GetBulkSecretAsync("localsecretstore").ConfigureAwait(false).GetAwaiter().GetResult();
+        var secrets = daprClient.GetSecretAsync("localsecretstore", "masa-scheduler-secret").ConfigureAwait(false).GetAwaiter().GetResult();
+        var accessId = secrets.GetValueOrDefault("access_id", string.Empty);
+        var accessSecret = secrets.GetValueOrDefault("access_secret", string.Empty);
+        var endpoint = secrets.GetValueOrDefault("endpoint", string.Empty);
+        var roleArn = secrets.GetValueOrDefault("roleArn", string.Empty);
+
+        return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
+        {
+            Sts = new AliyunStsOptions()
+            {
+                RegionId = "cn-hangzhou"
+            }
+        };
+    }
+    catch(Exception ex)
+    {
+        throw;
+    }
 });
 
 var app = builder.Services

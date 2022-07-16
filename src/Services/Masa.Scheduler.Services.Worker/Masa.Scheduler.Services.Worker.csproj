@@ -90,6 +90,12 @@
     <None Update="JobShell\Masa.Utils.Exceptions.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="JobShell\Masa.Utils.Security.Authentication.OpenIdConnect.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="JobShell\Microsoft.AspNetCore.Authentication.OpenIdConnect.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="JobShell\Microsoft.Bcl.AsyncInterfaces.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
