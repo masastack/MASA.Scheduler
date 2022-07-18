@@ -88,3 +88,4 @@ global using Masa.BuildingBlocks.Identity.IdentityModel;
 global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
 global using Masa.BuildingBlocks.BasicAbility.Auth;
+global using Masa.BuildingBlocks.BasicAbility.Pm.Enum;

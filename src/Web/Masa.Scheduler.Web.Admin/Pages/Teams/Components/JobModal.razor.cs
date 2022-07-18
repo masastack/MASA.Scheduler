@@ -40,7 +40,23 @@ public partial class JobModal
     public EventCallback<bool> VisibleChanged { get; set; }
 
     [Parameter]
-    public ProjectDto Project { get; set; } = default!;
+    public ProjectDto Project
+    {
+        get
+        {
+            return _project;
+        }
+        set
+        {
+            _project = value;
+
+            if (_project != null)
+            {
+                _serviceApp = Project.ProjectApps.FindAll(p => p.Type == ProjectAppTypes.Service);
+                _jobApp = Project.ProjectApps.FindAll(p => p.Type == ProjectAppTypes.Job);
+            }
+        }
+    }
 
     [Parameter]
     public EventCallback<Task> OnAfterSubmit { get; set; }
@@ -65,10 +81,16 @@ public partial class JobModal
 
     private bool _isAdd = false;
 
+    private ProjectDto _project = default!;
+
+    private List<ProjectAppDto> _serviceApp = new();
+
+    private List<ProjectAppDto> _jobApp = new();
+
     protected override async Task OnInitializedAsync()
     {
         _isAdd = Model.Id == Guid.Empty;
-
+      
         await GetWorkerList();
 
         await base.OnInitializedAsync();

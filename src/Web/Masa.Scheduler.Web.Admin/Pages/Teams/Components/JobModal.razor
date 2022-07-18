@@ -212,7 +212,7 @@
                                 <MForm Model=Model.JobAppConfig EnableValidation @ref="Form" Class="full-height">
                                     <MRow Class="mt-1">
                                         <MCol Cols="3">
-                                            <MSelect Value="Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Identity">
+                                            <MSelect Value="Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="_jobApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
@@ -266,7 +266,7 @@
                                 <MForm Model=Model.DaprServiceInvocationConfig EnableValidation @ref="Form" Class="full-height">
                                     <MRow Class="mt-1">
                                         <MCol Cols="3">
-                                            <MSelect Value="Model.DaprServiceInvocationConfig.DaprServiceIdentity" TValue="string" TItemValue="string" TItem="ProjectAppDto"  ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Identity">
+                                            <MSelect Value="Model.DaprServiceInvocationConfig.DaprServiceIdentity" TValue="string" TItemValue="string" TItem="ProjectAppDto"  ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="_serviceApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
