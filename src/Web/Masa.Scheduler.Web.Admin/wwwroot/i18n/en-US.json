@@ -45,7 +45,7 @@
   "Failure": "Failure",
   "Timeout": "Timeout",
   "WaitToRetry": "Wait to retry",
-  "WaitToRun":  "Wait to run",
+  "WaitToRun": "Wait to run",
   "TimeoutSuccess": "Timeout but success",
   "Idle": "Idle",
   "StartDate": "Start Date",
@@ -68,5 +68,6 @@
   "AddResourceFiles": "Add resource files",
   "Explain": "Explain",
   "UploadFiles.Tips": "Only accept .zip, .dll files, the fiels max size is 100M",
-  "ResourceFileUploadDescription": "{0} upload resource file at {1}"
+  "ResourceFileUploadDescription": "{0} upload resource file at {1}",
+  "StopTask": "Stop Task"
 }
