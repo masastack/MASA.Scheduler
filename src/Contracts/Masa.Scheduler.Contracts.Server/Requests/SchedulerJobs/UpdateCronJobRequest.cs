@@ -5,6 +5,12 @@ namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerJobs;
 
 public class UpdateCronJobRequest : BaseRequest
 {
-    public SchedulerJobDto Data { get; set; } = new();
+    public Guid JobId { get; set; }
+
+    public bool Enabled { get; set; }
+
+    public ScheduleTypes ScheduleType { get; set; }
+
+    public string CronExpression { get; set; } = string.Empty;
 }
 

@@ -12,5 +12,7 @@ public class ProjectAppDto
     public string Identity { get; set; } = string.Empty;
 
     public int ProjectId { get; set; }
+
+    public int Type { get; set; }
 }
 

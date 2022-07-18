@@ -27,13 +27,20 @@ public class SchedulerJobCommandHandler
 
         var result = await _schedulerJobRepository.AddAsync(job);
 
+        await _schedulerJobRepository.UnitOfWork.SaveChangesAsync();
+
+        await _schedulerJobRepository.UnitOfWork.CommitAsync();
+
         var dto = _mapper.Map<SchedulerJobDto>(result);
 
         command.Result = dto;
 
         var request = new UpdateCronJobRequest()
         {
-            Data = command.Request.Data
+            JobId = job.Id,
+            CronExpression = job.CronExpression,
+            Enabled = job.Enabled,
+            ScheduleType = job.ScheduleType
         };
 
         await _schedulerJobDomainService.UpdateCronJobAsync(request);
@@ -62,7 +69,10 @@ public class SchedulerJobCommandHandler
 
         var request = new UpdateCronJobRequest()
         {
-            Data = jobDto
+            JobId = job.Id,
+            CronExpression = job.CronExpression,
+            Enabled = job.Enabled,
+            ScheduleType = job.ScheduleType
         };
 
         await _schedulerJobDomainService.UpdateCronJobAsync(request);
@@ -92,7 +102,10 @@ public class SchedulerJobCommandHandler
 
         var request = new UpdateCronJobRequest()
         {
-            Data = jobDto
+            JobId = job.Id,
+            CronExpression = job.CronExpression,
+            Enabled = job.Enabled,
+            ScheduleType = job.ScheduleType
         };
 
         await _schedulerJobDomainService.UpdateCronJobAsync(request);
@@ -134,7 +147,6 @@ public class SchedulerJobCommandHandler
 
         var projectDetailsQuery = new ProjectDetailsQuery()
         {
-            ProjectId = 1,
             ProjectIdentity = request.ProjectIdentity
         };
 

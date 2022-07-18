@@ -6,10 +6,10 @@
     var total = GetValueCount();
     <MRow Class="mt-2">
         <MCol Cols="3">
-            <MTextField Value="kv.Key" Label="Key" HideDetails="@("auto")" Outlined ValueChanged="(string key)=> OnModifyKey(index, key)"/>
+            <MTextField Value="kv.Key" Label="Key" HideDetails="@("auto")" Dense Outlined ValueChanged="(string key)=> OnModifyKey(index, key)"/>
         </MCol>
         <MCol Cols="3">
-            <MTextField Value="kv.Value" Label="Value" HideDetails="@("auto")" Outlined ValueChanged="(string value) => OnModifyValue(index, value)"/>
+            <MTextField Value="kv.Value" Label="Value" HideDetails="@("auto")" Dense Outlined ValueChanged="(string value) => OnModifyValue(index, value)"/>
         </MCol>
         <MCol Cols="1">
             @if(total > 1)

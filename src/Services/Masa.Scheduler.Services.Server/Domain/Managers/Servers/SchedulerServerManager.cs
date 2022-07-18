@@ -56,13 +56,13 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         await _quartzUtils.StartQuartzScheduler();
 
-        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry).AsNoTracking().ToListAsync();
+        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => (t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry) && t.Job.Enabled).AsNoTracking().ToListAsync();
 
         await LoadRunningTaskAsync(allTask);
 
         await LoadRetryTaskAsync(allTask);
 
-        var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression));
+        var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression) && job.Enabled);
 
         await RegisterCronJobAsync(cronJobList);
 
@@ -73,7 +73,14 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     {
         foreach (var cronJob in cronJobList)
         {
-            await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(cronJob.Id, cronJob.CronExpression);
+            try
+            {
+                await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(cronJob.Id, cronJob.CronExpression);
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, $"RegisterCronJob Error, JobId: {cronJob.Id}, CronExpression: {cronJob.CronExpression}");
+            }
         }
     }
 
@@ -140,9 +147,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         }
     }
 
-    public async Task<WorkerModel> GetWorker(RoutingStrategyTypes routingType)
+    public async Task<WorkerModel> GetWorker(SchedulerServerManagerData data,RoutingStrategyTypes routingType)
     {
-        if (!ServiceList.Any())
+        if (!data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Any())
         {
             throw new UserFriendlyException("WorkerList is empty");
         }
@@ -153,7 +160,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             case RoutingStrategyTypes.RoundRobin:
                 var currentRunCount = await RedisCacheClient.HashIncrementAsync(CacheKeys.CURRENT_RUN_COUNT);
-                var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count);
+                var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count);
                 worker = ServiceList[currentUesIndex];
                 break;
             case RoutingStrategyTypes.DynamicRatioApm:
@@ -204,10 +211,12 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
             }
         }
 
+        _logger.LogInformation($"SchedulerServerManager: TaskEnqueue, JobId: {task.JobId}, TaskId: {task.Id}");
+
         _data.TaskQueue.Enqueue(taskDto);
     }
 
-    public async Task StartTask(SchedulerTaskDto taskDto, WorkerModel worker)
+    public async Task StartTask(IServiceProvider provider, SchedulerTaskDto taskDto, WorkerModel worker)
     {
         var @event = new StartTaskIntegrationEvent()
         {
@@ -217,8 +226,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
             ExcuteTime = taskDto.SchedulerTime
         };
 
-        await EventBus.PublishAsync(@event);
-        await EventBus.CommitAsync();
+        var eventBus = provider.GetRequiredService<IIntegrationEventBus>();
+        await eventBus.PublishAsync(@event);
+        await eventBus.CommitAsync();
     }
 
     public async Task StopTask(Guid taskId, string workerHost)
@@ -261,13 +271,19 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             while (true)
             {
-                if (_data.TaskQueue.Count == 0)
+                await using var scope = ServiceProvider.CreateAsyncScope();
+
+                var provider = scope.ServiceProvider;
+
+                var data = provider.GetRequiredService<SchedulerServerManagerData>();
+
+                if (data.TaskQueue.Count == 0)
                 {
                     await Task.Delay(1000);
                     continue;
                 }
 
-                if(!_data.ServiceList.Any())
+                if(!data.ServiceList.Any())
                 {
                     await Task.Delay(1000);
                     continue;
@@ -277,11 +293,14 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                 try
                 {
-                    if (_data.TaskQueue.TryDequeue(out taskDto))
+                    if (data.TaskQueue.TryDequeue(out taskDto))
                     {
-                        if (_data.StopTask.Any(p => p == taskDto.Id))
+                        _logger.LogInformation($"SchedulerServerManager: TaskDequeue, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
+
+                        if (data.StopTask.Any(p => p == taskDto.Id))
                         {
-                            _data.StopTask.Remove(taskDto.Id);
+                            _logger.LogInformation($"SchedulerServerManager: TaskStop, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
+                            data.StopTask.Remove(taskDto.Id);
                             continue;
                         }
 
@@ -293,47 +312,55 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                             if(workerModel == null)
                             {
-                                Logger.LogError($"Cannot find worker model, workerHost: {taskDto.Job.SpecifiedWorkerHost}");
+                                _logger.LogError($"SchedulerServerManager: Cannot find worker model, workerHost: {taskDto.Job.SpecifiedWorkerHost}, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                                 continue;
                             }
                         }
                         else
                         {
-                            workerModel = await GetWorker(taskDto.Job.RoutingStrategy);
+                            workerModel = await GetWorker(data, taskDto.Job.RoutingStrategy);
                         }
 
                         await CheckHeartbeat(workerModel!);
 
                         if(workerModel.Status != ServiceStatus.Normal)
                         {
-                            _data.TaskQueue.Enqueue(taskDto);
+                            _logger.LogInformation($"SchedulerServerManager: WorkerModel Status is not Normal, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
+                            data.TaskQueue.Enqueue(taskDto);
                             await Task.Delay(1000);
                         }
 
-                        var task = await _repository.FindAsync(p=> p.Id == taskDto.Id);
+                        var repository = provider.GetRequiredService<IRepository<SchedulerTask>>();
+
+                        var task = await repository.FindAsync(p=> p.Id == taskDto.Id);
 
                         if(task == null)
                         {
+                            _logger.LogError($"SchedulerServerManager:Task is not found, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                             throw new UserFriendlyException($"Task is not found, taskId: {taskDto.Id}");
                         }
 
                         task.TaskStart();
                         task.SetWorkerHost(workerModel.GetServiceUrl());
 
-                        await _repository.UpdateAsync(task);
+                        await repository.UpdateAsync(task);
 
-                        await _repository.UnitOfWork.SaveChangesAsync();
+                        await repository.UnitOfWork.SaveChangesAsync();
 
-                        await StartTask(taskDto, workerModel);
+                        await StartTask(provider, taskDto, workerModel);
                     }
                 }
                 catch(Exception ex)
                 {
                     if(taskDto != null)
                     {
+                        _logger.LogError(ex, $"SchedulerServerManager:Task Assign Error, Exception Message: {ex.Message}, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                         _data.TaskQueue.Enqueue(taskDto);
                     }
-                    Logger.LogError(ex, "StartAssignAsync");
+                    else
+                    {
+                        Logger.LogError(ex, "StartAssignAsync");
+                    }
                 }
             }
         });

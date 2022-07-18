@@ -2,12 +2,15 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 using Masa.Scheduler.ApiGateways.Caller;
+using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
 using Masa.Scheduler.Contracts.Server.Infrastructure.SignalRClients;
 using Masa.Stack.Components;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddObservability(true);
 
 builder.WebHost.UseKestrel(option =>
 {
@@ -18,10 +21,12 @@ builder.WebHost.UseKestrel(option =>
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSchedulerApiGateways(options => options.SchedulerServerBaseAddress = builder.Configuration["SchedulerServerBaseAddress"]);
+builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGlobalForServer();
 builder.Services.AddMasaSignalRClient(options=> options.SignalRServiceUrl = builder.Configuration["SignalRServiceUrl"]);
-builder.Services.AddSchedulerApiGateways(options => options.SchedulerServerBaseAddress = builder.Configuration["SchedulerServerBaseAddress"]);
+builder.Services.AddMasaOpenIdConnect(builder.Configuration);
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
 var app = builder.Build();

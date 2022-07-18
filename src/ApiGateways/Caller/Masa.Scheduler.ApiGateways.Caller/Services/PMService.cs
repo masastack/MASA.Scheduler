@@ -11,7 +11,7 @@ public class PmService: ServiceBase
     {
         BaseUrl = "api/pm";
     }
-    public async Task<ProjectListResponse> GetProjectListAsync(Guid? teamId, string environment = "development")
+    public async Task<ProjectListResponse> GetProjectListAsync(Guid? teamId, string environment = "")
     {
         var requestUrl = nameof(GetProjectListAsync) + $"?environment={environment}";
 

@@ -12,8 +12,9 @@ public class StartTaskDomainEventHandler
     private readonly IMapper _mapper;
     private readonly QuartzUtils _quartzUtils;
     private readonly IDistributedCacheClient _distributedCacheClient;
+    private readonly ILogger<StartTaskDomainEventHandler> _logger;
 
-    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper, QuartzUtils quartzUtils, IDistributedCacheClient distributedCacheClient)
+    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper, QuartzUtils quartzUtils, IDistributedCacheClient distributedCacheClient, ILogger<StartTaskDomainEventHandler> logger)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
@@ -22,6 +23,7 @@ public class StartTaskDomainEventHandler
         _mapper = mapper;
         _quartzUtils = quartzUtils;
         _distributedCacheClient = distributedCacheClient;
+        _logger = logger;
     }
 
     [EventHandler(1)]
@@ -50,6 +52,7 @@ public class StartTaskDomainEventHandler
 
         if(!task.Job.Enabled || task.Job.IsDeleted)
         {
+            _logger.LogError($"SchedulerJob was disabled or deleted, taskId: {task.Id}, jobId: {task.JobId}");
             throw new UserFriendlyException($"SchedulerJob was disabled or deleted");
         }
 

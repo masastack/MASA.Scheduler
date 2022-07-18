@@ -25,6 +25,7 @@ public class HttpTaskHandler : ITaskHandler
 
         HttpUtils.AddHttpHeader(client, jobDto.HttpConfig.HttpHeaders);
 
+        jobDto.HttpConfig.HttpParameters.Add(new("taskId", taskId.ToString()));
         jobDto.HttpConfig.HttpParameters.Add(new("excuteTime", excuteTime.ToString()));
 
         var requestMessage = new HttpRequestMessage()

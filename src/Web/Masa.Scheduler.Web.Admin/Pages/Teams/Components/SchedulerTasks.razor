@@ -22,7 +22,7 @@
         <MTextField Value="_queryOrigin" TValue="string" ValueChanged="QueryOriginChanged" Placeholder="@T("Origin")" HideDetails="@("auto")" Flat Dense Solo Outlined>
         </MTextField>
     </div>
-    <MDataTable Headers="Headers" Items="_tasks" TItem="SchedulerTaskDto" ItemsPerPage="_pageSize" HideDefaultFooter Class="table-border-none">
+    <MDataTable Headers="Headers" Items="_tasks" TItem="SchedulerTaskDto" ItemsPerPage="_pageSize" HideDefaultFooter Class="table-border-none scheduler-task-table">
         <HeaderColContent Context="header">
             <span class="text-btn">@header.Text</span>
         </HeaderColContent>
@@ -40,8 +40,8 @@
                     break;
                 case (nameof(SchedulerTaskDto.TaskStatus)):
                     <span class="text-body4 neutral-lighten-2--text d-flex">
-                        <MButton Icon XSmall Style="cursor:default" Color="@ComputedStatusColor(context.Item.TaskStatus)">
-                            <MIcon>mdi-checkbox-blank-circle</MIcon>
+                        <MButton Icon XSmall Style="cursor:default">
+                            <MIcon Color="@ComputedStatusColor(context.Item.TaskStatus)">mdi-checkbox-blank-circle</MIcon>
                         </MButton>
                         <div style="padding-left:4px; color: @ComputedStatusColor(context.Item.TaskStatus)">
                             @(context.Item.TaskStatus == 0? @T("NotRunning") : @T(context.Item.TaskStatus.ToString()))
@@ -109,8 +109,7 @@
             }
         </ItemColContent>
         <FooterContent>
-            <DataTableFooter Page="@Page" PageSize="@PageSize" Total="@_total" Style="padding-top: 15px;" OnPrev="OnPrevHandler" OnNext="OnNextHandler" OnPageSzieChanged="OnPageSizeChanged">
-            </DataTableFooter>
+            <Pagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
         </FooterContent>
     </MDataTable>
 </MCard>

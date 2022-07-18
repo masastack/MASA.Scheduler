@@ -1,29 +1,50 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Scheduler.Services.Server.Application.Auths.Queries;
-
 namespace Masa.Scheduler.Services.Server.Application.Auths;
 
 public class AuthQueryHandler
 {
-    [EventHandler]
-    public Task TeamListHandleAsync(TeamQuery query)
+    private IUserContext _userContext;
+    private IAuthClient _authClient;
+
+    public AuthQueryHandler(IUserContext userContext, IAuthClient authClient)
     {
+        _userContext = userContext;
+        _authClient = authClient;
+    }
+
+    [EventHandler]
+    public async Task TeamListHandleAsync(TeamQuery query)
+    {
+        // todo: use auth sdk get team list, when auth sdk is ok
+        //var teamList = await _authClient.TeamService.GetUserTeamsAsync();
+
+        //query.Result = teamList.Select(p => new TeamDto()
+        //{
+        //    Id = p.Id,
+        //    Name = p.Name,
+        //    Description = p.Description,
+        //    Avatar = p.Avatar,
+        //    MemberCount = p.MemberCount
+
+        //}).ToList();
+
+        // use mock team list
         query.Result = new List<TeamDto>()
         {
             new TeamDto()
             {
                 Id = new Guid("00000000-0000-0000-0000-000000000000"),
-                Name = "Masa团队",
-                Description = "Masa 团队",
+                Name = "默认团队",
+                Description = "默认团队",
                 MemberCount = 1,
             },
             new TeamDto()
             {
-                Id = new Guid("D0643F37-8202-45FF-D53C-08DA1D3F3845"),
-                Name = "IoT团队",
-                Description = "IoT 团队",
+                Id = new Guid("713334DC-F91E-4ADA-9B16-C2D0881DC2F2"),
+                Name = "Masa团队",
+                Description = "Masa团队",
                 MemberCount =2,
             },
             new TeamDto()
@@ -34,13 +55,31 @@ public class AuthQueryHandler
                 MemberCount = 3,
             }
         };
-
-        return Task.CompletedTask;
     }
 
     [EventHandler]
-    public Task GetUserAsync(UserQuery query)
+    public async Task GetUserAsync(UserQuery query)
     {
+        // todo: use auth sdk to get use information, when auth sdk is ok
+        //var userInfos = await _authClient.UserService.GetUserPortraitsAsync(query.UserId);
+
+        //var userInfo = userInfos.FirstOrDefault();
+
+        //if (userInfo != null)
+        //{
+        //    var useDto = new UserDto()
+        //    {
+        //        Account = userInfo.Account,
+        //        Id = userInfo.Id,
+        //        Name = userInfo.Name,
+        //        Avatar = userInfo.Avatar,
+        //        DisplayName = userInfo.DisplayName
+        //    };
+
+        //    query.Result = useDto;
+        //}
+
+        //use mock use info
         query.Result = new UserDto()
         {
             Account = "Tester",
@@ -48,6 +87,6 @@ public class AuthQueryHandler
             Name = "Tester"
         };
 
-        return Task.CompletedTask;
+        //return Task.CompletedTask;
     }
 }

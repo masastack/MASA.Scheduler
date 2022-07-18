@@ -33,7 +33,7 @@
                         <div class="full-height flex-column">
                             <div class="d-flex">
                                 <div class="mx-auto text-center" style="width:212px;">
-                                    <MTextField @bind-Value="@Model.Name" Class="mx-auto mt-0" Style="width:220px;" Label="@T("PleaseInputJobName")" HideDetails="@("auto")" />
+                                    <MTextField @bind-Value="@Model.Name" Class="mx-auto mt-0" Style="width:220px;" Label="@T("PleaseInputJobName")" HideDetails="@("auto")"/>
                                 </div>
                             </div>
                             <div class="mt-2" style="overflow-y: auto;overflow-x: hidden;max-height: 740px;">
@@ -42,14 +42,14 @@
                                     @if (!_isAdd)
                                     {
                                         <MCol Cols="2">
-                                            <MSelect @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <MSelect @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </MSelect>
                                         </MCol>
                                     }
                                 </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MTextField @bind-Value="Model.Owner" Label="@T("Owner")" HideDetails="@("auto")" Outlined />
+                                        <MTextField @bind-Value="Model.Owner" Label="@T("Owner")" HideDetails="@("auto")" Outlined Dense/>
                                     </MCol>
                                 </MRow>
                                 <MRow Class="mt-1">
@@ -59,13 +59,13 @@
                                 </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MSelect @bind-Value="Model.ScheduleType" Label="@T("ScheduleType")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        <MSelect @bind-Value="Model.ScheduleType" Label="@T("ScheduleType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                         </MSelect>
                                     </MCol>
                                     @if (Model.ScheduleType == ScheduleTypes.Cron)
                                     {
                                         <MCol Cols="2">
-                                            <MTextField @bind-Value="Model.CronExpression" Label="@T("CronExpression")" Outlined>
+                                            <MTextField @bind-Value="Model.CronExpression" Label="@T("CronExpression")" Outlined Dense>
                                             </MTextField>
                                         </MCol>
                                     }
@@ -73,34 +73,34 @@
                                 <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("RunStrategy")</div>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MSelect Value="Model.RoutingStrategy" ValueChanged="OnRoutingStrategyChanged" TValue="RoutingStrategyTypes" TItem="KeyValuePair<string, RoutingStrategyTypes>" TItemValue="RoutingStrategyTypes" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        <MSelect Value="Model.RoutingStrategy" ValueChanged="OnRoutingStrategyChanged" TValue="RoutingStrategyTypes" TItem="KeyValuePair<string, RoutingStrategyTypes>" TItemValue="RoutingStrategyTypes" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                         </MSelect>
                                     </MCol>
                                     @if (Model.RoutingStrategy == RoutingStrategyTypes.Specified)
                                     {
                                         <MCol Cols="2">
-                                            <MSelect @bind-Value="Model.SpecifiedWorkerHost" Label="Worker" HideDetails="@("auto")" Outlined Clearable Items="_workerList" ItemText="worker => worker.GetServiceUrl()" ItemValue="worker=> worker.GetServiceUrl()">
+                                            <MSelect @bind-Value="Model.SpecifiedWorkerHost" Label="Worker" HideDetails="@("auto")" Dense Outlined Clearable Items="_workerList" ItemText="worker => worker.GetServiceUrl()" ItemValue="worker=> worker.GetServiceUrl()">
                                             </MSelect>
                                         </MCol>
                                     }
                                 </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MSelect @bind-Value="Model.ScheduleExpiredStrategy" Label="@T("ScheduleExpiredStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<ScheduleExpiredStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        <MSelect @bind-Value="Model.ScheduleExpiredStrategy" Label="@T("ScheduleExpiredStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleExpiredStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                         </MSelect>
                                     </MCol>
                                     <MCol Cols="2">
-                                        <MSelect @bind-Value="Model.ScheduleBlockStrategy" Label="@T("ScheduleBlockStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<ScheduleBlockStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        <MSelect @bind-Value="Model.ScheduleBlockStrategy" Label="@T("ScheduleBlockStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleBlockStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                         </MSelect>
                                     </MCol>
                                 </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MSelect @bind-Value="Model.RunTimeoutStrategy" Label="@T("RunTimeoutStrategy")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<RunTimeoutStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        <MSelect @bind-Value="Model.RunTimeoutStrategy" Label="@T("RunTimeoutStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<RunTimeoutStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                         </MSelect>
                                     </MCol>
                                     <MCol Cols="2">
-                                        <MTextField @bind-Value="Model.RunTimeoutSecond" Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" Label="@T("RunTimeoutSecond")" HideDetails="@("auto")" Outlined />
+                                        <MTextField @bind-Value="Model.RunTimeoutSecond" Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" Label="@T("RunTimeoutSecond")" HideDetails="@("auto")" Dense Outlined />
                                     </MCol>
                                 </MRow>
                                 <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("FailedStrategy")</div>
@@ -118,10 +118,10 @@
                                     @if (Model.FailedStrategy == FailedStrategyTypes.Auto)
                                     {
                                         <MCol Cols="2">
-                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" @bind-Value="Model.FailedRetryInterval" Label="@T("FailedRetryInterval")" HideDetails="@("auto")" Outlined />
+                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" @bind-Value="Model.FailedRetryInterval" Label="@T("FailedRetryInterval")" HideDetails="@("auto")" Dense Outlined />
                                         </MCol>
                                         <MCol Cols="2">
-                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" @bind-Value="Model.FailedRetryCount" Label="@T("FailedRetryCount")" HideDetails="@("auto")" Outlined />
+                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" @bind-Value="Model.FailedRetryCount" Label="@T("FailedRetryCount")" HideDetails="@("auto")" Dense Outlined />
                                         </MCol>
                                     }
                                 </MRow>
@@ -147,13 +147,13 @@
                                 <MForm Model=Model.HttpConfig EnableValidation @ref="Form" Class="full-height">
                                     <MRow Class="mt-1">
                                         <MCol Cols="2">
-                                            <MSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <MSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
                                         <MCol Cols="4">
-                                            <MTextField @bind-Value="Model.HttpConfig.RequestUrl" Label="@T("RequestUrl")" HideDetails="@("auto")" Outlined />
+                                            <MTextField @bind-Value="Model.HttpConfig.RequestUrl" Label="@T("RequestUrl")" HideDetails="@("auto")" Dense Outlined />
                                         </MCol>
                                     </MRow>
                                     <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("RequestParameters")</div>
@@ -183,20 +183,20 @@
                                     {
                                         <MRow Class="mt-2">
                                             <MCol Cols="12">
-                                                <MTextarea @bind-Value="Model.HttpConfig.HttpBody" Label="@T("HttpBody")" HideDetails="@("auto")" Outlined Rows="10">
+                                                <MTextarea @bind-Value="Model.HttpConfig.HttpBody" Label="@T("HttpBody")" HideDetails="@("auto")" Dense Outlined Rows="10">
                                                 </MTextarea>
                                             </MCol>
                                         </MRow>
                                     }
                                     <MRow Class="mt-1">
                                         <MCol Cols="3">
-                                            <MSelect @bind-Value="Model.HttpConfig.HttpVerifyType" Label="@T("HttpVerifyType")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<HttpVerifyTypes>()" ItemText="kv => kv.Key" ItemValue="kv=> kv.Value">
+                                            <MSelect @bind-Value="Model.HttpConfig.HttpVerifyType" Label="@T("HttpVerifyType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<HttpVerifyTypes>()" ItemText="kv => kv.Key" ItemValue="kv=> kv.Value">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
                                         <MCol Cols="12">
-                                            <MTextarea @bind-Value="Model.HttpConfig.VerifyContent" Label="@T("VerifyContent")" HideDetails="@("auto")" Outlined Rows="10">
+                                            <MTextarea @bind-Value="Model.HttpConfig.VerifyContent" Label="@T("VerifyContent")" HideDetails="@("auto")" Dense Outlined Rows="10">
                                             </MTextarea>
                                         </MCol>
                                     </MRow>
@@ -212,25 +212,25 @@
                                 <MForm Model=Model.JobAppConfig EnableValidation @ref="Form" Class="full-height">
                                     <MRow Class="mt-1">
                                         <MCol Cols="3">
-                                            <MSelect Value="Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Identity">
+                                            <MSelect Value="Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
                                         <MCol Cols="4">
-                                            <MTextField @bind-Value="Model.JobAppConfig.JobEntryAssembly" Placeholder="*.dll" Label="@T("JobEntryAssembly")" HideDetails="@("auto")" Outlined>
+                                            <MTextField @bind-Value="Model.JobAppConfig.JobEntryAssembly" Placeholder="*.dll" Label="@T("JobEntryAssembly")" HideDetails="@("auto")" Dense Outlined>
                                             </MTextField>
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
                                         <MCol Cols="4">
-                                            <MTextField @bind-Value="Model.JobAppConfig.JobEntryMethod" Placeholder="Namespace.Class.Method" Label="@T("JobEntryMethod")" HideDetails="@("auto")" Outlined>
+                                            <MTextField @bind-Value="Model.JobAppConfig.JobEntryClassName" Placeholder="Namespace.Class" Label="@T("JobEntryClass")" HideDetails="@("auto")" Outlined>
                                             </MTextField>
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
                                         <MCol Cols="12">
-                                            <MTextarea @bind-Value="Model.JobAppConfig.JobParams" Label="@T("OptionParams")" HideDetails="@("auto")" Outlined>
+                                            <MTextarea @bind-Value="Model.JobAppConfig.JobParams" Label="@T("OptionParams")" HideDetails="@("auto")" Dense Outlined>
                                             </MTextarea>
                                         </MCol>
                                     </MRow>
@@ -249,7 +249,7 @@
                                         @if (_resourceVersionType == ResourceVersionTypes.SpecifiedVersion)
                                         {
                                             <MCol Cols="2">
-                                                <MSelect @bind-Value="Model.JobAppConfig.Version" Label="@T("ResourceVersion")" HideDetails="@("auto")" Outlined Clearable Items="_versionList" ItemText="version => version" ItemValue="version=> version">
+                                                <MSelect @bind-Value="Model.JobAppConfig.Version" Label="@T("ResourceVersion")" HideDetails="@("auto")" Dense Outlined Clearable Items="_versionList" ItemText="version => version" ItemValue="version=> version">
                                                 </MSelect>
                                             </MCol>
                                         }
@@ -266,25 +266,25 @@
                                 <MForm Model=Model.DaprServiceInvocationConfig EnableValidation @ref="Form" Class="full-height">
                                     <MRow Class="mt-1">
                                         <MCol Cols="3">
-                                            <MSelect Value="Model.DaprServiceInvocationConfig.DaprServiceIdentity" TValue="string" TItemValue="string" TItem="ProjectAppDto"  ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Identity">
+                                            <MSelect Value="Model.DaprServiceInvocationConfig.DaprServiceIdentity" TValue="string" TItemValue="string" TItem="ProjectAppDto"  ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="Project.ProjectApps" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
                                         <MCol Cols="4">
-                                            <MTextField @bind-Value="Model.DaprServiceInvocationConfig.MethodName" Label="@T("MethodName")" HideDetails="@("auto")" Outlined>
+                                            <MTextField @bind-Value="Model.DaprServiceInvocationConfig.MethodName" Label="@T("MethodName")" HideDetails="@("auto")" Dense Outlined>
                                             </MTextField>
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
                                         <MCol Cols="4">
-                                            <MSelect @bind-Value="Model.DaprServiceInvocationConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <MSelect @bind-Value="Model.DaprServiceInvocationConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
                                         <MCol Cols="12">
-                                            <MTextarea @bind-Value="Model.DaprServiceInvocationConfig.Data" Label="@T("Data")" HideDetails="@("auto")" Outlined Rows="10">
+                                            <MTextarea @bind-Value="Model.DaprServiceInvocationConfig.Data" Label="@T("Data")" HideDetails="@("auto")" Dense Outlined Rows="10">
                                             </MTextarea>
                                         </MCol>
                                     </MRow>

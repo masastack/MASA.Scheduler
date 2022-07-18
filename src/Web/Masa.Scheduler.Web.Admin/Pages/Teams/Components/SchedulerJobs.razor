@@ -77,7 +77,7 @@
     </div>
     
     <div class="rounded-2 mt-6" style="height:calc(100vh - @(_contentHeight)); overflow-y:auto; overflow-x:hidden">
-       <MRow>
+       <MRow Style="min-height:10px;">
             @foreach(var job in _jobs)
             {
                 <MCol Cols="12">
@@ -166,8 +166,7 @@
                 </MCol>
             }
         </MRow>
-        <DataTableFooter Page="@Page" PageSize="@PageSize" Total="@_total" Style="padding-top: 15px;" OnPrev="OnPrevHandler" OnNext="OnNextHandler" OnPageSzieChanged="OnPageSizeChanged">
-        </DataTableFooter>
+        <Pagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
 
         <JobModal Visible="_modalVisible" Model="modalModel" VisibleChanged="OnVisibleChanged" Project="Project" OnAfterSubmit="OnAfterSubmit"></JobModal>
     </div>

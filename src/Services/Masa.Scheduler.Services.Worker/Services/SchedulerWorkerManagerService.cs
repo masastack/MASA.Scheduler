@@ -43,7 +43,13 @@ public class SchedulerWorkerManagerService : ServiceBase
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent))]
     public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, StartTaskIntegrationEvent @event)
     {
-        _logger.LogInformation($"Start Task, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}");
+        if(@event.TaskId == Guid.Empty || @event.Job == null)
+        {
+            _logger.LogError("StartTask Error, Parameter is null");
+            return;
+        }
+
+        _logger.LogInformation($"SchedulerWorker: Receive Start Task Event, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}");
 
         await workerManager.EnqueueTask(@event);
     }
