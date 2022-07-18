@@ -132,6 +132,6 @@
   "ResourceFileUploadDescription": "{0} 于{1} 上传源文件",
   "Download": "下载",
   "Rerun": "重跑",
-  "Stop": "停止",
+  "StopTask": "中断任务",
   "Delete": "删除"
 }
