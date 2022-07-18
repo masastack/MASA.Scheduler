@@ -193,9 +193,9 @@ public class JobAppTaskHandler : ITaskHandler
         }
         else
         {
-            _logger.LogError($"JobAppTaskHandler: Start decompress files. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
+            _logger.LogInformation($"JobAppTaskHandler: Start decompress files. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
             DeCompressFile(resource, resourcePath, jobExtractPath);
-            _logger.LogError($"JobAppTaskHandler: Decompress files success. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
+            _logger.LogInformation($"JobAppTaskHandler: Decompress files success. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
 
             if (!Directory.Exists(jobExtractPath))
             {

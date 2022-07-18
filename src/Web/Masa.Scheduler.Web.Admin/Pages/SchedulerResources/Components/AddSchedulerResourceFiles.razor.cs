@@ -57,7 +57,9 @@ public partial class AddSchedulerResourceFiles
 
         Model.Name = file.Name;
 
-        var uploadUrl = await JsInvokeAsync<string>("ossUpload", _ref.Ref, securityToken);
+        var fileName = Guid.NewGuid() + "-" + file.Name;
+
+        var uploadUrl = await JsInvokeAsync<string>("ossUpload", _ref.Ref, securityToken, fileName);
 
         Model.FilePath = uploadUrl;
 
