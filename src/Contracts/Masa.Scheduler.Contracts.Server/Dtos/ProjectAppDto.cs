@@ -13,6 +13,6 @@ public class ProjectAppDto
 
     public int ProjectId { get; set; }
 
-    public int Type { get; set; }
+    public ProjectAppTypes Type { get; set; }
 }
 

@@ -137,7 +137,7 @@ public partial class SchedulerResourceFiles
                     Identity = PROJECT_PREFIX + project.Identity,
                     Title = project.Name,
                     IsProject = true,
-                    Children = project.ProjectApps.Select(app => new SideBarItem() { Identity = APP_PREFIX + app.Identity, Title = app.Name, IsProject = false }).ToList()
+                    Children = project.ProjectApps.Where(p=> p.Type == ProjectAppTypes.Job).Select(app => new SideBarItem() { Identity = APP_PREFIX + app.Identity, Title = app.Name, IsProject = false }).ToList()
                 });
             }
 

@@ -22,14 +22,35 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
             throw new UserFriendlyException("DaprServiceInvocationConfig is required in Dapr Service Invocation Task");
         }
 
-        //todo add excuteTime parameter to data;
-
         var runStatus = TaskRunStatus.Failure;
+
+        object? requestObj;
 
         try
         {
-            await _daprClient.InvokeMethodAsync(HttpUtils.ConvertHttpMethod(jobDto.DaprServiceInvocationConfig.HttpMethod), jobDto.DaprServiceInvocationConfig.DaprServiceIdentity, jobDto.DaprServiceInvocationConfig.MethodName, jobDto.DaprServiceInvocationConfig.Data, token);
+            requestObj = JsonSerializer.Deserialize<dynamic>(jobDto.DaprServiceInvocationConfig.Data);
+        }
+        catch
+        {
+            requestObj = jobDto.DaprServiceInvocationConfig.Data;
+        }
 
+        string methodName;
+
+        if (jobDto.DaprServiceInvocationConfig.MethodName.Contains('?'))
+        {
+            methodName = jobDto.DaprServiceInvocationConfig.MethodName + "&";
+        }
+        else
+        {
+            methodName = jobDto.DaprServiceInvocationConfig.MethodName + "?";
+        }
+
+        methodName += $"taskId={taskId}&excuteTime={excuteTime}";
+
+        try
+        {
+            await _daprClient.InvokeMethodAsync(HttpUtils.ConvertHttpMethod(jobDto.DaprServiceInvocationConfig.HttpMethod), jobDto.DaprServiceInvocationConfig.DaprServiceIdentity, methodName, requestObj, token);
             runStatus = TaskRunStatus.Success;
         }
         catch (Exception ex)
