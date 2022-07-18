@@ -45,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.ApiGateways.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shells", "Shells", "{9DE805E7-2CDC-43E0-A7DA-D5586DDAD260}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Scheduler.Shells.JobShell", "src\Shells\Masa.Scheduler.Shells.JobShell\Masa.Scheduler.Shells.JobShell.csproj", "{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Shells.JobShell", "src\Shells\Masa.Scheduler.Shells.JobShell\Masa.Scheduler.Shells.JobShell.csproj", "{B518E989-7F7A-49C9-93FF-1FCC9FCCE0A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

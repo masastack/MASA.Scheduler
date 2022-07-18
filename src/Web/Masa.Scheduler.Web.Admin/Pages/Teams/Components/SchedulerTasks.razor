@@ -30,13 +30,22 @@
             @switch (context.Header.Value)
             {
                 case nameof(SchedulerTaskDto.SchedulerTime):
-                    <span class="text-body3 neutral--text">@context.Item.SchedulerTime.ToString(T("$DateTimeFormat"))</span>
+                    <span class="text-body3 neutral--text">
+                        <DateTimeFormat Value="context.Item.SchedulerTime" Format="@(T("$DateTimeFormat"))">
+                        </DateTimeFormat>
+                    </span>
                     break;
                 case (nameof(SchedulerTaskDto.TaskRunStartTime)):
-                    <span class="text-body4 neutral-lighten-2--text">@(context.Item.TaskRunStartTime == DateTimeOffset.MinValue? "": context.Item.TaskRunStartTime.ToString(T("$DateTimeFormat")))</span>
+                    <span class="text-body4 neutral-lighten-2--text">
+                        <DateTimeFormat Value="context.Item.TaskRunStartTime" Format="@(T("$DateTimeFormat"))">
+                        </DateTimeFormat>
+                    </span>
                     break;
                 case nameof(SchedulerTaskDto.TaskRunEndTime):
-                    <span class="text-body4 neutral-lighten-2--text">@(context.Item.TaskRunEndTime == DateTimeOffset.MinValue? "": context.Item.TaskRunEndTime.ToString(T("$DateTimeFormat")))</span>
+                    <span class="text-body4 neutral-lighten-2--text">
+                        <DateTimeFormat Value="context.Item.TaskRunEndTime" Format="@(T("$DateTimeFormat"))">
+                        </DateTimeFormat>
+                    </span>
                     break;
                 case (nameof(SchedulerTaskDto.TaskStatus)):
                     <span class="text-body4 neutral-lighten-2--text d-flex">
@@ -75,7 +84,7 @@
                                 <MListItem Link OnClick="()=> StartTask(context.Item.Id)">
                                     <MListItemContent>
                                         <MListItemTitle>
-                                            重跑
+                                            @(T("Rerun"))
                                         </MListItemTitle>
                                     </MListItemContent>
                                 </MListItem>
@@ -84,7 +93,7 @@
                                     <MListItem Link OnClick="()=> StopTask(context.Item.Id)">
                                         <MListItemContent>
                                             <MListItemTitle>
-                                                中断任务
+                                               @(T("Stop"))
                                             </MListItemTitle>
                                         </MListItemContent>
                                     </MListItem>
@@ -94,7 +103,7 @@
                                     <MListItem Link OnClick="()=> DeleteTask(context.Item.Id)">
                                         <MListItemContent>
                                             <MListItemTitle>
-                                                删除
+                                                @(T("Delete"))
                                             </MListItemTitle>
                                         </MListItemContent>
                                     </MListItem>

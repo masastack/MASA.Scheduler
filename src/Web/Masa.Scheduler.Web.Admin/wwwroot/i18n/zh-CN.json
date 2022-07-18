@@ -130,5 +130,8 @@
   "UploadFiles.Tips": "仅可上传 “.zip”，“.dll” 格式的文件，最大上传100M",
   "Version": "版本号",
   "ResourceFileUploadDescription": "{0} 于{1} 上传源文件",
-  "Download": "下载"
+  "Download": "下载",
+  "Rerun": "重跑",
+  "Stop": "停止",
+  "Delete": "删除"
 }
