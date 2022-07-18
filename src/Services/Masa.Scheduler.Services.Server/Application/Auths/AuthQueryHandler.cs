@@ -17,7 +17,7 @@ public class AuthQueryHandler
     [EventHandler]
     public async Task TeamListHandleAsync(TeamQuery query)
     {
-        // todo: use auth sdk get team list, when auth sdk is ok
+        // todo: use auth sdk get team list, when pm use auth team
         //var teamList = await _authClient.TeamService.GetUserTeamsAsync();
 
         //query.Result = teamList.Select(p => new TeamDto()
@@ -60,33 +60,22 @@ public class AuthQueryHandler
     [EventHandler]
     public async Task GetUserAsync(UserQuery query)
     {
-        // todo: use auth sdk to get use information, when auth sdk is ok
-        //var userInfos = await _authClient.UserService.GetUserPortraitsAsync(query.UserId);
+        var userInfos = await _authClient.UserService.GetUserPortraitsAsync(query.UserId);
 
-        //var userInfo = userInfos.FirstOrDefault();
+        var userInfo = userInfos.FirstOrDefault();
 
-        //if (userInfo != null)
-        //{
-        //    var useDto = new UserDto()
-        //    {
-        //        Account = userInfo.Account,
-        //        Id = userInfo.Id,
-        //        Name = userInfo.Name,
-        //        Avatar = userInfo.Avatar,
-        //        DisplayName = userInfo.DisplayName
-        //    };
-
-        //    query.Result = useDto;
-        //}
-
-        //use mock use info
-        query.Result = new UserDto()
+        if (userInfo != null)
         {
-            Account = "Tester",
-            Id = Guid.Empty,
-            Name = "Tester"
-        };
+            var useDto = new UserDto()
+            {
+                Account = userInfo.Account,
+                Id = userInfo.Id,
+                Name = userInfo.Name,
+                Avatar = userInfo.Avatar,
+                DisplayName = userInfo.DisplayName
+            };
 
-        //return Task.CompletedTask;
+            query.Result = useDto;
+        }
     }
 }
