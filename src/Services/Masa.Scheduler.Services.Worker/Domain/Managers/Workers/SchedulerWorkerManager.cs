@@ -76,13 +76,13 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                     if (string.IsNullOrWhiteSpace(data.ServiceId))
                     {
                         _logger.LogInformation($"SchedulerWorkerManager: ServiceId is null");
-                        await Task.Delay(1000);
+                        await Task.Delay(100);
                         continue;
                     }
 
                     if (data.TaskQueue.Count == 0)
                     {
-                        await Task.Delay(1000);
+                        await Task.Delay(100);
                         continue;
                     }
 

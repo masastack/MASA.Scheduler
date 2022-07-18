@@ -279,13 +279,13 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                 if (data.TaskQueue.Count == 0)
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(100);
                     continue;
                 }
 
                 if(!data.ServiceList.Any())
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(100);
                     continue;
                 }
 
