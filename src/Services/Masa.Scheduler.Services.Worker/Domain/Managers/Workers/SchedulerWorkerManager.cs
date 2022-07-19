@@ -29,6 +29,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_WORKER_MANAGER_API}/heartbeat";
 
+    protected override string OnlineApi { get; set; } = $"{ConstStrings.SCHEDULER_WORKER_MANAGER_API}/online";
+
     protected override ILogger<BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>> Logger => _logger;
     
     public Task EnqueueTask(StartTaskIntegrationEvent @event)

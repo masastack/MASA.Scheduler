@@ -77,5 +77,15 @@ public class AuthQueryHandler
 
             query.Result = useDto;
         }
+        else
+        {
+            // use mock data
+            query.Result = new UserDto()
+            {
+                Account = "Tester",
+                Id = Guid.Empty,
+                Name = "Tester"
+            };
+        }
     }
 }
