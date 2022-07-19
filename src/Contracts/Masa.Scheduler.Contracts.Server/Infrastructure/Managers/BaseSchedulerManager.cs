@@ -42,6 +42,8 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     protected abstract string HeartbeatApi { get; set; }
 
+    protected abstract string OnlineApi { get; set; }
+
     protected abstract ILogger<BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent>> Logger { get; }
 
     public virtual async Task StartManagerAsync(CancellationToken stoppingToken)
@@ -124,22 +126,42 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     public virtual async Task OnManagerStartAsync()
     {
-        await Online(false);
+        _ = Task.Run(async () =>
+        {
+            while (!_data.ServiceList.Any())
+            {
+                await RequestOnlineByApi();
+                await Task.Delay(1000);
+            }
+        });
         await RegisterHeartbeat();
     }
 
     public async virtual Task Online(bool isResponse = false)
     {
+        var service = await GetServiceInfo();
+
+        if (service != null)
+        {
+            var @event = new TOnlineEvent();
+            @event.IsPong = isResponse;
+            @event.OnlineService = service;
+
+            await _eventBus.PublishAsync(@event);
+            await _eventBus.CommitAsync();
+        }
+    }
+
+    private async Task<T?> GetServiceInfo()
+    {
         if (!_data.AddressList.Any())
         {
-            return;
+            return null;
         }
 
         var httpAddress = _data.AddressList.FirstOrDefault(address => address.StartsWith(Uri.UriSchemeHttp + Uri.SchemeDelimiter));
 
         var httpsAddress = _data.AddressList.FirstOrDefault(address => address.StartsWith(Uri.UriSchemeHttps + Uri.SchemeDelimiter));
-
-        var @event = new TOnlineEvent();
 
         var service = new T()
         {
@@ -152,12 +174,30 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         _data.ServiceId = MD5Utils.Encrypt(EncryptType.Md5, service.GetServiceUrl());
         service.ServiceId = _data.ServiceId;
 
-        @event.IsPong = isResponse;
-        @event.OnlineService = service;
+        return service;
+    }
 
-        await _eventBus.PublishAsync(@event);
+    public async Task RequestOnlineByApi()
+    {
+        var service = await GetServiceInfo();
 
-        await _eventBus.CommitAsync();
+        if(service != null)
+        {
+            var requestUrl = service.GetServiceUrl() + OnlineApi;
+
+            var client = _httpClientFactory.CreateClient();
+
+            try
+            {
+                _ = await client.GetAsync(requestUrl);
+                Logger.LogInformation($"RequestOnline success, RequestUrl: {requestUrl}");
+            }
+            catch (Exception ex)
+            {
+                var message = $"RequestOnline error, RequestUrl: {requestUrl}";
+                Logger.LogError(ex, message);
+            }
+        }
     }
 
     public async virtual Task MonitorHandler(TMonitorEvent @event)
