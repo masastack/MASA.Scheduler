@@ -22,4 +22,11 @@ public class AuthService : ServiceBase
 
         return response;
     }
+
+    public async Task<UserDto> GetUserInfoAsync(Guid userId)
+    {
+        var result = await GetAsync<UserDto>($"GetUserInfo?userId=" + userId);
+
+        return result;
+    }
 }
