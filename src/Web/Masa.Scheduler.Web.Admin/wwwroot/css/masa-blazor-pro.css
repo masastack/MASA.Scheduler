@@ -1149,3 +1149,16 @@ tr:hover {
 .scheduler-list .m-list-group__items .m-list-item {
     padding-left: 29px !important;
 }
+
+.scheduler-confirm-dialog-ok-button {
+    color: white !important
+}
+
+.scheduler-delete-resources {
+    width: 194px;
+    height: 54px;
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+}

@@ -52,6 +52,11 @@ public partial class SchedulerTasks
     private bool _visible;
     private TaskRunStatus _queryStatus;
     private TaskRunStatus _lastQueryStatus;
+    private bool _showConfirmDialog;
+    private string _confirmTitle = string.Empty;
+    private string _confirmMessage = string.Empty;
+    private ConfirmDialogTypes _confirmDialogType;
+    private Guid _confirmTaskId;
 
     private Task QueryStatusChanged(TaskRunStatus status)
     {
@@ -260,7 +265,7 @@ public partial class SchedulerTasks
 
         await GetTaskListAsync();
 
-        OpenSuccessMessage("Start Task Success");
+        OpenSuccessMessage(T("RestartTaskSuccess"));
     }
 
     private async Task DeleteTask(Guid taskId)
@@ -275,7 +280,7 @@ public partial class SchedulerTasks
 
         await GetTaskListAsync();
 
-        OpenSuccessMessage("Delete Task Success");
+        OpenSuccessMessage(T("DeleteTaskSuccess"));
     }
 
     private async Task StopTask(Guid taskId)
@@ -288,7 +293,7 @@ public partial class SchedulerTasks
 
         await SchedulerServerCaller.SchedulerTaskService.StopAsync(request);
 
-        OpenSuccessMessage("Stop Task Success");
+        OpenSuccessMessage(T("StopTaskSuccess"));
     }
 
     private Task RadioGroupClickHandler()
@@ -299,6 +304,57 @@ public partial class SchedulerTasks
         }
 
         _lastQueryStatus = _queryStatus;
+
+        return Task.CompletedTask;
+    }
+
+    private async Task OnSure()
+    {
+        switch (_confirmDialogType)
+        {
+            case ConfirmDialogTypes.DeleteTask:
+                await DeleteTask(_confirmTaskId);
+                break;
+            case ConfirmDialogTypes.StopTask:
+                await StopTask(_confirmTaskId);
+                break;
+            case ConfirmDialogTypes.RestartTask:
+                await StartTask(_confirmTaskId);
+                break;
+            default:
+                await PopupService.ToastErrorAsync("Confirm type eror");
+                break;
+        }
+
+        _showConfirmDialog = false;
+    }
+
+    private Task OnShowConfirmDialog(ConfirmDialogTypes confirmDialogType, Guid taskId)
+    {
+        _confirmTaskId = taskId;
+        _confirmDialogType = confirmDialogType;
+        _showConfirmDialog = true;
+
+        switch (confirmDialogType)
+        {
+            case ConfirmDialogTypes.DeleteTask:
+                _confirmMessage = T("DeleteTaskConfirmMessage");
+                _confirmTitle = T("DeleteTask");
+                break;
+            case ConfirmDialogTypes.StopTask:
+                _confirmMessage = T("StopTaskConfirmMessage");
+                _confirmTitle = T("StopTask");
+                break;
+            case ConfirmDialogTypes.RestartTask:
+                _confirmMessage = T("RestartTaskConfirmMessage");
+                _confirmTitle = T("RestartTask");
+                break;
+            default:
+                _showConfirmDialog = false;
+                _confirmTaskId = Guid.Empty;
+                PopupService.ToastErrorAsync("Confirm type eror");
+                break;
+        }
 
         return Task.CompletedTask;
     }

@@ -121,6 +121,7 @@ public abstract class ProCompontentBase : BDomComponentBase
         PopupService.ToastErrorAsync(message);
     }
 
+
     protected string GetRunTimeDescription(double runTime)
     {
         if (runTime < 0)

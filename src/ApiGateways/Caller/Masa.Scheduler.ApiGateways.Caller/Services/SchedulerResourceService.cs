@@ -28,9 +28,9 @@ public class SchedulerResourceService : ServiceBase
         await PutAsync(string.Empty, request);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(RemoveSchedulerResourceRequest request)
     {
-        await DeleteAsync($"{id}");
+        await DeleteAsync(string.Empty, request);
     }
 }
 

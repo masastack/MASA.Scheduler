@@ -75,6 +75,8 @@ public partial class SchedulerResourceFiles
 
     private List<SideBarItem> _allProjects = new();
 
+    private List<ProjectAppDto> _allApp = new();
+
     private List<SideBarItem> _projects = new();
 
     private List<SchedulerResourceDto> _resources = new();
@@ -86,6 +88,18 @@ public partial class SchedulerResourceFiles
     private bool _showForm = false;
 
     private bool _isAdd = false;
+
+    private bool _showConfirmDialog = false;
+
+    private string _confirmMessage = string.Empty;
+
+    private string _confirmTitle = string.Empty;
+
+    private Guid? _deleteResourceId;
+
+    private string _deleteIdentityResource = string.Empty;
+
+    private ConfirmDialogTypes _confirmType;
 
     private SchedulerResourceDto Model { get; set; } = new();
 
@@ -139,6 +153,8 @@ public partial class SchedulerResourceFiles
                     IsProject = true,
                     Children = project.ProjectApps.Where(p=> p.Type == ProjectAppTypes.Job).Select(app => new SideBarItem() { Identity = APP_PREFIX + app.Identity, Title = app.Name, IsProject = false }).ToList()
                 });
+
+                _allApp.AddRange(project.ProjectApps);
             }
 
             _allProjects = _projects;
@@ -258,13 +274,75 @@ public partial class SchedulerResourceFiles
         return Task.FromResult(string.Empty);
     }
 
-    private async Task DeleteResourceFiles(Guid id)
+    private Task ShowDialog(ConfirmDialogTypes confirmType, Guid resourceId)
     {
-        await SchedulerServerCaller.SchedulerResourceService.DeleteAsync(id);
+        if(confirmType == ConfirmDialogTypes.DeleteResourceVersion)
+        {
+            var resource = _resources.FirstOrDefault(r => r.Id == resourceId);
 
-        await PopupService.ToastAsync("Delete success", AlertTypes.Success);
+            if(resource != null)
+            {
+                var app = _allApp.FirstOrDefault(p => p.Identity == resource.JobAppIdentity);
 
-        await GetResourceList();
+                if(app != null)
+                {
+                    _showConfirmDialog = true;
+                    _confirmMessage = string.Format(T("DeleteResourceVersionMessage"), app.Name, resource.Version);
+                    _confirmTitle = T("DeleteResourceVersion");
+                    _deleteResourceId = resourceId;
+                    _confirmType = confirmType;
+                }
+            }
+        }
+        else if(confirmType == ConfirmDialogTypes.DeleteResources)
+        {
+            var app = _allApp.FirstOrDefault(p => p.Identity == LastSelectedAppIdentity);
+
+            if(app != null)
+            {
+                _showConfirmDialog = true;
+                _confirmMessage = string.Format(T("DeleteResourceMessage"), app.Name);
+                _confirmTitle = T("DeleteResources");
+                _deleteResourceId = Guid.Empty;
+                _confirmType = confirmType;
+                _deleteIdentityResource = app.Identity;
+            }
+        }
+        else
+        {
+            _showConfirmDialog = false;
+            _confirmType = 0;
+            _deleteResourceId = null;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task OnSureDelete()
+    {
+        var deleteSuccess = false;
+
+        if(_confirmType == ConfirmDialogTypes.DeleteResourceVersion && _deleteResourceId.HasValue)
+        {
+            await SchedulerServerCaller.SchedulerResourceService.DeleteAsync(new RemoveSchedulerResourceRequest() { ResourceId = _deleteResourceId.Value });
+
+            deleteSuccess = true;
+        }
+        else if(_confirmType == ConfirmDialogTypes.DeleteResources)
+        {
+            await SchedulerServerCaller.SchedulerResourceService.DeleteAsync(new RemoveSchedulerResourceRequest() { JobAppIdentity = _deleteIdentityResource });
+
+            deleteSuccess = true;
+        }
+
+        if (deleteSuccess)
+        {
+            _showConfirmDialog = false;
+
+            await PopupService.ToastAsync("Delete success", AlertTypes.Success);
+
+            await GetResourceList();
+        }
     }
 
     private async Task AfterSubmit()

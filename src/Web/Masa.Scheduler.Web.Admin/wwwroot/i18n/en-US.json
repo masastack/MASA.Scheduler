@@ -82,5 +82,17 @@
   "AddJobSuccess": "Add job success",
   "UpdateJobSuccess": "Update job success",
   "TaskTrace": "Task trace",
-  "TaskLog": "Task log"
+  "TaskLog": "Task log",
+  "SureDelete": "Sure delete",
+  "DeleteResourceVersion": "Delete resource file version",
+  "DeleteResourceVersionMessage": "Delete '{0}' app's resources file version: {1}, will make the relation job run failed, are you sure to delete?",
+  "DeleteResourceMessage": "Delete '{0}' app's resources files, will delete all the resource file versions, are you sure to delete?",
+  "DeleteTaskConfirmMessage": "Are you sure to delete the task?",
+  "StopTaskConfirmMessage": "Are you sure to stop the task?",
+  "RestartTaskConfirmMessage": "Are you sure to restart the task?",
+  "DeleteTask": "Delete task",
+  "RestartTask": "Restart task",
+  "DeleteTaskSuccess": "Delete task success",
+  "RestartTaskSuccess": "Restart task success",
+  "StopTaskSuccess": "Stop task success"
 }

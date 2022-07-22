@@ -151,5 +151,19 @@
   "StatusCode200": "默认响应码200",
   "CustomStatusCode": "自定义响应码",
   "ContentContains": "内容包含",
-  "ContentUnContains": "内容不包含"
+  "ContentUnContains": "内容不包含",
+  "SureDelete": "确认删除",
+  "DeleteResourceVersion": "删除源文件版本",
+  "DeleteResources": "删除源文件",
+  "DeleteResourceVersionMessage": "删除“{0}”应用的“{1}”版本源文件，将会导致关联的Job运行失败，确定要删除吗？",
+  "DeleteResourceMessage": "删除“{0}”应用的源文件将会删除源文件的所有版本，确定要删除吗？",
+  "Sure": "确定",
+  "DeleteTaskConfirmMessage": "是否确认删除任务？",
+  "StopTaskConfirmMessage": "是否确认中断任务？",
+  "RestartTaskConfirmMessage": "是否确认重跑任务？",
+  "DeleteTask": "删除任务",
+  "RestartTask": "重跑任务",
+  "DeleteTaskSuccess": "删除任务成功",
+  "RestartTaskSuccess": "重跑任务成功",
+  "StopTaskSuccess": "中断任务成功"
 }
