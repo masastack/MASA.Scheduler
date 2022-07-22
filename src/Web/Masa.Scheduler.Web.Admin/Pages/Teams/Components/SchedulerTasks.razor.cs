@@ -162,6 +162,11 @@ public partial class SchedulerTasks
             new() { Text = T("Action"), Value = "Action", Sortable = false },
         };
 
+        if (_job != null && string.IsNullOrWhiteSpace(_job.Origin))
+        {
+            Headers.RemoveAll(p => p.Value == nameof(SchedulerTaskDto.Origin));
+        }
+
         _queryStatusList = GetEnumMap<TaskRunStatus>();
 
         _queryStatusList.RemoveAll(p => p.Value == TaskRunStatus.Idle);
@@ -205,8 +210,8 @@ public partial class SchedulerTasks
             Origin = _queryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = _queryEndTime,
-            QueryStartTime = _queryStartTime,
+            QueryEndTime = _queryEndTime.HasValue ? new DateTimeOffset(_queryEndTime.Value, GlobalConfig.TimezoneOffset) : null,
+            QueryStartTime = _queryStartTime.HasValue ? new DateTimeOffset(_queryStartTime.Value, GlobalConfig.TimezoneOffset) : null,
             QueryTimeType = _queryTimeType
         };
 
@@ -243,13 +248,14 @@ public partial class SchedulerTasks
     {
         var request = new StartSchedulerTaskRequest()
         {
-            //todo: use current login user
-            OperatorId = Guid.Empty,
+            OperatorId = UserContext.GetUserId<Guid>(),
             IsManual = true,
             TaskId = taskId
         };
 
         await SchedulerServerCaller.SchedulerTaskService.StartAsync(request);
+
+        await GetTaskListAsync();
 
         OpenSuccessMessage("Start Task Success");
     }
@@ -258,7 +264,7 @@ public partial class SchedulerTasks
     {
         var request = new RemoveSchedulerTaskRequest()
         {
-            OperatorId = Guid.Empty,
+            OperatorId = UserContext.GetUserId<Guid>(),
             TaskId = taskId
         };
 
@@ -273,7 +279,7 @@ public partial class SchedulerTasks
     {
         var request = new StopSchedulerTaskRequest()
         {
-            OperatorId = Guid.Empty,
+            OperatorId = UserContext.GetUserId<Guid>(),
             TaskId = taskId
         };
 

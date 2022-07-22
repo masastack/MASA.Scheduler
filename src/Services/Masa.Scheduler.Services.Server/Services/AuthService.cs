@@ -20,8 +20,9 @@ public class AuthService : ServiceBase
 
     public async Task<IResult> GetUserInfoAsync(IEventBus eventBus, [FromQuery] Guid userId)
     {
-        var query = new UserQuery() { UserId = userId };
+        var query = new UserQuery();
+        query.UserIds.Add(userId);
         await eventBus.PublishAsync(query);
-        return Results.Ok(query.Result);
+        return Results.Ok(query.Result.FirstOrDefault());
     }
 }

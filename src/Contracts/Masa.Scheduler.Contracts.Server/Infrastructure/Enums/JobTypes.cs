@@ -6,6 +6,6 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 public enum JobTypes
 {
     JobApp = 1,
-    Http,
+    HTTP,
     DaprServiceInvocation
 }

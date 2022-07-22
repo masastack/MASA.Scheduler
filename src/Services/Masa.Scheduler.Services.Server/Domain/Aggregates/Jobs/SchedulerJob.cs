@@ -138,7 +138,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
         switch (dto.JobType)
         {
-            case JobTypes.Http:
+            case JobTypes.HTTP:
                 SetHttpConfig(dto.HttpConfig);
                 break;
             case JobTypes.JobApp:

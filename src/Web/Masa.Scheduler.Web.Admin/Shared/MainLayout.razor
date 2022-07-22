@@ -4,12 +4,11 @@
 @inject GlobalConfig GlobalConfig
 @inject NavigationManager Navigation
 
-<Layout AppId="masa-scheduler-web-admin" OnSignOut="SignOut" OnErrorAsync="OnError" OnAfterNavItemsLoadAsync="OnAfterNavItemsLoadAsync"
+<Layout AppId="masa-scheduler-web-admin" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}"
         Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
         MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg">
     @Body
 </Layout>
-
 
 @code{
     [Inject]
@@ -18,6 +17,9 @@
     [Inject]
     public SchedulerServerCaller SchedulerServerCaller { get; set; } = default!;
 
+    [Inject]
+    private IJSRuntime Js { get; set; } = default!;
+
     private Task OnError(Exception exception)
     {
         PopupService.AlertAsync(exception.Message, AlertTypes.Error);
@@ -25,31 +27,20 @@
         return Task.CompletedTask;
     }
 
-    private void SignOut()
+    private bool SignOut()
     {
         Navigation.NavigateTo("/Logout",true);
+        return true;
     }
 
-    private async Task OnAfterNavItemsLoadAsync(List<Nav> navItems)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var teamNav = navItems.FirstOrDefault(p=> p.Code == "scheduler.team");
-
-        if(teamNav != null)
+        if (firstRender)
         {
-            var teamList = await SchedulerServerCaller.AuthService.GetTeamListAsync();
+            var timezoneMinuteOffset = await Js.InvokeAsync<long>("getTimezoneOffset");
 
-            foreach(var team in teamList.Data)
-            {
-                var newNavItem = new Nav()
-                {
-                    Code = $"{teamNav.Code}.{team.Id}",
-                    Name = team.Name,
-                    ParentCode = teamNav.Code,
-                    Url =$"{teamNav.Url}/{team.Id}",
-                };
-
-                teamNav.Children.Add(newNavItem);
-            }
+            GlobalConfig.TimezoneOffset = TimeSpan.FromMinutes(-timezoneMinuteOffset);
         }
+        await base.OnAfterRenderAsync(firstRender);
     }
 }

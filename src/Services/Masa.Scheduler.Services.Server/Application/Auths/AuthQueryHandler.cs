@@ -7,18 +7,19 @@ public class AuthQueryHandler
 {
     private IUserContext _userContext;
     private IAuthClient _authClient;
+    private IMapper _mapper;
 
-    public AuthQueryHandler(IUserContext userContext, IAuthClient authClient)
+    public AuthQueryHandler(IUserContext userContext, IAuthClient authClient, IMapper mapper)
     {
         _userContext = userContext;
         _authClient = authClient;
+        _mapper = mapper;
     }
 
     [EventHandler]
     public async Task TeamListHandleAsync(TeamQuery query)
     {
-        // todo: use auth sdk get team list, when pm use auth team
-        //var teamList = await _authClient.TeamService.GetUserTeamsAsync();
+        var teamList = await _authClient.TeamService.GetUserTeamsAsync();
 
         //query.Result = teamList.Select(p => new TeamDto()
         //{
@@ -27,10 +28,8 @@ public class AuthQueryHandler
         //    Description = p.Description,
         //    Avatar = p.Avatar,
         //    MemberCount = p.MemberCount
-
         //}).ToList();
 
-        // use mock team list
         query.Result = new List<TeamDto>()
         {
             new TeamDto()
@@ -60,32 +59,27 @@ public class AuthQueryHandler
     [EventHandler]
     public async Task GetUserAsync(UserQuery query)
     {
-        var userInfos = await _authClient.UserService.GetUserPortraitsAsync(query.UserId);
+        var userInfos = await _authClient.UserService.GetUserPortraitsAsync(query.UserIds.ToArray());
 
-        var userInfo = userInfos.FirstOrDefault();
-
-        if (userInfo != null)
+        if (userInfos.Any())
         {
-            var useDto = new UserDto()
-            {
-                Account = userInfo.Account,
-                Id = userInfo.Id,
-                Name = userInfo.Name,
-                Avatar = userInfo.Avatar,
-                DisplayName = userInfo.DisplayName
-            };
-
-            query.Result = useDto;
+            query.Result = _mapper.Map<List<UserDto>>(userInfos);
         }
-        else
+
+        // use mock data when not exists for test. will remove after test
+        var notExistsUserIds = query.UserIds.FindAll(i => !userInfos.Any(u => u.Id == i));
+       
+        foreach (var item in notExistsUserIds)
         {
-            // use mock data
-            query.Result = new UserDto()
+            var dto = new UserDto()
             {
                 Account = "Tester",
                 Id = Guid.Empty,
-                Name = "Tester"
+                Name = "Tester",
+                Avatar = "https://cdn.masastack.com/stack/images/website/masa-blazor/jack.png"
             };
+
+            query.Result.Add(dto);
         }
     }
 }

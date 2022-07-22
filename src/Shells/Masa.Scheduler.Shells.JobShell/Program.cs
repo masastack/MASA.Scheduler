@@ -1,6 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+var serviceCollection = new ServiceCollection();
+serviceCollection.AddLogging();
+
+var loggerFactory = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
+
 var taskId = args[0];
 
 var assemblyName = args[1];

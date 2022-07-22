@@ -22,7 +22,7 @@ public class TaskHanlderFactory
         {
             case JobTypes.JobApp:
                 return _jobAppTaskHandler;
-            case JobTypes.Http:
+            case JobTypes.HTTP:
                 return _httpTaskHandler;
             case JobTypes.DaprServiceInvocation:
                 return _daprTaskHanlder;

@@ -13,7 +13,9 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DAPR_GRPC_PORT": "10601",
+        "DAPR_HTTP_PORT": "10602"
       },
       "applicationUrl": "https://localhost:19611;http://localhost:19601",
       "dotnetRunMessages": true

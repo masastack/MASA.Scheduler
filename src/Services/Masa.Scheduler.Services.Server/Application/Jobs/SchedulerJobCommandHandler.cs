@@ -131,7 +131,7 @@ public class SchedulerJobCommandHandler
                     throw new UserFriendlyException($"JobAppconfig cannot null");
                 }
                 break;
-            case JobTypes.Http:
+            case JobTypes.HTTP:
                 if (request.HttpConfig == null)
                 {
                     throw new UserFriendlyException($"HttpConfig cannot null");
@@ -165,19 +165,19 @@ public class SchedulerJobCommandHandler
 
         schedulerJobDto.Origin = projectDetailsQuery.Result.Name;
 
-        var query = new UserQuery() 
-        {
-            UserId = request.OperatorId
-        };
+        var query = new UserQuery();
+        query.UserIds.Add(request.OperatorId);
 
         await _eventBus.PublishAsync(query);
 
-        if(query.Result == null)
+        var owner = query.Result.FirstOrDefault();
+
+        if (owner == null)
         {
             throw new UserFriendlyException($"User not found, UserId: {request.OperatorId}");
         }
 
-        schedulerJobDto.Owner = query.Result.Name;
+        schedulerJobDto.Owner = owner.Name;
 
         schedulerJobDto.ScheduleType = string.IsNullOrWhiteSpace(schedulerJobDto.CronExpression) ? ScheduleTypes.ManualRun : ScheduleTypes.Cron;
 

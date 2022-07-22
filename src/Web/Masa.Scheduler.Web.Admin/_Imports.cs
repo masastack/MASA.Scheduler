@@ -34,3 +34,5 @@ global using Masa.Scheduler.Contracts.Server.Requests.SchedulerResources;
 global using Masa.Scheduler.Web.Admin.Model;
 global using Microsoft.JSInterop;
 global using Microsoft.Extensions.DependencyInjection;
+global using Quartz;
+global using Masa.BuildingBlocks.Identity.IdentityModel;

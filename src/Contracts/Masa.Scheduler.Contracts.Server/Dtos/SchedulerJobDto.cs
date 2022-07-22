@@ -47,6 +47,12 @@ public class SchedulerJobDto
 
     public string Origin { get; set; } = string.Empty;
 
+    public string Avator { get; set; } = string.Empty;
+
+    public string UserName { get; set; } = string.Empty;
+
+    public Guid Creator { get; set; }
+
     public DateTimeOffset UpdateExpiredStrategyTime { get; set; }
 
     public DateTimeOffset LastScheduleTime { get; set; } = DateTimeOffset.MinValue;

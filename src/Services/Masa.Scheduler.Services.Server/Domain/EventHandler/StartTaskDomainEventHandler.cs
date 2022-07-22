@@ -6,6 +6,7 @@ namespace Masa.Scheduler.Services.Server.Domain.EventHandler;
 public class StartTaskDomainEventHandler
 {
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
+    private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly IEventBus _eventBus;
     private readonly SchedulerServerManager _serverManager;
     private readonly SchedulerDbContext _dbContext;
@@ -14,7 +15,7 @@ public class StartTaskDomainEventHandler
     private readonly IDistributedCacheClient _distributedCacheClient;
     private readonly ILogger<StartTaskDomainEventHandler> _logger;
 
-    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper, QuartzUtils quartzUtils, IDistributedCacheClient distributedCacheClient, ILogger<StartTaskDomainEventHandler> logger)
+    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper, QuartzUtils quartzUtils, IDistributedCacheClient distributedCacheClient, ILogger<StartTaskDomainEventHandler> logger, ISchedulerJobRepository schedulerJobRepository)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
@@ -24,6 +25,7 @@ public class StartTaskDomainEventHandler
         _quartzUtils = quartzUtils;
         _distributedCacheClient = distributedCacheClient;
         _logger = logger;
+        _schedulerJobRepository = schedulerJobRepository;
     }
 
     [EventHandler(1)]
@@ -114,6 +116,13 @@ public class StartTaskDomainEventHandler
         else
         {
             task.TaskSchedule(@event.Request.OperatorId);
+        }
+
+        if(task.TaskStatus != TaskRunStatus.WaitToRun)
+        {
+            task.Job.UpdateLastScheduleTime(@event.Request.ExcuteTime);
+            task.Job.UpdateLastRunDetail(task.TaskStatus);
+            await _schedulerJobRepository.UpdateAsync(task.Job);
         }
 
         await _schedulerTaskRepository.UpdateAsync(task);

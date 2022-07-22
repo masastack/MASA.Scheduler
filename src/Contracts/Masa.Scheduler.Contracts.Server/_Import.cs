@@ -34,3 +34,4 @@ global using OpenTelemetry.Resources;
 global using OpenTelemetry.Trace;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Configuration;
+global using Microsoft.AspNetCore.Components.Forms;

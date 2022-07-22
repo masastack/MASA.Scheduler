@@ -48,6 +48,11 @@ public class QuartzUtils
             throw new UserFriendlyException("cron is empty");
         }
 
+        if(!CronExpression.IsValidExpression(cron))
+        {
+            return;
+        }
+
         var triggerKey = new TriggerKey(jobId.ToString());
 
         if(await _scheduler.CheckExists(triggerKey))

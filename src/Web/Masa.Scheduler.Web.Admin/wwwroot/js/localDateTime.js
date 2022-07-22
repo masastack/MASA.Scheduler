@@ -3,3 +3,7 @@
     const dateStr = date.toLocaleString();
     return dateStr;
 }
+
+async function getTimezoneOffset() {
+    return new Date().getTimezoneOffset();
+}

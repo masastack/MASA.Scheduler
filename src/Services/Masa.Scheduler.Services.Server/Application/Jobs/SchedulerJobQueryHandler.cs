@@ -8,12 +8,14 @@ public class SchedulerJobQueryHandler
     private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IEventBus _eventBus;
 
-    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper)
+    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _dbContext = dbContext;
         _mapper = mapper;
+        _eventBus = eventBus;
     }
 
     [EventHandler]
@@ -70,6 +72,26 @@ public class SchedulerJobQueryHandler
         });
 
         var jobDtos = _mapper.Map<List<SchedulerJobDto>>(paginatedResult.Result);
+
+        if (jobDtos.Any())
+        {
+            var userIds = jobDtos.Select(p => p.Creator).Distinct().ToList();
+
+            var userQuery = new UserQuery() { UserIds = userIds };
+
+            await _eventBus.PublishAsync(userQuery);
+
+            foreach (var item in jobDtos)
+            {
+                var user = userQuery.Result.FirstOrDefault(u => u.Id == item.Creator);
+
+                if (user != null)
+                {
+                    item.UserName = user.Name;
+                    item.Avator = user.Avatar;
+                }
+            }
+        }
 
         query.Result = new(paginatedResult.Total, paginatedResult.TotalPages , jobDtos);
     }

@@ -10,7 +10,8 @@ public class SchedulerResourceDtoValidator : AbstractValidator<SchedulerResource
         RuleFor(x=> x.FilePath).Required();
         RuleFor(x=> x.Name).Required();
         RuleFor(x => x.JobAppIdentity).Required();
-        RuleFor(x => x.Version).Required();
+        RuleFor(x => x.Version).MaxLength(20).Required();
+        RuleFor(x => x.Description).MaxLength(255);
     }
 }
 

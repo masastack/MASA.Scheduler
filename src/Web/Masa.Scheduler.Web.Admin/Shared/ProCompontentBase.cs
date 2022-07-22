@@ -5,6 +5,7 @@ namespace Masa.Scheduler.Web.Admin;
 
 public abstract class ProCompontentBase : BDomComponentBase
 {
+    public static TimeSpan TimezoneOffset { get; set; }
     private I18n? _languageProvider;
     private SchedulerServerCaller? _schedulerServerCaller;
     private GlobalConfig? _globalConfig;
@@ -69,6 +70,12 @@ public abstract class ProCompontentBase : BDomComponentBase
     [Inject]
     public MasaSignalRClient MasaSignalRClient { get; set; } = default!;
 
+    [Inject]
+    public IUserContext UserContext { get; set; } = default!;
+
+    //[CascadingParameter]
+    //public TimeSpan TimezoneOffset { get; set; }
+
     public List<KeyValuePair<string, TEnum>> GetEnumMap<TEnum>() where TEnum : struct, Enum
     {
         return Enum.GetValues<TEnum>().Select(e => new KeyValuePair<string, TEnum>(e.ToString(), e)).ToList();
@@ -96,22 +103,22 @@ public abstract class ProCompontentBase : BDomComponentBase
 
     public void OpenInformationMessage(string message)
     {
-        PopupService.AlertAsync(message, AlertTypes.Info);
+        PopupService.ToastInfoAsync(message);
     }
 
     public void OpenSuccessMessage(string message)
     {
-        PopupService.AlertAsync(message, AlertTypes.Success);
+        PopupService.ToastSuccessAsync(message);
     }
 
     public void OpenWarningMessage(string message)
     {
-        PopupService.AlertAsync(message, AlertTypes.Warning);
+        PopupService.ToastWarningAsync(message);
     }
 
     public void OpenErrorMessage(string message)
     {
-        PopupService.AlertAsync(message, AlertTypes.Error);
+        PopupService.ToastErrorAsync(message);
     }
 
     protected string GetRunTimeDescription(double runTime)

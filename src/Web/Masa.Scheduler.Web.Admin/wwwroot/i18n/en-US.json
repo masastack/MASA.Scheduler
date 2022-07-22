@@ -69,5 +69,18 @@
   "Explain": "Explain",
   "UploadFiles.Tips": "Only accept .zip, .dll files, the fiels max size is 100M",
   "ResourceFileUploadDescription": "{0} upload resource file at {1}",
-  "StopTask": "Stop Task"
+  "StopTask": "Stop Task",
+  "DeleteSuccess": "Delete Success",
+  "CannotDeleteEnableJob": "Cannot delete enabled job",
+  "VersionAlreadyExists": "Current version is already exists",
+  "AddResourceSuccess": "Add resource file success",
+  "FileNotValid": "Only accept .zip, .dll files",
+  "FileSizeNotValid": "The fiels max size is 100M",
+  "GetOssTokenFailed": "Get Oss token failed",
+  "FileIsRequired": "Resource files is required",
+  "CronExpressionInvalid": "Cron expression is invalid",
+  "AddJobSuccess": "Add job success",
+  "UpdateJobSuccess": "Update job success",
+  "TaskTrace": "Task trace",
+  "TaskLog": "Task log"
 }

@@ -11,16 +11,47 @@ public partial class AddSchedulerResourceFiles
     [Parameter]
     public EventCallback OnAfterSubmit { get; set; }
 
+    [Parameter]
+    public List<SchedulerResourceDto> Resources { get; set; } = new();
+
     private MForm? _form;
 
     private MFileInput<IBrowserFile> _ref = default!;
 
-    private IBrowserFile? _browserFile;
+    private IBrowserFile _browserFile = default!;
 
+    private List<Func<IBrowserFile, StringBoolean>> _rules = default!;
+
+    protected override Task OnInitializedAsync()
+    {
+        _rules = new List<Func<IBrowserFile, StringBoolean>>()
+        {
+            value=> value != null ? true :  T("FileIsRequired"),
+            value=> (value != null && value.Size<1024*1024*100) ? true : T("FileSizeNotValid")
+        };
+        return base.OnInitializedAsync();
+    }
     private async Task Submit(EditContext context)
     {
+        if(await _ref.ValidateAsync(true))
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Model.FilePath))
+        {
+            await PopupService.ToastAsync(T("PleaseUploadFiles"), AlertTypes.Error);
+            return;
+        }
+
         if (context.Validate())
         {
+            if (Resources.Any(p => p.Version == Model.Version))
+            {
+                await PopupService.ToastAsync(T("VersionAlreadyExists"), AlertTypes.Error);
+                return;
+            }
+
             var request = new AddSchedulerResourceRequest()
             {
                 Data = Model
@@ -28,7 +59,7 @@ public partial class AddSchedulerResourceFiles
 
             await SchedulerServerCaller.SchedulerResourceService.AddAsync(request);
 
-            await PopupService.ToastAsync("Add resource files Success", AlertTypes.Success);
+            await PopupService.ToastAsync(T("AddResourceSuccess"), AlertTypes.Success);
 
             if (OnAfterSubmit.HasDelegate)
             {
@@ -41,7 +72,25 @@ public partial class AddSchedulerResourceFiles
     {
         if(file == null)
         {
-            await PopupService.ToastAsync("Upload file is empty", AlertTypes.Error);
+            await PopupService.ToastAsync(T("FileIsEmpty"), AlertTypes.Error);
+            return;
+        }
+
+        var filterExtension = new List<string>()
+        {
+            ".zip",
+            ".dll"
+        };
+
+        if(!filterExtension.Contains(Path.GetExtension(file.Name)))
+        {
+            await PopupService.ToastAsync(T("FileNotValid"), AlertTypes.Error);
+            return;
+        }
+
+        if(file.Size > 100 * 1024 * 1024)
+        {
+            await PopupService.ToastAsync(T("FileSizeNotValid"), AlertTypes.Error);
             return;
         }
 
@@ -51,7 +100,7 @@ public partial class AddSchedulerResourceFiles
 
         if(securityToken == null)
         {
-            await PopupService.ToastAsync("Upload file is empty", AlertTypes.Error);
+            await PopupService.ToastAsync(T("GetOssTokenFailed"), AlertTypes.Error);
             return;
         }
 
@@ -65,10 +114,4 @@ public partial class AddSchedulerResourceFiles
 
         Model.UploadTime = DateTimeOffset.Now;
     }
-
-    private List<Func<IBrowserFile, StringBoolean>> _rules = new List<Func<IBrowserFile, StringBoolean>>()
-    {
-        value=> value != null ? true : "Files is required",
-        value=> (value != null && value.Size<1024*1024*100) ? true : "files size should be less than 100 MB!"
-    };
 }

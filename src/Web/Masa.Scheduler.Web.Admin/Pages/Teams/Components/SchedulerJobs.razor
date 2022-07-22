@@ -33,38 +33,27 @@
 
                 <MButton Icon OnClick="ShowFilter">
                     <MIcon>
-                        mdi-filter
+                        @_filterIcon
                     </MIcon>
                 </MButton>
 
-                <MButton Color="primary" Class="rounded-4" OnClick="AddJob">
-                    @T("Add")
-                </MButton>
+                @if(_jobCreateType == JobCreateTypes.Manual)
+                {
+                    <MButton Color="primary" Class="rounded-4" OnClick="AddJob">
+                        @T("Add")
+                    </MButton>
+                }
             </div>
         </MRow>
         @if (_showFilter)
         {
             <MRow NoGutters Align="AlignTypes.Center" >
-                @*<MCol Cols="2">
-                    <MSelect @bind-Value="_queryTimeType" Label="@T("QueryTimeType")" HideDetails="@("auto")" Dense Outlined Clearable Items="JobQueryTimeTypes" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
-                    </MSelect>
-                </MCol>
-
-                <MCol Cols="2" Class="pa-2">
-                    <PDateTimePicker @bind-Value="QueryStartTime" Disabled="_queryTimeType == 0" Outlined Dense Label="@T("StartDate")" style="margin-left:10px;">
-                    </PDateTimePicker>
-                </MCol>
-
-                <MCol Cols="2" Class="pa-2">
-                    <PDateTimePicker @bind-Value="QueryEndTime" Disabled="_queryTimeType == 0" Outlined Dense Label="@T("EndDate")" style="margin-left:10px;">
-                    </PDateTimePicker>
-                </MCol>*@
                 <MCol Cols="2" Class="pa-2">
                     <MSelect @bind-Value="QueryJobType" HideDetails="@("auto")" Placeholder="@T("JobType")" Outlined Dense Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                     </MSelect>
                 </MCol>
 
-                @if (_jobCreateType == JobCreateTypes.Api)
+                @if (_jobCreateType == JobCreateTypes.API)
                 {
                     <MCol Cols="2" Class="pa-2">
                         <MTextField @bind-Value="QueryOrigin" Placeholder="@T("Origin")" HideDetails="@("auto")" Flat Dense Solo Outlined>
@@ -90,11 +79,11 @@
                                Label>
                                 @T(job.JobType.ToString())
                             </MChip>
-                            <div style="padding-left:8px; font-weight:500" class="job-text job-name">
+                            <div style="padding-left:8px; font-weight:500; max-width:90%" class="job-text job-name text-truncate">
                                 @job.Name
                             </div>
                             <MSpacer />
-                            @if(_jobCreateType == JobCreateTypes.Api)
+                            @if(_jobCreateType == JobCreateTypes.API)
                             {
                                 <MChip
                                    Class="job-text mr-1"
@@ -103,9 +92,16 @@
                                     @job.Origin
                                 </MChip>
                             }
-                            <MAvatar Size="24">
-                                <MImage Src="https://cdn.masastack.com/stack/images/website/masa-blazor/jack.png"></MImage>
-                            </MAvatar>
+                            <MTooltip Top>
+                                <ActivatorContent>
+                                    <MAvatar Size="24" @attributes="@context.Attrs">
+                                        <MImage Src="@job.Avator"></MImage>
+                                    </MAvatar>
+                                </ActivatorContent>
+                                <ChildContent>
+                                    <span>@T("Owner"): @job.UserName</span>
+                                </ChildContent>
+                            </MTooltip>
                         </MCardTitle>
                         <MCardText Style="height:24px; padding-left:10px; padding-right:16px; display:inline-flex">
                             <MButton Icon XSmall Class="run-icon" Style="cursor:default">
@@ -123,13 +119,16 @@
                                 </ActivatorContent>
                                 <ChildContent>
                                     <MList>
-                                        <MListItem Link OnClick="()=> RunJob(job)">
-                                            <MListItemContent>
-                                                <MListItemTitle>
-                                                    运行
-                                                </MListItemTitle>
-                                            </MListItemContent>
-                                        </MListItem>
+                                        @if (job.Enabled)
+                                        {
+                                            <MListItem Link OnClick="()=> RunJob(job)">
+                                                <MListItemContent>
+                                                    <MListItemTitle>
+                                                        运行
+                                                    </MListItemTitle>
+                                                </MListItemContent>
+                                            </MListItem>
+                                        }
                                         <MListItem Link OnClick="()=> EditJob(job)">
                                             <MListItemContent>
                                                 <MListItemTitle>
@@ -168,6 +167,6 @@
         </MRow>
         <Pagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
 
-        <JobModal Visible="_modalVisible" Model="modalModel" VisibleChanged="OnVisibleChanged" Project="Project" OnAfterSubmit="OnAfterSubmit"></JobModal>
+        <JobModal Visible="_modalVisible" Model="modalModel" VisibleChanged="OnVisibleChanged" Project="Project" OnAfterDataChange="OnAfterDataChange"></JobModal>
     </div>
 </div>

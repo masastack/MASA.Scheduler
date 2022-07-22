@@ -6,6 +6,7 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 public enum RoutingStrategyTypes
 {
     RoundRobin = 1,
-    DynamicRatioApm,
     Specified
+    // implement this routing strategy in next version
+    //DynamicRatioApm
 }

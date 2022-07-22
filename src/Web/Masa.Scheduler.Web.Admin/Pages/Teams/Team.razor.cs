@@ -9,13 +9,17 @@ public partial class Team
     public string TeamId { get; set; } = string.Empty;
 
     private bool JobVisible => _curTab == 0;
-
     private bool TaskVisible => _curTab == 1;
-
     private ProjectDto _project = default!;
     private SchedulerJobDto? _selectedJob;
     private StringNumber _curTab = 0;
-    private Dictionary<StringNumber, string> NavTab => new Dictionary<StringNumber, string>() { { 0, T("Job") }, { 1, T("Task") } };
+    private string _jobTabName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _jobTabName = T("Job");
+        await base.OnInitializedAsync();
+    }
 
     public Task OnProjectChangedAsync(ProjectDto project)
     {
@@ -27,6 +31,7 @@ public partial class Team
     public Task HandleJobSelect(SchedulerJobDto job)
     {
         _selectedJob = job;
+        _jobTabName = _selectedJob.Name;
         _curTab = 1;
         return Task.CompletedTask;
     }

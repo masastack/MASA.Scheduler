@@ -52,36 +52,23 @@ builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
     .AddDbContextCheck<SchedulerDbContext>();
 
-builder.Services.AddAliyunStorage(serviceProvider =>
+builder.Services.AddAliyunStorage(async serviceProvider =>
 {
-    try
-    {
-        var daprClient = serviceProvider.GetService<DaprClient>();
+    var daprClient = serviceProvider.GetRequiredService<DaprClient>();
 
-        if(daprClient == null)
+    var secrets = await daprClient.GetSecretAsync("localsecretstore", "masa-scheduler-secret");
+    var accessId = secrets.GetValueOrDefault("access_id", string.Empty);
+    var accessSecret = secrets.GetValueOrDefault("access_secret", string.Empty);
+    var endpoint = secrets.GetValueOrDefault("endpoint", string.Empty);
+    var roleArn = secrets.GetValueOrDefault("roleArn", string.Empty);
+
+    return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
+    {
+        Sts = new AliyunStsOptions()
         {
-            throw new UserFriendlyException("dapr client is null");
+            RegionId = "cn-hangzhou"
         }
-
-        var bulk = daprClient.GetBulkSecretAsync("localsecretstore").ConfigureAwait(false).GetAwaiter().GetResult();
-        var secrets = daprClient.GetSecretAsync("localsecretstore", "masa-scheduler-secret").ConfigureAwait(false).GetAwaiter().GetResult();
-        var accessId = secrets.GetValueOrDefault("access_id", string.Empty);
-        var accessSecret = secrets.GetValueOrDefault("access_secret", string.Empty);
-        var endpoint = secrets.GetValueOrDefault("endpoint", string.Empty);
-        var roleArn = secrets.GetValueOrDefault("roleArn", string.Empty);
-
-        return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
-        {
-            Sts = new AliyunStsOptions()
-            {
-                RegionId = "cn-hangzhou"
-            }
-        };
-    }
-    catch(Exception ex)
-    {
-        throw;
-    }
+    };
 });
 
 var app = builder.Services

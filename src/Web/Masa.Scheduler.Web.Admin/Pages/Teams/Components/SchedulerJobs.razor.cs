@@ -71,6 +71,8 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private bool _showFilter;
 
+    private string _filterIcon = "mdi-filter";
+
     private JobCreateTypes _jobCreateType = JobCreateTypes.Manual;
 
     private int _page = 1;
@@ -266,6 +268,7 @@ public partial class SchedulerJobs : ProCompontentBase
     public Task ShowFilter()
     {
         _showFilter = !_showFilter;
+        _filterIcon = _showFilter ? "mdi-filter-off" : "mdi-filter";
         _contentHeight = _showFilter ? "356px" : "300px";
         return Task.CompletedTask;
     }
@@ -293,8 +296,8 @@ public partial class SchedulerJobs : ProCompontentBase
             Origin = QueryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = QueryEndTime,
-            QueryStartTime = QueryStartTime,
+            QueryEndTime = QueryEndTime.HasValue ? new DateTimeOffset(QueryEndTime.Value, GlobalConfig.TimezoneOffset) : null,
+            QueryStartTime = QueryStartTime.HasValue ? new DateTimeOffset(QueryStartTime.Value, GlobalConfig.TimezoneOffset) : null,
             QueryTimeType = _queryTimeType,
             BelongProjectIdentity = Project.Identity,
         };
@@ -387,8 +390,7 @@ public partial class SchedulerJobs : ProCompontentBase
         var startJobRequest = new StartSchedulerJobRequest()
         {
             JobId = dto.Id,
-            // todo: use login user id
-            OperatorId = Guid.NewGuid()
+            OperatorId = UserContext.GetUserId<Guid>()
         };
 
         await SchedulerServerCaller.SchedulerJobService.StartJobAsync(startJobRequest);
@@ -453,7 +455,7 @@ public partial class SchedulerJobs : ProCompontentBase
         await GetProjectJobs();
     }
 
-    public async Task OnAfterSubmit()
+    public async Task OnAfterDataChange()
     {
         await GetProjectJobs();
     }

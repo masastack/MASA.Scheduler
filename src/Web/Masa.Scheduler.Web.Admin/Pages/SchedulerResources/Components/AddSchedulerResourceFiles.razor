@@ -12,7 +12,8 @@
                                 Outlined
                                 Accept=".zip, .dll"
                                 Rules="_rules"
-                                Value="_browserFile"
+                                @bind-Value="_browserFile"
+                                HideDetails="@("auto")"
                                 Label="@T("PleaseUploadFiles")"
                                 Placeholder="@T("PleaseUploadFiles")" OnChange="HandleFileChange"></MFileInput>
                 </MCol>

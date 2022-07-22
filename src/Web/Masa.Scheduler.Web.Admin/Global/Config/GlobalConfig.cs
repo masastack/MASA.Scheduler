@@ -30,6 +30,7 @@ public class GlobalConfig
 
     public static string FavoriteCookieKey { get; set; } = "GlobalConfig_Favorite";
 
+    public static TimeSpan TimezoneOffset { get; set; }
 
     public bool IsDark
     {
