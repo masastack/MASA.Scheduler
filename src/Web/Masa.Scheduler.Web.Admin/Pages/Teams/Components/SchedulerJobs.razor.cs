@@ -287,6 +287,9 @@ public partial class SchedulerJobs : ProCompontentBase
             return;
         }
 
+        DateTimeOffset? queryEndTimeDateTimeOffset = QueryEndTime.HasValue ? new DateTimeOffset(QueryEndTime.Value, GlobalConfig.TimezoneOffset) : null;
+        DateTimeOffset? queryStartTimeDateTimeOffset = QueryStartTime.HasValue ? new DateTimeOffset(QueryStartTime.Value, GlobalConfig.TimezoneOffset) : null;
+
         var request = new SchedulerJobListRequest()
         {
             FilterStatus = QueryStatus,
@@ -296,8 +299,8 @@ public partial class SchedulerJobs : ProCompontentBase
             Origin = QueryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = QueryEndTime.HasValue ? new DateTimeOffset(QueryEndTime.Value, GlobalConfig.TimezoneOffset) : null,
-            QueryStartTime = QueryStartTime.HasValue ? new DateTimeOffset(QueryStartTime.Value, GlobalConfig.TimezoneOffset) : null,
+            QueryEndTime = queryEndTimeDateTimeOffset.HasValue ? queryEndTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
+            QueryStartTime = queryStartTimeDateTimeOffset.HasValue ? queryStartTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
             QueryTimeType = _queryTimeType,
             BelongProjectIdentity = Project.Identity,
         };
