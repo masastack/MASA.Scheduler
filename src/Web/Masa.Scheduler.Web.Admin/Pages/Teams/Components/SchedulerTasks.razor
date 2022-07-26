@@ -143,15 +143,15 @@
             }
         </ItemColContent>
         <FooterContent>
-            <Pagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
+            <SPagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
         </FooterContent>
     </MDataTable>
 </MCard>
 
-<ADialog OkText="@T("Sure")" OnOk="OnSure" @bind-Value="_showConfirmDialog" Title="@_confirmTitle" HideCancel OkColor="#FF5252" OkClass="full-width scheduler-confirm-dialog-ok-button">
+<SSimpleDialog OkText="@T("Sure")" OnOk="OnSure" @bind-Value="_showConfirmDialog" Title="@_confirmTitle" HideCancel OkColor="#FF5252" OkClass="full-width scheduler-confirm-dialog-ok-button">
     <ChildContent>
         <span class="d-flex flex-column justify-center align-center" style="text-align:center">
             @_confirmMessage
         </span>
     </ChildContent>
-</ADialog>
+</SSimpleDialog>

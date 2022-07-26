@@ -87,6 +87,8 @@ public partial class JobModal
 
     private List<ProjectAppDto> _jobApp = new();
 
+    private SUserAutoComplete _userAutoComplete = default!;
+
     protected override async Task OnInitializedAsync()
     {
         _isAdd = Model.Id == Guid.Empty;
@@ -218,7 +220,7 @@ public partial class JobModal
     {
         if (context.Validate())
         {
-            if(Model.JobType == JobTypes.HTTP)
+            if(Model.JobType == JobTypes.Http)
             {
                 Model.HttpConfig.HttpParameters.RemoveAll(p => string.IsNullOrEmpty(p.Key) && string.IsNullOrEmpty(p.Value));
                 Model.HttpConfig.HttpHeaders.RemoveAll(p => string.IsNullOrEmpty(p.Key) && string.IsNullOrEmpty(p.Value));
@@ -315,6 +317,20 @@ public partial class JobModal
         if(daprServiceAppIdentity != Model.DaprServiceInvocationConfig.DaprServiceIdentity)
         {
             Model.DaprServiceInvocationConfig.DaprServiceIdentity = daprServiceAppIdentity;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnOwnerIdChange(Guid ownerId)
+    {
+        Model.OwnerId = ownerId;
+
+        var owner = _userAutoComplete.UserSelect.FirstOrDefault();
+
+        if(owner != null)
+        {
+            Model.Owner = owner.Name;
         }
 
         return Task.CompletedTask;

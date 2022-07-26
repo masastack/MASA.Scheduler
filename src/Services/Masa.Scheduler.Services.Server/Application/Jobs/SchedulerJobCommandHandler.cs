@@ -131,7 +131,7 @@ public class SchedulerJobCommandHandler
                     throw new UserFriendlyException($"JobAppconfig cannot null");
                 }
                 break;
-            case JobTypes.HTTP:
+            case JobTypes.Http:
                 if (request.HttpConfig == null)
                 {
                     throw new UserFriendlyException($"HttpConfig cannot null");
@@ -179,6 +179,8 @@ public class SchedulerJobCommandHandler
 
         schedulerJobDto.Owner = owner.Name;
 
+        schedulerJobDto.OwnerId = owner.Id;
+
         schedulerJobDto.ScheduleType = string.IsNullOrWhiteSpace(schedulerJobDto.CronExpression) ? ScheduleTypes.ManualRun : ScheduleTypes.Cron;
 
         schedulerJobDto.FailedStrategy = schedulerJobDto.FailedRetryCount == 0 ? FailedStrategyTypes.Manual : FailedStrategyTypes.Auto;
@@ -187,11 +189,11 @@ public class SchedulerJobCommandHandler
 
         schedulerJobDto.Enabled = true;
 
-        schedulerJobDto.HttpConfig = schedulerJobDto.HttpConfig ?? new();
+        schedulerJobDto.HttpConfig ??= new();
 
-        schedulerJobDto.JobAppConfig = schedulerJobDto.JobAppConfig ?? new();
+        schedulerJobDto.JobAppConfig ??= new();
 
-        schedulerJobDto.DaprServiceInvocationConfig = schedulerJobDto.DaprServiceInvocationConfig ?? new();
+        schedulerJobDto.DaprServiceInvocationConfig ??= new();
 
         var addCommand = new AddSchedulerJobCommand(new AddSchedulerJobRequest()
         {

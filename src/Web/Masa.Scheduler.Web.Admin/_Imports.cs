@@ -36,3 +36,4 @@ global using Microsoft.JSInterop;
 global using Microsoft.Extensions.DependencyInjection;
 global using Quartz;
 global using Masa.BuildingBlocks.Identity.IdentityModel;
+global using static Masa.Stack.Components.JsInitVariables;

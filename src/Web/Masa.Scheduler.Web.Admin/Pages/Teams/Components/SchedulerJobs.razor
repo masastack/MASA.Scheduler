@@ -53,7 +53,7 @@
                     </MSelect>
                 </MCol>
 
-                @if (_jobCreateType == JobCreateTypes.API)
+                @if (_jobCreateType == JobCreateTypes.Api)
                 {
                     <MCol Cols="2" Class="pa-2">
                         <MTextField @bind-Value="QueryOrigin" Placeholder="@T("Origin")" HideDetails="@("auto")" Flat Dense Solo Outlined>
@@ -83,7 +83,7 @@
                                 @job.Name
                             </div>
                             <MSpacer />
-                            @if(_jobCreateType == JobCreateTypes.API)
+                            @if(_jobCreateType == JobCreateTypes.Api)
                             {
                                 <MChip
                                    Class="job-text mr-1"
@@ -138,7 +138,7 @@
                                         </MListItem>
                                         @if (job.Enabled)
                                         {
-                                            <MListItem Link OnClick="()=> DisabledJob(job)">
+                                            <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.DisabledJob, job.Id)">
                                                 <MListItemContent>
                                                     <MListItemTitle>
                                                         禁用
@@ -148,7 +148,7 @@
                                         }
                                         else
                                         {
-                                             <MListItem Link OnClick="()=> EnabledJob(job)">
+                                             <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.EnabledJob, job.Id)">
                                                 <MListItemContent>
                                                     <MListItemTitle>
                                                         启用
@@ -165,8 +165,16 @@
                 </MCol>
             }
         </MRow>
-        <Pagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
+        <SPagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
 
         <JobModal Visible="_modalVisible" Model="modalModel" VisibleChanged="OnVisibleChanged" Project="Project" OnAfterDataChange="OnAfterDataChange"></JobModal>
     </div>
 </div>
+
+<SSimpleDialog OkText="@T("Sure")" OnOk="OnSure" @bind-Value="_showConfirmDialog" Title="@_confirmTitle" HideCancel OkColor="#FF5252" OkClass="full-width scheduler-confirm-dialog-ok-button">
+    <ChildContent>
+        <span class="d-flex flex-column justify-center align-center" style="text-align:center">
+            @_confirmMessage
+        </span>
+    </ChildContent>
+</SSimpleDialog>

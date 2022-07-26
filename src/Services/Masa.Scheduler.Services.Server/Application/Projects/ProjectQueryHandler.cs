@@ -28,6 +28,7 @@ public class ProjectQueryHandler
 
         if (query.TeamId.HasValue)
         {
+            Console.WriteLine("queryTeamId: " + query.TeamId.Value);
             projectList = projectList.FindAll(p => p.TeamId == query.TeamId.Value);
         }
 

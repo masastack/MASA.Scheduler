@@ -15,6 +15,7 @@ public class SchedulerJobDtoValidator : AbstractValidator<SchedulerJobDto>
         RuleFor(job => job.RunTimeoutStrategy).Required();
         RuleFor(job => job.Name).Required().MaxLength(100);
         RuleFor(job => job.Owner).Required().MaxLength(20);
+        RuleFor(job => job.OwnerId).Required();
         RuleFor(job => job.CronExpression).MaxLength(100);
         RuleFor(job => job.FailedRetryCount).GreaterThanOrEqualTo(0);
         RuleFor(job => job.FailedRetryInterval).GreaterThanOrEqualTo(0);

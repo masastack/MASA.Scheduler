@@ -65,21 +65,5 @@ public class AuthQueryHandler
         {
             query.Result = _mapper.Map<List<UserDto>>(userInfos);
         }
-
-        // use mock data when not exists for test. will remove after test
-        var notExistsUserIds = query.UserIds.FindAll(i => !userInfos.Any(u => u.Id == i));
-       
-        foreach (var item in notExistsUserIds)
-        {
-            var dto = new UserDto()
-            {
-                Account = "Tester",
-                Id = Guid.Empty,
-                Name = "Tester",
-                Avatar = "https://cdn.masastack.com/stack/images/website/masa-blazor/jack.png"
-            };
-
-            query.Result.Add(dto);
-        }
     }
 }

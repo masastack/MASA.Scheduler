@@ -55,7 +55,8 @@
   "StartDate": "开始日期",
   "EndDate": "结束日期",
   "JobCreateTypes.Manual": "手动创建",
-  "JobCreateTypes.API": "API创建",
+  "JobCreateTypes.Api": "API创建",
+  "Http": "HTTP",
   "JobApp": "Job应用",
   "DaprServiceInvocation": "Dapr Service Invocation",
   "AlreadyRun": "已运行",
@@ -165,5 +166,10 @@
   "RestartTask": "重跑任务",
   "DeleteTaskSuccess": "删除任务成功",
   "RestartTaskSuccess": "重跑任务成功",
-  "StopTaskSuccess": "中断任务成功"
+  "StopTaskSuccess": "中断任务成功",
+  "EnabledJobConfirmMessage": "确认启用Job: {0}？",
+  "EnabledJob": "启用Job",
+  "DisabledJob": "禁用Job",
+  "DisabledJobConfirmMessage": "确认禁用Job: {0}？",
+  "JobNameAlredyExists":  "Job名称已重复"
 }

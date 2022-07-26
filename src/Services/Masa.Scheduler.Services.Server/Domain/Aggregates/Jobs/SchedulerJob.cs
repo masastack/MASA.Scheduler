@@ -17,6 +17,8 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
     public string Owner { get; private set; } = string.Empty;
 
+    public Guid OwnerId { get; set; }
+
     public bool IsAlertException { get; private set; }
 
     public ScheduleTypes ScheduleType { get; private set; }
@@ -81,6 +83,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
     public SchedulerJob(
         string name,
         string owner,
+        Guid ownerId,
         bool isAlertException,
         ScheduleTypes scheduleType,
         string cronExpression,
@@ -99,6 +102,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
     {
         Name = name;
         Owner = owner;
+        OwnerId = ownerId;
         IsAlertException = isAlertException;
         ScheduleType = scheduleType;
         CronExpression = cronExpression;
@@ -121,6 +125,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
     {
         Name = dto.Name;
         Owner = dto.Owner;
+        OwnerId = dto.OwnerId;
         IsAlertException = dto.IsAlertException;
         ScheduleType = dto.ScheduleType;
         CronExpression = dto.CronExpression;
@@ -138,7 +143,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
         switch (dto.JobType)
         {
-            case JobTypes.HTTP:
+            case JobTypes.Http:
                 SetHttpConfig(dto.HttpConfig);
                 break;
             case JobTypes.JobApp:

@@ -6,6 +6,6 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 public enum JobCreateTypes
 {
     Manual = 1,
-    API
+    Api
 }
 

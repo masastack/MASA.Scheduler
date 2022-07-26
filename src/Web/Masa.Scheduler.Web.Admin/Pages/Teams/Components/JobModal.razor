@@ -1,7 +1,7 @@
 ﻿@inherits ProCompontentBase
 
 <div @ref="Ref">
-    <SheetDialog Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(Model.Id == Guid.Empty? T("Job.Add") : T("Job.Update"))">
+    <SSheetDialog Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(Model.Id == Guid.Empty? T("Job.Add") : T("Job.Update"))">
         <MStepper Value="_step" Class="sheetDialogPadding full-height">
             <MStepperItems Class="full-height">
                 <MStepperContent Step="1" Class="full-height">
@@ -49,7 +49,7 @@
                                 </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MTextField @bind-Value="Model.Owner" Label="@T("Owner")" HideDetails="@("auto")" Outlined Dense/>
+                                        <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange"  @ref="_userAutoComplete" FillBackground="false" Outlined Label="@T("Owner")" Solo="false" Flat="false" Placeholder="@Model.Owner" PersistentPlaceholder="true"></SUserAutoComplete>
                                     </MCol>
                                 </MRow>
                                 <MRow Class="mt-1">
@@ -145,7 +145,7 @@
                 <MStepperContent Step="3">
                     <div class="full-height flex-column">
                         <div class="mt-6 flex-height-auto overflow-y">
-                            @if (Model.JobType == JobTypes.HTTP)
+                            @if (Model.JobType == JobTypes.Http)
                             {
                                 <MForm Model=Model.HttpConfig EnableValidation @ref="Form" Class="full-height">
                                     <MRow Class="mt-1">
@@ -315,5 +315,5 @@
                 </MStepperContent>
             </MStepperItems>
         </MStepper>
-    </SheetDialog>
+    </SSheetDialog>
 </div>

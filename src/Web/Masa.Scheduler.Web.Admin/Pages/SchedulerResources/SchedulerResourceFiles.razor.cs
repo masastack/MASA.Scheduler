@@ -216,7 +216,7 @@ public partial class SchedulerResourceFiles
         {
             foreach (var child in item.Children)
             {
-                if (child.Title.Contains(SearchName))
+                if (child.Title.ToLower().Contains(SearchName.ToLower()))
                 {
                     var parent = parentList.FirstOrDefault(p => p.Identity == item.Identity);
 

@@ -11,6 +11,8 @@ public class SchedulerJobDto
 
     public string Owner { get; set; } = string.Empty;
 
+    public Guid OwnerId { get; set; }
+
     public bool IsAlertException { get; set; }
 
     public ScheduleTypes ScheduleType { get; set; }
@@ -50,6 +52,8 @@ public class SchedulerJobDto
     public string Avator { get; set; } = string.Empty;
 
     public string UserName { get; set; } = string.Empty;
+
+    public int SortPriority { get; set; }
 
     public Guid Creator { get; set; }
 

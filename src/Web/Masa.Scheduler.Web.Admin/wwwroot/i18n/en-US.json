@@ -94,5 +94,12 @@
   "RestartTask": "Restart task",
   "DeleteTaskSuccess": "Delete task success",
   "RestartTaskSuccess": "Restart task success",
-  "StopTaskSuccess": "Stop task success"
+  "StopTaskSuccess": "Stop task success",
+  "EnabledJobConfirmMessage": "Are you sure to enable the job: {0}？",
+  "EnabledJob": "Enable Job",
+  "DisabledJob": "Disable Job",
+  "DisabledJobConfirmMessage": "Are you sure to disable the job: {0}？",
+  "JobNameAlredyExists": "Job name already exists",
+  "Http": "HTTP",
+  "JobCreateTypes.Api": "API Create"
 }

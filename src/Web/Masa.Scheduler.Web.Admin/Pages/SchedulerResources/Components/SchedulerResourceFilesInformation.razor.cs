@@ -43,7 +43,7 @@ public partial class SchedulerResourceFilesInformation
             }
         }
 
-        var uploadTime = Model.UploadTime.ToOffset(GlobalConfig.TimezoneOffset).ToString(T("$DateTimeFormat"));
+        var uploadTime = Model.UploadTime.ToOffset(TimezoneOffset).ToString(T("$DateTimeFormat"));
 
         _description = string.Format(T("ResourceFileUploadDescription"), creatorName, uploadTime);
     }

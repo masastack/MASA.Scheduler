@@ -5,7 +5,6 @@ namespace Masa.Scheduler.Web.Admin;
 
 public abstract class ProCompontentBase : BDomComponentBase
 {
-    public static TimeSpan TimezoneOffset { get; set; }
     private I18n? _languageProvider;
     private SchedulerServerCaller? _schedulerServerCaller;
     private GlobalConfig? _globalConfig;
@@ -72,9 +71,6 @@ public abstract class ProCompontentBase : BDomComponentBase
 
     [Inject]
     public IUserContext UserContext { get; set; } = default!;
-
-    //[CascadingParameter]
-    //public TimeSpan TimezoneOffset { get; set; }
 
     public List<KeyValuePair<string, TEnum>> GetEnumMap<TEnum>() where TEnum : struct, Enum
     {

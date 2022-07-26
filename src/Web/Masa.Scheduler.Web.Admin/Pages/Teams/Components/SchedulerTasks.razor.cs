@@ -208,8 +208,8 @@ public partial class SchedulerTasks
             return;
         }
 
-        DateTimeOffset? queryEndTimeDateTimeOffset = _queryEndTime.HasValue ? new DateTimeOffset(_queryEndTime.Value, GlobalConfig.TimezoneOffset) : null;
-        DateTimeOffset? queryStartTimeDateTimeOffset = _queryStartTime.HasValue ? new DateTimeOffset(_queryStartTime.Value, GlobalConfig.TimezoneOffset) : null;
+        DateTimeOffset? queryEndTimeDateTimeOffset = _queryEndTime.HasValue ? new DateTimeOffset(_queryEndTime.Value, TimezoneOffset) : null;
+        DateTimeOffset? queryStartTimeDateTimeOffset = _queryStartTime.HasValue ? new DateTimeOffset(_queryStartTime.Value, TimezoneOffset) : null;
 
         var request = new SchedulerTaskListRequest()
         {
