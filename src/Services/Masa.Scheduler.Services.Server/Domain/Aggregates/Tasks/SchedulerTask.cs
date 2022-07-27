@@ -82,4 +82,15 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
         Message = message;
         RunTime = Convert.ToInt64((TaskRunEndTime - TaskRunStartTime).TotalSeconds);
     }
+
+    public void TaskStartError(string message)
+    {
+        var now = DateTimeOffset.Now;
+        RunCount++;
+        TaskRunStartTime = now;
+        TaskRunEndTime = now;
+        TaskStatus = TaskRunStatus.Failure;
+        RunTime = 0;
+        Message = message;
+    }
 }

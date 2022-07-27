@@ -34,9 +34,9 @@ public class SchedulerServerManagerService : ServiceBase
         return Results.Ok();
     }
 
-    public IResult GetWorkerListAsync([FromServices] SchedulerServerManager serverManager)
+    public IResult GetWorkerListAsync([FromServices] SchedulerServerManagerData data)
     {
-        return Results.Ok(serverManager.ServiceList);
+        return Results.Ok(data.ServiceList);
     }
 
     public IResult Heartbeat()

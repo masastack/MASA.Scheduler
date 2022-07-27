@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Utils.Security.Cryptography;
+
 namespace Masa.Scheduler.Services.Worker.Services;
 
 public class SchedulerWorkerManagerService : ServiceBase
@@ -9,13 +11,15 @@ public class SchedulerWorkerManagerService : ServiceBase
 
     public SchedulerWorkerManagerService(IServiceCollection services, ILogger<SchedulerWorkerManagerService> logger) : base(services, ConstStrings.SCHEDULER_WORKER_MANAGER_API)
     {
+        _logger = logger;
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        var serviceId = MD5Utils.Encrypt(EncryptType.Md5, host.HostName);
         MapPost(MonitorServerOnlineAsync);
         MapGet(OnlineAsync);
         MapGet(GetServerListAsync);
         MapGet(Heartbeat);
-        MapPost(StartTask);
-        MapPost(StopTask);
-        _logger = logger;
+        MapPost(StartTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent) + serviceId);
+        MapPost(StopTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StopTaskIntegrationEvent) + serviceId);
     }
 
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(SchedulerServerOnlineIntegrationEvent))]
@@ -30,9 +34,9 @@ public class SchedulerWorkerManagerService : ServiceBase
         return Results.Ok(); 
     }
 
-    public IResult GetServerListAsync([FromServices] SchedulerWorkerManager workerManager)
+    public IResult GetServerListAsync([FromServices] SchedulerWorkerManagerData data)
     {
-        return Results.Ok(workerManager.ServiceList);
+        return Results.Ok(data.ServiceList);
     }
 
     public IResult Heartbeat()
@@ -40,7 +44,6 @@ public class SchedulerWorkerManagerService : ServiceBase
         return Results.Ok("success");
     }
 
-    [Topic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent))]
     public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, StartTaskIntegrationEvent @event)
     {
         if(@event.TaskId == Guid.Empty || @event.Job == null)
@@ -54,7 +57,6 @@ public class SchedulerWorkerManagerService : ServiceBase
         await workerManager.EnqueueTask(@event);
     }
 
-    [Topic(ConstStrings.PUB_SUB_NAME, nameof(StopTaskIntegrationEvent))]
     public async Task StopTask([FromServices] SchedulerWorkerManager workerManager, StopTaskIntegrationEvent @event)
     {
         await workerManager.StopTaskAsync(@event);
