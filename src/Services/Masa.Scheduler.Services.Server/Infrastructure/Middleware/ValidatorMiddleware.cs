@@ -29,7 +29,9 @@ public class ValidatorMiddleware<TEvent> : Middleware<TEvent>
 
         if (failures.Any())
         {
-            _logger.LogWarning("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, action, failures);
+            _logger.LogInformation("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, action, failures);
+
+            _logger.LogInformation(string.Join(",", failures.Select(p => p.ErrorMessage)));
 
             throw new ValidationException("Validation exception", failures);
         }

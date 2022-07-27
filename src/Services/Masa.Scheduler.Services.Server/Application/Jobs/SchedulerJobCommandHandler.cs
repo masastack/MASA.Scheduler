@@ -165,19 +165,21 @@ public class SchedulerJobCommandHandler
 
         schedulerJobDto.Origin = projectDetailsQuery.Result.Name;
 
-        var query = new UserQuery() 
-        {
-            UserId = request.OperatorId
-        };
+        var query = new UserQuery();
+        query.UserIds.Add(request.OperatorId);
 
         await _eventBus.PublishAsync(query);
 
-        if(query.Result == null)
+        var owner = query.Result.FirstOrDefault();
+
+        if (owner == null)
         {
             throw new UserFriendlyException($"User not found, UserId: {request.OperatorId}");
         }
 
-        schedulerJobDto.Owner = query.Result.Name;
+        schedulerJobDto.Owner = owner.Name;
+
+        schedulerJobDto.OwnerId = owner.Id;
 
         schedulerJobDto.ScheduleType = string.IsNullOrWhiteSpace(schedulerJobDto.CronExpression) ? ScheduleTypes.ManualRun : ScheduleTypes.Cron;
 
@@ -187,11 +189,11 @@ public class SchedulerJobCommandHandler
 
         schedulerJobDto.Enabled = true;
 
-        schedulerJobDto.HttpConfig = schedulerJobDto.HttpConfig ?? new();
+        schedulerJobDto.HttpConfig ??= new();
 
-        schedulerJobDto.JobAppConfig = schedulerJobDto.JobAppConfig ?? new();
+        schedulerJobDto.JobAppConfig ??= new();
 
-        schedulerJobDto.DaprServiceInvocationConfig = schedulerJobDto.DaprServiceInvocationConfig ?? new();
+        schedulerJobDto.DaprServiceInvocationConfig ??= new();
 
         var addCommand = new AddSchedulerJobCommand(new AddSchedulerJobRequest()
         {

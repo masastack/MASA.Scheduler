@@ -15,7 +15,7 @@
         <MSpacer />
         <MSelect @bind-Value="_queryTimeType" Label="@T("QueryTimeType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<JobQueryTimeTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
         </MSelect>
-        <PDateTimePicker Value="_queryStartTime" TValue="DateTime?" Disabled="_queryTimeType == 0" ValueChanged="QueryStartTimeChanged" Outlined Dense Label="@T("StartDate")" Clearable style="margin-left:10px;">
+        <PDateTimePicker Value="_queryStartTime" TValue="DateTime?" TimeZoneOffset="TimezoneOffset" Disabled="_queryTimeType == 0" ValueChanged="QueryStartTimeChanged" Outlined Dense Label="@T("StartDate")" Clearable style="margin-left:10px;">
         </PDateTimePicker>
         <PDateTimePicker Value="_queryEndTime" TValue="DateTime?" Disabled="_queryTimeType == 0" ValueChanged="QueryEndTimeChanged" Outlined Dense Label="@T("EndDate")" Clearable style="margin-left:10px;">
         </PDateTimePicker>
@@ -71,46 +71,71 @@
                     <span class="text-body4 neutral-lighten-2--text">@context.Item.OperatorName</span>
                     break;
                 case "Action":
-                    <MIcon Small Color="neutral-lighten-2">mdi-message-text</MIcon>
-                    <MIcon Small Color="neutral-lighten-2" Class="ml-2">mdi-message-text</MIcon>
-                    <MMenu Bottom Left Class="ml-2">
-                        <ActivatorContent Context="menuContext">
-                            <MButton Icon @attributes="@menuContext.Attrs" Width="24" Height="24" StopPropagation>
-                                <MIcon>mdi-dots-horizontal</MIcon>
+                    <MTooltip Bottom>
+                        <ActivatorContent Context="tooltips">
+                           <MButton Icon @attributes="@tooltips.Attrs" Width="24" Height="24" StopPropagation>
+                                <MIcon>mdi-message-text</MIcon>
                             </MButton>
                         </ActivatorContent>
                         <ChildContent>
-                            <MList>
-                                <MListItem Link OnClick="()=> StartTask(context.Item.Id)">
-                                    <MListItemContent>
-                                        <MListItemTitle>
-                                            @(T("Rerun"))
-                                        </MListItemTitle>
-                                    </MListItemContent>
-                                </MListItem>
-                                @if (@context.Item.TaskStatus == TaskRunStatus.Running)
-                                {
-                                    <MListItem Link OnClick="()=> StopTask(context.Item.Id)">
-                                        <MListItemContent>
-                                            <MListItemTitle>
-                                               @(T("StopTask"))
-                                            </MListItemTitle>
-                                        </MListItemContent>
-                                    </MListItem>
-                                }
-                                else
-                                {
-                                    <MListItem Link OnClick="()=> DeleteTask(context.Item.Id)">
-                                        <MListItemContent>
-                                            <MListItemTitle>
-                                                @(T("Delete"))
-                                            </MListItemTitle>
-                                        </MListItemContent>
-                                    </MListItem>
-                                }
-                            </MList>
+                            <span>@T("TaskTrace")</span>
                         </ChildContent>
-                    </MMenu>
+                    </MTooltip>
+                     <MTooltip Bottom>
+                        <ActivatorContent Context="tooltips">
+                           <MButton Icon @attributes="@tooltips.Attrs" Width="24" Height="24" StopPropagation>
+                                <MIcon>mdi-message-text</MIcon>
+                            </MButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <span>@T("TaskLog")</span>
+                        </ChildContent>
+                    </MTooltip>
+                    @if(@context.Item.TaskStatus == TaskRunStatus.WaitToRun)
+                    {
+                        <MIcon Small Color="neutral-lighten-2" Class="ml-2" OnClick="()=> DeleteTask(context.Item.Id)">mdi-delete</MIcon>
+                    }
+                    else
+                    {
+                        <MMenu Bottom Left Class="ml-2">
+                            <ActivatorContent Context="menuContext">
+                                <MButton Icon @attributes="@menuContext.Attrs" Width="24" Height="24" StopPropagation>
+                                    <MIcon>mdi-dots-horizontal</MIcon>
+                                </MButton>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MList>
+                                    <MListItem Link OnClick="()=> OnShowConfirmDialog(ConfirmDialogTypes.RestartTask,context.Item.Id)">
+                                        <MListItemContent>
+                                            <MListItemTitle>
+                                                @(T("Rerun"))
+                                            </MListItemTitle>
+                                        </MListItemContent>
+                                    </MListItem>
+                                    @if (@context.Item.TaskStatus == TaskRunStatus.Running)
+                                    {
+                                        <MListItem Link OnClick="()=> OnShowConfirmDialog(ConfirmDialogTypes.StopTask,context.Item.Id)">
+                                            <MListItemContent>
+                                                <MListItemTitle>
+                                                   @(T("StopTask"))
+                                                </MListItemTitle>
+                                            </MListItemContent>
+                                        </MListItem>
+                                    }
+                                    else
+                                    {
+                                        <MListItem Link OnClick="()=> OnShowConfirmDialog(ConfirmDialogTypes.DeleteTask,context.Item.Id)">
+                                            <MListItemContent>
+                                                <MListItemTitle>
+                                                    @(T("Delete"))
+                                                </MListItemTitle>
+                                            </MListItemContent>
+                                        </MListItem>
+                                    }
+                                </MList>
+                            </ChildContent>
+                        </MMenu>
+                    }
                     break;
                 default:
                     <span class="text-body3">@context.Value</span>
@@ -118,7 +143,15 @@
             }
         </ItemColContent>
         <FooterContent>
-            <Pagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
+            <SPagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
         </FooterContent>
     </MDataTable>
 </MCard>
+
+<SSimpleDialog OkText="@T("Sure")" OnOk="OnSure" @bind-Value="_showConfirmDialog" Title="@_confirmTitle" HideCancel OkColor="#FF5252" OkClass="full-width scheduler-confirm-dialog-ok-button">
+    <ChildContent>
+        <span class="d-flex flex-column justify-center align-center" style="text-align:center">
+            @_confirmMessage
+        </span>
+    </ChildContent>
+</SSimpleDialog>

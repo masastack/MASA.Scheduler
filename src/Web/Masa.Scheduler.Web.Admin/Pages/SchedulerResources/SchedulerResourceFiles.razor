@@ -9,7 +9,7 @@
                                 @bind-Value="@SelectedIdentity"
                                 Mandatory
                                 Color="@Color">
-                    <Search @bind-Value="SearchName" Class="pb-4"></Search>
+                    <SSearch @bind-Value="SearchName" Class="pb-4"></SSearch>
                     @foreach (var project in _projects)
                     {
                         @if (project.Children.Any())
@@ -51,9 +51,14 @@
                                     @resouce.Version
                                 </MListItemTitle>
                                 <MListItemIcon>
-                                    <MIcon OnClick="()=> DeleteResourceFiles(resouce.Id)"> mdi-delete-outline </MIcon>
+                                    <MIcon OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, resouce.Id)"> mdi-delete-outline </MIcon>
                                 </MListItemIcon>
                             </MListItem>
+                        }
+
+                        @if (_resources.Any())
+                        {
+                            <MButton Class="scheduler-delete-resources" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty)" Text Color="red">@T("DeleteResources")</MButton>   
                         }
                     </MListItemGroup>
                 </MList>
@@ -61,9 +66,17 @@
         </MNavigationDrawer>
     }
 
+    <SSimpleDialog OkText="@T("SureDelete")" OnOk="OnSureDelete" @bind-Value="_showConfirmDialog" Title="@_confirmTitle" HideCancel OkColor="#FF5252" OkClass="full-width scheduler-confirm-dialog-ok-button">
+        <ChildContent>
+            <span class="d-flex d-flex flex-column justify-center align-center" style="text-align:center">
+                @_confirmMessage
+            </span>
+        </ChildContent>
+    </SSimpleDialog>
+
     @if (_isAdd)
     {
-        <AddSchedulerResourceFiles Model="Model" OnAfterSubmit="AfterSubmit">
+        <AddSchedulerResourceFiles Model="Model" OnAfterSubmit="AfterSubmit" Resources="_resources">
         </AddSchedulerResourceFiles>
     }
     else if(_selectedResourceDto != null)

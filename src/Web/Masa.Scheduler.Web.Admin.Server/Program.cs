@@ -7,6 +7,8 @@ using Masa.Scheduler.Contracts.Server.Infrastructure.SignalRClients;
 using Masa.Stack.Components;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using System.Security.Cryptography.X509Certificates;
+using Masa.Utils.Data.Elasticsearch;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSchedulerApiGateways(options => options.SchedulerServerBaseAddress = builder.Configuration["SchedulerServerBaseAddress"]);
 builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);
+builder.Services.AddElasticsearchClient("auth", option => option.UseNodes("http://10.10.90.44:31920/").UseDefault())
+                   .AddAutoComplete(option => option.UseIndexName(builder.Configuration["UserAutoComplete"]));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGlobalForServer();
 builder.Services.AddMasaSignalRClient(options=> options.SignalRServiceUrl = builder.Configuration["SignalRServiceUrl"]);

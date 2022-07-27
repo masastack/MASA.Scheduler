@@ -36,11 +36,6 @@ public class StartJobDomainEventHandler
 
         await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
 
-        job.UpdateLastScheduleTime(@event.Request.ExcuteTime);
-        job.UpdateLastRunDetail(TaskRunStatus.Running);
-
-        await _schedulerJobRepository.UpdateAsync(job);
-
         var startTaskRequest = new StartSchedulerTaskRequest()
         {
             TaskId = task.Id,

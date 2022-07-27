@@ -71,6 +71,7 @@ public class JobAppTaskHandler : ITaskHandler
                 if (!process.HasExited)
                 {
                     _logger.LogInformation($"JobAppTaskHandler: process kill. TaskId: {taskId}, JobId: {jobDto.Id}");
+                    _runStatus = TaskRunStatus.Failure;
                     process.Kill();
                 }
             });

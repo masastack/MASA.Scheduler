@@ -7,11 +7,13 @@ public class SchedulerTaskQueryHandler
 {
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly IMapper _mapper;
+    private readonly IEventBus _eventBus;
 
-    public SchedulerTaskQueryHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper)
+    public SchedulerTaskQueryHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper, IEventBus eventBus)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _mapper = mapper;
+        _eventBus = eventBus;
     }
 
     [EventHandler]
@@ -53,10 +55,23 @@ public class SchedulerTaskQueryHandler
 
         var taskDtos = _mapper.Map<List<SchedulerTaskDto>>(paginatedResult.Result);
 
-        foreach (var item in taskDtos)
+        if (taskDtos.Any())
         {
-            // todo: get operator name from masa.auth
-            item.OperatorName = "Tester";
+            var userIds = taskDtos.Select(p => p.OperatorId).Distinct().ToList();
+
+            var userQuery = new UserQuery() { UserIds = userIds };
+
+            await _eventBus.PublishAsync(userQuery);
+
+            foreach (var item in taskDtos)
+            {
+                var user = userQuery.Result.FirstOrDefault(u => u.Id == item.OperatorId);
+
+                if (user != null)
+                {
+                    item.OperatorName = user.Name;
+                }
+            }
         }
 
         query.Result = new(paginatedResult.Total, paginatedResult.TotalPages, taskDtos);

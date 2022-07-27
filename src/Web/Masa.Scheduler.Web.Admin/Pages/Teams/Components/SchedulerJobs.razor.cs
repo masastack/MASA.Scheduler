@@ -71,6 +71,8 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private bool _showFilter;
 
+    private string _filterIcon = "mdi-filter";
+
     private JobCreateTypes _jobCreateType = JobCreateTypes.Manual;
 
     private int _page = 1;
@@ -92,6 +94,16 @@ public partial class SchedulerJobs : ProCompontentBase
     private SchedulerJobDto modalModel = new();
 
     private List<KeyValuePair<string, TaskRunStatus>> _queryStatusList = new();
+
+    private bool _showConfirmDialog;
+
+    private string _confirmTitle = string.Empty;
+
+    private string _confirmMessage = string.Empty;
+
+    private ConfirmDialogTypes _confirmDialogType;
+
+    private Guid _confirmJobId = Guid.Empty;
 
     public List<KeyValuePair<string, JobQueryTimeTypes>> JobQueryTimeTypes { get; set; } = new();
     public TaskRunStatus QueryStatus
@@ -266,6 +278,7 @@ public partial class SchedulerJobs : ProCompontentBase
     public Task ShowFilter()
     {
         _showFilter = !_showFilter;
+        _filterIcon = _showFilter ? "mdi-filter-off" : "mdi-filter";
         _contentHeight = _showFilter ? "356px" : "300px";
         return Task.CompletedTask;
     }
@@ -284,6 +297,9 @@ public partial class SchedulerJobs : ProCompontentBase
             return;
         }
 
+        DateTimeOffset? queryEndTimeDateTimeOffset = QueryEndTime.HasValue ? new DateTimeOffset(QueryEndTime.Value, TimezoneOffset) : null;
+        DateTimeOffset? queryStartTimeDateTimeOffset = QueryStartTime.HasValue ? new DateTimeOffset(QueryStartTime.Value, TimezoneOffset) : null;
+
         var request = new SchedulerJobListRequest()
         {
             FilterStatus = QueryStatus,
@@ -293,8 +309,8 @@ public partial class SchedulerJobs : ProCompontentBase
             Origin = QueryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = QueryEndTime,
-            QueryStartTime = QueryStartTime,
+            QueryEndTime = queryEndTimeDateTimeOffset.HasValue ? queryEndTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
+            QueryStartTime = queryStartTimeDateTimeOffset.HasValue ? queryStartTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
             QueryTimeType = _queryTimeType,
             BelongProjectIdentity = Project.Identity,
         };
@@ -387,8 +403,7 @@ public partial class SchedulerJobs : ProCompontentBase
         var startJobRequest = new StartSchedulerJobRequest()
         {
             JobId = dto.Id,
-            // todo: use login user id
-            OperatorId = Guid.NewGuid()
+            OperatorId = UserContext.GetUserId<Guid>()
         };
 
         await SchedulerServerCaller.SchedulerJobService.StartJobAsync(startJobRequest);
@@ -423,11 +438,11 @@ public partial class SchedulerJobs : ProCompontentBase
         return Task.CompletedTask;
     }
 
-    private async Task DisabledJob(SchedulerJobDto job)
+    private async Task DisabledJob(Guid jobId)
     {
         var request = new ChangeEnabledStatusRequest()
         {
-            JobId = job.Id,
+            JobId = jobId,
             Enabled = false
         };
 
@@ -438,11 +453,11 @@ public partial class SchedulerJobs : ProCompontentBase
         await GetProjectJobs();
     }
 
-    private async Task EnabledJob(SchedulerJobDto job)
+    private async Task EnabledJob(Guid jobId)
     {
         var request = new ChangeEnabledStatusRequest()
         {
-            JobId = job.Id,
+            JobId = jobId,
             Enabled = true
         };
 
@@ -453,7 +468,7 @@ public partial class SchedulerJobs : ProCompontentBase
         await GetProjectJobs();
     }
 
-    public async Task OnAfterSubmit()
+    public async Task OnAfterDataChange()
     {
         await GetProjectJobs();
     }
@@ -500,5 +515,65 @@ public partial class SchedulerJobs : ProCompontentBase
     {
         PageSize = pageSize;
         return Task.CompletedTask;
+    }
+
+    private Task ShowDialog(ConfirmDialogTypes confirmDialogType, Guid jobId)
+    {
+        _showConfirmDialog = true;
+        _confirmJobId = jobId;
+        _confirmDialogType = confirmDialogType;
+        var job = _jobs.FirstOrDefault(p => p.Id == jobId);
+        if(job == null)
+        {
+            _showConfirmDialog = false;
+            _confirmJobId = Guid.Empty;
+            _confirmDialogType = 0;
+            PopupService.ToastErrorAsync("JobId error");
+            return Task.CompletedTask;
+        }
+
+        switch (confirmDialogType)
+        {
+            case ConfirmDialogTypes.EnabledJob:
+                _confirmMessage = string.Format(T("EnabledJobConfirmMessage"), job.Name);
+                _confirmTitle = T("EnabledJob");
+                break;
+            case ConfirmDialogTypes.DisabledJob:
+                _confirmMessage = string.Format(T("DisabledJobConfirmMessage"), job.Name);
+                _confirmTitle = T("DisabledJob");
+                break;
+            default:
+                _showConfirmDialog = false;
+                _confirmJobId = Guid.Empty;
+                PopupService.ToastErrorAsync("Confirm type eror");
+                break;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task OnSure()
+    {
+        if (_confirmJobId == Guid.Empty)
+        {
+            _confirmDialogType = 0;
+            _showConfirmDialog = false;
+            await PopupService.ToastErrorAsync("Confirm Job Id Error");
+            return;
+        }
+
+        switch (_confirmDialogType)
+        {
+            case ConfirmDialogTypes.DisabledJob:
+                await DisabledJob(_confirmJobId);
+                break;
+            case ConfirmDialogTypes.EnabledJob:
+                await EnabledJob(_confirmJobId);
+                break;
+            default:
+                await PopupService.ToastErrorAsync("Confirm type eror");
+                break;
+        }
+        _showConfirmDialog = false;
     }
 }

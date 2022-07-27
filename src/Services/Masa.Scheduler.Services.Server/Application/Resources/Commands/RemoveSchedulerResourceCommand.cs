@@ -3,4 +3,4 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Resources.Commands;
 
-public record RemoveSchedulerResourceCommand(Guid ResourceId) : Command;
+public record RemoveSchedulerResourceCommand(RemoveSchedulerResourceRequest request) : Command;

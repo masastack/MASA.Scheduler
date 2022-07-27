@@ -1,7 +1,7 @@
 ﻿@inherits ProCompontentBase
 
 <div @ref="Ref">
-    <SheetDialog Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(Model.Id == Guid.Empty? T("Job.Add") : T("Job.Update"))">
+    <SSheetDialog Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(Model.Id == Guid.Empty? T("Job.Add") : T("Job.Update"))">
         <MStepper Value="_step" Class="sheetDialogPadding full-height">
             <MStepperItems Class="full-height">
                 <MStepperContent Step="1" Class="full-height">
@@ -42,14 +42,14 @@
                                     @if (!_isAdd)
                                     {
                                         <MCol Cols="2">
-                                            <MSelect @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <MSelect @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Readonly Dense Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </MSelect>
                                         </MCol>
                                     }
                                 </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MTextField @bind-Value="Model.Owner" Label="@T("Owner")" HideDetails="@("auto")" Outlined Dense/>
+                                        <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange"  @ref="_userAutoComplete" FillBackground="false" Outlined Label="@T("Owner")" Solo="false" Flat="false" Placeholder="@Model.Owner" PersistentPlaceholder="true"></SUserAutoComplete>
                                     </MCol>
                                 </MRow>
                                 <MRow Class="mt-1">
@@ -118,10 +118,10 @@
                                     @if (Model.FailedStrategy == FailedStrategyTypes.Auto)
                                     {
                                         <MCol Cols="2">
-                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" @bind-Value="Model.FailedRetryInterval" Label="@T("FailedRetryInterval")" HideDetails="@("auto")" Dense Outlined />
+                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min = 1; }" @bind-Value="Model.FailedRetryInterval" Label="@T("FailedRetryInterval")" HideDetails="@("auto")" Dense Outlined />
                                         </MCol>
                                         <MCol Cols="2">
-                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" @bind-Value="Model.FailedRetryCount" Label="@T("FailedRetryCount")" HideDetails="@("auto")" Dense Outlined />
+                                            <MTextField Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min = 1; p.Max = 10; }" @bind-Value="Model.FailedRetryCount" Label="@T("FailedRetryCount")" HideDetails="@("auto")" Dense Outlined />
                                         </MCol>
                                     }
                                 </MRow>
@@ -133,7 +133,10 @@
                             </div>
                             <div class="d-flex mt-2">
                                 <MSpacer></MSpacer>
-                                <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep" Text>@T("PreviousStep")</MButton>
+                                @if(Model.Id == Guid.Empty)
+                                {
+                                    <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep" Text>@T("PreviousStep")</MButton>
+                                }
                                 <MButton Color="primary" Class="small-button ml-6" OnClick="() => NextStep(context)">@T("NextStep")</MButton>
                             </div>
                         </div>
@@ -183,27 +186,31 @@
                                     {
                                         <MRow Class="mt-2">
                                             <MCol Cols="12">
-                                                <MTextarea @bind-Value="Model.HttpConfig.HttpBody" Label="@T("HttpBody")" HideDetails="@("auto")" Dense Outlined Rows="10">
+                                                <MTextarea @bind-Value="Model.HttpConfig.HttpBody" Label="@T("HttpBody")" HideDetails="@("auto")" Dense Outlined Rows="5">
                                                 </MTextarea>
                                             </MCol>
                                         </MRow>
                                     }
                                     <MRow Class="mt-1">
                                         <MCol Cols="3">
-                                            <MSelect @bind-Value="Model.HttpConfig.HttpVerifyType" Label="@T("HttpVerifyType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<HttpVerifyTypes>()" ItemText="kv => kv.Key" ItemValue="kv=> kv.Value">
+                                            <MSelect @bind-Value="Model.HttpConfig.HttpVerifyType" Label="@T("HttpVerifyType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<HttpVerifyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=> kv.Value">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
                                         <MCol Cols="12">
-                                            <MTextarea @bind-Value="Model.HttpConfig.VerifyContent" Label="@T("VerifyContent")" HideDetails="@("auto")" Dense Outlined Rows="10">
+                                            <MTextarea @bind-Value="Model.HttpConfig.VerifyContent" Label="@T("VerifyContent")" HideDetails="@("auto")" Dense Outlined Rows="5">
                                             </MTextarea>
                                         </MCol>
                                     </MRow>
                                     <div class="d-flex mt-6">
+                                        @if(Model.Id != Guid.Empty)
+                                        {
+                                            <MButton Height="40" OnClick="RemoveJobAsync" Width=100 Class="rounded-pill" Text Color="red" Style="float:left;">@T("Delete")</MButton>   
+                                        }
                                         <MSpacer></MSpacer>
                                         <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep">@T("PreviousStep")</MButton>
-                                        <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Submit")</MButton>
+                                        <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
                                     </div>
                                 </MForm>
                             }
@@ -212,7 +219,7 @@
                                 <MForm Model=Model.JobAppConfig EnableValidation @ref="Form" Class="full-height">
                                     <MRow Class="mt-1">
                                         <MCol Cols="3">
-                                            <MSelect Value="Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="_jobApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
+                                            <MSelect Value="Model.JobAppConfig.JobAppIdentity" ValueExpression="()=> Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="_jobApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                             </MSelect>
                                         </MCol>
                                     </MRow>
@@ -254,10 +261,14 @@
                                             </MCol>
                                         }
                                     </MRow>
-                                    <div class="d-flex mt-6">
+                                    <div class="d-flex mt-12">
+                                        @if(Model.Id != Guid.Empty)
+                                        {
+                                            <MButton Height="40" OnClick="RemoveJobAsync" Width=100 Class="rounded-pill" Text Color="red" Style="float:left;">@T("Delete")</MButton>   
+                                        }
                                         <MSpacer></MSpacer>
                                         <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep">@T("PreviousStep")</MButton>
-                                        <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Submit")</MButton>
+                                        <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
                                     </div>
                                 </MForm>
                             }
@@ -288,10 +299,14 @@
                                             </MTextarea>
                                         </MCol>
                                     </MRow>
-                                    <div class="d-flex mt-6">
+                                    <div class="d-flex mt-12">
+                                        @if(Model.Id != Guid.Empty)
+                                        {
+                                            <MButton Height="40" OnClick="RemoveJobAsync" Width=100 Class="rounded-pill" Text Color="red" Style="float:left;">@T("Delete")</MButton>   
+                                        }
                                         <MSpacer></MSpacer>
                                         <MButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep">@T("PreviousStep")</MButton>
-                                        <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Submit")</MButton>
+                                        <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
                                     </div>
                                 </MForm>
                             }
@@ -300,5 +315,5 @@
                 </MStepperContent>
             </MStepperItems>
         </MStepper>
-    </SheetDialog>
+    </SSheetDialog>
 </div>

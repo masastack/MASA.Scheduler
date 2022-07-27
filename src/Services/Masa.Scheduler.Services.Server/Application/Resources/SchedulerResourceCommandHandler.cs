@@ -42,13 +42,31 @@ public class SchedulerResourceCommandHandler
     [EventHandler]
     public async Task RemoveHandleAsync(RemoveSchedulerResourceCommand command)
     {
-        var resource = await _repository.FindAsync(r => r.Id == command.ResourceId);
+        var request = command.request;
 
-        if (resource is null)
+        if(request.ResourceId == Guid.Empty && string.IsNullOrEmpty(request.JobAppIdentity))
         {
-            throw new UserFriendlyException($"Resouce id {command.ResourceId}, not found");
+            return;
         }
 
-        await _repository.RemoveAsync(resource);
+        Expression<Func<SchedulerResource, bool>> condition;
+
+        if (request.ResourceId != Guid.Empty)
+        {
+            condition = r => r.Id == request.ResourceId;
+        }
+        else
+        {
+            condition = r => r.JobAppIdentity == request.JobAppIdentity;
+        }
+    
+        var resourceList = await _repository.GetListAsync(condition);
+
+        if (!resourceList.Any())
+        {
+            throw new UserFriendlyException($"Resouce not found, id: {request.ResourceId}, jobAppIdentity: {request.JobAppIdentity}");
+        }
+        
+        await _repository.RemoveRangeAsync(resourceList);
     }
 }

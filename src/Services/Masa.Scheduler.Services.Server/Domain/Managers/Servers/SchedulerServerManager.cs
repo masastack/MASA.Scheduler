@@ -149,11 +149,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         }
     }
 
-    public async Task<WorkerModel> GetWorker(SchedulerServerManagerData data,RoutingStrategyTypes routingType)
+    public async Task<WorkerModel?> GetWorker(SchedulerServerManagerData data,RoutingStrategyTypes routingType)
     {
         if (!data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Any())
         {
-            throw new UserFriendlyException("WorkerList is empty");
+            return null;
         }
 
         WorkerModel? worker = null;
@@ -165,12 +165,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count);
                 worker = ServiceList[currentUesIndex];
                 break;
-            case RoutingStrategyTypes.DynamicRatioApm:
-                break;
+            //case RoutingStrategyTypes.DynamicRatioApm:
+            //    break;
         }
-
-        CheckWorkerNotNull(worker);
-
         return worker!;
     }
 
@@ -321,6 +318,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                         else
                         {
                             workerModel = await GetWorker(data, taskDto.Job.RoutingStrategy);
+
+                            if(workerModel == null)
+                            {
+                                continue;
+                            }
                         }
 
                         await CheckHeartbeat(workerModel!);

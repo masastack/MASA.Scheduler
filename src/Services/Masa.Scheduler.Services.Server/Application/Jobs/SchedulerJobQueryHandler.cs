@@ -8,12 +8,14 @@ public class SchedulerJobQueryHandler
     private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IEventBus _eventBus;
 
-    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper)
+    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _dbContext = dbContext;
         _mapper = mapper;
+        _eventBus = eventBus;
     }
 
     [EventHandler]
@@ -51,26 +53,51 @@ public class SchedulerJobQueryHandler
                 condition = condition.And(request.QueryEndTime.HasValue, job => job.LastRunEndTime < request.QueryEndTime);
                 break;
         }
-       
+
         condition = condition.And(request.JobType != 0, job => job.JobType == request.JobType);
 
         condition = condition.And(!string.IsNullOrEmpty(request.Origin), job => job.Origin == request.Origin);
 
         condition = condition.And(job => job.BelongProjectIdentity == request.BelongProjectIdentity);
 
-        var paginatedResult = await _schedulerJobRepository.GetPaginatedListAsync(condition, new PaginatedOptions()
+        var skip = (request.Page - 1) * request.PageSize;
+
+        var dbQuery = _dbContext.Jobs.Where(condition); 
+            
+        var result = await dbQuery
+            .Select(j => new { job = j, SortPriority = j.LastRunStatus == TaskRunStatus.Failure ? 5 : (j.LastRunStatus == TaskRunStatus.Timeout? 4: (j.LastRunStatus == TaskRunStatus.TimeoutSuccess ? 3: (j.LastRunStatus == TaskRunStatus.Idle? 2: (j.LastRunStatus == TaskRunStatus.Running? 1: 0)))) })
+            .OrderByDescending(p => p.job.Enabled)
+            .ThenByDescending(p => p.SortPriority)
+            .ThenByDescending(p => p.job.ModificationTime).Skip(skip).Take(request.PageSize).ToListAsync();
+
+        var total = await dbQuery.CountAsync();
+
+        var jobList = result.Select(p => p.job).ToList();
+
+        var jobDtos = _mapper.Map<List<SchedulerJobDto>>(jobList);
+
+        if (jobDtos.Any())
         {
-            Page = request.Page,
-            PageSize = request.PageSize,
-            Sorting = new Dictionary<string, bool>()
+            var userIds = jobDtos.Select(p => p.OwnerId).Distinct().ToList();
+
+            var userQuery = new UserQuery() { UserIds = userIds };
+
+            await _eventBus.PublishAsync(userQuery);
+
+            foreach (var item in jobDtos)
             {
-                [nameof(SchedulerJob.ModificationTime)] = true,
-                [nameof(SchedulerJob.CreationTime)] = true,
+                var user = userQuery.Result.FirstOrDefault(u => u.Id == item.Creator);
+
+                if (user != null)
+                {
+                    item.UserName = user.Name;
+                    item.Avator = user.Avatar;
+                }
             }
-        });
+        }
 
-        var jobDtos = _mapper.Map<List<SchedulerJobDto>>(paginatedResult.Result);
+        var totalPages = (int)Math.Ceiling(total / (decimal)request.PageSize);
 
-        query.Result = new(paginatedResult.Total, paginatedResult.TotalPages , jobDtos);
+        query.Result = new(total, totalPages, jobDtos);
     }
 }

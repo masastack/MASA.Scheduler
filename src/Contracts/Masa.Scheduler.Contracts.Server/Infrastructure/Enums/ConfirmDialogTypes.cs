@@ -3,10 +3,13 @@
 
 namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 
-public enum RoutingStrategyTypes
+public enum ConfirmDialogTypes
 {
-    RoundRobin = 1,
-    Specified
-    // implement this routing strategy in next version
-    //DynamicRatioApm
+    DeleteResourceVersion = 1,
+    DeleteResources,
+    DeleteTask,
+    StopTask,
+    RestartTask,
+    EnabledJob,
+    DisabledJob
 }

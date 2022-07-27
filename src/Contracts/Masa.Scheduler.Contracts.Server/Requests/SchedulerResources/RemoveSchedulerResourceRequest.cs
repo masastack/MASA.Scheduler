@@ -3,7 +3,9 @@
 
 namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerResources;
 
-public class SchedulerResourceListRequest : BaseRequest
+public class RemoveSchedulerResourceRequest : BaseRequest
 {
+    public Guid ResourceId { get; set; }
+
     public string JobAppIdentity { get; set; } = string.Empty;
 }

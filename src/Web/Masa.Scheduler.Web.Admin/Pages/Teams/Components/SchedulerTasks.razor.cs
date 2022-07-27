@@ -52,6 +52,11 @@ public partial class SchedulerTasks
     private bool _visible;
     private TaskRunStatus _queryStatus;
     private TaskRunStatus _lastQueryStatus;
+    private bool _showConfirmDialog;
+    private string _confirmTitle = string.Empty;
+    private string _confirmMessage = string.Empty;
+    private ConfirmDialogTypes _confirmDialogType;
+    private Guid _confirmTaskId;
 
     private Task QueryStatusChanged(TaskRunStatus status)
     {
@@ -162,6 +167,11 @@ public partial class SchedulerTasks
             new() { Text = T("Action"), Value = "Action", Sortable = false },
         };
 
+        if (_job != null && string.IsNullOrWhiteSpace(_job.Origin))
+        {
+            Headers.RemoveAll(p => p.Value == nameof(SchedulerTaskDto.Origin));
+        }
+
         _queryStatusList = GetEnumMap<TaskRunStatus>();
 
         _queryStatusList.RemoveAll(p => p.Value == TaskRunStatus.Idle);
@@ -198,6 +208,9 @@ public partial class SchedulerTasks
             return;
         }
 
+        DateTimeOffset? queryEndTimeDateTimeOffset = _queryEndTime.HasValue ? new DateTimeOffset(_queryEndTime.Value, TimezoneOffset) : null;
+        DateTimeOffset? queryStartTimeDateTimeOffset = _queryStartTime.HasValue ? new DateTimeOffset(_queryStartTime.Value, TimezoneOffset) : null;
+
         var request = new SchedulerTaskListRequest()
         {
             JobId = _job.Id,
@@ -205,8 +218,8 @@ public partial class SchedulerTasks
             Origin = _queryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = _queryEndTime,
-            QueryStartTime = _queryStartTime,
+            QueryEndTime = queryEndTimeDateTimeOffset.HasValue ? queryEndTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
+            QueryStartTime = queryStartTimeDateTimeOffset.HasValue ? queryStartTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
             QueryTimeType = _queryTimeType
         };
 
@@ -243,22 +256,23 @@ public partial class SchedulerTasks
     {
         var request = new StartSchedulerTaskRequest()
         {
-            //todo: use current login user
-            OperatorId = Guid.Empty,
+            OperatorId = UserContext.GetUserId<Guid>(),
             IsManual = true,
             TaskId = taskId
         };
 
         await SchedulerServerCaller.SchedulerTaskService.StartAsync(request);
 
-        OpenSuccessMessage("Start Task Success");
+        await GetTaskListAsync();
+
+        OpenSuccessMessage(T("RestartTaskSuccess"));
     }
 
     private async Task DeleteTask(Guid taskId)
     {
         var request = new RemoveSchedulerTaskRequest()
         {
-            OperatorId = Guid.Empty,
+            OperatorId = UserContext.GetUserId<Guid>(),
             TaskId = taskId
         };
 
@@ -266,20 +280,20 @@ public partial class SchedulerTasks
 
         await GetTaskListAsync();
 
-        OpenSuccessMessage("Delete Task Success");
+        OpenSuccessMessage(T("DeleteTaskSuccess"));
     }
 
     private async Task StopTask(Guid taskId)
     {
         var request = new StopSchedulerTaskRequest()
         {
-            OperatorId = Guid.Empty,
+            OperatorId = UserContext.GetUserId<Guid>(),
             TaskId = taskId
         };
 
         await SchedulerServerCaller.SchedulerTaskService.StopAsync(request);
 
-        OpenSuccessMessage("Stop Task Success");
+        OpenSuccessMessage(T("StopTaskSuccess"));
     }
 
     private Task RadioGroupClickHandler()
@@ -290,6 +304,57 @@ public partial class SchedulerTasks
         }
 
         _lastQueryStatus = _queryStatus;
+
+        return Task.CompletedTask;
+    }
+
+    private async Task OnSure()
+    {
+        switch (_confirmDialogType)
+        {
+            case ConfirmDialogTypes.DeleteTask:
+                await DeleteTask(_confirmTaskId);
+                break;
+            case ConfirmDialogTypes.StopTask:
+                await StopTask(_confirmTaskId);
+                break;
+            case ConfirmDialogTypes.RestartTask:
+                await StartTask(_confirmTaskId);
+                break;
+            default:
+                await PopupService.ToastErrorAsync("Confirm type eror");
+                break;
+        }
+
+        _showConfirmDialog = false;
+    }
+
+    private Task OnShowConfirmDialog(ConfirmDialogTypes confirmDialogType, Guid taskId)
+    {
+        _confirmTaskId = taskId;
+        _confirmDialogType = confirmDialogType;
+        _showConfirmDialog = true;
+
+        switch (confirmDialogType)
+        {
+            case ConfirmDialogTypes.DeleteTask:
+                _confirmMessage = T("DeleteTaskConfirmMessage");
+                _confirmTitle = T("DeleteTask");
+                break;
+            case ConfirmDialogTypes.StopTask:
+                _confirmMessage = T("StopTaskConfirmMessage");
+                _confirmTitle = T("StopTask");
+                break;
+            case ConfirmDialogTypes.RestartTask:
+                _confirmMessage = T("RestartTaskConfirmMessage");
+                _confirmTitle = T("RestartTask");
+                break;
+            default:
+                _showConfirmDialog = false;
+                _confirmTaskId = Guid.Empty;
+                PopupService.ToastErrorAsync("Confirm type eror");
+                break;
+        }
 
         return Task.CompletedTask;
     }

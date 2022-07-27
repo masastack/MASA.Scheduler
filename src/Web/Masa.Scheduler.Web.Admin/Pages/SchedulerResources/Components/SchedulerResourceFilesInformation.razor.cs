@@ -43,11 +43,7 @@ public partial class SchedulerResourceFilesInformation
             }
         }
 
-        var localTimeStr = await JsInvokeAsync<string>("toLocalTime", Model.UploadTime);
-
-        var localDateTime = Convert.ToDateTime(localTimeStr);
-
-        var uploadTime = localDateTime.ToString(T("$DateTimeFormat"));
+        var uploadTime = Model.UploadTime.ToOffset(TimezoneOffset).ToString(T("$DateTimeFormat"));
 
         _description = string.Format(T("ResourceFileUploadDescription"), creatorName, uploadTime);
     }

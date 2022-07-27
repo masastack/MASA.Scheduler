@@ -10,7 +10,7 @@ public class SchedulerResourceService : ServiceBase
         MapGet(ListAsync, string.Empty);
         MapPost(AddAsync, string.Empty);
         MapPut(UpdateAsync, string.Empty);
-        MapDelete(DeleteAsync, "{id}");
+        MapDelete(DeleteAsync, string.Empty);
     }
 
     public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] string jobAppIdentity)
@@ -39,9 +39,9 @@ public class SchedulerResourceService : ServiceBase
         return Results.Ok();
     }
 
-    public async Task<IResult> DeleteAsync(IEventBus eventBus, Guid id)
+    public async Task<IResult> DeleteAsync(IEventBus eventBus, [FromBody] RemoveSchedulerResourceRequest request)
     {
-        var command = new RemoveSchedulerResourceCommand(id);
+        var command = new RemoveSchedulerResourceCommand(request);
         await eventBus.PublishAsync(command);
         return Results.Ok();
     }

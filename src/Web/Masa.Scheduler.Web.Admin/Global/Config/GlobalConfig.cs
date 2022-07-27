@@ -30,7 +30,6 @@ public class GlobalConfig
 
     public static string FavoriteCookieKey { get; set; } = "GlobalConfig_Favorite";
 
-
     public bool IsDark
     {
         get => _isDark;
@@ -109,7 +108,6 @@ public class GlobalConfig
     public delegate void LoadingChanged(bool loading, string loadingText);
 
     public event GlobalConfigChanged? OnCurrentNavChanged;
-    public event GlobalConfigChanged? OnLanguageChanged;
     public event LoadingChanged? OnLoadingChanged;
 
     #endregion

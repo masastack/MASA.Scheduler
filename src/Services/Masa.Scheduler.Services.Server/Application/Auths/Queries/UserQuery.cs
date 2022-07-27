@@ -3,9 +3,9 @@
 
 namespace Masa.Scheduler.Services.Server.Application.Auths.Queries;
 
-public record UserQuery : Query<UserDto>
+public record UserQuery : Query<List<UserDto>>
 {
-    public Guid UserId { get; set; }
+    public List<Guid> UserIds { get; set; } = new();
 
-    public override UserDto Result { get; set; } = new();
+    public override List<UserDto> Result { get; set; } = new();
 }

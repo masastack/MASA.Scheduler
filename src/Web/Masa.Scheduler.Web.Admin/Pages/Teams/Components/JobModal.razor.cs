@@ -27,7 +27,7 @@ public partial class JobModal
         }
         set
         {
-            if(_model.Id != value.Id || _model.BelongProjectIdentity != value.BelongProjectIdentity)
+            if(_model != value)
             {
                 _model = value;
 
@@ -59,7 +59,7 @@ public partial class JobModal
     }
 
     [Parameter]
-    public EventCallback<Task> OnAfterSubmit { get; set; }
+    public EventCallback<Task> OnAfterDataChange { get; set; }
 
     private List<WorkerModel> _workerList = new();
 
@@ -86,6 +86,8 @@ public partial class JobModal
     private List<ProjectAppDto> _serviceApp = new();
 
     private List<ProjectAppDto> _jobApp = new();
+
+    private SUserAutoComplete _userAutoComplete = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -224,6 +226,12 @@ public partial class JobModal
                 Model.HttpConfig.HttpHeaders.RemoveAll(p => string.IsNullOrEmpty(p.Key) && string.IsNullOrEmpty(p.Value));
             }
 
+            if(Model.ScheduleType == ScheduleTypes.Cron && !CronExpression.IsValidExpression(Model.CronExpression))
+            {
+                OpenErrorMessage(T("CronExpressionInvalid"));
+                return;
+            }
+
             if (_isAdd)
             {
                 var request = new AddSchedulerJobRequest()
@@ -233,7 +241,7 @@ public partial class JobModal
 
                 await SchedulerServerCaller.SchedulerJobService.AddAsync(request);
 
-                OpenSuccessMessage("Add job success");
+                OpenSuccessMessage(T("AddJobSuccess"));
             }
             else
             {
@@ -244,18 +252,38 @@ public partial class JobModal
 
                 await SchedulerServerCaller.SchedulerJobService.UpdateAsync(request);
 
-                OpenSuccessMessage("Update job success");
+                OpenSuccessMessage(T("UpdateJobSuccess"));
             }
 
-            if (OnAfterSubmit.HasDelegate)
+            if (OnAfterDataChange.HasDelegate)
             {
-               await OnAfterSubmit.InvokeAsync();
+               await OnAfterDataChange.InvokeAsync();
             }
 
             await HandleVisibleChanged();
         }
     }
-    
+
+    private async Task RemoveJobAsync()
+    {
+        if (Model.Enabled)
+        {
+            OpenErrorMessage(T("CannotDeleteEnableJob"));
+            return;
+        }
+
+        await SchedulerServerCaller.SchedulerJobService.DeleteAsync(new RemoveSchedulerJobRequest() { JobId = Model.Id });
+
+        OpenSuccessMessage(T("DeleteSuccess"));
+
+        if (OnAfterDataChange.HasDelegate)
+        {
+            await OnAfterDataChange.InvokeAsync();
+        }
+
+        await HandleVisibleChanged();
+    }
+
     private Task OnModelChange()
     {
         _isAdd = Model.Id == Guid.Empty;
@@ -289,6 +317,20 @@ public partial class JobModal
         if(daprServiceAppIdentity != Model.DaprServiceInvocationConfig.DaprServiceIdentity)
         {
             Model.DaprServiceInvocationConfig.DaprServiceIdentity = daprServiceAppIdentity;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnOwnerIdChange(Guid ownerId)
+    {
+        Model.OwnerId = ownerId;
+
+        var owner = _userAutoComplete.UserSelect.FirstOrDefault();
+
+        if(owner != null)
+        {
+            Model.Owner = owner.Name;
         }
 
         return Task.CompletedTask;
