@@ -50,9 +50,9 @@ builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR();
 builder.Services.AddQuartzUtils();
 
-//builder.Services.AddHealthChecks()
-//    .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
-//    .AddDbContextCheck<SchedulerDbContext>();
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
+    .AddDbContextCheck<SchedulerDbContext>();
 
 builder.Services.AddAliyunStorage(async serviceProvider =>
 {
