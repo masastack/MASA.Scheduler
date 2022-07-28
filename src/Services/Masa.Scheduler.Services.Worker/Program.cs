@@ -9,6 +9,7 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter(opt =>
     {
+        opt.AppId = "masa-scheduler-service-worker";
         opt.DaprHttpPort = 10604;
         opt.DaprGrpcPort = 10603;
     });

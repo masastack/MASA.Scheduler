@@ -7,6 +7,7 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter(opt =>
     {
+        opt.AppId = "masa-scheduler-service-server";
         opt.DaprHttpPort = 10602;
         opt.DaprGrpcPort = 10601;
     });
@@ -48,9 +49,9 @@ builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR();
 builder.Services.AddQuartzUtils();
 
-builder.Services.AddHealthChecks()
-    .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
-    .AddDbContextCheck<SchedulerDbContext>();
+//builder.Services.AddHealthChecks()
+//    .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
+//    .AddDbContextCheck<SchedulerDbContext>();
 
 builder.Services.AddAliyunStorage(async serviceProvider =>
 {

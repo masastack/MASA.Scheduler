@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Utils.Security.Cryptography;
-
 namespace Masa.Scheduler.Services.Worker.Services;
 
 public class SchedulerWorkerManagerService : ServiceBase

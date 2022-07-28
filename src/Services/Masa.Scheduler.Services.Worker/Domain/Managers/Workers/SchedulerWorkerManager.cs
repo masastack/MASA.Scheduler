@@ -7,8 +7,6 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 {
     private ILogger<SchedulerWorkerManager> _logger;
 
-    //private readonly SchedulerWorkerManagerData _data;
-
     private readonly TaskHanlderFactory _taskHandlerFactory;
 
     public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory,
