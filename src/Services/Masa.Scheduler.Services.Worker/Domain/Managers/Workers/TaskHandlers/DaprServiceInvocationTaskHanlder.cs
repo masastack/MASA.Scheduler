@@ -48,9 +48,16 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
 
         methodName += $"taskId={taskId}&excuteTime={excuteTime}";
 
+        var appId = jobDto.DaprServiceInvocationConfig.DaprServiceIdentity;
+
+        if (!string.IsNullOrWhiteSpace(jobDto.DaprServiceInvocationConfig.Namespace))
+        {
+            appId += $".{jobDto.DaprServiceInvocationConfig.Namespace}";
+        }
+
         try
         {
-            await _daprClient.InvokeMethodAsync(HttpUtils.ConvertHttpMethod(jobDto.DaprServiceInvocationConfig.HttpMethod), jobDto.DaprServiceInvocationConfig.DaprServiceIdentity, methodName, requestObj, token);
+            await _daprClient.InvokeMethodAsync(HttpUtils.ConvertHttpMethod(jobDto.DaprServiceInvocationConfig.HttpMethod), appId, methodName, requestObj, token);
             runStatus = TaskRunStatus.Success;
         }
         catch (Exception ex)

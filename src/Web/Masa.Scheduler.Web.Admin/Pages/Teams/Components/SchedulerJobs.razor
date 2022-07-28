@@ -83,6 +83,19 @@
                                 @job.Name
                             </div>
                             <MSpacer />
+                            @if(!string.IsNullOrWhiteSpace(job.UserName))
+                            {
+                                <MTooltip Top>
+                                    <ActivatorContent>
+                                        <MAvatar Size="24" @attributes="@context.Attrs">
+                                            <MImage Src="@job.Avator"></MImage>
+                                        </MAvatar>
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <span>@T("Owner"): @job.UserName</span>
+                                    </ChildContent>
+                                </MTooltip>
+                            }
                             @if(_jobCreateType == JobCreateTypes.Api)
                             {
                                 <MChip
@@ -92,16 +105,6 @@
                                     @job.Origin
                                 </MChip>
                             }
-                            <MTooltip Top>
-                                <ActivatorContent>
-                                    <MAvatar Size="24" @attributes="@context.Attrs">
-                                        <MImage Src="@job.Avator"></MImage>
-                                    </MAvatar>
-                                </ActivatorContent>
-                                <ChildContent>
-                                    <span>@T("Owner"): @job.UserName</span>
-                                </ChildContent>
-                            </MTooltip>
                         </MCardTitle>
                         <MCardText Style="height:24px; padding-left:10px; padding-right:16px; display:inline-flex">
                             <MButton Icon XSmall Class="run-icon" Style="cursor:default">

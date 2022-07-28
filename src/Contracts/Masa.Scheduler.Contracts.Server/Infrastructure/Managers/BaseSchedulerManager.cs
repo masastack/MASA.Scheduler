@@ -19,7 +19,8 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         IServiceProvider serviceProvider,
         IIntegrationEventBus eventBus,
         IHttpClientFactory httpClientFactory,
-        BaseSchedulerManagerData<T> data, IHostApplicationLifetime hostApplicationLifetime)
+        BaseSchedulerManagerData<T> data,
+        IHostApplicationLifetime hostApplicationLifetime)
     {
         _cacheClientFactory = cacheClientFactory;
         _redisCacheClient = redisCacheClient;
@@ -38,7 +39,6 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     protected IDistributedCacheClientFactory CacheClientFactory => _cacheClientFactory;
 
-    public List<T> ServiceList => _data.ServiceList;
 
     protected abstract string HeartbeatApi { get; set; }
 
@@ -53,9 +53,13 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             return;
         }
 
-        var _server = ServiceProvider.GetService<IServer>()!;
+        await using var scope = ServiceProvider.CreateAsyncScope();
 
-        var addressFeature = _server.Features.Get<IServerAddressesFeature>()!;
+        var provider = scope.ServiceProvider;
+
+        var server = provider.GetService<IServer>()!;
+
+        var addressFeature = server.Features.Get<IServerAddressesFeature>()!;
 
         if (addressFeature.Addresses.Any())
         {
@@ -171,7 +175,9 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             Status = ServiceStatus.Normal
         };
 
-        _data.ServiceId = MD5Utils.Encrypt(EncryptType.Md5, service.GetServiceUrl());
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        _data.ServiceId = MD5Utils.Encrypt(EncryptType.Md5, host.HostName);
+
         service.ServiceId = _data.ServiceId;
 
         return service;
@@ -212,7 +218,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             return;
         }
 
-        var service = ServiceList.FirstOrDefault(p => p.HttpServiceUrl == @event.OnlineService.HttpServiceUrl || p.HttpsServiceUrl == @event.OnlineService.HttpsServiceUrl);
+        var service = _data.ServiceList.FirstOrDefault(p => (!string.IsNullOrWhiteSpace(p.HttpServiceUrl) && p.HttpServiceUrl == @event.OnlineService.HttpServiceUrl) || (!string.IsNullOrWhiteSpace(p.HttpsServiceUrl) && p.HttpsServiceUrl == @event.OnlineService.HttpsServiceUrl));
 
         if (service == null)
         {

@@ -282,6 +282,12 @@
                                         </MCol>
                                     </MRow>
                                     <MRow Class="mt-1">
+                                        <MCol Cols="3">
+                                            <MTextField @bind-Value="Model.DaprServiceInvocationConfig.Namespace" Label="@T("Namespace")" HideDetails="@("auto")" Dense Outlined>
+                                            </MTextField>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow Class="mt-1">
                                         <MCol Cols="4">
                                             <MTextField @bind-Value="Model.DaprServiceInvocationConfig.MethodName" Label="@T("MethodName")" HideDetails="@("auto")" Dense Outlined>
                                             </MTextField>

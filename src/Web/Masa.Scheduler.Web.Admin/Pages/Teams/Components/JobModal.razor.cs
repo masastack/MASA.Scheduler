@@ -52,8 +52,24 @@ public partial class JobModal
 
             if (_project != null)
             {
-                _serviceApp = Project.ProjectApps.FindAll(p => p.Type == ProjectAppTypes.Service);
                 _jobApp = Project.ProjectApps.FindAll(p => p.Type == ProjectAppTypes.Job);
+            }
+        }
+    }
+
+    [Parameter]
+    public List<ProjectDto> AllProject
+    {
+        get
+        {
+            return _allProject;
+        }
+        set
+        {
+            if (_allProject != value)
+            {
+                _allProject = value;
+                _serviceApp = _allProject.SelectMany(p=> p.ProjectApps).Where(p => p.Type == ProjectAppTypes.Service).ToList();
             }
         }
     }
@@ -85,6 +101,8 @@ public partial class JobModal
 
     private List<ProjectAppDto> _serviceApp = new();
 
+    private List<ProjectDto> _allProject = new();
+
     private List<ProjectAppDto> _jobApp = new();
 
     private SUserAutoComplete _userAutoComplete = default!;
@@ -94,6 +112,8 @@ public partial class JobModal
         _isAdd = Model.Id == Guid.Empty;
       
         await GetWorkerList();
+
+        await GetProjects();
 
         await base.OnInitializedAsync();
     }
@@ -173,6 +193,12 @@ public partial class JobModal
     private async Task GetWorkerList()
     {
         _workerList = await SchedulerServerCaller.SchedulerServerManagerService.GetWorkerListAsync();
+    }
+
+    private async Task GetProjects()
+    {   
+        var projectListResponse = await SchedulerServerCaller.PmService.GetProjectListAsync(null);
+        AllProject = projectListResponse.Data;
     }
 
     private string GetStyle(JobTypes type)

@@ -7,8 +7,6 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 {
     private ILogger<SchedulerWorkerManager> _logger;
 
-    private readonly SchedulerWorkerManagerData _data;
-
     private readonly TaskHanlderFactory _taskHandlerFactory;
 
     public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory,
@@ -20,9 +18,15 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         SchedulerWorkerManagerData data,
         IHostApplicationLifetime hostApplicationLifetime, 
         TaskHanlderFactory taskHandlerFactory)
-        : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
+        : base(
+            cacheClientFactory,
+            redisCacheClient,
+            serviceProvider,
+            eventBus,
+            httpClientFactory,
+            data,
+            hostApplicationLifetime)
     {
-        _data = data;
         _logger = logger;
         _taskHandlerFactory = taskHandlerFactory;
     }
@@ -33,7 +37,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     protected override ILogger<BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>> Logger => _logger;
     
-    public Task EnqueueTask(StartTaskIntegrationEvent @event)
+    public async Task EnqueueTask(StartTaskIntegrationEvent @event)
     {
         if (@event.Job is null)
         {
@@ -41,10 +45,14 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             throw new UserFriendlyException("Job cannot be null");
         }
 
-        _logger.LogInformation($"SchedulerWorkerManager: Task Enqueue, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}");
-        _data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime });
+        await using var scope = ServiceProvider.CreateAsyncScope();
 
-        return Task.CompletedTask;
+        var provider = scope.ServiceProvider;
+
+        var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
+
+        _logger.LogInformation($"SchedulerWorkerManager: Task Enqueue, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}, CurrentServiceId: {data.ServiceId}, EventServiceId: {@event.ServiceId}");
+        data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime });
     }
 
     public override async Task OnManagerStartAsync()
@@ -90,7 +98,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
                     if (data.TaskQueue.TryDequeue(out var task))
                     {
-                        _logger.LogInformation($"SchedulerWorkerManager: Task Dequeue, TaskId: {task.TaskId}, JobId: {task.Job.Id}");
+                        _logger.LogInformation($"SchedulerWorkerManager: Task Dequeue, TaskId: {task.TaskId}, JobId: {task.Job.Id}, CurrentServiceId:{data.ServiceId}");
 
                         if (task.ServiceId != data.ServiceId)
                         {
@@ -105,6 +113,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                             continue;
                         }
 
+                        _logger.LogInformation($"SchedulerWorkerManager: Start Task, TaskId: {task.TaskId}, JobId: {task.Job.Id}, CurrentServiceId:{data.ServiceId}");
                         await StartTaskAsync(data, task.TaskId, task.Job, task.ExcuteTime);
                     }
                 }
@@ -186,21 +195,25 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         }, cts.Token);
     }
 
-    public Task StopTaskAsync(StopTaskIntegrationEvent @event)
+    public async Task StopTaskAsync(StopTaskIntegrationEvent @event)
     {
-        if(@event.ServiceId == _data.ServiceId)
+        await using var scope = ServiceProvider.CreateAsyncScope();
+
+        var provider = scope.ServiceProvider;
+
+        var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
+
+        if(@event.ServiceId == data.ServiceId)
         {
-            if (_data.TaskCancellationTokenSources.TryGetValue(@event.TaskId, out var task))
+            if (data.TaskCancellationTokenSources.TryGetValue(@event.TaskId, out var task))
             {
                 task.Cancel();
             }
-            else if(_data.TaskQueue.Any(t=> t.TaskId == @event.TaskId))
+            else if(data.TaskQueue.Any(t=> t.TaskId == @event.TaskId))
             {
-                _data.StopTask.Add(@event.TaskId);
+                data.StopTask.Add(@event.TaskId);
             }
         }
-
-        return Task.CompletedTask;
     }
 
     private async Task NotifyTaskRunResult(TaskRunStatus runStatus, Guid taskId)

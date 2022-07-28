@@ -7,7 +7,6 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 {
     private readonly ILogger<SchedulerServerManager> _logger;
     private readonly IMapper _mapper;
-    private readonly SchedulerServerManagerData _data;
     private readonly IRepository<SchedulerTask> _repository;
     private readonly IRepository<SchedulerResource> _resourceRepository;
     private readonly IRepository<SchedulerJob> _jobRepository;
@@ -22,8 +21,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         IIntegrationEventBus eventBus,
         ILogger<SchedulerServerManager> logger,
         IHttpClientFactory httpClientFactory,
-        IMapper mapper,
         SchedulerServerManagerData data,
+        IMapper mapper,
         IRepository<SchedulerTask> repository,
         IHostApplicationLifetime hostApplicationLifetime,
         IRepository<SchedulerResource> resourceRepository,
@@ -31,11 +30,16 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         QuartzUtils quartzUtils,
         SchedulerDbContext dbContext,
         IDomainEventBus domainEventBus)
-        : base(cacheClientFactory, redisCacheClient, serviceProvider, eventBus, httpClientFactory, data, hostApplicationLifetime)
+        : base(cacheClientFactory,
+               redisCacheClient,
+               serviceProvider,
+               eventBus,
+               httpClientFactory,
+               data,
+               hostApplicationLifetime)
     {
         _logger = logger;
         _mapper = mapper;
-        _data = data;
         _repository = repository;
         _resourceRepository = resourceRepository;
         _jobRepository = jobRepository;
@@ -162,8 +166,10 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             case RoutingStrategyTypes.RoundRobin:
                 var currentRunCount = await RedisCacheClient.HashIncrementAsync(CacheKeys.CURRENT_RUN_COUNT);
-                var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count);
-                worker = ServiceList[currentUesIndex];
+                var serviceCount = data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count;
+                var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % serviceCount);
+                Console.WriteLine($"CurrentRunCount: {currentRunCount}, currentUesIndex: {currentUesIndex}, serviceCount: {serviceCount}");
+                worker = data.ServiceList[currentUesIndex];
                 break;
             //case RoutingStrategyTypes.DynamicRatioApm:
             //    break;
@@ -171,7 +177,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         return worker!;
     }
 
-    public Task<WorkerModel?> GetWorker(string workerHost)
+    public Task<WorkerModel?> GetWorker(SchedulerServerManagerData data, string workerHost)
     {
         WorkerModel? workerModel = null;
 
@@ -184,11 +190,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
        
         if(uri.Scheme == Uri.UriSchemeHttp)
         {
-            workerModel = ServiceList.FirstOrDefault(w => w.HttpServiceUrl == workerHost && w.Status == ServiceStatus.Normal);
+            workerModel = data.ServiceList.FirstOrDefault(w => w.HttpServiceUrl == workerHost && w.Status == ServiceStatus.Normal);
         }
         else
         {
-            workerModel = ServiceList.FirstOrDefault(w => w.HttpsServiceUrl == workerHost && w.Status == ServiceStatus.Normal);
+            workerModel = data.ServiceList.FirstOrDefault(w => w.HttpsServiceUrl == workerHost && w.Status == ServiceStatus.Normal);
         }
         
         return Task.FromResult(workerModel);
@@ -210,9 +216,13 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
             }
         }
 
+        await using var scope = ServiceProvider.CreateAsyncScope();
+
+        var data = scope.ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
+
         _logger.LogInformation($"SchedulerServerManager: TaskEnqueue, JobId: {task.JobId}, TaskId: {task.Id}");
 
-        _data.TaskQueue.Enqueue(taskDto);
+        data.TaskQueue.Enqueue(taskDto);
     }
 
     public async Task StartTask(IServiceProvider provider, SchedulerTaskDto taskDto, WorkerModel worker)
@@ -224,25 +234,30 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
             ServiceId = worker.ServiceId,
             ExcuteTime = taskDto.SchedulerTime
         };
+        @event.Topic = nameof(StartTaskIntegrationEvent) + worker.ServiceId;
 
         var eventBus = provider.GetRequiredService<IIntegrationEventBus>();
+        
         await eventBus.PublishAsync(@event);
         await eventBus.CommitAsync();
     }
 
     public async Task StopTask(Guid taskId, string workerHost)
     {
-        if(_data.TaskQueue.Any(p => p.Id == taskId))
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var data = scope.ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
+
+        if(data.TaskQueue.Any(p => p.Id == taskId))
         {
-            _data.StopTask.Add(taskId);
+            data.StopTask.Add(taskId);
         }
         else
         {
-            var worker = await GetWorker(workerHost);
+            var worker = await GetWorker(data, workerHost);
 
             if(worker != null)
             {
-                _data.StopByManual.Add(taskId);
+                data.StopByManual.Add(taskId);
 
                 var @event = new StopTaskIntegrationEvent()
                 {
@@ -307,22 +322,30 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                         if (taskDto.Job.RoutingStrategy == RoutingStrategyTypes.Specified)
                         {
-                            workerModel = await GetWorker(taskDto.Job.SpecifiedWorkerHost);
-
-                            if(workerModel == null)
-                            {
-                                _logger.LogError($"SchedulerServerManager: Cannot find worker model, workerHost: {taskDto.Job.SpecifiedWorkerHost}, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
-                                continue;
-                            }
+                            workerModel = await GetWorker(data, taskDto.Job.SpecifiedWorkerHost);
                         }
                         else
                         {
                             workerModel = await GetWorker(data, taskDto.Job.RoutingStrategy);
+                        }
 
-                            if(workerModel == null)
-                            {
-                                continue;
-                            }
+                        var repository = provider.GetRequiredService<IRepository<SchedulerTask>>();
+
+                        var task = await repository.FindAsync(p => p.Id == taskDto.Id);
+
+                        if (task == null)
+                        {
+                            _logger.LogError($"SchedulerServerManager:Task is not found, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
+                            throw new UserFriendlyException($"Task is not found, taskId: {taskDto.Id}");
+                        }
+
+                        if (workerModel == null)
+                        {
+                            task.TaskStartError("cannot find worker");
+                            await repository.UpdateAsync(task);
+                            await repository.UnitOfWork.SaveChangesAsync();
+                            _logger.LogError($"SchedulerServerManager: Cannot find worker model, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
+                            continue;
                         }
 
                         await CheckHeartbeat(workerModel!);
@@ -332,16 +355,6 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                             _logger.LogInformation($"SchedulerServerManager: WorkerModel Status is not Normal, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                             data.TaskQueue.Enqueue(taskDto);
                             await Task.Delay(1000);
-                        }
-
-                        var repository = provider.GetRequiredService<IRepository<SchedulerTask>>();
-
-                        var task = await repository.FindAsync(p=> p.Id == taskDto.Id);
-
-                        if(task == null)
-                        {
-                            _logger.LogError($"SchedulerServerManager:Task is not found, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
-                            throw new UserFriendlyException($"Task is not found, taskId: {taskDto.Id}");
                         }
 
                         task.TaskStart();
@@ -359,11 +372,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                     if(taskDto != null)
                     {
                         _logger.LogError(ex, $"SchedulerServerManager:Task Assign Error, Exception Message: {ex.Message}, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
-                        _data.TaskQueue.Enqueue(taskDto);
+                        data.TaskQueue.Enqueue(taskDto);
                     }
                     else
                     {
-                        Logger.LogError(ex, "StartAssignAsync");
+                        _logger.LogError(ex, "StartAssignAsync");
                     }
                 }
             }
