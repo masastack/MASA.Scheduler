@@ -9,6 +9,7 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter(opt =>
     {
+        opt.AppIdSuffix = "";
         opt.DaprHttpPort = 10604;
         opt.DaprGrpcPort = 10603;
     });

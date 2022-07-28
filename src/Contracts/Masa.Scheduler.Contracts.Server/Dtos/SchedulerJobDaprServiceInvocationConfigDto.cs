@@ -12,5 +12,7 @@ public class SchedulerJobDaprServiceInvocationConfigDto
     public string Data { get; set; } = string.Empty;
 
     public string DaprServiceIdentity { get; set; } = string.Empty;
+
+    public string Namespace { get; set; } = string.Empty;
 }
 
