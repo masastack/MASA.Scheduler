@@ -165,21 +165,22 @@ public class SchedulerJobCommandHandler
 
         schedulerJobDto.Origin = projectDetailsQuery.Result.Name;
 
-        var query = new UserQuery();
-        query.UserIds.Add(request.OperatorId);
-
-        await _eventBus.PublishAsync(query);
-
-        var owner = query.Result.FirstOrDefault();
-
-        if (owner == null)
+        if(request.OperatorId != Guid.Empty)
         {
-            throw new UserFriendlyException($"User not found, UserId: {request.OperatorId}");
+            var query = new UserQuery();
+            query.UserIds.Add(request.OperatorId);
+
+            await _eventBus.PublishAsync(query);
+
+            var owner = query.Result.FirstOrDefault();
+
+            if (owner != null)
+            {
+                schedulerJobDto.Owner = owner.Name;
+            }
         }
 
-        schedulerJobDto.Owner = owner.Name;
-
-        schedulerJobDto.OwnerId = owner.Id;
+        schedulerJobDto.OwnerId = request.OperatorId;
 
         schedulerJobDto.ScheduleType = string.IsNullOrWhiteSpace(schedulerJobDto.CronExpression) ? ScheduleTypes.ManualRun : ScheduleTypes.Cron;
 
