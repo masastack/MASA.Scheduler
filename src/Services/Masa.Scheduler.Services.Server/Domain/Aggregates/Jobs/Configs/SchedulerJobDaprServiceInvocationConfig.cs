@@ -9,6 +9,9 @@ public class SchedulerJobDaprServiceInvocationConfig : ValueObject
     public string DaprServiceIdentity { get; private set; } = string.Empty;
 
     [JsonInclude]
+    public string Namespace { get; set; } = string.Empty;
+
+    [JsonInclude]
     public string MethodName { get; private set; } = string.Empty;
 
     [JsonInclude]
@@ -17,10 +20,11 @@ public class SchedulerJobDaprServiceInvocationConfig : ValueObject
     [JsonInclude]
     public string Data { get; private set; } = string.Empty;
 
-    public void SetConfig(string methodName, HttpMethods httpMethod, string data, string daprServiceIdentity)
+    public void SetConfig(string methodName, string nameSpace, HttpMethods httpMethod, string data, string daprServiceIdentity)
     {
         MethodName = methodName;
         HttpMethod = httpMethod;
+        Namespace = nameSpace;
         Data = data;
         DaprServiceIdentity = daprServiceIdentity;
     }
