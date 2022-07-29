@@ -101,5 +101,6 @@
   "DisabledJobConfirmMessage": "Are you sure to disable the job: {0}？",
   "JobNameAlredyExists": "Job name already exists",
   "Http": "HTTP",
-  "JobCreateTypes.Api": "API Create"
+  "JobCreateTypes.Api": "API Create",
+  "StartJobSuccess": "Request Success"
 }

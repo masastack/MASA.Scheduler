@@ -408,7 +408,7 @@ public partial class SchedulerJobs : ProCompontentBase
 
         await SchedulerServerCaller.SchedulerJobService.StartJobAsync(startJobRequest);
 
-        await PopupService.ToastSuccessAsync("Request success");
+        await PopupService.ToastSuccessAsync(T("RequestSuccess"));
 
         await GetProjectJobs();
     }
@@ -448,7 +448,7 @@ public partial class SchedulerJobs : ProCompontentBase
 
         await SchedulerServerCaller.SchedulerJobService.ChangeEnableStatusAsync(request);
 
-        await PopupService.ToastSuccessAsync("Request success");
+        await PopupService.ToastSuccessAsync(T("RequestSuccess"));
 
         await GetProjectJobs();
     }
@@ -463,7 +463,7 @@ public partial class SchedulerJobs : ProCompontentBase
 
         await SchedulerServerCaller.SchedulerJobService.ChangeEnableStatusAsync(request);
 
-        await PopupService.ToastSuccessAsync("Request success");
+        await PopupService.ToastSuccessAsync(T("RequestSuccess"));
 
         await GetProjectJobs();
     }
