@@ -62,17 +62,19 @@ public class SchedulerJobQueryHandler
 
         var skip = (request.Page - 1) * request.PageSize;
 
-        var dbQuery = _dbContext.Jobs.Where(condition); 
-            
+        var dbQuery = _dbContext.Jobs.Where(condition);
+
         var result = await dbQuery
-            .Select(j => new { 
-                job = j, 
-                SortPriority = j.LastRunStatus == TaskRunStatus.Failure ? 6 : 
-                j.LastRunStatus == TaskRunStatus.WaitToRetry? 5 : 
-                j.LastRunStatus == TaskRunStatus.Timeout? 4: 
-                j.LastRunStatus == TaskRunStatus.TimeoutSuccess ? 3: 
-                j.LastRunStatus == TaskRunStatus.Idle? 2: 
-                j.LastRunStatus == TaskRunStatus.Running? 1: 0
+            .Select(j => new
+            {
+                job = j,
+                SortPriority =
+                    j.LastRunStatus == TaskRunStatus.Failure ? 6 :
+                    j.LastRunStatus == TaskRunStatus.WaitToRetry ? 5 :
+                    j.LastRunStatus == TaskRunStatus.Timeout ? 4 :
+                    j.LastRunStatus == TaskRunStatus.TimeoutSuccess ? 3 :
+                    j.LastRunStatus == TaskRunStatus.Idle ? 2 :
+                    j.LastRunStatus == TaskRunStatus.Running ? 1 : 0
             })
             .OrderByDescending(p => p.job.Enabled)
             .ThenByDescending(p => p.SortPriority)
