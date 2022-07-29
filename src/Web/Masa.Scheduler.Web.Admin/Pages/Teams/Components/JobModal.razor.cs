@@ -354,7 +354,7 @@ public partial class JobModal
 
         var owner = _userAutoComplete.UserSelect.FirstOrDefault();
 
-        if(owner != null)
+        if(owner != null && !string.IsNullOrWhiteSpace(owner.Name))
         {
             Model.Owner = owner.Name;
         }
