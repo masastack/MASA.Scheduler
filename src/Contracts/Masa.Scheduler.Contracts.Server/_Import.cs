@@ -27,7 +27,7 @@ global using Microsoft.Extensions.Hosting;
 global using Masa.Utils.Security.Cryptography;
 global using System.Diagnostics;
 global using System.Text;
-global using Masa.Contrib.BasicAbility.Tsc;
+global using Masa.Contrib.StackSdks.Tsc;
 global using OpenTelemetry.Logs;
 global using OpenTelemetry.Metrics;
 global using OpenTelemetry.Resources;

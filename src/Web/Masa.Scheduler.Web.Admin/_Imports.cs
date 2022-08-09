@@ -35,5 +35,6 @@ global using Masa.Scheduler.Web.Admin.Model;
 global using Microsoft.JSInterop;
 global using Microsoft.Extensions.DependencyInjection;
 global using Quartz;
-global using Masa.BuildingBlocks.Identity.IdentityModel;
+global using Masa.BuildingBlocks.Authentication.Identity;
 global using static Masa.Stack.Components.JsInitVariables;
+global using Masa.BuildingBlocks.Data.Mapping;

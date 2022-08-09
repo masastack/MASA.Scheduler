@@ -64,15 +64,20 @@ public class NotifyTaskRunResultDomainEventHandler
             }
         }
 
-        string message = status switch
+        string? message = @event.Request.Message;
+
+        if (string.IsNullOrWhiteSpace(message))
         {
-            //todo: i18n
-            TaskRunStatus.Success => "Task run success",
-            TaskRunStatus.Timeout => "Task run timeout",
-            TaskRunStatus.Failure => "Task run failure",
-            TaskRunStatus.WaitToRetry => "Wait for auto retry",
-            _ => ""
-        };
+            message = status switch
+            {
+                //todo: i18n
+                TaskRunStatus.Success => "Task run success",
+                TaskRunStatus.Timeout => "Task run timeout",
+                TaskRunStatus.Failure => "Task run failure",
+                TaskRunStatus.WaitToRetry => "Wait for auto retry",
+                _ => ""
+            };
+        }
 
         if (task.TaskStatus == TaskRunStatus.Timeout && status == TaskRunStatus.Success)
         {

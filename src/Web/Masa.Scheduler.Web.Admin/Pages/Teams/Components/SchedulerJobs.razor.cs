@@ -175,7 +175,7 @@ public partial class SchedulerJobs : ProCompontentBase
             if (_page != value)
             {
                 _page = value;
-                OnQueryDataChanged();
+                OnQueryDataChanged(false);
             }
         }
     }
@@ -283,12 +283,12 @@ public partial class SchedulerJobs : ProCompontentBase
         return Task.CompletedTask;
     }
 
-    public Task OnQueryDataChanged()
+    public Task OnQueryDataChanged(bool resetPage = true)
     {
-        return GetProjectJobs();
+        return GetProjectJobs(resetPage);
     }
 
-    private async Task GetProjectJobs()
+    private async Task GetProjectJobs(bool resetPage = true)
     {
         if (Project == null)
         {
@@ -320,6 +320,11 @@ public partial class SchedulerJobs : ProCompontentBase
         _total = jobListResponse.Total;
 
         _jobs = jobListResponse.Data;
+
+        if(resetPage)
+        {
+            _page = 1;
+        }
 
         StateHasChanged();
     }
@@ -433,7 +438,7 @@ public partial class SchedulerJobs : ProCompontentBase
     private Task EditJob(SchedulerJobDto dto)
     {
         _modalVisible = true;
-        modalModel = dto;
+        modalModel = Mapper.Map<SchedulerJobDto>(dto);
 
         return Task.CompletedTask;
     }

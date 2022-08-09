@@ -64,6 +64,9 @@ public abstract class ProCompontentBase : BDomComponentBase
     }
 
     [Inject]
+    public IMapper Mapper { get; set; } = default!;
+
+    [Inject]
     public IPopupService PopupService { get; set; } = default!;
 
     [Inject]

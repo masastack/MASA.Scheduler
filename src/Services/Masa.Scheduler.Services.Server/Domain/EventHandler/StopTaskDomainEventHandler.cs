@@ -30,32 +30,26 @@ public class StopTaskDomainEventHandler
             throw new UserFriendlyException($"Scheduler Task not found, Id: {@event.Request.TaskId}");
         }
 
-        if(task.TaskStatus != TaskRunStatus.Running)
+        if(task.TaskStatus != TaskRunStatus.Running && task.TaskStatus != TaskRunStatus.WaitToRun && task.TaskStatus != TaskRunStatus.WaitToRetry && task.TaskStatus != TaskRunStatus.Timeout)
         {
-            throw new UserFriendlyException("Only running task can be stop");
+            throw new UserFriendlyException("Only Process status can be stop");
         }
 
-        await _serverManager.StopTask(task.Id, task.WorkerHost);
+        if(task.TaskStatus == TaskRunStatus.Running || task.TaskStatus == TaskRunStatus.Timeout)
+        {
+            await _serverManager.StopTask(task.Id, task.WorkerHost);
+        }
 
         if (!@event.IsRestart)
         {
-            task.TaskEnd(TaskRunStatus.Failure, $"User manual stop task, OperatorId: {@event.Request.OperatorId}");
-
-            await _schedulerTaskRepository.UpdateAsync(task);
-
-            var job = await _schedulerJobRepository.FindAsync(j => j.Id == task.JobId);
-
-            if(job != null)
+            var notifyEvent = new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
             {
-                job.UpdateLastRunDetail(TaskRunStatus.Failure);
-                await _schedulerJobRepository.UpdateAsync(job);
-            }
-       
-            await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
-            await _schedulerTaskRepository.UnitOfWork.CommitAsync();
+                Status = TaskRunStatus.Failure,
+                TaskId = task.Id,
+                Message = $"User manual stop task, OperatorId: {@event.Request.OperatorId}"
+            });
 
-            var groupClient = _hubContext.Clients.Group(ConstStrings.GLOBAL_GROUP);
-            await groupClient.SendAsync(SignalRMethodConsts.GET_NOTIFICATION);
+            await _eventBus.PublishAsync(notifyEvent);
         }
     }
 }

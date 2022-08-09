@@ -27,12 +27,9 @@ public partial class JobModal
         }
         set
         {
-            if(_model != value)
-            {
-                _model = value;
+            _model = value;
 
-                OnModelChange();
-            }
+            OnModelChange();
         }
     }
 

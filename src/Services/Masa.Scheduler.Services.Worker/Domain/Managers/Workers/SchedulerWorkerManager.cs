@@ -146,13 +146,17 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             {
                 _logger.LogInformation($"SchedulerWorkerManager: Task Cancel, TaskId: {taskId}, JobId: {job.Id}");
 
-                if (job.RunTimeoutSecond > 0 && (DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
+                await using var scope = ServiceProvider.CreateAsyncScope();
+
+                var _data = scope.ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
+
+                if (!_data.StopTask.Contains(taskId) && job.RunTimeoutSecond > 0 && (DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
                 {
                     await NotifyTaskRunResult(TaskRunStatus.Timeout, taskId);
                 }
                 else
                 {
-                    data.InternalCancellationTokenSources.TryGetValue(taskId, out var internalCancellationToken);
+                    _data.InternalCancellationTokenSources.TryGetValue(taskId, out var internalCancellationToken);
                     internalCancellationToken?.Cancel();
                 }
             }
@@ -207,6 +211,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         {
             if (data.TaskCancellationTokenSources.TryGetValue(@event.TaskId, out var task))
             {
+                data.StopTask.Add(@event.TaskId);
                 task.Cancel();
             }
             else if(data.TaskQueue.Any(t=> t.TaskId == @event.TaskId))

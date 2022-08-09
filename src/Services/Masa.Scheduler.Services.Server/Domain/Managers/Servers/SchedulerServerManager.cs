@@ -70,9 +70,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression) && job.Enabled);
 
-        await RegisterCronJobAsync(cronJobList);
-
         await CheckSchedulerExpiredJobAsync(cronJobList);
+
+        await RegisterCronJobAsync(cronJobList);
     }
 
     private async Task RegisterCronJobAsync(IEnumerable<SchedulerJob> cronJobList)

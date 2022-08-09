@@ -78,7 +78,10 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
     public void TaskEnd(TaskRunStatus taskStatus, string message)
     {
         TaskStatus = taskStatus;
-        TaskRunEndTime = DateTimeOffset.Now;
+        if(taskStatus != TaskRunStatus.Timeout)
+        {
+            TaskRunEndTime = DateTimeOffset.Now;
+        }
         Message = message;
         RunTime = Convert.ToInt64((TaskRunEndTime - TaskRunStartTime).TotalSeconds);
     }

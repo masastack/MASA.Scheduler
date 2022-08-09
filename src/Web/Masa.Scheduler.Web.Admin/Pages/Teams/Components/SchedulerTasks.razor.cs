@@ -18,6 +18,10 @@ public partial class SchedulerTasks
             {
                 _job = value;
                 _jobChange = true;
+                if (_job != null && string.IsNullOrWhiteSpace(_job.Origin) && Headers != null)
+                {
+                    Headers.RemoveAll(p => p.Value == nameof(SchedulerTaskDto.Origin));
+                }
                 OnQueryDataChanged();
             }
             else
@@ -105,7 +109,7 @@ public partial class SchedulerTasks
             if (_page != value)
             {
                 _page = value;
-                OnQueryDataChanged();
+                OnQueryDataChanged(false);
             }
         }
     }
@@ -167,11 +171,6 @@ public partial class SchedulerTasks
             new() { Text = T("Action"), Value = "Action", Sortable = false },
         };
 
-        if (_job != null && string.IsNullOrWhiteSpace(_job.Origin))
-        {
-            Headers.RemoveAll(p => p.Value == nameof(SchedulerTaskDto.Origin));
-        }
-
         _queryStatusList = GetEnumMap<TaskRunStatus>();
 
         _queryStatusList.RemoveAll(p => p.Value == TaskRunStatus.Idle);
@@ -196,12 +195,12 @@ public partial class SchedulerTasks
         }
     }
 
-    private Task OnQueryDataChanged()
+    private Task OnQueryDataChanged(bool resetPage = true)
     {
-        return GetTaskListAsync();
+        return GetTaskListAsync(resetPage);
     }
 
-    private async Task GetTaskListAsync()
+    private async Task GetTaskListAsync(bool resetPage = true)
     {
         if (_job is null)
         {
@@ -228,6 +227,11 @@ public partial class SchedulerTasks
         _total = response.Total;
 
         _tasks = response.Data;
+
+        if (resetPage)
+        {
+            Page = 1;
+        }
 
         StateHasChanged();
     }
