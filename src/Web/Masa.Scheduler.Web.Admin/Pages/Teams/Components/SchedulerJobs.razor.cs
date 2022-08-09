@@ -188,7 +188,7 @@ public partial class SchedulerJobs : ProCompontentBase
             if (_pageSize != value)
             {
                 _pageSize = value;
-                OnQueryDataChanged(false);
+                OnQueryDataChanged();
             }
         }
     }

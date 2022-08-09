@@ -13,19 +13,19 @@ public class SchedulerServerCaller : HttpClientCallerBase
     OssService? _ossService;
     SchedulerServerManagerService? _schedulerServerManagerService;
     
-    public SchedulerJobService SchedulerJobService => _schedulerJobService ??= new(CallerProvider);
+    public SchedulerJobService SchedulerJobService => _schedulerJobService ??= new(Caller);
 
-    public AuthService AuthService => _authService ??= new(CallerProvider);
+    public AuthService AuthService => _authService ??= new(Caller);
 
-    public PmService PmService => _pmService ??= new(CallerProvider);
+    public PmService PmService => _pmService ??= new(Caller);
 
-    public SchedulerTaskService SchedulerTaskService => _schedulerTaskService ??= new(CallerProvider);
+    public SchedulerTaskService SchedulerTaskService => _schedulerTaskService ??= new(Caller);
 
-    public SchedulerResourceService SchedulerResourceService => _schedulerResourceService ??= new(CallerProvider);
+    public SchedulerResourceService SchedulerResourceService => _schedulerResourceService ??= new(Caller);
 
-    public OssService OssService => _ossService ??= new(CallerProvider);
+    public OssService OssService => _ossService ??= new(Caller);
 
-    public SchedulerServerManagerService SchedulerServerManagerService => _schedulerServerManagerService ??= new(CallerProvider);
+    public SchedulerServerManagerService SchedulerServerManagerService => _schedulerServerManagerService ??= new(Caller);
 
     public SchedulerServerCaller(IServiceProvider serviceProvider, SchedulerApiOptions options) : base(serviceProvider)
     {

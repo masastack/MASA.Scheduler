@@ -109,7 +109,7 @@ public partial class SchedulerTasks
             if (_page != value)
             {
                 _page = value;
-                OnQueryDataChanged();
+                OnQueryDataChanged(false);
             }
         }
     }
@@ -195,12 +195,12 @@ public partial class SchedulerTasks
         }
     }
 
-    private Task OnQueryDataChanged()
+    private Task OnQueryDataChanged(bool resetPage = true)
     {
-        return GetTaskListAsync();
+        return GetTaskListAsync(resetPage);
     }
 
-    private async Task GetTaskListAsync()
+    private async Task GetTaskListAsync(bool resetPage = true)
     {
         if (_job is null)
         {
@@ -227,6 +227,11 @@ public partial class SchedulerTasks
         _total = response.Total;
 
         _tasks = response.Data;
+
+        if (resetPage)
+        {
+            Page = 1;
+        }
 
         StateHasChanged();
     }

@@ -7,7 +7,7 @@ public class SchedulerJobService : ServiceBase
 {
     protected override string BaseUrl { get; set; }
 
-    public SchedulerJobService(ICaller callerProvider) : base(callerProvider)
+    public SchedulerJobService(ICaller caller) : base(caller)
     {
         BaseUrl = "api/scheduler-job/";
     }

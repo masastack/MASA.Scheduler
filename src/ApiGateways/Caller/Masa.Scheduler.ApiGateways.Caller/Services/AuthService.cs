@@ -7,7 +7,7 @@ public class AuthService : ServiceBase
 {
     protected override string BaseUrl { get; set; }
 
-    public AuthService(ICaller provider) : base(provider)
+    public AuthService(ICaller caller) : base(caller)
     {
         BaseUrl = "api/auth";
     }
