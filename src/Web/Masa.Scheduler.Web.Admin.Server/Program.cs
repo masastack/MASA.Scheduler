@@ -28,6 +28,7 @@ builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configu
 builder.Services.AddElasticsearchClient("auth", option => option.UseNodes("http://10.10.90.44:31920/").UseDefault())
                    .AddAutoComplete(option => option.UseIndexName(builder.Configuration["UserAutoComplete"]));
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMapster();
 builder.Services.AddGlobalForServer();
 builder.Services.AddMasaSignalRClient(options=> options.SignalRServiceUrl = builder.Configuration["SignalRServiceUrl"]);
 builder.Services.AddMasaOpenIdConnect(builder.Configuration);

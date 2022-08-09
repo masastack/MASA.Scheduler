@@ -96,7 +96,7 @@ public class SchedulerJobQueryHandler
 
             foreach (var item in jobDtos)
             {
-                var user = userQuery.Result.FirstOrDefault(u => u.Id == item.Creator);
+                var user = userQuery.Result.FirstOrDefault(u => u.Id == item.OwnerId);
 
                 if (user != null)
                 {

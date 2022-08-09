@@ -42,7 +42,7 @@
                                     @if (!_isAdd)
                                     {
                                         <MCol Cols="2">
-                                            <MSelect @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Readonly Dense Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <MSelect @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Readonly Disabled Dense Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </MSelect>
                                         </MCol>
                                     }
@@ -73,7 +73,7 @@
                                 <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("RunStrategy")</div>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MSelect Value="Model.RoutingStrategy" ValueChanged="OnRoutingStrategyChanged" TValue="RoutingStrategyTypes" TItem="KeyValuePair<string, RoutingStrategyTypes>" TItemValue="RoutingStrategyTypes" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        <MSelect Value="Model.RoutingStrategy" ValueExpression="()=>Model.RoutingStrategy" ValueChanged="OnRoutingStrategyChanged" TValue="RoutingStrategyTypes" TItem="KeyValuePair<string, RoutingStrategyTypes>" TItemValue="RoutingStrategyTypes" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                         </MSelect>
                                     </MCol>
                                     @if (Model.RoutingStrategy == RoutingStrategyTypes.Specified)

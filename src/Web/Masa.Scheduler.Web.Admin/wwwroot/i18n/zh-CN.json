@@ -172,5 +172,8 @@
   "DisabledJob": "禁用Job",
   "DisabledJobConfirmMessage": "确认禁用Job: {0}？",
   "JobNameAlredyExists": "Job名称已重复",
-  "RequestSuccess": "请求成功"
+  "RequestSuccess": "请求成功",
+  "Run": "运行",
+  "Disabled": "禁用",
+  "Enabled": "启用"
 }

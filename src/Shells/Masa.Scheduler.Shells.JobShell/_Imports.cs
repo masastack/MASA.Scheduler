@@ -4,7 +4,7 @@
 global using System.Reflection;
 global using Masa.Scheduler.Shells.JobShell.Models;
 global using System.Text.Json;
-global using Masa.BuildingBlocks.BasicAbility.Scheduler;
-global using Masa.BuildingBlocks.BasicAbility.Scheduler.Model;
+global using Masa.BuildingBlocks.StackSdks.Scheduler;
+global using Masa.BuildingBlocks.StackSdks.Scheduler.Model;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;

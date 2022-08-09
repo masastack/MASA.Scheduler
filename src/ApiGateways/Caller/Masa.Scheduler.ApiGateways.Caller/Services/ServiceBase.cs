@@ -5,11 +5,11 @@ namespace Masa.Scheduler.ApiGateways.Caller.Services;
 
 public abstract class ServiceBase
 {
-    protected ICallerProvider CallerProvider { get; init; }
+    protected ICaller CallerProvider { get; init; }
 
     protected abstract string BaseUrl { get; set; }
 
-    protected ServiceBase(ICallerProvider callerProvider)
+    protected ServiceBase(ICaller callerProvider)
     {
         CallerProvider = callerProvider;
     }

@@ -15,7 +15,16 @@ public class StartTaskDomainEventHandler
     private readonly IDistributedCacheClient _distributedCacheClient;
     private readonly ILogger<StartTaskDomainEventHandler> _logger;
 
-    public StartTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, SchedulerDbContext dbContext, IMapper mapper, QuartzUtils quartzUtils, IDistributedCacheClient distributedCacheClient, ILogger<StartTaskDomainEventHandler> logger, ISchedulerJobRepository schedulerJobRepository)
+    public StartTaskDomainEventHandler(
+        ISchedulerTaskRepository schedulerTaskRepository,
+        IEventBus eventBus,
+        SchedulerServerManager serverManager,
+        SchedulerDbContext dbContext,
+        IMapper mapper,
+        QuartzUtils quartzUtils,
+        IDistributedCacheClient distributedCacheClient,
+        ILogger<StartTaskDomainEventHandler> logger,
+        ISchedulerJobRepository schedulerJobRepository)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
@@ -52,10 +61,16 @@ public class StartTaskDomainEventHandler
             throw new UserFriendlyException("SchedulerJob cannot null");
         }
 
-        if(!task.Job.Enabled || task.Job.IsDeleted)
+        if (!task.Job.Enabled || task.Job.IsDeleted)
         {
-            _logger.LogError($"SchedulerJob was disabled or deleted, taskId: {task.Id}, jobId: {task.JobId}");
-            throw new UserFriendlyException($"SchedulerJob was disabled or deleted");
+            var notifyEvent = new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
+            {
+                TaskId = task.Id,
+                Status = TaskRunStatus.Failure
+            });
+
+            await _eventBus.PublishAsync(notifyEvent);
+            return;
         }
 
         // When task is running, restart will stop task first

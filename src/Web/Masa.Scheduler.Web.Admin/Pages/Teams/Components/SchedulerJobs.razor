@@ -79,7 +79,7 @@
                                Label>
                                 @T(job.JobType.ToString())
                             </MChip>
-                            <div style="padding-left:8px; font-weight:500; max-width:90%" class="job-text job-name text-truncate">
+                            <div style="padding-left:8px; font-weight:500; max-width:70%" class="job-text job-name text-truncate">
                                 @job.Name
                             </div>
                             <MSpacer />
@@ -99,7 +99,7 @@
                             @if(_jobCreateType == JobCreateTypes.Api)
                             {
                                 <MChip
-                                   Class="job-text mr-1"
+                                   Class="job-text ml-1"
                                    Style="height:25px; background-color:#F0F3FA"
                                    >
                                     @job.Origin
@@ -127,7 +127,7 @@
                                             <MListItem Link OnClick="()=> RunJob(job)">
                                                 <MListItemContent>
                                                     <MListItemTitle>
-                                                        运行
+                                                        @T("Run")
                                                     </MListItemTitle>
                                                 </MListItemContent>
                                             </MListItem>
@@ -135,7 +135,7 @@
                                         <MListItem Link OnClick="()=> EditJob(job)">
                                             <MListItemContent>
                                                 <MListItemTitle>
-                                                    编辑
+                                                    @T("Edit")
                                                 </MListItemTitle>
                                             </MListItemContent>
                                         </MListItem>
@@ -144,7 +144,7 @@
                                             <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.DisabledJob, job.Id)">
                                                 <MListItemContent>
                                                     <MListItemTitle>
-                                                        禁用
+                                                        @T("Disabled")
                                                     </MListItemTitle>
                                                 </MListItemContent>
                                             </MListItem>
@@ -154,7 +154,7 @@
                                              <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.EnabledJob, job.Id)">
                                                 <MListItemContent>
                                                     <MListItemTitle>
-                                                        启用
+                                                        @T("Enabled")
                                                     </MListItemTitle>
                                                 </MListItemContent>
                                             </MListItem>

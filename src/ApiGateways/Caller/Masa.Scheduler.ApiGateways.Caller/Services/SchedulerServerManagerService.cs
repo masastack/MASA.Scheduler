@@ -7,7 +7,7 @@ public class SchedulerServerManagerService : ServiceBase
 {
     protected override string BaseUrl { get; set; }
 
-    public SchedulerServerManagerService(ICallerProvider provider): base(provider)
+    public SchedulerServerManagerService(ICaller provider): base(provider)
     {
         BaseUrl = "api/scheduler-server-manager/";
     }

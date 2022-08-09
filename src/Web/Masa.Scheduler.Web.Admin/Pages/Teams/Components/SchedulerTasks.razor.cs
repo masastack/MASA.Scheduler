@@ -18,6 +18,10 @@ public partial class SchedulerTasks
             {
                 _job = value;
                 _jobChange = true;
+                if (_job != null && string.IsNullOrWhiteSpace(_job.Origin) && Headers != null)
+                {
+                    Headers.RemoveAll(p => p.Value == nameof(SchedulerTaskDto.Origin));
+                }
                 OnQueryDataChanged();
             }
             else
@@ -166,11 +170,6 @@ public partial class SchedulerTasks
             new() { Text = T("SchedulerTask.OperatorId"), Value = nameof(SchedulerTaskDto.OperatorId), Sortable = false },
             new() { Text = T("Action"), Value = "Action", Sortable = false },
         };
-
-        if (_job != null && string.IsNullOrWhiteSpace(_job.Origin))
-        {
-            Headers.RemoveAll(p => p.Value == nameof(SchedulerTaskDto.Origin));
-        }
 
         _queryStatusList = GetEnumMap<TaskRunStatus>();
 

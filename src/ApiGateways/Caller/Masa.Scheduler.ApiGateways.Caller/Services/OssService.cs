@@ -7,7 +7,7 @@ public class OssService : ServiceBase
 {
     protected override string BaseUrl { get; set; }
 
-    public OssService(ICallerProvider provider) : base(provider)
+    public OssService(ICaller provider) : base(provider)
     {
         BaseUrl = "api/oss";
     }
