@@ -40,16 +40,5 @@ public class AuthQueryHandler
         {
             query.Result = _mapper.Map<List<UserDto>>(userInfos);
         }
-
-        //foreach (var item in query.UserIds)
-        //{
-        //    query.Result.Add(new UserDto()
-        //    {
-        //        Account = "Tester",
-        //        Avatar = "https://cdn.masastack.com/stack/images/avatar/mr.gu.svg",
-        //        Name = "Tester",
-        //        Id = item
-        //    });
-        //}
     }
 }
