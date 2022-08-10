@@ -105,6 +105,8 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private Guid _confirmJobId = Guid.Empty;
 
+    private List<string> _originList = new();
+
     public List<KeyValuePair<string, JobQueryTimeTypes>> JobQueryTimeTypes { get; set; } = new();
     public TaskRunStatus QueryStatus
     {
@@ -270,9 +272,22 @@ public partial class SchedulerJobs : ProCompontentBase
         if(_jobCreateType != jobCreateTypes)
         {
             _jobCreateType = jobCreateTypes;
-
+            ResetQueryOptions();
             await GetProjectJobs();
         }
+    }
+    
+    private void ResetQueryOptions()
+    {
+        _queryEndTime = null;
+        _queryStartTime = null;
+        _queryJobName = string.Empty;
+        _queryOrigin = string.Empty;
+        _queryTimeType = 0;
+        _queryStatus = 0;
+        _queryJobType = 0;
+        _page = 1;
+        _pageSize = 10;
     }
 
     public Task ShowFilter()
@@ -321,7 +336,9 @@ public partial class SchedulerJobs : ProCompontentBase
 
         _jobs = jobListResponse.Data;
 
-        if(resetPage)
+        _originList = jobListResponse.OriginList;
+
+        if (resetPage)
         {
             _page = 1;
         }
@@ -427,8 +444,8 @@ public partial class SchedulerJobs : ProCompontentBase
         }
 
         modalModel = new();
-        modalModel.BelongProjectIdentity = Project!.Identity;
-        modalModel.BelongTeamId = Project!.TeamId;
+        modalModel.BelongProjectIdentity = Project.Identity;
+        modalModel.BelongTeamId = Project.TeamId;
         modalModel.Enabled = true;
 
         _modalVisible = true;

@@ -220,7 +220,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         var data = scope.ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
 
-        _logger.LogInformation($"SchedulerServerManager: TaskEnqueue, JobId: {task.JobId}, TaskId: {task.Id}");
+        _logger.LogInformation($"SchedulerServerManager: TaskEnqueue, JobId: {task.JobId}, TaskId: {task.Id}, ResourceId: {taskDto.Job?.JobAppConfig?.SchedulerResourceDto?.Id}");
 
         data.TaskQueue.Enqueue(taskDto);
     }
@@ -262,7 +262,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 var @event = new StopTaskIntegrationEvent()
                 {
                     TaskId = taskId,
-                    ServiceId = worker.ServiceId
+                    ServiceId = worker.ServiceId,
+                    Topic = nameof(StopTaskIntegrationEvent) + worker.ServiceId
                 };
 
                 await EventBus.PublishAsync(@event);
@@ -283,6 +284,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     {
         Task.Run(async () =>
         {
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
             while (true)
             {
                 await using var scope = ServiceProvider.CreateAsyncScope();

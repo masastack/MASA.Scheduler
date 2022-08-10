@@ -7,12 +7,13 @@ public class SchedulerTaskDomainService : DomainService
 {
     private readonly ILogger<SchedulerTask> _logger;
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
-    private readonly IHubContext<NotificationsHub> _hubContext;
-    public SchedulerTaskDomainService(IDomainEventBus eventBus, ILogger<SchedulerTask> logger, ISchedulerTaskRepository schedulerTaskRepository, IHubContext<NotificationsHub> hubContext) : base(eventBus)
+    public SchedulerTaskDomainService(
+        IDomainEventBus eventBus,
+        ILogger<SchedulerTask> logger,
+        ISchedulerTaskRepository schedulerTaskRepository) : base(eventBus)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _logger = logger;
-        _hubContext = hubContext;
     }
 
     public async Task StartTaskAsync(StartSchedulerTaskRequest request)

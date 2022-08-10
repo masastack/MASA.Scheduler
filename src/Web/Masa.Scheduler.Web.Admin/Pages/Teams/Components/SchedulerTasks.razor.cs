@@ -14,6 +14,8 @@ public partial class SchedulerTasks
         }
         set
         {
+            ResetQueryOptions();
+
             if (_job?.Id != value?.Id)
             {
                 _job = value;
@@ -61,6 +63,7 @@ public partial class SchedulerTasks
     private string _confirmMessage = string.Empty;
     private ConfirmDialogTypes _confirmDialogType;
     private Guid _confirmTaskId;
+    private List<string> _orginList = new();
 
     private Task QueryStatusChanged(TaskRunStatus status)
     {
@@ -71,6 +74,18 @@ public partial class SchedulerTasks
         }
 
         return Task.CompletedTask;
+    }
+
+    private void ResetQueryOptions()
+    {
+        _queryStatus = default;
+        _lastQueryStatus = default;
+        _queryTimeType = default;
+        _queryStartTime = default;
+        _queryEndTime = default;
+        _page = 1;
+        _pageSize = 10;
+        _queryOrigin = string.Empty;
     }
 
     private JobQueryTimeTypes _queryTimeType;
@@ -227,6 +242,8 @@ public partial class SchedulerTasks
         _total = response.Total;
 
         _tasks = response.Data;
+
+        _orginList = response.OriginList;
 
         if (resetPage)
         {

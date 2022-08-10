@@ -9,6 +9,7 @@ public static class SignalRServiceCollectionExtensions
     {
         services.AddTransient<IUserIdProvider, MasaUserIdProvider>();
         services.AddTransient<NotificationsHub>();
+        services.AddScoped<SignalRUtils>();
         services.AddSignalR();
 
         return services;

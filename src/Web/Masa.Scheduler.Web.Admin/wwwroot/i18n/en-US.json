@@ -102,5 +102,7 @@
   "JobNameAlredyExists": "Job name already exists",
   "Http": "HTTP",
   "JobCreateTypes.Api": "API Create",
-  "StartJobSuccess": "Request Success"
+  "StartJobSuccess": "Request Success",
+  "CronExpressionNotHasNextRunTime": "Cannot calculate the next run time from this expression",
+  "ExpectedNextRunTime": "Expected next 5 run times"
 }

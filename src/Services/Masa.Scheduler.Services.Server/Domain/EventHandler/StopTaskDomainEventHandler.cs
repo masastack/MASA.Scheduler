@@ -9,14 +9,16 @@ public class StopTaskDomainEventHandler
     private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly IEventBus _eventBus;
     private readonly SchedulerServerManager _serverManager;
-    private readonly IHubContext<NotificationsHub> _hubContext;
 
-    public StopTaskDomainEventHandler(ISchedulerTaskRepository schedulerTaskRepository, IEventBus eventBus, SchedulerServerManager serverManager, IHubContext<NotificationsHub> hubContext, ISchedulerJobRepository schedulerJobRepository)
+    public StopTaskDomainEventHandler(
+        ISchedulerTaskRepository schedulerTaskRepository,
+        IEventBus eventBus,
+        SchedulerServerManager serverManager,
+        ISchedulerJobRepository schedulerJobRepository)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
         _serverManager = serverManager;
-        _hubContext = hubContext;
         _schedulerJobRepository = schedulerJobRepository;
     }
 

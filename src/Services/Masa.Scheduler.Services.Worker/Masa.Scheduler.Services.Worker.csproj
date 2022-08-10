@@ -69,13 +69,31 @@
     <None Update="JobShell\Grpc.Net.Common.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="JobShell\Masa.BuildingBlocks.Authentication.Identity.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="JobShell\Masa.BuildingBlocks.BasicAbility.Scheduler.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="JobShell\Masa.BuildingBlocks.Identity.IdentityModel.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="JobShell\Masa.BuildingBlocks.Service.Caller.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="JobShell\Masa.BuildingBlocks.StackSdks.Scheduler.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="JobShell\Masa.Contrib.BasicAbility.Scheduler.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="JobShell\Masa.Contrib.Service.Caller.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="JobShell\Masa.Contrib.Service.Caller.HttpClient.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="JobShell\Masa.Contrib.StackSdks.Scheduler.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="JobShell\Masa.Scheduler.Shells.JobShell.dll">

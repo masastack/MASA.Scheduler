@@ -5,15 +5,16 @@ namespace Masa.Scheduler.Contracts.Server.Responses;
 
 public class SchedulerTaskListResponse : BasePaginationResponse<SchedulerTaskDto>
 {
+    public List<string> OriginList { get; set; }
     public SchedulerTaskListResponse()
         :base(0, 0, new List<SchedulerTaskDto>())
     {
-
+        OriginList = new();
     }
 
-    public SchedulerTaskListResponse(long total, int totalPages, List<SchedulerTaskDto> result)
+    public SchedulerTaskListResponse(long total, int totalPages, List<SchedulerTaskDto> result, List<string> originList)
         : base(total, totalPages, result)
     {
-
+        OriginList = originList;
     }
 }

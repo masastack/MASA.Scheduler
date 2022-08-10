@@ -65,11 +65,27 @@
                                     @if (Model.ScheduleType == ScheduleTypes.Cron)
                                     {
                                         <MCol Cols="2">
-                                            <MTextField @bind-Value="Model.CronExpression" Label="@T("CronExpression")" Outlined Dense>
+                                            <MTextField Value="Model.CronExpression" TValue="string" ValueChanged="OnCronValueChange" HideDetails="@("auto")" Label="@T("CronExpression")" Outlined Dense>
                                             </MTextField>
+                                        </MCol>
+                                        <MCol Cols="2">
+                                            <SIcon Large OnClick="OpenCronModal">
+                                                mdi-clock
+                                            </SIcon>
                                         </MCol>
                                     }
                                 </MRow>
+                                @if (Model.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(Model.CronExpression))
+                                {
+                                    <div class="mt-4">
+                                        <p>
+                                            @T("ExpectedNextRunTime"):
+                                        </p>
+                                        <pre class="masa body2">
+                                            @_nextRunTimeStr
+                                        </pre>
+                                    </div>
+                                }
                                 <div class="text-subtitle2 neutral-lighten-2--text mt-3">@T("RunStrategy")</div>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
@@ -322,4 +338,8 @@
             </MStepperItems>
         </MStepper>
     </SSheetDialog>
+    <SSimpleModal @bind-Value="@_cronVisible" Title="@T("CronExpression")" SaveText="@T("Sure")" OnSave="() => SetCronExpression()">
+        <PCron @bind-Value="@(_tempCron)">
+        </PCron>
+    </SSimpleModal>
 </div>
