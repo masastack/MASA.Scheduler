@@ -14,7 +14,7 @@ public class SignalRUtils
         _distributedCacheClient = distributedCacheClient;
     }
 
-    public async Task SendNoticationByGroup(string group, string method, int intervalSecond = 1)
+    public async Task SendNoticationByGroup(string group, string method, SchedulerTaskDto taskDto, int intervalSecond = 0)
     {
         if (intervalSecond > 0)
         {
@@ -35,7 +35,7 @@ public class SignalRUtils
             }
         }
         var groupClient = _hubContext.Clients.Groups(group);
-        await groupClient.SendAsync(SignalRMethodConsts.GET_NOTIFICATION);
+        await groupClient.SendAsync(SignalRMethodConsts.GET_NOTIFICATION, taskDto);
     }
 
 }

@@ -13,6 +13,7 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly QuartzUtils _quartzUtils;
     private readonly IIntegrationEventBus _eventBus;
     private readonly SchedulerServerManagerData _data;
+    private readonly IMapper _mapper;
 
     public NotifyTaskRunResultDomainEventHandler(
         IRepository<SchedulerTask> schedulerTaskRepository,
@@ -22,7 +23,8 @@ public class NotifyTaskRunResultDomainEventHandler
         IDistributedCacheClient distributedCacheClient,
         QuartzUtils quartzUtils,
         IIntegrationEventBus eventBus,
-        SchedulerServerManagerData data)
+        SchedulerServerManagerData data,
+        IMapper mapper)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _dbContext = dbContext;
@@ -32,6 +34,7 @@ public class NotifyTaskRunResultDomainEventHandler
         _quartzUtils = quartzUtils;
         _eventBus = eventBus;
         _data = data;
+        _mapper = mapper;
     }
 
     [EventHandler]
@@ -116,6 +119,8 @@ public class NotifyTaskRunResultDomainEventHandler
             _distributedCacheClient.Remove<int>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
         }
 
-        await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION);
+        var dto = _mapper.Map<SchedulerTaskDto>(task);
+
+        await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, dto);
     }
 }

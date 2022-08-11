@@ -158,6 +158,8 @@ public class StartTaskDomainEventHandler
             await _serverManager.TaskEnqueue(task);
         }
 
-        await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION);
+        var dto = _mapper.Map<SchedulerTaskDto>(task);
+
+        await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, dto);
     }
 }

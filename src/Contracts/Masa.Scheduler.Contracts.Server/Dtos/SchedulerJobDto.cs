@@ -72,4 +72,8 @@ public class SchedulerJobDto
     public SchedulerJobHttpConfigDto HttpConfig { get; set; } = new();
 
     public SchedulerJobDaprServiceInvocationConfigDto DaprServiceInvocationConfig { get; set; } = new();
+
+    public DateTime ModificationTime { get; set; }
+
+    public DateTime CreationTime { get; set; }
 }

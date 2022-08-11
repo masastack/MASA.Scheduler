@@ -35,4 +35,6 @@ public class SchedulerTaskDto
     public Guid OperatorId { get; set; }
 
     public string OperatorName { get; set; } = String.Empty;
+
+    public DateTime CreationTime { get; set; }
 }

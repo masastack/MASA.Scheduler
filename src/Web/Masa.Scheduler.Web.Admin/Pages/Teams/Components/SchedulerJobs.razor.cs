@@ -225,9 +225,9 @@ public partial class SchedulerJobs : ProCompontentBase
     {
         await MasaSignalRClient.HubConnectionBuilder();
 
-        MasaSignalRClient.HubConnection?.On(SignalRMethodConsts.GET_NOTIFICATION, async () =>
+        MasaSignalRClient.HubConnection?.On(SignalRMethodConsts.GET_NOTIFICATION, async (SchedulerTaskDto schedulerTaskDto) =>
         {
-            await GetProjectJobs();
+            await SignalRNotifyDataHandler(schedulerTaskDto);
         });
 
         JobQueryTimeTypes = GetEnumMap<JobQueryTimeTypes>();
@@ -275,19 +275,6 @@ public partial class SchedulerJobs : ProCompontentBase
             ResetQueryOptions();
             await GetProjectJobs();
         }
-    }
-    
-    private void ResetQueryOptions()
-    {
-        _queryEndTime = null;
-        _queryStartTime = null;
-        _queryJobName = string.Empty;
-        _queryOrigin = string.Empty;
-        _queryTimeType = 0;
-        _queryStatus = 0;
-        _queryJobType = 0;
-        _page = 1;
-        _pageSize = 10;
     }
 
     public Task ShowFilter()
@@ -597,5 +584,88 @@ public partial class SchedulerJobs : ProCompontentBase
                 break;
         }
         _showConfirmDialog = false;
+    }
+
+    private void ResetQueryOptions()
+    {
+        _queryEndTime = null;
+        _queryStartTime = null;
+        _queryJobName = string.Empty;
+        _queryOrigin = string.Empty;
+        _queryTimeType = 0;
+        _queryStatus = 0;
+        _queryJobType = 0;
+        _page = 1;
+        _pageSize = 10;
+    }
+
+    private bool CheckNotifiyData(SchedulerJobDto job)
+    {
+        if(job == null)
+        {
+            return false;
+        }
+
+        if(!string.IsNullOrWhiteSpace(_queryJobName) && !job.Name.Contains(_queryJobName))
+        {
+            return false;
+        }
+
+        if(!string.IsNullOrWhiteSpace(_queryOrigin) && !job.Origin.Contains(_queryOrigin))
+        {
+            return false;
+        }
+
+        if(_queryStatus != 0 && job.LastRunStatus != _queryStatus)
+        {
+            return false;
+        }
+
+        if(_queryJobType != 0 && job.JobType != _queryJobType)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task SignalRNotifyDataHandler(SchedulerTaskDto taskDto)
+    {
+        var notifyJob = taskDto.Job;
+
+        if (CheckNotifiyData(notifyJob))
+        {
+            var jobIndex = _jobs.FindIndex(j=> j.Id == notifyJob.Id);
+
+            if (jobIndex > -1)
+            {
+                var job = _jobs.ElementAt(jobIndex);
+                notifyJob.UserName = job.UserName;
+                notifyJob.Avator = job.Avator;
+                _jobs[jobIndex] = notifyJob;
+            }
+            else if(Page == 1)
+            {
+                var sameOwnerJob = _jobs.FirstOrDefault(j => j.OwnerId == notifyJob.OwnerId);
+
+                if(sameOwnerJob != null)
+                {
+                    notifyJob.UserName = sameOwnerJob.UserName;
+                    notifyJob.Avator = sameOwnerJob.Avator;
+                }
+                else
+                {
+                    var userInfo = await SchedulerServerCaller.AuthService.GetUserInfoAsync(notifyJob.OwnerId);
+                    notifyJob.UserName = userInfo.Name;
+                    notifyJob.Avator = userInfo.Avatar;
+                }
+
+                _jobs.Add(notifyJob);
+
+                _jobs = _jobs.OrderByDescending(p => p.ModificationTime).ThenByDescending(p => p.CreationTime).Take(_pageSize).ToList();
+            }
+
+            StateHasChanged();
+        }
     }
 }

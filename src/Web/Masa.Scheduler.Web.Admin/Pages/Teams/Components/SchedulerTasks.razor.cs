@@ -76,18 +76,6 @@ public partial class SchedulerTasks
         return Task.CompletedTask;
     }
 
-    private void ResetQueryOptions()
-    {
-        _queryStatus = default;
-        _lastQueryStatus = default;
-        _queryTimeType = default;
-        _queryStartTime = default;
-        _queryEndTime = default;
-        _page = 1;
-        _pageSize = 10;
-        _queryOrigin = string.Empty;
-    }
-
     private JobQueryTimeTypes _queryTimeType;
 
     private DateTime? _queryStartTime;
@@ -168,9 +156,9 @@ public partial class SchedulerTasks
     {
         await MasaSignalRClient.HubConnectionBuilder();
 
-        MasaSignalRClient.HubConnection?.On(SignalRMethodConsts.GET_NOTIFICATION, async () =>
+        MasaSignalRClient.HubConnection?.On(SignalRMethodConsts.GET_NOTIFICATION, async (SchedulerTaskDto schedulerTaskDto) =>
         {
-            await GetTaskListAsync();
+            await SignalRNotifyDataHandler(schedulerTaskDto);
         });
 
         Headers = new()
@@ -378,6 +366,110 @@ public partial class SchedulerTasks
         }
 
         return Task.CompletedTask;
+    }
+
+    private void ResetQueryOptions()
+    {
+        _queryStatus = default;
+        _lastQueryStatus = default;
+        _queryTimeType = default;
+        _queryStartTime = default;
+        _queryEndTime = default;
+        _page = 1;
+        _pageSize = 10;
+        _queryOrigin = string.Empty;
+    }
+
+    private bool CheckNotifiyData(SchedulerTaskDto task)
+    {
+        if (task == null)
+        {
+            return false;
+        }
+
+        switch (_queryTimeType)
+        {
+            case JobQueryTimeTypes.ScheduleTime:
+                if (_queryStartTime.HasValue && task.SchedulerTime < _queryStartTime)
+                {
+                    return false;
+                }
+
+                if (_queryEndTime.HasValue && task.SchedulerTime >= _queryEndTime)
+                {
+                    return false;
+                }
+                break;
+            case JobQueryTimeTypes.RunStartTime:
+                if (_queryStartTime.HasValue && task.TaskRunStartTime < _queryStartTime)
+                {
+                    return false;
+                }
+
+                if (_queryEndTime.HasValue && task.TaskRunStartTime >= _queryEndTime)
+                {
+                    return false;
+                }
+                break;
+            case JobQueryTimeTypes.RunEndTime:
+                if (_queryStartTime.HasValue && task.TaskRunEndTime < _queryStartTime)
+                {
+                    return false;
+                }
+
+                if (_queryEndTime.HasValue && task.TaskRunEndTime >= _queryEndTime)
+                {
+                    return false;
+                }
+                break;
+        }
+
+        if (!string.IsNullOrWhiteSpace(_queryOrigin) && !task.Origin.Contains(_queryOrigin))
+        {
+            return false;
+        }
+
+        if (_queryStatus != 0 && task.TaskStatus != _queryStatus)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task SignalRNotifyDataHandler(SchedulerTaskDto taskDto)
+    {
+        if (CheckNotifiyData(taskDto))
+        {
+            var index = _tasks.FindIndex(j => j.Id == taskDto.Id);
+
+            if (index > -1)
+            {
+                var task = _tasks.ElementAt(index);
+                taskDto.OperatorName = task.OperatorName;
+                _tasks[index] = taskDto;
+            }
+            else if (Page == 1)
+            {
+                var sameOperatorJob = _tasks.FirstOrDefault(j => j.OperatorId == taskDto.OperatorId);
+
+                if (sameOperatorJob != null)
+                {
+                    taskDto.OperatorName = sameOperatorJob.OperatorName;
+                }
+                else
+                {
+                    var userInfo = await SchedulerServerCaller.AuthService.GetUserInfoAsync(taskDto.OperatorId);
+                    taskDto.OperatorName = userInfo.Name;
+                }
+
+                _tasks.Add(taskDto);
+
+                _tasks = _tasks.OrderByDescending(p => p.SchedulerTime).OrderByDescending(p => p.CreationTime).Take(_pageSize).ToList();
+            }
+
+            StateHasChanged();
+        }
     }
 }
 
