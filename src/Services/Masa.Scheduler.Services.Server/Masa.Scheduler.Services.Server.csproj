@@ -40,12 +40,13 @@
 		<PackageReference Include="Masa.Contrib.ReadWriteSpliting.Cqrs" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Contrib.Storage.ObjectStorage.Aliyun" Version="0.6.0-preview.3" />
-		<PackageReference Include="Masa.Utils.Caching.Memory" Version="0.6.0-preview.3" />
+		<PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Utils.Caching.Redis" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Utils.Development.Dapr.AspNetCore" Version="0.6.0-preview.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
 		<PackageReference Include="Masa.Contrib.Data.UoW.EFCore" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="0.6.0-preview.3" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
 		  <PrivateAssets>all</PrivateAssets>
@@ -56,6 +57,7 @@
 		<PackageReference Include="Quartz" Version="3.4.0" />
 		<PackageReference Include="Quartz.AspNetCore" Version="3.4.0" />
 		<PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.4.0" />
+		<PackageReference Include="Quartz.Serialization.Json" Version="3.4.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 	</ItemGroup>
 	

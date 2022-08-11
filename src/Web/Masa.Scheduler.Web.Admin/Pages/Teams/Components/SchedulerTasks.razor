@@ -2,29 +2,43 @@
 
 <MCard Class="pa-6">
     <div class="d-flex mb-6">
-        <MRadioGroup Value="_queryStatus" TValue="TaskRunStatus" ValueChanged="QueryStatusChanged" OnClick="RadioGroupClickHandler" Row Style="margin-top:0px; padding-top:8px;">
-            @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
-            {
-                <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
-                    <LabelContent>
-                        <span style="color: @ComputedStatusColor(pair.Value)"> @T(pair.Key) </span>
-                    </LabelContent>
-                </MRadio>
-            }
-        </MRadioGroup>
-        <MSpacer />
-        <MSelect @bind-Value="_queryTimeType" Label="@T("QueryTimeType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<JobQueryTimeTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
-        </MSelect>
-        <PDateTimePicker Value="_queryStartTime" TValue="DateTime?" TimeZoneOffset="TimezoneOffset" Disabled="_queryTimeType == 0" ValueChanged="QueryStartTimeChanged" Outlined Dense Label="@T("StartDate")" Clearable style="margin-left:10px;">
-        </PDateTimePicker>
-        <PDateTimePicker Value="_queryEndTime" TValue="DateTime?" Disabled="_queryTimeType == 0" ValueChanged="QueryEndTimeChanged" Outlined Dense Label="@T("EndDate")" Clearable style="margin-left:10px;">
-        </PDateTimePicker>
-        <MTextField Value="_queryOrigin" TValue="string" ValueChanged="QueryOriginChanged" Placeholder="@T("Origin")" HideDetails="@("auto")" Flat Dense Solo Outlined>
-        </MTextField>
+        <MRow>
+            <MCol Cols="6">
+                <MRadioGroup Value="_queryStatus" TValue="TaskRunStatus" ValueChanged="QueryStatusChanged" OnClick="RadioGroupClickHandler" Row Style="margin-top:0px; padding-top:8px; width:90%">
+                    @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
+                    {
+                        <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
+                            <LabelContent>
+                                <span style="color: @ComputedStatusColor(pair.Value)"> @T(pair.Key) </span>
+                            </LabelContent>
+                        </MRadio>
+                    }
+                </MRadioGroup>
+            </MCol>
+            <MCol Cols="2">
+                <MSelect @bind-Value="_queryTimeType" Label="@T("QueryTimeType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<JobQueryTimeTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                </MSelect>
+            </MCol>
+            <MCol Cols="2">
+                <PDateTimePicker Value="_queryStartTime" TValue="DateTime?" TimeZoneOffset="TimezoneOffset" Disabled="_queryTimeType == 0" ValueChanged="QueryStartTimeChanged" Outlined Dense Label="@T("StartDate")" Clearable style="margin-left:10px;">
+                </PDateTimePicker>
+            </MCol>
+            <MCol Cols="2">
+                <PDateTimePicker Value="_queryEndTime" TValue="DateTime?" Disabled="_queryTimeType == 0" ValueChanged="QueryEndTimeChanged" Outlined Dense Label="@T("EndDate")" Clearable style="margin-left:10px;">
+                </PDateTimePicker>
+            </MCol>
+            <MCol Cols="2">
+                <MSelect Value="_queryOrigin" TItem="string" TItemValue="string" TValue="string" ValueChanged="QueryOriginChanged" Label="@T("Origin")" HideDetails="@("auto")" Dense Outlined Clearable Items="_orginList" ItemText="origin => origin" ItemValue="origin=>origin">
+                </MSelect>
+            </MCol>
+        </MRow>
     </div>
     <MDataTable Headers="Headers" Items="_tasks" TItem="SchedulerTaskDto" ItemsPerPage="_pageSize" HideDefaultFooter Class="table-border-none scheduler-task-table">
         <HeaderColContent Context="header">
-            <span class="text-btn">@header.Text</span>
+            @if(header.Value != nameof(SchedulerTaskDto.Origin) || (header.Value == nameof(SchedulerTaskDto.Origin) && IsApiCreate))
+            {
+                <span class="text-btn">@header.Text</span>
+            }
         </HeaderColContent>
         <ItemColContent>
             @switch (context.Header.Value)
@@ -65,7 +79,10 @@
                     <span class="text-body4 neutral-lighten-2--text">@context.Item.RunCount</span>
                     break;
                 case nameof(SchedulerTaskDto.Origin):
-                    <span class="text-body4 neutral-lighten-2--text">@context.Item.Origin</span>
+                    @if (IsApiCreate)
+                    {
+                        <span class="text-body4 neutral-lighten-2--text">@context.Item.Origin</span>
+                    }
                     break;
                 case nameof(SchedulerTaskDto.OperatorId):
                     <span class="text-body4 neutral-lighten-2--text">@context.Item.OperatorName</span>

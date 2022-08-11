@@ -14,6 +14,7 @@ public class StartTaskDomainEventHandler
     private readonly QuartzUtils _quartzUtils;
     private readonly IDistributedCacheClient _distributedCacheClient;
     private readonly ILogger<StartTaskDomainEventHandler> _logger;
+    private readonly SignalRUtils _signalRUtils;
 
     public StartTaskDomainEventHandler(
         ISchedulerTaskRepository schedulerTaskRepository,
@@ -24,7 +25,8 @@ public class StartTaskDomainEventHandler
         QuartzUtils quartzUtils,
         IDistributedCacheClient distributedCacheClient,
         ILogger<StartTaskDomainEventHandler> logger,
-        ISchedulerJobRepository schedulerJobRepository)
+        ISchedulerJobRepository schedulerJobRepository,
+        SignalRUtils signalRUtils)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
@@ -35,6 +37,7 @@ public class StartTaskDomainEventHandler
         _distributedCacheClient = distributedCacheClient;
         _logger = logger;
         _schedulerJobRepository = schedulerJobRepository;
+        _signalRUtils = signalRUtils;
     }
 
     [EventHandler(1)]
@@ -86,21 +89,27 @@ public class StartTaskDomainEventHandler
             await _distributedCacheClient.RemoveAsync<int>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
         }
 
-        var filterStatus = new List<TaskRunStatus>() { TaskRunStatus.Running, TaskRunStatus.WaitToRetry, TaskRunStatus.Idle };
+        var filterStatus = new List<TaskRunStatus>() { TaskRunStatus.Running, TaskRunStatus.WaitToRetry, TaskRunStatus.Idle, TaskRunStatus.WaitToRun };
 
         var otherRunningTaskList = await _schedulerTaskRepository.GetListAsync(t => filterStatus.Contains(t.TaskStatus) && t.JobId == task.JobId && t.Id != task.Id);
 
         var allowEnqueue = true;
 
-        task.UpdateTaskSchedulerTime(@event.Request.ExcuteTime);
+        if (task.SchedulerTime == DateTimeOffset.MinValue)
+        {
+            task.UpdateTaskSchedulerTime(@event.Request.ExcuteTime);
+        }
 
         if (otherRunningTaskList.Any())
         {
             switch (task.Job.ScheduleBlockStrategy)
             {
                 case ScheduleBlockStrategyTypes.Serial:
-                    task.Wait();
-                    allowEnqueue = false;
+                    if(otherRunningTaskList.Any(p=> p.TaskStatus == TaskRunStatus.Running))
+                    {
+                        task.Wait();
+                        allowEnqueue = false;
+                    }
                     break;
                 case ScheduleBlockStrategyTypes.Discard:
                     task.Discard();
@@ -135,7 +144,7 @@ public class StartTaskDomainEventHandler
 
         if(task.TaskStatus != TaskRunStatus.WaitToRun)
         {
-            task.Job.UpdateLastScheduleTime(@event.Request.ExcuteTime);
+            task.Job.UpdateLastScheduleTime(task.SchedulerTime);
             task.Job.UpdateLastRunDetail(task.TaskStatus);
             await _schedulerJobRepository.UpdateAsync(task.Job);
         }
@@ -148,5 +157,9 @@ public class StartTaskDomainEventHandler
         {
             await _serverManager.TaskEnqueue(task);
         }
+
+        var dto = _mapper.Map<SchedulerTaskDto>(task);
+
+        await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, dto);
     }
 }

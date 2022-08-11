@@ -8,12 +8,14 @@ public class SchedulerTaskQueryHandler
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly IMapper _mapper;
     private readonly IEventBus _eventBus;
+    private readonly SchedulerDbContext _dbContext;
 
-    public SchedulerTaskQueryHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper, IEventBus eventBus)
+    public SchedulerTaskQueryHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper, IEventBus eventBus, SchedulerDbContext dbContext)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _mapper = mapper;
         _eventBus = eventBus;
+        _dbContext = dbContext;
     }
 
     [EventHandler]
@@ -43,17 +45,17 @@ public class SchedulerTaskQueryHandler
 
         condition = condition.And(!string.IsNullOrEmpty(request.Origin), t => t.Origin == request.Origin);
 
-        var paginatedResult = await _schedulerTaskRepository.GetPaginatedListAsync(condition, new PaginatedOptions()
-        {
-            Page = request.Page,
-            PageSize = request.PageSize,
-            Sorting = new Dictionary<string, bool>()
-            {
-                [nameof(SchedulerJob.CreationTime)] = true
-            }
-        });
+        var skip = (request.Page - 1) * request.PageSize;
 
-        var taskDtos = _mapper.Map<List<SchedulerTaskDto>>(paginatedResult.Result);
+        var dbQuery = _dbContext.Tasks.Where(condition);
+
+        var originList = await dbQuery.Where(p => !string.IsNullOrWhiteSpace(p.Origin)).Select(p => p.Origin).Distinct().ToListAsync();
+
+        var total = await dbQuery.CountAsync();
+
+        var result = await dbQuery.OrderByDescending(p => p.SchedulerTime).OrderByDescending(p => p.CreationTime).Skip(skip).Take(request.PageSize).ToListAsync();
+
+        var taskDtos = _mapper.Map<List<SchedulerTaskDto>>(result);
 
         if (taskDtos.Any())
         {
@@ -74,6 +76,8 @@ public class SchedulerTaskQueryHandler
             }
         }
 
-        query.Result = new(paginatedResult.Total, paginatedResult.TotalPages, taskDtos);
+        var totalPages = (int)Math.Ceiling(total / (decimal)request.PageSize);
+
+        query.Result = new(total, totalPages, taskDtos, originList);
     }
 }

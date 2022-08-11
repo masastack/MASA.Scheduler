@@ -175,5 +175,7 @@
   "RequestSuccess": "请求成功",
   "Run": "运行",
   "Disabled": "禁用",
-  "Enabled": "启用"
+  "Enabled": "启用",
+  "CronExpressionNotHasNextRunTime": "您的表达式计算不出下一次运行时间",
+  "ExpectedNextRunTime": "预计未来5次运行时间"
 }

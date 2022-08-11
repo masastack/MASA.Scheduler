@@ -9,13 +9,15 @@ public class SchedulerJobQueryHandler
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IEventBus _eventBus;
+    private readonly IMemoryCacheClient _memoryCacheClient;
 
-    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus)
+    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus, IMemoryCacheClient memoryCacheClient)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _dbContext = dbContext;
         _mapper = mapper;
         _eventBus = eventBus;
+        _memoryCacheClient = memoryCacheClient;
     }
 
     [EventHandler]
@@ -64,27 +66,13 @@ public class SchedulerJobQueryHandler
 
         var dbQuery = _dbContext.Jobs.Where(condition);
 
-        var result = await dbQuery
-            .Select(j => new
-            {
-                job = j,
-                SortPriority =
-                    j.LastRunStatus == TaskRunStatus.Failure ? 6 :
-                    j.LastRunStatus == TaskRunStatus.WaitToRetry ? 5 :
-                    j.LastRunStatus == TaskRunStatus.Timeout ? 4 :
-                    j.LastRunStatus == TaskRunStatus.TimeoutSuccess ? 3 :
-                    j.LastRunStatus == TaskRunStatus.Idle ? 2 :
-                    j.LastRunStatus == TaskRunStatus.Running ? 1 : 0
-            })
-            .OrderByDescending(p => p.job.Enabled)
-            .ThenByDescending(p => p.SortPriority)
-            .ThenByDescending(p => p.job.ModificationTime).Skip(skip).Take(request.PageSize).ToListAsync();
+        var originList = await dbQuery.Where(p => !string.IsNullOrWhiteSpace(p.Origin)).Select(p => p.Origin).Distinct().ToListAsync();
 
         var total = await dbQuery.CountAsync();
 
-        var jobList = result.Select(p => p.job).ToList();
+        var result = await dbQuery.OrderByDescending(p => p.ModificationTime).ThenByDescending(p => p.CreationTime).Skip(skip).Take(request.PageSize).ToListAsync();
 
-        var jobDtos = _mapper.Map<List<SchedulerJobDto>>(jobList);
+        var jobDtos = _mapper.Map<List<SchedulerJobDto>>(result);
 
         if (jobDtos.Any())
         {
@@ -108,6 +96,6 @@ public class SchedulerJobQueryHandler
 
         var totalPages = (int)Math.Ceiling(total / (decimal)request.PageSize);
 
-        query.Result = new(total, totalPages, jobDtos);
+        query.Result = new(total, totalPages, jobDtos, originList);
     }
 }

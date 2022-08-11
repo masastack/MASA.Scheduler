@@ -56,9 +56,8 @@
                 @if (_jobCreateType == JobCreateTypes.Api)
                 {
                     <MCol Cols="2" Class="pa-2">
-                        <MTextField @bind-Value="QueryOrigin" Placeholder="@T("Origin")" HideDetails="@("auto")" Flat Dense Solo Outlined>
-
-                        </MTextField>
+                        <MSelect @bind-Value="QueryOrigin" HideDetails="@("auto")" Placeholder="@T("Origin")" Outlined Dense Clearable Items="_originList" ItemText="origin=>origin" ItemValue="origin=>origin">
+                        </MSelect>
                     </MCol>
                 }
             </MRow>

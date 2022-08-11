@@ -78,6 +78,8 @@ public partial class JobModal
 
     private bool _visible;
 
+    private bool _cronVisible;
+
     private SchedulerJobDto _model = new();
 
     private MForm? Form { get; set; }
@@ -103,6 +105,10 @@ public partial class JobModal
     private List<ProjectAppDto> _jobApp = new();
 
     private SUserAutoComplete _userAutoComplete = default!;
+
+    private string _nextRunTimeStr = string.Empty;
+
+    private string _tempCron = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -322,6 +328,11 @@ public partial class JobModal
         _resourceVersionType = string.IsNullOrEmpty(Model.JobAppConfig.Version) ? ResourceVersionTypes.Latest : ResourceVersionTypes.SpecifiedVersion;
         _requireCard = false;
 
+        if (Model.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(Model.CronExpression))
+        {
+            GetNextRunTime();
+        }
+
         if (Form is not null)
         {
             Form.ResetValidationAsync();
@@ -354,6 +365,75 @@ public partial class JobModal
         if(owner != null && !string.IsNullOrWhiteSpace(owner.Name))
         {
             Model.Owner = owner.Name;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnCronValueChange(string cronValue)
+    {
+        if(Model.CronExpression != cronValue)
+        {
+            Model.CronExpression = cronValue;
+            GetNextRunTime();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void GetNextRunTime(int showCount = 5)
+    {
+        if (!CronExpression.IsValidExpression(Model.CronExpression))
+        {
+            _nextRunTimeStr = T("CronExpressionNotHasNextRunTime");
+            return;
+        }
+
+        var sb = new StringBuilder();
+
+        var startTime = DateTimeOffset.Now;
+
+        var cronExpression = new CronExpression(Model.CronExpression);
+
+        for (int i = 0; i < showCount; i++)
+        {
+            var nextExcuteTime = cronExpression.GetNextValidTimeAfter(startTime);
+
+            if (nextExcuteTime.HasValue)
+            {
+                startTime = nextExcuteTime.Value;
+                sb.AppendLine(startTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"));
+            }
+        }
+
+        if (sb.Length == 0)
+        {
+            _nextRunTimeStr = T("CronExpressionNotHasNextRunTime");
+        }
+        else
+        {
+            _nextRunTimeStr = sb.ToString();
+        }
+    }
+
+    private Task OpenCronModal() 
+    {
+        _cronVisible = true;
+        _tempCron = Model.CronExpression;
+        return Task.CompletedTask;
+    }
+
+    private Task SetCronExpression()
+    {
+        if (CronExpression.IsValidExpression(_tempCron))
+        {
+            Model.CronExpression = _tempCron;
+            GetNextRunTime();
+            _cronVisible = false;
+        }
+        else
+        {
+            PopupService.ToastErrorAsync(T("CronExpressionInvalid"));
         }
 
         return Task.CompletedTask;

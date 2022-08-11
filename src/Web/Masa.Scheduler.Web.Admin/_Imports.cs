@@ -38,3 +38,4 @@ global using Quartz;
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using static Masa.Stack.Components.JsInitVariables;
 global using Masa.BuildingBlocks.Data.Mapping;
+global using System.Text;

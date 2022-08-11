@@ -8,30 +8,33 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly IRepository<SchedulerTask> _schedulerTaskRepository;
     private readonly SchedulerDbContext _dbContext;
     private readonly IRepository<SchedulerJob> _schedulerJobRepository;
-    private readonly IHubContext<NotificationsHub> _hubContext;
+    private readonly SignalRUtils _signalRUtils;
     private readonly IDistributedCacheClient _distributedCacheClient;
     private readonly QuartzUtils _quartzUtils;
     private readonly IIntegrationEventBus _eventBus;
     private readonly SchedulerServerManagerData _data;
+    private readonly IMapper _mapper;
 
     public NotifyTaskRunResultDomainEventHandler(
         IRepository<SchedulerTask> schedulerTaskRepository,
         SchedulerDbContext dbContext,
         IRepository<SchedulerJob> schedulerJobRepository,
-        IHubContext<NotificationsHub> hubContext,
+        SignalRUtils signalRUtils,
         IDistributedCacheClient distributedCacheClient,
         QuartzUtils quartzUtils,
         IIntegrationEventBus eventBus,
-        SchedulerServerManagerData data)
+        SchedulerServerManagerData data,
+        IMapper mapper)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _dbContext = dbContext;
         _schedulerJobRepository = schedulerJobRepository;
-        _hubContext = hubContext;
+        _signalRUtils = signalRUtils;
         _distributedCacheClient = distributedCacheClient;
         _quartzUtils = quartzUtils;
         _eventBus = eventBus;
         _data = data;
+        _mapper = mapper;
     }
 
     [EventHandler]
@@ -100,7 +103,7 @@ public class NotifyTaskRunResultDomainEventHandler
 
         if (task.TaskStatus != TaskRunStatus.WaitToRetry)
         {
-            var waitForRunTask = await _dbContext.Tasks.OrderBy(t => t.CreationTime).Include(t => t.Job).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
+            var waitForRunTask = await _dbContext.Tasks.OrderBy(t => t.SchedulerTime).ThenBy(t => t.CreationTime).Include(t => t.Job).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
 
             if (waitForRunTask != null)
             {
@@ -116,7 +119,8 @@ public class NotifyTaskRunResultDomainEventHandler
             _distributedCacheClient.Remove<int>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
         }
 
-        var groupClient = _hubContext.Clients.Groups(ConstStrings.GLOBAL_GROUP);
-        await groupClient.SendAsync(SignalRMethodConsts.GET_NOTIFICATION);
+        var dto = _mapper.Map<SchedulerTaskDto>(task);
+
+        await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, dto);
     }
 }

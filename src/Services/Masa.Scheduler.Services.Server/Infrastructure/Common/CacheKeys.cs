@@ -7,4 +7,6 @@ public class CacheKeys
 {
     public const string CURRENT_RUN_COUNT = nameof(CURRENT_RUN_COUNT);
     public const string TASK_RETRY_COUNT = nameof(TASK_RETRY_COUNT);
+    public const string SIGNALR_NOTIFY = nameof(SIGNALR_NOTIFY);
+    public const string USER_QUERY = nameof(USER_QUERY);
 }

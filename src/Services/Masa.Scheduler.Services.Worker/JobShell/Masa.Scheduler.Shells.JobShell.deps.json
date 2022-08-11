@@ -8,8 +8,8 @@
     ".NETCoreApp,Version=v6.0": {
       "Masa.Scheduler.Shells.JobShell/1.0.0": {
         "dependencies": {
-          "Masa.Contrib.BasicAbility.Scheduler": "0.5.0-preview.7",
-          "Masa.Utils.Security.Authentication.OpenIdConnect": "0.5.0-preview.6",
+          "Masa.Contrib.StackSdks.Scheduler": "0.6.0-preview.3",
+          "Masa.Utils.Security.Authentication.OpenIdConnect": "0.5.0",
           "Microsoft.EntityFrameworkCore": "6.0.7",
           "Microsoft.EntityFrameworkCore.SqlServer": "6.0.7"
         },
@@ -25,98 +25,73 @@
           }
         }
       },
-      "Grpc.Core.Api/2.40.0": {
-        "dependencies": {
-          "System.Memory": "4.5.3"
-        },
+      "Masa.BuildingBlocks.Authentication.Identity/0.6.0-preview.3": {
         "runtime": {
-          "lib/netstandard2.0/Grpc.Core.Api.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.40.0.0"
-          }
-        }
-      },
-      "Grpc.Net.Client/2.40.0": {
-        "dependencies": {
-          "Grpc.Net.Common": "2.40.0",
-          "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
-        },
-        "runtime": {
-          "lib/net6.0/Grpc.Net.Client.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.40.0.0"
-          }
-        }
-      },
-      "Grpc.Net.Common/2.40.0": {
-        "dependencies": {
-          "Grpc.Core.Api": "2.40.0"
-        },
-        "runtime": {
-          "lib/net6.0/Grpc.Net.Common.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.40.0.0"
-          }
-        }
-      },
-      "Masa.BuildingBlocks.BasicAbility.Scheduler/0.5.0-preview.7": {
-        "runtime": {
-          "lib/net6.0/Masa.BuildingBlocks.BasicAbility.Scheduler.dll": {
+          "lib/net6.0/Masa.BuildingBlocks.Authentication.Identity.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
       },
-      "Masa.BuildingBlocks.Identity.IdentityModel/0.5.0-preview.7": {
-        "runtime": {
-          "lib/net6.0/Masa.BuildingBlocks.Identity.IdentityModel.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "Masa.Contrib.BasicAbility.Scheduler/0.5.0-preview.7": {
-        "dependencies": {
-          "Masa.BuildingBlocks.BasicAbility.Scheduler": "0.5.0-preview.7",
-          "Masa.BuildingBlocks.Identity.IdentityModel": "0.5.0-preview.7",
-          "Masa.Utils.Caller.HttpClient": "0.5.0-preview.6"
-        },
-        "runtime": {
-          "lib/net6.0/Masa.Contrib.BasicAbility.Scheduler.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "Masa.Utils.Caller.Core/0.5.0-preview.6": {
+      "Masa.BuildingBlocks.Service.Caller/0.6.0-preview.3": {
         "dependencies": {
           "Google.Protobuf": "3.19.1",
-          "Masa.Utils.Exceptions": "0.5.0-preview.6",
-          "Microsoft.Extensions.DependencyInjection": "6.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0"
         },
         "runtime": {
-          "lib/net6.0/Masa.Utils.Caller.Core.dll": {
+          "lib/net6.0/Masa.BuildingBlocks.Service.Caller.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
       },
-      "Masa.Utils.Caller.HttpClient/0.5.0-preview.6": {
+      "Masa.BuildingBlocks.StackSdks.Scheduler/0.6.0-preview.3": {
+        "runtime": {
+          "lib/net6.0/Masa.BuildingBlocks.StackSdks.Scheduler.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Masa.Contrib.Service.Caller/0.6.0-preview.3": {
         "dependencies": {
-          "Google.Protobuf": "3.19.1",
-          "Grpc.Net.Client": "2.40.0",
-          "Masa.Utils.Caller.Core": "0.5.0-preview.6",
+          "Masa.BuildingBlocks.Service.Caller": "0.6.0-preview.3",
+          "Masa.Utils.Exceptions": "0.6.0-preview.3"
+        },
+        "runtime": {
+          "lib/net6.0/Masa.Contrib.Service.Caller.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Masa.Contrib.Service.Caller.HttpClient/0.6.0-preview.3": {
+        "dependencies": {
+          "Masa.BuildingBlocks.Service.Caller": "0.6.0-preview.3",
           "Microsoft.Extensions.Http": "6.0.0"
         },
         "runtime": {
-          "lib/net6.0/Masa.Utils.Caller.HttpClient.dll": {
+          "lib/net6.0/Masa.Contrib.Service.Caller.HttpClient.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
       },
-      "Masa.Utils.Exceptions/0.5.0-preview.6": {
+      "Masa.Contrib.StackSdks.Scheduler/0.6.0-preview.3": {
+        "dependencies": {
+          "Masa.BuildingBlocks.Authentication.Identity": "0.6.0-preview.3",
+          "Masa.BuildingBlocks.StackSdks.Scheduler": "0.6.0-preview.3",
+          "Masa.Contrib.Service.Caller": "0.6.0-preview.3",
+          "Masa.Contrib.Service.Caller.HttpClient": "0.6.0-preview.3"
+        },
+        "runtime": {
+          "lib/net6.0/Masa.Contrib.StackSdks.Scheduler.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Masa.Utils.Exceptions/0.6.0-preview.3": {
         "runtime": {
           "lib/net6.0/Masa.Utils.Exceptions.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -124,7 +99,7 @@
           }
         }
       },
-      "Masa.Utils.Security.Authentication.OpenIdConnect/0.5.0-preview.6": {
+      "Masa.Utils.Security.Authentication.OpenIdConnect/0.5.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.OpenIdConnect": "6.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0"
@@ -467,7 +442,6 @@
           }
         }
       },
-      "System.Memory/4.5.3": {},
       "System.Runtime.Caching/4.7.0": {
         "dependencies": {
           "System.Configuration.ConfigurationManager": "4.7.0"
@@ -563,75 +537,61 @@
       "path": "google.protobuf/3.19.1",
       "hashPath": "google.protobuf.3.19.1.nupkg.sha512"
     },
-    "Grpc.Core.Api/2.40.0": {
+    "Masa.BuildingBlocks.Authentication.Identity/0.6.0-preview.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Ig3ioHBMDl8jZzPRU+t8GPpgDBYkjwupHzSVswwrsUVZdO5SThmYY4fHftNC1rMCjsjVvUMQ/o1NCf1CT4Y+rA==",
-      "path": "grpc.core.api/2.40.0",
-      "hashPath": "grpc.core.api.2.40.0.nupkg.sha512"
+      "sha512": "sha512-AHnXWI88LcNvhVOglfBk1xOFyXMKvWr4F2hCfpmfvBNa05zsgM/BtT+yKW+/w1MNbxig3q+7wAwMOlWeHggSnA==",
+      "path": "masa.buildingblocks.authentication.identity/0.6.0-preview.3",
+      "hashPath": "masa.buildingblocks.authentication.identity.0.6.0-preview.3.nupkg.sha512"
     },
-    "Grpc.Net.Client/2.40.0": {
+    "Masa.BuildingBlocks.Service.Caller/0.6.0-preview.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+Z+onJ5jOLwKR41wROs+I1Bo6+NKT9ov/moXZCi9vH7aDRVQuqhmfALoxWdsNUNO9Bl3A/VzmfPB2jxZB4B1WQ==",
-      "path": "grpc.net.client/2.40.0",
-      "hashPath": "grpc.net.client.2.40.0.nupkg.sha512"
+      "sha512": "sha512-tuVekEDloSHbXmk2yZnVgEl+b2NBy2iCjU0QxJHECyox2/U84XPQrhznLYsnVEDmNJ6IkgvIGccGcFLBEtsWBQ==",
+      "path": "masa.buildingblocks.service.caller/0.6.0-preview.3",
+      "hashPath": "masa.buildingblocks.service.caller.0.6.0-preview.3.nupkg.sha512"
     },
-    "Grpc.Net.Common/2.40.0": {
+    "Masa.BuildingBlocks.StackSdks.Scheduler/0.6.0-preview.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-nj5XotYmzAT4UlGyOK6xWacPp2nODupQvlbeA2qqu9F47BIr+vze6+psJ9gSgED2HeTVBXuc+vdKrUXzk0ErMQ==",
-      "path": "grpc.net.common/2.40.0",
-      "hashPath": "grpc.net.common.2.40.0.nupkg.sha512"
+      "sha512": "sha512-yo6uuS2LP3b/ycWjQ0VbbLxf4rAE0X0tOINQ/WT9n61dCgXMjTDfGGhHdslZMncccYN4KgbIJyH1L4KRMPND0w==",
+      "path": "masa.buildingblocks.stacksdks.scheduler/0.6.0-preview.3",
+      "hashPath": "masa.buildingblocks.stacksdks.scheduler.0.6.0-preview.3.nupkg.sha512"
     },
-    "Masa.BuildingBlocks.BasicAbility.Scheduler/0.5.0-preview.7": {
+    "Masa.Contrib.Service.Caller/0.6.0-preview.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-iZrsW3zfaELba1EgBxREHKq2BxsewE7xfwOYSzamRkQ6IzsrzMX4U6fGybVS1HUyK66wOAhNBmJrvwTyCHkPKA==",
-      "path": "masa.buildingblocks.basicability.scheduler/0.5.0-preview.7",
-      "hashPath": "masa.buildingblocks.basicability.scheduler.0.5.0-preview.7.nupkg.sha512"
+      "sha512": "sha512-3Zzb429iFZ8ys32KQTIEZw5i/79ymxIgdpRouL3qvzV4LfgigWlN3MVMrd6XiQ81hHMbsmcssDnVchCwde1koQ==",
+      "path": "masa.contrib.service.caller/0.6.0-preview.3",
+      "hashPath": "masa.contrib.service.caller.0.6.0-preview.3.nupkg.sha512"
     },
-    "Masa.BuildingBlocks.Identity.IdentityModel/0.5.0-preview.7": {
+    "Masa.Contrib.Service.Caller.HttpClient/0.6.0-preview.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-30LCY8sw216NeZM042HbH4I/g47Bn3H/EOtDWe2RXUWEuRmGzJkQh6tDAaF8VNk/HchCFqaR8BBznyXCwYunhw==",
-      "path": "masa.buildingblocks.identity.identitymodel/0.5.0-preview.7",
-      "hashPath": "masa.buildingblocks.identity.identitymodel.0.5.0-preview.7.nupkg.sha512"
+      "sha512": "sha512-887Pg9PwR2Uv7GKPsHWaW2m25C+nNPUBa9VQ2g+ZLviIHAJLjAhrMYPP3M6oLBhtaUfocSH1xePcCMb3fozUug==",
+      "path": "masa.contrib.service.caller.httpclient/0.6.0-preview.3",
+      "hashPath": "masa.contrib.service.caller.httpclient.0.6.0-preview.3.nupkg.sha512"
     },
-    "Masa.Contrib.BasicAbility.Scheduler/0.5.0-preview.7": {
+    "Masa.Contrib.StackSdks.Scheduler/0.6.0-preview.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-4+QI7r+UAglnsI51dh2WWkt4DdCYHHnWCGn/GvkferSL7ABgySrVynOj4+iCuN9qrzW4K7ZMbWjpj9uxKljnvQ==",
-      "path": "masa.contrib.basicability.scheduler/0.5.0-preview.7",
-      "hashPath": "masa.contrib.basicability.scheduler.0.5.0-preview.7.nupkg.sha512"
+      "sha512": "sha512-IHtFNxb9TrJRrOdFqWhO/UJLYupyJep1lV6IKTnzuKboCaf25z70VOWf+ir2jTg8bC5qyZGGdyx02xKsf99VOA==",
+      "path": "masa.contrib.stacksdks.scheduler/0.6.0-preview.3",
+      "hashPath": "masa.contrib.stacksdks.scheduler.0.6.0-preview.3.nupkg.sha512"
     },
-    "Masa.Utils.Caller.Core/0.5.0-preview.6": {
+    "Masa.Utils.Exceptions/0.6.0-preview.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-vM1U5o6x5g6fSB+cjA0Z/5cRiepVAH0QRlfqT3BSAZ2EHl7iHPoQYcf3jOEzIRTsTFshC+GAVX9IklJCK5ILkw==",
-      "path": "masa.utils.caller.core/0.5.0-preview.6",
-      "hashPath": "masa.utils.caller.core.0.5.0-preview.6.nupkg.sha512"
+      "sha512": "sha512-NPi7Fj+SV5bbZk3I8+smmZJobjfhhBG8Fqtpw0p3XFfkj4SlTtvOR2NbVpPnpL4IZlgg49SmPCWGOsOWp7XNQg==",
+      "path": "masa.utils.exceptions/0.6.0-preview.3",
+      "hashPath": "masa.utils.exceptions.0.6.0-preview.3.nupkg.sha512"
     },
-    "Masa.Utils.Caller.HttpClient/0.5.0-preview.6": {
+    "Masa.Utils.Security.Authentication.OpenIdConnect/0.5.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-kugJP5g4XYtAaV+pYJn+LJMuKeA2pLskbM1Fad1Xh+M9rA7GnfuknhSEklJ2+J/ksb+VLwd/j7PEcHzN6Zs9yQ==",
-      "path": "masa.utils.caller.httpclient/0.5.0-preview.6",
-      "hashPath": "masa.utils.caller.httpclient.0.5.0-preview.6.nupkg.sha512"
-    },
-    "Masa.Utils.Exceptions/0.5.0-preview.6": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-UXGUL8BucITQpP8CY95LmMou/uD0qgtrtfA4gFr8dPPcpNwrfY/x2FHnXJhbdnnmjbnuKFs/roau5oynSDhRLQ==",
-      "path": "masa.utils.exceptions/0.5.0-preview.6",
-      "hashPath": "masa.utils.exceptions.0.5.0-preview.6.nupkg.sha512"
-    },
-    "Masa.Utils.Security.Authentication.OpenIdConnect/0.5.0-preview.6": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-JyaE/DT5ullpCG5wI6jJN3fYRfOtAIOvCC4+kuerlxHlRcxd3xJxB5Q1ssQSBwh7nrozt+gPkcsn2k995njW0Q==",
-      "path": "masa.utils.security.authentication.openidconnect/0.5.0-preview.6",
-      "hashPath": "masa.utils.security.authentication.openidconnect.0.5.0-preview.6.nupkg.sha512"
+      "sha512": "sha512-HdE76XSKYduIkOagyrrb8LlH+Pq2uf18+mmKJ74r97S/GSOQkGJHAbfl4J/MUpOgd5POzX3vQwB8AIh1Up73Ow==",
+      "path": "masa.utils.security.authentication.openidconnect/0.5.0",
+      "hashPath": "masa.utils.security.authentication.openidconnect.0.5.0.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authentication.OpenIdConnect/6.0.0": {
       "type": "package",
@@ -863,13 +823,6 @@
       "sha512": "sha512-C+Q5ORsFycRkRuvy/Xd0Pv5xVpmWSAvQYZAGs7VQogmkqlLhvfZXTgBIlHqC3cxkstSoLJAYx6xZB7foQ2y5eg==",
       "path": "system.identitymodel.tokens.jwt/6.10.0",
       "hashPath": "system.identitymodel.tokens.jwt.6.10.0.nupkg.sha512"
-    },
-    "System.Memory/4.5.3": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-3oDzvc/zzetpTKWMShs1AADwZjQ/36HnsufHRPcOjyRAAMLDlu2iD33MBI2opxnezcVUtXyqDXXjoFMOU9c7SA==",
-      "path": "system.memory/4.5.3",
-      "hashPath": "system.memory.4.5.3.nupkg.sha512"
     },
     "System.Runtime.Caching/4.7.0": {
       "type": "package",

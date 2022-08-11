@@ -71,7 +71,7 @@ public class SchedulerJobService : ServiceBase
         await eventBus.PublishAsync(command);
         return Results.Ok();
     }
-    
+
     public async Task<IResult> AddSchedulerJobBySdkAsync(IEventBus eventBus, [FromBody] AddSchedulerJobBySdkRequest request)
     {
         var command = new AddSchedulerJobBySdkCommand(request);

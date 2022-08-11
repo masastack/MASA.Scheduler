@@ -89,3 +89,8 @@ global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
 global using Masa.BuildingBlocks.StackSdks.Auth;
 global using Masa.BuildingBlocks.StackSdks.Pm.Enum;
+global using Masa.Utils.Security.Cryptography;
+global using Masa.Utils.Caching.DistributedMemory.Interfaces;
+global using Masa.Utils.Caching.Core.Models;
+global using Microsoft.Extensions.Caching.Distributed;
+global using Microsoft.Extensions.Caching.Memory;
