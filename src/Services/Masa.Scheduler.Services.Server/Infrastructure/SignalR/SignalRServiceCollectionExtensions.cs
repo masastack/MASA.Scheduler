@@ -27,6 +27,8 @@ public static class SignalRServiceCollectionExtensions
                 SyncTimeout = options.SyncTimeout
             };
 
+            config.Configuration.ChannelPrefix = "masa-scheduler";
+
             foreach (var server in options.Servers)
             {
                 config.Configuration.EndPoints.Add(server.Host, server.Port);
