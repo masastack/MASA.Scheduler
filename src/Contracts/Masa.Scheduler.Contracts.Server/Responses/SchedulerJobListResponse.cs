@@ -6,6 +6,7 @@ namespace Masa.Scheduler.Contracts.Server.Responses;
 public class SchedulerJobListResponse : BasePaginationResponse<SchedulerJobDto>
 {
     public List<string> OriginList { get; set; }
+
     public SchedulerJobListResponse()
         : base(0, 0, new List<SchedulerJobDto>())
     {

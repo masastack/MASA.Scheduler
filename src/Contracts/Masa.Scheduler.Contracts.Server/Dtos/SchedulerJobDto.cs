@@ -73,7 +73,7 @@ public class SchedulerJobDto
 
     public SchedulerJobDaprServiceInvocationConfigDto DaprServiceInvocationConfig { get; set; } = new();
 
-    public DateTime ModificationTime { get; set; }
-
     public DateTime CreationTime { get; set; }
+
+    public DateTime ModificationTime { get; set; }
 }
