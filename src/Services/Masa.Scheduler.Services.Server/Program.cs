@@ -16,6 +16,8 @@ if (builder.Environment.IsDevelopment())
 
 builder.AddObservability();
 
+var quartzConnectString = builder.Configuration.GetValue<string>("QuartzConnectString");
+
 builder.Services.AddMasaIdentityModel(IdentityType.MultiEnvironment, options =>
 {
     options.Environment = "environment";
@@ -48,7 +50,7 @@ builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR();
-builder.Services.AddQuartzUtils();
+builder.Services.AddQuartzUtils(quartzConnectString);
 
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))

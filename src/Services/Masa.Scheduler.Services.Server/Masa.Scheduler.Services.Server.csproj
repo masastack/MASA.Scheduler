@@ -56,6 +56,7 @@
 		<PackageReference Include="Quartz" Version="3.4.0" />
 		<PackageReference Include="Quartz.AspNetCore" Version="3.4.0" />
 		<PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.4.0" />
+		<PackageReference Include="Quartz.Serialization.Json" Version="3.4.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 	</ItemGroup>
 	

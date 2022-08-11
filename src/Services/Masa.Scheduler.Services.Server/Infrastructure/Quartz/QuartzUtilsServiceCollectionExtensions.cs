@@ -5,11 +5,18 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Quartz;
 
 public static class QuartzUtilsServiceCollectionExtensions
 {
-    public static IServiceCollection AddQuartzUtils(this IServiceCollection services)
+    public static IServiceCollection AddQuartzUtils(this IServiceCollection services, string quartzConnectString)
     {
         services.AddQuartz(q =>
         {
             q.UseMicrosoftDependencyInjectionJobFactory();
+            q.UsePersistentStore(config =>
+            {
+                config.UseSqlServer(quartzConnectString);
+                config.UseClustering();
+                config.UseJsonSerializer();
+            });
+            
         });
         services.AddQuartzServer(options =>
         {   
