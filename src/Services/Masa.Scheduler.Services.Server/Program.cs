@@ -43,13 +43,16 @@ builder.AddMasaConfiguration(configurationBuilder =>
     configurationBuilder.UseDcc();
 });
 var configuration = builder.GetMasaConfiguration().ConfigurationApi.GetDefault();
+
+var redisConfigOptions = configuration.GetSection("RedisConfig").Get<RedisConfigurationOptions>();
+
 builder.Services.AddAuthClient(configuration.GetValue<string>("AppSettings:AuthClient:Url"));
-builder.Services.AddMasaRedisCache(configuration.GetSection("RedisConfig").Get<RedisConfigurationOptions>()).AddMasaMemoryCache();
+builder.Services.AddMasaRedisCache(redisConfigOptions).AddMasaMemoryCache();
 builder.Services.AddPmClient(configuration.GetValue<string>("AppSettings:PmClient:Url"));
 builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
-builder.Services.AddMasaSignalR();
+builder.Services.AddMasaSignalR(redisConfigOptions);
 builder.Services.AddQuartzUtils(quartzConnectString);
 
 builder.Services.AddHealthChecks()

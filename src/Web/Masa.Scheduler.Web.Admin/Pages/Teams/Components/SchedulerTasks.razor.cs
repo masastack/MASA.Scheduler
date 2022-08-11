@@ -20,10 +20,6 @@ public partial class SchedulerTasks
             {
                 _job = value;
                 _jobChange = true;
-                if (_job != null && string.IsNullOrWhiteSpace(_job.Origin) && Headers != null)
-                {
-                    Headers.RemoveAll(p => p.Value == nameof(SchedulerTaskDto.Origin));
-                }
                 OnQueryDataChanged();
             }
             else
@@ -64,6 +60,7 @@ public partial class SchedulerTasks
     private ConfirmDialogTypes _confirmDialogType;
     private Guid _confirmTaskId;
     private List<string> _orginList = new();
+    private bool IsApiCreate => _job != null && !string.IsNullOrWhiteSpace(_job.Origin);
 
     private Task QueryStatusChanged(TaskRunStatus status)
     {

@@ -35,7 +35,10 @@
     </div>
     <MDataTable Headers="Headers" Items="_tasks" TItem="SchedulerTaskDto" ItemsPerPage="_pageSize" HideDefaultFooter Class="table-border-none scheduler-task-table">
         <HeaderColContent Context="header">
-            <span class="text-btn">@header.Text</span>
+            @if(header.Value != nameof(SchedulerTaskDto.Origin) || (header.Value == nameof(SchedulerTaskDto.Origin) && IsApiCreate))
+            {
+                <span class="text-btn">@header.Text</span>
+            }
         </HeaderColContent>
         <ItemColContent>
             @switch (context.Header.Value)
@@ -76,7 +79,10 @@
                     <span class="text-body4 neutral-lighten-2--text">@context.Item.RunCount</span>
                     break;
                 case nameof(SchedulerTaskDto.Origin):
-                    <span class="text-body4 neutral-lighten-2--text">@context.Item.Origin</span>
+                    @if (IsApiCreate)
+                    {
+                        <span class="text-body4 neutral-lighten-2--text">@context.Item.Origin</span>
+                    }
                     break;
                 case nameof(SchedulerTaskDto.OperatorId):
                     <span class="text-body4 neutral-lighten-2--text">@context.Item.OperatorName</span>
