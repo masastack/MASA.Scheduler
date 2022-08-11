@@ -382,7 +382,17 @@ public partial class SchedulerTasks
 
     private bool CheckNotifiyData(SchedulerTaskDto task)
     {
-        if (task == null)
+        if(task == null)
+        {
+            return false;
+        }
+
+        if(_job == null)
+        {
+            return false;
+        }
+
+        if(task.JobId != _job.Id)
         {
             return false;
         }

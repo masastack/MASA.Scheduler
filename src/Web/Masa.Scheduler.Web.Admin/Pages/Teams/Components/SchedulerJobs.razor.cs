@@ -606,6 +606,16 @@ public partial class SchedulerJobs : ProCompontentBase
             return false;
         }
 
+        if (Project == null)
+        {
+            return false;
+        }
+
+        if(job.BelongProjectIdentity != Project.Identity)
+        {
+            return false;
+        }
+
         if(!string.IsNullOrWhiteSpace(_queryJobName) && !job.Name.Contains(_queryJobName))
         {
             return false;
