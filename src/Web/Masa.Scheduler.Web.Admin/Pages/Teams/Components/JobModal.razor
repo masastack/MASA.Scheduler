@@ -1,7 +1,7 @@
 ﻿@inherits ProCompontentBase
 
 <div @ref="Ref">
-    <SSheetDialog Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(Model.Id == Guid.Empty? T("Job.Add") : T("Job.Update"))">
+    <SSheetDialog Value="Visible" ValueChanged="HandleVisibleChanged" Title="@(Model.Id == Guid.Empty? T("Job.Add") : T("Job.Update"))">
         <MStepper Value="_step" Class="sheetDialogPadding full-height">
             <MStepperItems Class="full-height">
                 <MStepperContent Step="1" Class="full-height">
