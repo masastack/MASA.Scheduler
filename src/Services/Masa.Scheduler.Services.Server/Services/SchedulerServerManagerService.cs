@@ -7,18 +7,11 @@ public class SchedulerServerManagerService : ServiceBase
 {
     public SchedulerServerManagerService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_SERVER_MANAGER_API)
     {
-        MapPost(MonitorWorkerOnlineAsync);
         MapGet(OnlineAsync);
         MapGet(GetWorkerListAsync);
         MapGet(Heartbeat);
         MapPost(NotifyTaskRunResultAsync);
         MapPost(MonitorTaskStartAsync);
-    }
-
-    [Topic(ConstStrings.PUB_SUB_NAME, nameof(SchedulerWorkerOnlineIntegrationEvent))]
-    public async Task MonitorWorkerOnlineAsync([FromServices] SchedulerServerManager serverManager, SchedulerWorkerOnlineIntegrationEvent @event)
-    {
-        await serverManager.MonitorHandler(@event);
     }
 
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(NotifyTaskStartIntegrationEvent))]

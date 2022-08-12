@@ -12,18 +12,11 @@ public class SchedulerWorkerManagerService : ServiceBase
         _logger = logger;
         var host = Dns.GetHostEntry(Dns.GetHostName());
         var serviceId = MD5Utils.Encrypt(EncryptType.Md5, host.HostName);
-        MapPost(MonitorServerOnlineAsync);
         MapGet(OnlineAsync);
         MapGet(GetServerListAsync);
         MapGet(Heartbeat);
         MapPost(StartTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent) + serviceId);
         MapPost(StopTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StopTaskIntegrationEvent) + serviceId);
-    }
-
-    [Topic(ConstStrings.PUB_SUB_NAME, nameof(SchedulerServerOnlineIntegrationEvent))]
-    public async Task MonitorServerOnlineAsync([FromServices] SchedulerWorkerManager workerManager, SchedulerServerOnlineIntegrationEvent @event)
-    {
-        await workerManager.MonitorHandler(@event);
     }
 
     public async Task<IResult> OnlineAsync([FromServices] SchedulerWorkerManager workerManager)

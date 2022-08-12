@@ -370,6 +370,20 @@ public partial class JobModal
         return Task.CompletedTask;
     }
 
+    private Task OnScheduleTypeChanged(ScheduleTypes scheduleType)
+    {
+        if(Model.ScheduleType != scheduleType)
+        {
+            Model.ScheduleType = scheduleType;
+            if (Model.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(Model.CronExpression))
+            {
+                GetNextRunTime();
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
     private Task OnCronValueChange(string cronValue)
     {
         if(Model.CronExpression != cronValue)

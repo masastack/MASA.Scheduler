@@ -59,7 +59,7 @@
                                 </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MSelect @bind-Value="Model.ScheduleType" Label="@T("ScheduleType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        <MSelect Value="Model.ScheduleType" ValueExpression="()=>Model.ScheduleType" TValue="ScheduleTypes" TItemValue="ScheduleTypes" TItem="KeyValuePair<string,ScheduleTypes>" ValueChanged="OnScheduleTypeChanged" Label="@T("ScheduleType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                         </MSelect>
                                     </MCol>
                                     @if (Model.ScheduleType == ScheduleTypes.Cron)

@@ -35,13 +35,17 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     protected override string OnlineApi { get; set; } = $"{ConstStrings.SCHEDULER_WORKER_MANAGER_API}/online";
 
+    protected override string OnlineTopic { get; set; } = $"{nameof(SchedulerWorkerOnlineIntegrationEvent)}";
+
+    protected override string MoniterTopic { get; set; } = $"{nameof(SchedulerServerOnlineIntegrationEvent)}";
+
     protected override ILogger<BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>> Logger => _logger;
     
     public async Task EnqueueTask(StartTaskIntegrationEvent @event)
     {
         if (@event.Job is null)
         {
-            _logger.LogError($"SchedulerWorkerManager: Job is null, TaskId: {@event.TaskId}");
+            _logger.LogError($"SchedulerWorkerManager: Job is null, TaskId: {@event.TaskId}", new { type="Worker"});
             throw new UserFriendlyException("Job cannot be null");
         }
 

@@ -52,6 +52,10 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
     protected override string OnlineApi { get; set; } = $"{ConstStrings.SCHEDULER_SERVER_MANAGER_API}/online";
 
+    protected override string OnlineTopic { get; set; } = $"{nameof(SchedulerServerOnlineIntegrationEvent)}";
+
+    protected override string MoniterTopic { get; set; } = $"{nameof(SchedulerWorkerOnlineIntegrationEvent)}";
+
     protected override ILogger<BaseSchedulerManager<WorkerModel, SchedulerServerOnlineIntegrationEvent, SchedulerWorkerOnlineIntegrationEvent>> Logger => _logger;
 
     public override async Task OnManagerStartAsync()
@@ -344,9 +348,15 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                         if (workerModel == null)
                         {
-                            task.TaskStartError("cannot find worker");
-                            await repository.UpdateAsync(task);
-                            await repository.UnitOfWork.SaveChangesAsync();
+                            var notifyEvent = new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
+                            {
+                                TaskId = taskDto.Id,
+                                Status = TaskRunStatus.Failure,
+                                Message = "cannot find worker"
+                            });
+
+                            await _domainEventBus.PublishAsync(notifyEvent);
+
                             _logger.LogError($"SchedulerServerManager: Cannot find worker model, JobId: {taskDto.JobId}, TaskId: {taskDto.Id}");
                             continue;
                         }

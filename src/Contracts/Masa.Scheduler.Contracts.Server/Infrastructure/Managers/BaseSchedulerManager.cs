@@ -44,6 +44,10 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     protected abstract string OnlineApi { get; set; }
 
+    protected abstract string OnlineTopic { get; set; }
+
+    protected abstract string MoniterTopic { get; set; }
+
     protected abstract ILogger<BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent>> Logger { get; }
 
     public virtual async Task StartManagerAsync(CancellationToken stoppingToken)
@@ -130,14 +134,16 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     public virtual async Task OnManagerStartAsync()
     {
-        _ = Task.Run(async () =>
+        await _redisCacheClient.SubscribeAsync<TMonitorEvent>(MoniterTopic, async handler =>
         {
-            while (!_data.ServiceList.Any())
+            if (handler != null && handler.Value != null)
             {
-                await RequestOnlineByApi();
-                await Task.Delay(1000);
+                await MonitorHandler(handler.Value);
             }
         });
+
+        await RequestOnlineByApi();
+
         await RegisterHeartbeat();
     }
 
@@ -151,8 +157,14 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             @event.IsPong = isResponse;
             @event.OnlineService = service;
 
-            await _eventBus.PublishAsync(@event);
-            await _eventBus.CommitAsync();
+            await _redisCacheClient.PublishAsync<TOnlineEvent>(OnlineTopic, handler =>
+            {
+                if(handler != null)
+                {
+                    handler.Key = OnlineTopic;
+                    handler.Value = @event;
+                }
+            });
         }
     }
 
