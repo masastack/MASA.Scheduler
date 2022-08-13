@@ -154,7 +154,7 @@ public class JobAppTaskHandler : ITaskHandler
 
         var output = e.Data;
 
-        if (output.StartsWith("{") && output.EndsWith("}"))
+        if (output.StartsWith("{") && output.EndsWith("}") && !output.Contains("EventId"))
         {
             try
             {
