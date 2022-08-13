@@ -98,4 +98,26 @@ public class SchedulerJobQueryHandler
 
         query.Result = new(total, totalPages, jobDtos, originList);
     }
+
+    [EventHandler] 
+    public async Task SchedulerJobQueryByIdentityHandleAsync(SchedulerJobQueryByIdentity query)
+    {
+        if (string.IsNullOrEmpty(query.Request.JobIdentity) || string.IsNullOrWhiteSpace(query.Request.ProjectIdentity))
+        {
+            throw new UserFriendlyException("Parameter: JobIdentity and ProjectIdentity cannot be null");
+        }
+
+        var job = await _schedulerJobRepository.FindAsync(p => p.JobIdentity == query.Request.JobIdentity && p.JobIdentity == query.Request.ProjectIdentity);
+
+        if(job == null)
+        {
+            query.Result = null;
+        }
+        else
+        {
+            var dto = _mapper.Map<SchedulerJobDto>(job);
+
+            query.Result = dto;
+        }
+    }
 }

@@ -9,5 +9,7 @@ public record NotifyTaskRunResultIntegrationEvent : IntegrationEvent
 
     public Guid TaskId { get; set; }
 
+    public string Message { get; set; } = string.Empty;
+
     public TaskRunStatus Status { get; set; }
 }

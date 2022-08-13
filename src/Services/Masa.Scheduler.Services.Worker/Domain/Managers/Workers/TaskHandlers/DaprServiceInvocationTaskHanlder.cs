@@ -9,10 +9,13 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
 
     private readonly DaprClient _daprClient;
 
-    public DaprServiceInvocationTaskHanlder(DaprClient daprClient, ILogger<DaprServiceInvocationTaskHanlder> logger)
+    private readonly SchedulerLogger _schedulerLogger;
+
+    public DaprServiceInvocationTaskHanlder(DaprClient daprClient, ILogger<DaprServiceInvocationTaskHanlder> logger, SchedulerLogger schedulerLogger)
     {
         _daprClient = daprClient;
         _logger = logger;
+        _schedulerLogger = schedulerLogger;
     }
 
     public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, CancellationToken token)
@@ -62,7 +65,8 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "DaprServiceInvocationTaskHanlder Run Task Error");
+            _schedulerLogger.LogError(ex, "DaprServiceInvocation run error", WriterTypes.Job, taskId, jobDto.Id);
+            throw;
         }
 
         return runStatus;

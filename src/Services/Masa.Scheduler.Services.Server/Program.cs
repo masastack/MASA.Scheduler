@@ -54,6 +54,7 @@ builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR(redisConfigOptions);
 builder.Services.AddQuartzUtils(quartzConnectString);
+builder.Services.AddSchedulerLogger();
 
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))

@@ -1,10 +1,20 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-var serviceCollection = new ServiceCollection();
-serviceCollection.AddLogging();
+var builder = WebApplication.CreateBuilder();
 
-var loggerFactory = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
+var otlpEndpoint = "";
+
+if (args.Length >= 8 && args[7] != null)
+{
+    otlpEndpoint = args[7].ToString();
+}
+
+builder.AddObservability(otlpEndpoint);
+
+builder.Services.AddLogging();
+
+var serviceProvider = builder.Services.BuildServiceProvider();
 
 var taskId = args[0];
 
@@ -12,7 +22,7 @@ var assemblyName = args[1];
 
 var className = args[2];
 
-Console.WriteLine($"Get args, TaskId: {taskId}, assemblyName: {assemblyName}, className: {className}");
+Console.WriteLine("Get Args: " + string.Join(" ", args));
 
 Assembly assembly;
 
@@ -50,7 +60,6 @@ string[]? parameterArr = null;
 if (args.Length >= 4)
 {
     var parameter = args[3];
-    Console.WriteLine($"Get parameter: {parameter}");
     parameterArr = parameter.Split(";");
 }
 
@@ -62,8 +71,6 @@ if (args.Length >= 6)
     var tickOffset = Convert.ToInt64(args[5]);
 
     DateTimeOffset parseExcuteTime = new DateTimeOffset(tick, new TimeSpan(tickOffset));
-
-    Console.WriteLine($"parseExcuteTime: {parseExcuteTime}");
 
     if(parseExcuteTime != DateTimeOffset.MinValue)
     {
@@ -89,6 +96,8 @@ if(instance == null)
 try
 {
     var jobContext = new JobContext() { TaskId = result.TaskId, JobId = jobId, ExcuteClassName = className, ExecutionTime = excuteTime, ExcuteParameters = parameterArr == null ? new() : parameterArr.ToList() };
+
+    await instance.Init(serviceProvider, jobId, result.TaskId);
 
     await instance.BeforeExcuteAsync(jobContext);
 

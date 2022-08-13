@@ -25,6 +25,8 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
     public string CronExpression { get; private set; } = string.Empty;
 
+    public string JobIdentity { get; private set; } = string.Empty;
+
     public JobTypes JobType { get; private set; }
 
     public RoutingStrategyTypes RoutingStrategy { get; private set; }
@@ -98,7 +100,8 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         int failedRetryCount,
         string description,
         Guid belongTeamId,
-        string belongProjectIdentity)
+        string belongProjectIdentity,
+        string jobIdentity)
     {
         Name = name;
         Owner = owner;
@@ -119,6 +122,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         Enabled = true;
         BelongProjectIdentity = belongProjectIdentity;
         BelongTeamId = belongTeamId;
+        JobIdentity = jobIdentity;
     }
 
     public void UpdateJob(SchedulerJobDto dto)

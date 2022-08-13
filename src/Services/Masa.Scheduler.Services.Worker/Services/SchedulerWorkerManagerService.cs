@@ -6,8 +6,9 @@ namespace Masa.Scheduler.Services.Worker.Services;
 public class SchedulerWorkerManagerService : ServiceBase
 {
     private readonly ILogger<SchedulerWorkerManagerService> _logger;
+    private readonly SchedulerLogger _schedulerLogger;
 
-    public SchedulerWorkerManagerService(IServiceCollection services, ILogger<SchedulerWorkerManagerService> logger) : base(services, ConstStrings.SCHEDULER_WORKER_MANAGER_API)
+    public SchedulerWorkerManagerService(IServiceCollection services, ILogger<SchedulerWorkerManagerService> logger, SchedulerLogger schedulerLogger) : base(services, ConstStrings.SCHEDULER_WORKER_MANAGER_API)
     {
         _logger = logger;
         var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -17,6 +18,7 @@ public class SchedulerWorkerManagerService : ServiceBase
         MapGet(Heartbeat);
         MapPost(StartTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent) + serviceId);
         MapPost(StopTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StopTaskIntegrationEvent) + serviceId);
+        _schedulerLogger = schedulerLogger;
     }
 
     public async Task<IResult> OnlineAsync([FromServices] SchedulerWorkerManager workerManager)
@@ -43,7 +45,7 @@ public class SchedulerWorkerManagerService : ServiceBase
             return;
         }
 
-        _logger.LogInformation($"SchedulerWorker: Receive Start Task Event, TaskId: {@event.TaskId}, JobId: {@event.Job.Id}");
+        _schedulerLogger.LogInformation($"Receive Start Task Event", WriterTypes.Worker, @event.TaskId, @event.Job.Id);
 
         await workerManager.EnqueueTask(@event);
     }

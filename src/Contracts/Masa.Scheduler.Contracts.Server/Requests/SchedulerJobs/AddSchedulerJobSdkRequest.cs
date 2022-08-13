@@ -17,6 +17,8 @@ public class AddSchedulerJobBySdkRequest
 
     public string CronExpression { get; set; } = string.Empty;
 
+    public string JobIdentity { get; set; } = string.Empty;
+
     public string Description { get; set; } = string.Empty;
 
     public ScheduleExpiredStrategyTypes ScheduleExpiredStrategy { get; set; } = ScheduleExpiredStrategyTypes.Ignore;

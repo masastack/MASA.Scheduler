@@ -19,6 +19,8 @@ public class SchedulerJobDto
 
     public string CronExpression { get; set; } = string.Empty;
 
+    public string JobIdentity { get; set; } = string.Empty;
+
     public JobTypes JobType { get; set; }
 
     public RoutingStrategyTypes RoutingStrategy { get; set; }

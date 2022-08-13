@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Scheduler.Contracts.Server.Infrastructure.Logger;
+
 namespace Masa.Scheduler.Contracts.Server.Dtos;
 
 public class SchedulerTaskDto
@@ -37,4 +39,6 @@ public class SchedulerTaskDto
     public string OperatorName { get; set; } = String.Empty;
 
     public DateTime CreationTime { get; set; }
+
+    public SchedulerLogger? Logger { get; set; } 
 }

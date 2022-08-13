@@ -8,15 +8,18 @@ public class StartJobDomainEventHandler
     private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly IEventBus _eventBus;
+    private readonly SchedulerLogger _logger;
 
     public StartJobDomainEventHandler(
         IEventBus eventBus,
         ISchedulerJobRepository schedulerJobRepository,
-        ISchedulerTaskRepository schedulerTaskRepository)
+        ISchedulerTaskRepository schedulerTaskRepository,
+        SchedulerLogger logger)
     {
         _eventBus = eventBus;
         _schedulerJobRepository = schedulerJobRepository;
         _schedulerTaskRepository = schedulerTaskRepository;
+        _logger = logger;
     }
 
     [EventHandler(1)]
@@ -36,6 +39,8 @@ public class StartJobDomainEventHandler
         await _schedulerTaskRepository.AddAsync(task);
 
         await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Scheduler Task Create", WriterTypes.Server, task.Id, task.JobId);
 
         var startTaskRequest = new StartSchedulerTaskRequest()
         {
