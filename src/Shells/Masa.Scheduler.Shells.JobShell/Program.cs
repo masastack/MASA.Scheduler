@@ -22,8 +22,6 @@ var assemblyName = args[1];
 
 var className = args[2];
 
-Console.WriteLine("Get Args: " + string.Join(" ", args));
-
 Assembly assembly;
 
 var result = new RunResult() { TaskId = new Guid(taskId) };

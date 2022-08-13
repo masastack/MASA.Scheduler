@@ -154,8 +154,6 @@ public class JobAppTaskHandler : ITaskHandler
 
         var output = e.Data;
 
-        _schedulerLogger.LogInformation($"JobShell output logger, {output}", WriterTypes.Worker, _taskId, _jobId);
-
         if (output.StartsWith("{") && output.EndsWith("}"))
         {
             try
