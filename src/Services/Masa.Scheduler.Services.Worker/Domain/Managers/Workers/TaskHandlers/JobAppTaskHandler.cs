@@ -154,8 +154,13 @@ public class JobAppTaskHandler : ITaskHandler
 
         var output = e.Data;
 
-        if (output.StartsWith("{") && output.EndsWith("}") && !output.Contains("EventId"))
+        if (output.StartsWith("{") && output.EndsWith("}"))
         {
+            if (output.Contains("EventId"))
+            {
+                return;
+            }
+
             try
             {
                 var result = JsonSerializer.Deserialize<JobShellRunResult>(output);
@@ -180,6 +185,10 @@ public class JobAppTaskHandler : ITaskHandler
             {
                 _schedulerLogger.LogError(ex, $"JobShell Result Deserialize Error, output: {output}, exception message: {ex.Message}", WriterTypes.Worker, _taskId, _jobId);
             }
+        }
+        else
+        {
+            _schedulerLogger.LogInformation(output, WriterTypes.Job, _taskId, _jobId);
         }
     }
 
