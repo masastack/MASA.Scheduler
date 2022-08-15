@@ -95,7 +95,7 @@ try
 {
     var jobContext = new JobContext() { TaskId = result.TaskId, JobId = jobId, ExcuteClassName = className, ExecutionTime = excuteTime, ExcuteParameters = parameterArr == null ? new() : parameterArr.ToList() };
 
-    await instance.Init(serviceProvider, jobId, result.TaskId);
+    await instance.Init(builder, serviceProvider, jobId, result.TaskId);
 
     await instance.BeforeExcuteAsync(jobContext);
 
