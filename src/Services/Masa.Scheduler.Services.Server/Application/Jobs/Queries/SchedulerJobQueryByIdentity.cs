@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using System.Runtime.CompilerServices;
-using System.Text;
-
 namespace Masa.Scheduler.Services.Server.Application.Jobs.Queries;
 
 public record SchedulerJobQueryByIdentity(GetSchedulerJobByIdentityRequest Request) : IQuery<SchedulerJobDto?>
