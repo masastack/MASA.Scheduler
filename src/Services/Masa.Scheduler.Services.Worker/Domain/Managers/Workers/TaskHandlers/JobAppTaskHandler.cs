@@ -16,36 +16,42 @@ public class JobAppTaskHandler : ITaskHandler
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<JobAppTaskHandler> _logger;
+    private readonly IConfiguration _configuration;
+    private readonly SchedulerLogger _schedulerLogger;
+    private Guid _taskId;
+    private Guid _jobId;
 
-    public JobAppTaskHandler(IHttpClientFactory httpClientFactory, ILogger<JobAppTaskHandler> logger, ILoggerFactory loggerFactory)
+    public JobAppTaskHandler(IHttpClientFactory httpClientFactory, ILogger<JobAppTaskHandler> logger, ILoggerFactory loggerFactory, IConfiguration configuration, SchedulerLogger schedulerLogger)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _loggerFactory = loggerFactory;
+        _configuration = configuration;
+        _schedulerLogger = schedulerLogger;
     }
 
     TaskRunStatus _runStatus = TaskRunStatus.Failure;
 
     public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime ,CancellationToken token)
     {
+        _taskId = taskId;
+        _jobId = jobDto.Id;
+
         if (jobDto.JobAppConfig is null)
-        {
-            _logger.LogInformation($"JobAppTaskHandler: JobAppConfig is required in JobApp Task. TaskId: {taskId}, JobId: {jobDto.Id}");
-            throw new UserFriendlyException("JobAppConfig is required in JobApp Task, jobId: " + jobDto.Id);
+        {   
+            throw new UserFriendlyException("JobAppConfig is required in JobApp Task");
         }
 
         if(jobDto.JobAppConfig.SchedulerResourceDto is null)
         {
-            _logger.LogInformation($"JobAppTaskHandler: Scheduler Resource cannot be null. TaskId: {taskId}, JobId: {jobDto.Id}");
-            throw new UserFriendlyException("Scheduler Resource cannot be null, jobId: " + jobDto.Id);
+            throw new UserFriendlyException("Scheduler Resource cannot be null");
         }
 
         var resource = jobDto.JobAppConfig.SchedulerResourceDto;
 
         if (string.IsNullOrEmpty(resource.FilePath))
         {
-            _logger.LogInformation($"JobAppTaskHandler: Scheduler Resource FilePath cannot empty. TaskId: {taskId}, JobId: {jobDto.Id}");
-            throw new UserFriendlyException("Scheduler Resource FilePath cannot empty, jobId: " + jobDto.Id);
+            throw new UserFriendlyException("Scheduler Resource FilePath cannot empty");
         }
 
         _runStatus = TaskRunStatus.Failure;
@@ -53,7 +59,7 @@ public class JobAppTaskHandler : ITaskHandler
         var jobExtractPath = GetJobExtractPath(jobDto.Id, resource);
         var jobResoucePath = GetJobResourcePath(jobDto.Id, resource);
 
-        await ProcessResource(resource, jobExtractPath, jobResoucePath, taskId, jobDto.Id);
+        await ProcessResource(resource, jobExtractPath, jobResoucePath);
 
         var processUtils = new ProcessUtils(_loggerFactory);
 
@@ -63,14 +69,14 @@ public class JobAppTaskHandler : ITaskHandler
 
         try
         {
-            _logger.LogInformation($"JobAppTaskHandler: process start. TaskId: {taskId}, JobId: {jobDto.Id}");
+            _schedulerLogger.LogInformation($"Process start", WriterTypes.Worker, taskId, jobDto.Id);
             var process = processUtils.Run("dotnet", GetJobShellRunParameter(jobDto, jobExtractPath, taskId, excuteTime));
 
             token.Register(() =>
             {
                 if (!process.HasExited)
                 {
-                    _logger.LogInformation($"JobAppTaskHandler: process kill. TaskId: {taskId}, JobId: {jobDto.Id}");
+                    _schedulerLogger.LogInformation($"Process kill", WriterTypes.Worker, taskId, jobDto.Id);
                     _runStatus = TaskRunStatus.Failure;
                     process.Kill();
                 }
@@ -80,8 +86,8 @@ public class JobAppTaskHandler : ITaskHandler
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"JobAppTaskHandler: Process run Error,  TaskId: {taskId}, JobId: {jobDto.Id}");
-            throw new UserFriendlyException($"Process run Error, TaskId: {taskId}");
+            _schedulerLogger.LogError(ex, "Process run Error", WriterTypes.Worker, taskId, jobDto.Id);
+            throw;
         }
 
         return _runStatus;
@@ -89,16 +95,14 @@ public class JobAppTaskHandler : ITaskHandler
 
     private void JobApp_Exit(object? sender, EventArgs e)
     {
-        _logger.LogInformation("Job Exits");
+        _schedulerLogger.LogInformation("Job Exits", WriterTypes.Worker, _taskId, _jobId);
     }
 
     private string GetJobShellRunParameter(SchedulerJobDto dto, string jobExtractPath, Guid taskId, DateTimeOffset excuteTime)
     {
-        var jobShellFullPath = Path.Combine(jobExtractPath, JOB_SHELL_SOURCE_PATH, JOB_SHELL_NAME);
-
+        var otlpEndpoint = _configuration.GetValue<string>("Local:OTLP:Endpoint");
         var parameterList = new List<string>()
         {
-            //jobShellFullPath,
             _rootPath + Path.Combine(JOB_SHELL_SOURCE_PATH, JOB_SHELL_NAME),
             taskId.ToString(),
             Path.Combine(jobExtractPath, dto.JobAppConfig.JobEntryAssembly),
@@ -107,7 +111,10 @@ public class JobAppTaskHandler : ITaskHandler
             excuteTime.Ticks.ToString(),
             excuteTime.Offset.Ticks.ToString(),
             dto.Id.ToString(),
+            otlpEndpoint
         };
+
+        _schedulerLogger.LogInformation($"JobShell run parameter: {string.Join(" ", parameterList)}", WriterTypes.Worker, _taskId, _jobId);
 
         return string.Join(" ", parameterList);
     }
@@ -123,8 +130,6 @@ public class JobAppTaskHandler : ITaskHandler
             Directory.CreateDirectory(jobExtractPath);
         }
 
-        Console.WriteLine("JobExtractPath:" + jobExtractPath);
-
         return jobExtractPath;
     }
 
@@ -135,7 +140,7 @@ public class JobAppTaskHandler : ITaskHandler
             return;
         }
 
-        _logger.LogError(e.Data);
+        _schedulerLogger.LogError(e.Data, WriterTypes.Worker, _taskId, _jobId);
 
         _runStatus = TaskRunStatus.Failure;
     }
@@ -149,59 +154,75 @@ public class JobAppTaskHandler : ITaskHandler
 
         var output = e.Data;
 
-        _logger.LogInformation(output);
-
         if (output.StartsWith("{") && output.EndsWith("}"))
         {
+            if (output.Contains("EventId"))
+            {
+                return;
+            }
+
             try
             {
                 var result = JsonSerializer.Deserialize<JobShellRunResult>(output);
 
                 if (result != null)
                 {
-                    _runStatus = result.IsSuccess ? TaskRunStatus.Success : TaskRunStatus.Failure;
+                    if (result.IsSuccess)
+                    {
+                        _runStatus = TaskRunStatus.Success;
+                    }
+                    else
+                    {
+                        throw new UserFriendlyException(result.Message);
+                    }
+                }
+                else
+                {
+                    _runStatus = TaskRunStatus.Failure;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"JobShell Result Deserialize Error, output: {output}");
+                _schedulerLogger.LogError(ex, $"JobShell Result Deserialize Error, output: {output}, exception message: {ex.Message}", WriterTypes.Worker, _taskId, _jobId);
             }
+        }
+        else
+        {
+            _schedulerLogger.LogInformation(output, WriterTypes.Job, _taskId, _jobId);
         }
     }
 
-    private async Task ProcessResource(SchedulerResourceDto resource, string jobExtractPath, string resourcePath, Guid taskId, Guid jobId)
+    private async Task ProcessResource(SchedulerResourceDto resource, string jobExtractPath, string resourcePath)
     {
         var filePath = Path.Combine(resourcePath, resource.Name);
 
         if (!File.Exists(filePath))
         {
-            _logger.LogInformation($"JobAppTaskHandler: Start download resource. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
+            _schedulerLogger.LogInformation($"Start download Resource", WriterTypes.Worker, _taskId, _jobId);
             await DownloadResource(resource, resourcePath);
-            _logger.LogInformation($"JobAppTaskHandler: Download resource success. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
+            _schedulerLogger.LogInformation($"Download resource success", WriterTypes.Worker, _taskId, _jobId);
         }
 
         if (!File.Exists(filePath))
         {
-            _logger.LogError($"JobAppTaskHandler: Resource Files not exists. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
             throw new UserFriendlyException("Resource Files not exists");
         }
 
         if (resource.Name.EndsWith(DLL_EXTENSION))
         {
-            _logger.LogInformation($"JobAppTaskHandler: Start copy resource. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
+            _schedulerLogger.LogError($"Start copy resource. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
             await CopyFolder(resourcePath, jobExtractPath);
-            _logger.LogInformation($"JobAppTaskHandler: Copy resource success. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
+            _schedulerLogger.LogError($"Copy resource success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
         }
         else
         {
-            _logger.LogInformation($"JobAppTaskHandler: Start decompress files. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
+            _schedulerLogger.LogError($"Start decompress files. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
             DeCompressFile(resource, resourcePath, jobExtractPath);
-            _logger.LogInformation($"JobAppTaskHandler: Decompress files success. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
+            _schedulerLogger.LogError($"Decompress files success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
 
             if (!Directory.Exists(jobExtractPath))
-            {
-                _logger.LogError($"JobAppTaskHandler: Cannot found decompress folder. TaskId: {taskId}, jobId: {jobId}, version: {resource.Version}");
-                throw new UserFriendlyException("Cannot found decompress folder");
+            {  
+                throw new UserFriendlyException("Cannot found decompress folder, version: {resource.Version}");
             }
         }
     }
@@ -259,8 +280,8 @@ public class JobAppTaskHandler : ITaskHandler
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Download resource error");
-            throw new UserFriendlyException("Download resource error");
+            _schedulerLogger.LogError(ex, "Download resource error", WriterTypes.Worker, _taskId, _jobId);
+            throw;
         }
     }
 
@@ -292,8 +313,8 @@ public class JobAppTaskHandler : ITaskHandler
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Extract resource error");
-            throw new UserFriendlyException("Extract resource error");
+            _schedulerLogger.LogError(ex, "Extract resource error", WriterTypes.Worker, _taskId, _jobId);
+            throw;
         }
     }
 }

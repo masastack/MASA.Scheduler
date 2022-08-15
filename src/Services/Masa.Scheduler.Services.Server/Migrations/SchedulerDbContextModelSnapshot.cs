@@ -132,6 +132,11 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("JobIdentity")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("JobType")
                         .HasColumnType("int");
 

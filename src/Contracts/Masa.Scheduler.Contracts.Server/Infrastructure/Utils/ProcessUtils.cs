@@ -18,7 +18,6 @@ public class ProcessUtils
         bool createNoWindow = true,
         bool isWait = false)
     {
-        _logger?.LogInformation("FileName: {FileName}, Arguments: {Arguments}", fileName, arguments);
         var processStartInfo = new ProcessStartInfo
         {
             FileName = fileName,
@@ -48,7 +47,6 @@ public class ProcessUtils
         }
         process.Exited += (_, _) => OnExited();
         string command = process.ProcessName + arguments;
-        _logger?.LogDebug("Process: {ProcessName}, Command: {Command}, PID: {ProcessId} executed successfully", process.ProcessName, command, process.Id);
 
         if (isWait)
         {

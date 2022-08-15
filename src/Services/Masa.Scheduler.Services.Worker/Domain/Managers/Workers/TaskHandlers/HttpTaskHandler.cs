@@ -7,11 +7,13 @@ public class HttpTaskHandler : ITaskHandler
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<HttpTaskHandler> _logger;
+    private readonly SchedulerLogger _schedulerLogger;
 
-    public HttpTaskHandler(IHttpClientFactory httpClientFactory, ILogger<HttpTaskHandler> logger)
+    public HttpTaskHandler(IHttpClientFactory httpClientFactory, ILogger<HttpTaskHandler> logger, SchedulerLogger schedulerLogger)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _schedulerLogger = schedulerLogger;
     }
 
     public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, CancellationToken token)
@@ -79,11 +81,12 @@ public class HttpTaskHandler : ITaskHandler
         catch (TimeoutException ex)
         {
             runSucess = TaskRunStatus.Timeout;
-            _logger.LogError(ex, "HttpRequestTimeout");
+            _schedulerLogger.LogError(ex, "HttpRequestTimeout", WriterTypes.Worker, taskId, jobDto.Id);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "HttpRequestError");
+            _schedulerLogger.LogError(ex, "HttpRequestError", WriterTypes.Worker, taskId, jobDto.Id);
+            throw;
         }
 
         return runSucess;

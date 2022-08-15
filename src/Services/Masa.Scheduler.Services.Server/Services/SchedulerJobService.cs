@@ -13,6 +13,7 @@ public class SchedulerJobService : ServiceBase
         MapPut(ChangeEnableStatusAsync);
         MapPut(StartJobAsync);
         MapPost(AddSchedulerJobBySdkAsync);
+        MapGet(GetSchedulerJobQueryByIdentityAsync);
     }
 
     public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string belongProjectIdentity)
@@ -77,5 +78,16 @@ public class SchedulerJobService : ServiceBase
         var command = new AddSchedulerJobBySdkCommand(request);
         await eventBus.PublishAsync(command);
         return Results.Ok(command.Result.Id);
+    }
+
+    public async Task<IResult> GetSchedulerJobQueryByIdentityAsync(IEventBus eventBus,[FromQuery] string jobIdentity,[FromQuery] string projectIdentity)
+    {
+        var query = new SchedulerJobQueryByIdentity(new GetSchedulerJobByIdentityRequest()
+        {
+            JobIdentity = jobIdentity,
+            ProjectIdentity = projectIdentity
+        });
+        await eventBus.PublishAsync(query);
+        return Results.Ok(query.Result);
     }
 }

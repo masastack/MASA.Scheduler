@@ -94,3 +94,6 @@ global using Masa.Utils.Caching.DistributedMemory.Interfaces;
 global using Masa.Utils.Caching.Core.Models;
 global using Microsoft.Extensions.Caching.Distributed;
 global using Microsoft.Extensions.Caching.Memory;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Logger;
+global using System.Runtime.CompilerServices;
+global using System.Text;

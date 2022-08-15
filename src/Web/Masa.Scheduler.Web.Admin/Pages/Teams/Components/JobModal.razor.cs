@@ -6,19 +6,6 @@ namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 public partial class JobModal
 {
     [Parameter]
-    public bool Visible
-    {
-        get
-        {
-            return _visible;
-        }
-        set
-        {
-            _visible = value;
-        }
-    }
-
-    [Parameter]
     public SchedulerJobDto Model
     {
         get
@@ -27,9 +14,30 @@ public partial class JobModal
         }
         set
         {
-            _model = value;
+            if (_model != value)
+            {
+                _model = value;
 
-            OnModelChange();
+                OnModelChange();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool Visible
+    {
+        get
+        {
+            return _visible;
+        }
+        set
+        {
+            if(_visible != value)
+            {
+                _visible = value;
+
+                OnVisibleChange();
+            }
         }
     }
 
@@ -123,7 +131,7 @@ public partial class JobModal
 
     private Task HandleVisibleChanged()
     {
-        _visible = false;
+        Visible = false;
         if (VisibleChanged.HasDelegate)
         {
             VisibleChanged.InvokeAsync(_visible);
@@ -313,8 +321,13 @@ public partial class JobModal
         await HandleVisibleChanged();
     }
 
-    private Task OnModelChange()
+    private Task OnVisibleChange()
     {
+        if (Form is not null)
+        {
+            Form.ResetValidationAsync();
+        }
+
         _isAdd = Model.Id == Guid.Empty;
         if (_isAdd)
         {
@@ -325,6 +338,11 @@ public partial class JobModal
             _step = 2;
         }
 
+        return Task.CompletedTask;
+    }
+
+    private Task OnModelChange()
+    {
         _resourceVersionType = string.IsNullOrEmpty(Model.JobAppConfig.Version) ? ResourceVersionTypes.Latest : ResourceVersionTypes.SpecifiedVersion;
         _requireCard = false;
 
@@ -332,12 +350,7 @@ public partial class JobModal
         {
             GetNextRunTime();
         }
-
-        if (Form is not null)
-        {
-            Form.ResetValidationAsync();
-        }
-
+       
         if (Model.JobType == JobTypes.JobApp && !string.IsNullOrEmpty(Model.JobAppConfig.JobAppIdentity))
         {
             return GetVersionList(Model.JobAppConfig.JobAppIdentity);
@@ -365,6 +378,20 @@ public partial class JobModal
         if(owner != null && !string.IsNullOrWhiteSpace(owner.Name))
         {
             Model.Owner = owner.Name;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnScheduleTypeChanged(ScheduleTypes scheduleType)
+    {
+        if(Model.ScheduleType != scheduleType)
+        {
+            Model.ScheduleType = scheduleType;
+            if (Model.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(Model.CronExpression))
+            {
+                GetNextRunTime();
+            }
         }
 
         return Task.CompletedTask;

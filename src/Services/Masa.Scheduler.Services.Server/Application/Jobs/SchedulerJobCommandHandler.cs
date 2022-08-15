@@ -25,6 +25,15 @@ public class SchedulerJobCommandHandler
 
         var job = _mapper.Map<SchedulerJob>(command.Request.Data);
 
+        if (!string.IsNullOrWhiteSpace(job.JobIdentity))
+        {
+            var sameJobIdentity = await _schedulerJobRepository.FindAsync(p => p.JobIdentity == job.JobIdentity && p.BelongProjectIdentity == job.BelongProjectIdentity);
+            if(sameJobIdentity != null)
+            {
+                throw new UserFriendlyException("JobIdentity already exists");
+            }
+        }
+
         var result = await _schedulerJobRepository.AddAsync(job);
 
         await _schedulerJobRepository.UnitOfWork.SaveChangesAsync();

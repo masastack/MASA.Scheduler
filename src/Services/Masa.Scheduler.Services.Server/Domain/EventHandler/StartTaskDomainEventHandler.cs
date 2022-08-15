@@ -13,7 +13,7 @@ public class StartTaskDomainEventHandler
     private readonly IMapper _mapper;
     private readonly QuartzUtils _quartzUtils;
     private readonly IDistributedCacheClient _distributedCacheClient;
-    private readonly ILogger<StartTaskDomainEventHandler> _logger;
+    private readonly SchedulerLogger _logger;
     private readonly SignalRUtils _signalRUtils;
 
     public StartTaskDomainEventHandler(
@@ -24,7 +24,7 @@ public class StartTaskDomainEventHandler
         IMapper mapper,
         QuartzUtils quartzUtils,
         IDistributedCacheClient distributedCacheClient,
-        ILogger<StartTaskDomainEventHandler> logger,
+        SchedulerLogger logger,
         ISchedulerJobRepository schedulerJobRepository,
         SignalRUtils signalRUtils)
     {
@@ -66,6 +66,8 @@ public class StartTaskDomainEventHandler
 
         if (!task.Job.Enabled || task.Job.IsDeleted)
         {
+            _logger.LogInformation("Scheduler Job is disable or delete, cancel this task", WriterTypes.Server, task.Id, task.JobId);
+
             var notifyEvent = new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
             {
                 TaskId = task.Id,
@@ -79,6 +81,7 @@ public class StartTaskDomainEventHandler
         // When task is running, restart will stop task first
         if (task.TaskStatus == TaskRunStatus.Running)
         {
+            _logger.LogInformation("Scheduler Task is running, stop this task", WriterTypes.Server, task.Id, task.JobId);
             await _serverManager.StopTask(task.Id, task.WorkerHost);
         }
 
@@ -109,11 +112,13 @@ public class StartTaskDomainEventHandler
                     {
                         task.Wait();
                         allowEnqueue = false;
+                        _logger.LogInformation("Other task is running, trigger serial block strategy, waiting now", WriterTypes.Server, task.Id, task.JobId);
                     }
                     break;
                 case ScheduleBlockStrategyTypes.Discard:
                     task.Discard();
                     allowEnqueue = false;
+                    _logger.LogInformation("Trigger discard block strategy, task failed", WriterTypes.Server, task.Id, task.JobId);
                     break;
                 case ScheduleBlockStrategyTypes.Cover:
                     foreach (var otherRunningTask in otherRunningTaskList)
@@ -129,6 +134,7 @@ public class StartTaskDomainEventHandler
 
                         otherRunningTask.TaskEnd(TaskRunStatus.Failure, "Stop by SchedulerBlockStrategy");
                         await _schedulerTaskRepository.UpdateAsync(otherRunningTask);
+                        _logger.LogInformation($"Trigger cover block strategy by TaskId: {task.Id}, task failed", WriterTypes.Server, otherRunningTask.Id, otherRunningTask.JobId);
                     }
                     task.TaskSchedule(@event.Request.OperatorId);
                     break;

@@ -39,6 +39,7 @@ builder.Services.AddMasaRedisCache(configuration.GetSection("RedisConfig").Get<R
 builder.Services.AddMapster();
 builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
+builder.Services.AddSchedulerLogger();
 
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

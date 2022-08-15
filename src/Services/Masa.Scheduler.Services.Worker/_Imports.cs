@@ -55,3 +55,4 @@ global using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
 global using Masa.Utils.Caching.Redis.Models;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
 global using Masa.Utils.Security.Cryptography;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Logger;

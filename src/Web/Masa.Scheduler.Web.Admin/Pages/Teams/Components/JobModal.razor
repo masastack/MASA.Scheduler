@@ -1,7 +1,7 @@
 ﻿@inherits ProCompontentBase
 
 <div @ref="Ref">
-    <SSheetDialog Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(Model.Id == Guid.Empty? T("Job.Add") : T("Job.Update"))">
+    <SSheetDialog Value="Visible" ValueChanged="HandleVisibleChanged" Title="@(Model.Id == Guid.Empty? T("Job.Add") : T("Job.Update"))">
         <MStepper Value="_step" Class="sheetDialogPadding full-height">
             <MStepperItems Class="full-height">
                 <MStepperContent Step="1" Class="full-height">
@@ -59,7 +59,7 @@
                                 </MRow>
                                 <MRow Class="mt-1">
                                     <MCol Cols="2">
-                                        <MSelect @bind-Value="Model.ScheduleType" Label="@T("ScheduleType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                        <MSelect Value="Model.ScheduleType" ValueExpression="()=>Model.ScheduleType" TValue="ScheduleTypes" TItemValue="ScheduleTypes" TItem="KeyValuePair<string,ScheduleTypes>" ValueChanged="OnScheduleTypeChanged" Label="@T("ScheduleType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                         </MSelect>
                                     </MCol>
                                     @if (Model.ScheduleType == ScheduleTypes.Cron)
