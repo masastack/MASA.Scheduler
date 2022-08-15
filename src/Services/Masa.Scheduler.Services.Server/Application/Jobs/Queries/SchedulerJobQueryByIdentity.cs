@@ -5,6 +5,8 @@ namespace Masa.Scheduler.Services.Server.Application.Jobs.Queries;
 
 public record SchedulerJobQueryByIdentity(GetSchedulerJobByIdentityRequest Request) : IQuery<SchedulerJobDto?>
 {
+    public SchedulerJobDto? Result { get; set; }
+
     private Guid _eventId;
 
     private DateTime _creationTime;
@@ -83,6 +85,4 @@ public record SchedulerJobQueryByIdentity(GetSchedulerJobByIdentityRequest Reque
         _eventId = original._eventId;
         _creationTime = original._creationTime;
     }
-
-    public SchedulerJobDto? Result { get; set; }
 }
