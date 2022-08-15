@@ -109,15 +109,6 @@ public class SchedulerJobQueryHandler
 
         var job = await _schedulerJobRepository.FindAsync(p => p.JobIdentity == query.Request.JobIdentity && p.JobIdentity == query.Request.ProjectIdentity);
 
-        if(job == null)
-        {
-            query.Result = null;
-        }
-        else
-        {
-            var dto = _mapper.Map<SchedulerJobDto>(job);
-
-            query.Result = dto;
-        }
+        query.Result = job == null ? null : _mapper.Map<SchedulerJobDto>(job);
     }
 }
