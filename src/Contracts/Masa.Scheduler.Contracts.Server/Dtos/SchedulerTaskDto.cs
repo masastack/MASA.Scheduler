@@ -37,6 +37,4 @@ public class SchedulerTaskDto
     public string OperatorName { get; set; } = String.Empty;
 
     public DateTime CreationTime { get; set; }
-
-    public SchedulerLogger? Logger { get; set; } 
 }
