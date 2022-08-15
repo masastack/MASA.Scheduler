@@ -13,6 +13,7 @@
 		<PackageReference Include="IdentityModel" Version="6.0.0" />
 		<PackageReference Include="Mapster" Version="7.3.0" />
 		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="0.6.0-preview.3" />
+		<PackageReference Include="Masa.BuildingBlocks.ReadWriteSpliting.Cqrs" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.BuildingBlocks.Storage.ObjectStorage" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Contrib.Authentication.Identity" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Contrib.StackSdks.Auth" Version="0.6.0-preview.3" />

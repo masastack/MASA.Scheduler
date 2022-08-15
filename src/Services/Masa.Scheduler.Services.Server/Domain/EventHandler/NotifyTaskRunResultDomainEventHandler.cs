@@ -14,6 +14,7 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly IIntegrationEventBus _eventBus;
     private readonly SchedulerServerManagerData _data;
     private readonly IMapper _mapper;
+    private readonly SchedulerLogger _schedulerLogger;
 
     public NotifyTaskRunResultDomainEventHandler(
         IRepository<SchedulerTask> schedulerTaskRepository,
@@ -24,7 +25,8 @@ public class NotifyTaskRunResultDomainEventHandler
         QuartzUtils quartzUtils,
         IIntegrationEventBus eventBus,
         SchedulerServerManagerData data,
-        IMapper mapper)
+        IMapper mapper,
+        SchedulerLogger schedulerLogger)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _dbContext = dbContext;
@@ -35,6 +37,7 @@ public class NotifyTaskRunResultDomainEventHandler
         _eventBus = eventBus;
         _data = data;
         _mapper = mapper;
+        _schedulerLogger = schedulerLogger;
     }
 
     [EventHandler]
@@ -52,6 +55,8 @@ public class NotifyTaskRunResultDomainEventHandler
             _data.StopByManual.Remove(@event.Request.TaskId);
             return;
         }
+
+        _schedulerLogger.LogInformation($"Receive notify task result, status: {@event.Request.Status}", WriterTypes.Server, task.Id, task.JobId);
 
         TaskRunStatus status = @event.Request.Status;
 
