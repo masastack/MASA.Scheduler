@@ -161,34 +161,37 @@ public class JobAppTaskHandler : ITaskHandler
                 return;
             }
 
+            JobShellRunResult? result = null;
+
             try
             {
-                var result = JsonSerializer.Deserialize<JobShellRunResult>(output);
-
-                if (result != null)
-                {
-                    if (result.IsSuccess)
-                    {
-                        _runStatus = TaskRunStatus.Success;
-                    }
-                    else
-                    {
-                        throw new UserFriendlyException(result.Message);
-                    }
-                }
-                else
-                {
-                    _runStatus = TaskRunStatus.Failure;
-                }
+                result = JsonSerializer.Deserialize<JobShellRunResult>(output);
             }
             catch (Exception ex)
             {
                 _schedulerLogger.LogError(ex, $"JobShell Result Deserialize Error, output: {output}, exception message: {ex.Message}", WriterTypes.Worker, _taskId, _jobId);
+                return;
+            }
+
+            if (result != null)
+            {
+                if (result.IsSuccess)
+                {
+                    _runStatus = TaskRunStatus.Success;
+                }
+                else
+                {
+                    throw new UserFriendlyException(result.Message);
+                }
+            }
+            else
+            {
+                _runStatus = TaskRunStatus.Failure;
             }
         }
         else
         {
-            _schedulerLogger.LogInformation(output, WriterTypes.Job, _taskId, _jobId);
+            _schedulerLogger.LogInformation(output, WriterTypes.Job, _taskId, _jobId, LoggerTypes.JobLog);
         }
     }
 
@@ -210,15 +213,15 @@ public class JobAppTaskHandler : ITaskHandler
 
         if (resource.Name.EndsWith(DLL_EXTENSION))
         {
-            _schedulerLogger.LogError($"Start copy resource. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
+            _schedulerLogger.LogInformation($"Start copy resource. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
             await CopyFolder(resourcePath, jobExtractPath);
-            _schedulerLogger.LogError($"Copy resource success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
+            _schedulerLogger.LogInformation($"Copy resource success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
         }
         else
         {
-            _schedulerLogger.LogError($"Start decompress files. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
+            _schedulerLogger.LogInformation($"Start decompress files. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
             DeCompressFile(resource, resourcePath, jobExtractPath);
-            _schedulerLogger.LogError($"Decompress files success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
+            _schedulerLogger.LogInformation($"Decompress files success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
 
             if (!Directory.Exists(jobExtractPath))
             {  

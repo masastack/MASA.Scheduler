@@ -14,28 +14,28 @@ public class SchedulerLogger
         _logger = loggerFactory.CreateLogger(LoggerTypes.SchedulerInternalLog.ToString());
     }
 
-    public void LogInformation(string message, WriterTypes writerType, Guid taskId, Guid jobId)
+    public void LogInformation(string message, WriterTypes writerType, Guid taskId, Guid jobId, LoggerTypes loggerType = LoggerTypes.SchedulerInternalLog)
     {
-        _logger.LogInformation(LOGGER_BODY, message, LoggerTypes.SchedulerInternalLog.ToString(), writerType.ToString(), taskId, jobId);
+        _logger.LogInformation(LOGGER_BODY, message, loggerType.ToString(), writerType.ToString(), taskId, jobId);
     }
 
-    public void LogError(Exception exception, string message, WriterTypes writerType, Guid taskId, Guid jobId)
+    public void LogError(Exception exception, string message, WriterTypes writerType, Guid taskId, Guid jobId, LoggerTypes loggerType = LoggerTypes.SchedulerInternalLog)
     {
-        _logger.LogError(exception, LOGGER_BODY, message, LoggerTypes.SchedulerInternalLog.ToString(), writerType.ToString(), taskId, jobId);
+        _logger.LogError(exception, LOGGER_BODY, message, loggerType.ToString(), writerType.ToString(), taskId, jobId);
     }
 
-    public void LogError(string message, WriterTypes writerType, Guid taskId, Guid jobId)
+    public void LogError(string message, WriterTypes writerType, Guid taskId, Guid jobId, LoggerTypes loggerType = LoggerTypes.SchedulerInternalLog)
     {
-        _logger.LogError(LOGGER_BODY, message, LoggerTypes.SchedulerInternalLog.ToString(), writerType.ToString(), taskId, jobId);
+        _logger.LogError(LOGGER_BODY, message, loggerType.ToString(), writerType.ToString(), taskId, jobId);
     }
 
-    public void LogWarning(string message, WriterTypes writerType, Guid taskId, Guid jobId)
+    public void LogWarning(string message, WriterTypes writerType, Guid taskId, Guid jobId, LoggerTypes loggerType = LoggerTypes.SchedulerInternalLog)
     {
-        _logger.LogWarning(LOGGER_BODY, message, LoggerTypes.SchedulerInternalLog.ToString(), writerType.ToString(), taskId, jobId);
+        _logger.LogWarning(LOGGER_BODY, message, loggerType.ToString(), writerType.ToString(), taskId, jobId);
     }
 
-    public void LogDebug(string message, WriterTypes writerType, Guid taskId, Guid jobId)
+    public void LogDebug(string message, WriterTypes writerType, Guid taskId, Guid jobId, LoggerTypes loggerType = LoggerTypes.SchedulerInternalLog)
     {
-        _logger.LogDebug(LOGGER_BODY, message, LoggerTypes.SchedulerInternalLog.ToString(), writerType.ToString(), taskId, jobId);
+        _logger.LogDebug(LOGGER_BODY, message, loggerType.ToString(), writerType.ToString(), taskId, jobId);
     }
 }
