@@ -164,13 +164,10 @@ public partial class JobModal
 
     private Task SelectJobType(JobTypes jobType)
     {
-        if(Model.JobType != jobType)
-        {
-            Model.JobType = jobType;
-            _requireCard = false;
-            _step++;
-        }
-        
+        Model.JobType = jobType;
+        _requireCard = false;
+        _step = 2;
+
         return Task.CompletedTask;
     }
 
