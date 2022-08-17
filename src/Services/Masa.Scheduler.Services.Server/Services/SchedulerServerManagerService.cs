@@ -40,10 +40,11 @@ public class SchedulerServerManagerService : ServiceBase
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(NotifyTaskRunResultIntegrationEvent))]
     public async Task NotifyTaskRunResultAsync([FromServices] IEventBus eventBus, NotifyTaskRunResultIntegrationEvent @event)
     {
-        var command = new NotifySchedulerTaskRunResultCommand(new NotifySchedulerTaskRunResultRequest() 
+        var command = new NotifySchedulerTaskRunResultCommand(new NotifySchedulerTaskRunResultRequest()
         {
             Status = @event.Status,
-            TaskId = @event.TaskId
+            TaskId = @event.TaskId,
+            Message = @event.Message
         });
         await eventBus.PublishAsync(command);
     }

@@ -20,6 +20,7 @@ public class JobAppTaskHandler : ITaskHandler
     private readonly SchedulerLogger _schedulerLogger;
     private Guid _taskId;
     private Guid _jobId;
+    private string _message = string.Empty;
 
     public JobAppTaskHandler(IHttpClientFactory httpClientFactory, ILogger<JobAppTaskHandler> logger, ILoggerFactory loggerFactory, IConfiguration configuration, SchedulerLogger schedulerLogger)
     {
@@ -88,6 +89,11 @@ public class JobAppTaskHandler : ITaskHandler
         {
             _schedulerLogger.LogError(ex, "Process run Error", WriterTypes.Worker, taskId, jobDto.Id);
             throw;
+        }
+
+        if(_runStatus == TaskRunStatus.Failure && !string.IsNullOrEmpty(_message))
+        {
+            throw new UserFriendlyException(_message);
         }
 
         return _runStatus;
@@ -161,29 +167,32 @@ public class JobAppTaskHandler : ITaskHandler
                 return;
             }
 
+            JobShellRunResult? result = null;
+
             try
             {
-                var result = JsonSerializer.Deserialize<JobShellRunResult>(output);
-
-                if (result != null)
-                {
-                    if (result.IsSuccess)
-                    {
-                        _runStatus = TaskRunStatus.Success;
-                    }
-                    else
-                    {
-                        throw new UserFriendlyException(result.Message);
-                    }
-                }
-                else
-                {
-                    _runStatus = TaskRunStatus.Failure;
-                }
+                result = JsonSerializer.Deserialize<JobShellRunResult>(output);
             }
             catch (Exception ex)
             {
                 _schedulerLogger.LogError(ex, $"JobShell Result Deserialize Error, output: {output}, exception message: {ex.Message}", WriterTypes.Worker, _taskId, _jobId);
+                return;
+            }
+
+            if (result != null)
+            {
+                if (result.IsSuccess)
+                {
+                    _runStatus = TaskRunStatus.Success;
+                }
+                else
+                {
+                    _message = result.Message;
+                }
+            }
+            else
+            {
+                _runStatus = TaskRunStatus.Failure;
             }
         }
         else
