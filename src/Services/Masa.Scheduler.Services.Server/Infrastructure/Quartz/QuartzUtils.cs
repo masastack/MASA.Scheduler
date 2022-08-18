@@ -59,7 +59,10 @@ public class QuartzUtils
         {
             var newTrigger = TriggerBuilder.Create()
                 .WithIdentity(jobId.ToString())
-                .WithCronSchedule(cron)
+                .WithCronSchedule(cron, builder =>
+                {
+                    builder.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"));
+                })
                 .Build();
 
             await _scheduler.RescheduleJob(triggerKey, newTrigger);
@@ -74,7 +77,10 @@ public class QuartzUtils
 
             var trigger = TriggerBuilder.Create()
                 .WithIdentity(jobId.ToString())
-                .WithCronSchedule(cron)
+                .WithCronSchedule(cron, builder=>
+                {
+                    builder.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"));
+                })
                 .Build();
 
             await _scheduler.ScheduleJob(job, trigger);
