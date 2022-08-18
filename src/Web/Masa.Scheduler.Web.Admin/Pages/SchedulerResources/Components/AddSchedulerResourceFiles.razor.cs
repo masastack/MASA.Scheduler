@@ -72,7 +72,6 @@ public partial class AddSchedulerResourceFiles
     {
         if(file == null)
         {
-            await PopupService.ToastAsync(T("FileIsEmpty"), AlertTypes.Error);
             return;
         }
 
@@ -109,6 +108,12 @@ public partial class AddSchedulerResourceFiles
         var fileName = Guid.NewGuid() + "-" + file.Name;
 
         var uploadUrl = await JsInvokeAsync<string>("ossUpload", _ref.Ref, securityToken, fileName);
+
+        if(uploadUrl == null)
+        {
+            await PopupService.ToastAsync(T("UploadFileFailed"), AlertTypes.Error);
+            return;
+        }
 
         Model.FilePath = uploadUrl;
 

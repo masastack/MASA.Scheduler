@@ -10,4 +10,6 @@ public class NotifySchedulerTaskRunResultRequest : BaseRequest
     public TaskRunStatus Status { get; set; }
 
     public string? Message { get; set; }
+
+    public bool StopManaul { get; set; }
 }

@@ -71,7 +71,8 @@ public class StartTaskDomainEventHandler
             var notifyEvent = new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
             {
                 TaskId = task.Id,
-                Status = TaskRunStatus.Failure
+                Status = TaskRunStatus.Failure,
+                StopManaul = true
             });
 
             await _eventBus.PublishAsync(notifyEvent);
@@ -108,7 +109,7 @@ public class StartTaskDomainEventHandler
             switch (task.Job.ScheduleBlockStrategy)
             {
                 case ScheduleBlockStrategyTypes.Serial:
-                    if(otherRunningTaskList.Any(p=> p.TaskStatus == TaskRunStatus.Running))
+                    if(otherRunningTaskList.Any(p=> p.TaskStatus == TaskRunStatus.Running || p.TaskStatus == TaskRunStatus.WaitToRetry))
                     {
                         task.Wait();
                         allowEnqueue = false;
@@ -134,6 +135,8 @@ public class StartTaskDomainEventHandler
 
                         otherRunningTask.TaskEnd(TaskRunStatus.Failure, "Stop by SchedulerBlockStrategy");
                         await _schedulerTaskRepository.UpdateAsync(otherRunningTask);
+
+                        await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, _mapper.Map<SchedulerTaskDto>(otherRunningTask));
                         _logger.LogInformation($"Trigger cover block strategy by TaskId: {task.Id}, task failed", WriterTypes.Server, otherRunningTask.Id, otherRunningTask.JobId);
                     }
                     task.TaskSchedule(@event.Request.OperatorId);

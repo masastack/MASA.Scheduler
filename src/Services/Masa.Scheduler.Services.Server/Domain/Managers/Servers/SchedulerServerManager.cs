@@ -14,6 +14,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     private readonly QuartzUtils _quartzUtils;
     private readonly IDomainEventBus _domainEventBus;
     private readonly SchedulerLogger _schedulerLogger;
+    private readonly SignalRUtils _signalRUtils;
 
     public SchedulerServerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -31,7 +32,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         QuartzUtils quartzUtils,
         SchedulerDbContext dbContext,
         IDomainEventBus domainEventBus,
-        SchedulerLogger schedulerLogger)
+        SchedulerLogger schedulerLogger,
+        SignalRUtils signalRUtils)
         : base(cacheClientFactory,
                redisCacheClient,
                serviceProvider,
@@ -49,6 +51,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         _dbContext = dbContext;
         _domainEventBus = domainEventBus;
         _schedulerLogger = schedulerLogger;
+        _signalRUtils = signalRUtils;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_SERVER_MANAGER_API}/heartbeat";
@@ -389,6 +392,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                         _schedulerLogger.LogInformation($"Sending task to worker, workerHost: {workerModel.GetServiceUrl()}", WriterTypes.Server, taskDto.Id, taskDto.JobId);
 
                         await StartTask(provider, taskDto, workerModel);
+
+                        await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, _mapper.Map<SchedulerTaskDto>(task));
                     }
                 }
                 catch(Exception ex)
