@@ -452,9 +452,14 @@ public partial class JobModal
 
         var sb = new StringBuilder();
 
-        var startTime = DateTimeOffset.Now.ToOffset(TimezoneOffset);
+        var startTime = DateTimeOffset.Now;
 
         var cronExpression = new CronExpression(Model.CronExpression);
+
+        var timezone = TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(p => p.BaseUtcOffset == TimezoneOffset);
+
+        if (timezone != null)
+            cronExpression.TimeZone = timezone;
 
         for (int i = 0; i < showCount; i++)
         {
