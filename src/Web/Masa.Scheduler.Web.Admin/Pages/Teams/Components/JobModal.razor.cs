@@ -452,7 +452,7 @@ public partial class JobModal
 
         var sb = new StringBuilder();
 
-        var startTime = DateTimeOffset.Now;
+        var startTime = DateTimeOffset.Now.ToOffset(TimezoneOffset);
 
         var cronExpression = new CronExpression(Model.CronExpression);
 
