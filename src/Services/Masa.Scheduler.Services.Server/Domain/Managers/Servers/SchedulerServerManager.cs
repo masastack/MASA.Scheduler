@@ -77,7 +77,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression) && job.Enabled);
 
-        await CheckSchedulerExpiredJobAsync(cronJobList);
+        await CheckSchedulerExpiredJobAsync(cronJobList.Where(p => p.ScheduleExpiredStrategy != ScheduleExpiredStrategyTypes.Ignore));
 
         await RegisterCronJobAsync(cronJobList);
     }
@@ -111,6 +111,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     {
         foreach (var cronJob in cronJobList)
         {
+            if(cronJob.ScheduleExpiredStrategy == ScheduleExpiredStrategyTypes.Ignore)
+            {
+                continue;
+            }
+
             var request = new StartSchedulerJobRequest()
             {
                 JobId = cronJob.Id,

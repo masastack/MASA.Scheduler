@@ -456,6 +456,11 @@ public partial class JobModal
 
         var cronExpression = new CronExpression(Model.CronExpression);
 
+        var timezone = TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(p => p.BaseUtcOffset == TimezoneOffset);
+
+        if (timezone != null)
+            cronExpression.TimeZone = timezone;
+
         for (int i = 0; i < showCount; i++)
         {
             var nextExcuteTime = cronExpression.GetNextValidTimeAfter(startTime);
@@ -463,7 +468,7 @@ public partial class JobModal
             if (nextExcuteTime.HasValue)
             {
                 startTime = nextExcuteTime.Value;
-                sb.AppendLine(startTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.AppendLine(startTime.ToOffset(TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss"));
             }
         }
 
