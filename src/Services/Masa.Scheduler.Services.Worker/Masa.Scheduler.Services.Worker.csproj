@@ -75,6 +75,12 @@
     <None Update="JobShell\Masa.BuildingBlocks.BasicAbility.Scheduler.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="JobShell\Masa.BuildingBlocks.Data.Contracts.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="JobShell\Masa.BuildingBlocks.Data.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="JobShell\Masa.BuildingBlocks.Identity.IdentityModel.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

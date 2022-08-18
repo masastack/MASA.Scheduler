@@ -90,7 +90,13 @@ public partial class JobModal
 
     private SchedulerJobDto _model = new();
 
-    private MForm? Form { get; set; }
+    private MForm? basicForm { get; set; }
+
+    private MForm? httpForm { get; set; }
+
+    private MForm? jobAppForm { get; set; }
+
+    private MForm? daprForm { get; set; }
 
     private int _step = 1;
 
@@ -160,7 +166,8 @@ public partial class JobModal
     {
         Model.JobType = jobType;
         _requireCard = false;
-        _step++;
+        _step = 2;
+
         return Task.CompletedTask;
     }
 
@@ -218,15 +225,27 @@ public partial class JobModal
 
         if (type == Model.JobType)
         {
-            defaultStyle += "background-color:#4318FF;";
+            defaultStyle += "background-color:#4318FF; color:#fff !important";
         }
 
         if (_requireCard)
         {
-            defaultStyle += "border-color: red";
+            defaultStyle += "border-color: red; color: #fff !important";
         }
 
         return defaultStyle;
+    }
+
+    private string GetColor(JobTypes type)
+    {
+        if (type == Model.JobType || _requireCard)
+        {
+            return "white";
+        }
+        else
+        {
+            return "black";
+        }
     }
 
     private Task SwitchFailedStrategyType(FailedStrategyTypes type)
@@ -323,9 +342,24 @@ public partial class JobModal
 
     private Task OnVisibleChange()
     {
-        if (Form is not null)
+        if (basicForm is not null)
         {
-            Form.ResetValidationAsync();
+            basicForm.ResetValidationAsync();
+        }
+
+        if (httpForm is not null)
+        {
+            httpForm.ResetValidationAsync();
+        }
+
+        if (jobAppForm is not null)
+        {
+            jobAppForm.ResetValidationAsync();
+        }
+
+        if (daprForm is not null)
+        {
+            daprForm.ResetValidationAsync();
         }
 
         _isAdd = Model.Id == Guid.Empty;
