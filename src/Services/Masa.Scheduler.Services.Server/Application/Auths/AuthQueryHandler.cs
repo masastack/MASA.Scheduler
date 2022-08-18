@@ -8,14 +8,14 @@ public class AuthQueryHandler
     private IUserContext _userContext;
     private IAuthClient _authClient;
     private IMapper _mapper;
-    private IMemoryCacheClient _memoryCacheClient;
+    private IMemoryCache _cache;
 
-    public AuthQueryHandler(IUserContext userContext, IAuthClient authClient, IMapper mapper, IMemoryCacheClient memoryCacheClient)
+    public AuthQueryHandler(IUserContext userContext, IAuthClient authClient, IMapper mapper, IMemoryCache cache)
     {
         _userContext = userContext;
         _authClient = authClient;
         _mapper = mapper;
-        _memoryCacheClient = memoryCacheClient;
+        _cache = cache;
     }
 
     [EventHandler]
@@ -40,7 +40,7 @@ public class AuthQueryHandler
 
         var cacheKey = CacheKeys.USER_QUERY + "-" + md5Key;
 
-        var response = await _memoryCacheClient.GetAsync<List<UserDto>>(cacheKey);
+        var response = _cache.Get<List<UserDto>>(cacheKey);
 
         if(response == null)
         {
@@ -51,13 +51,7 @@ public class AuthQueryHandler
                 response = _mapper.Map<List<UserDto>>(userInfos);
             }
 
-            await _memoryCacheClient.SetAsync(cacheKey, response ?? new(), new CombinedCacheEntryOptions<List<UserDto>>()
-            {
-                MemoryCacheEntryOptions = new MemoryCacheEntryOptions()
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
-                }
-            });
+            _cache.Set(cacheKey, response ?? new(), DateTimeOffset.Now.AddMinutes(1));
         }
 
         query.Result = response ?? new();
