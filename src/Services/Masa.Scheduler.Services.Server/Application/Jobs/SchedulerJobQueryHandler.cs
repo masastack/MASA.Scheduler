@@ -9,15 +9,13 @@ public class SchedulerJobQueryHandler
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IEventBus _eventBus;
-    private readonly IMemoryCacheClient _memoryCacheClient;
 
-    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus, IMemoryCacheClient memoryCacheClient)
+    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _dbContext = dbContext;
         _mapper = mapper;
         _eventBus = eventBus;
-        _memoryCacheClient = memoryCacheClient;
     }
 
     [EventHandler]

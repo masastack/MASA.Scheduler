@@ -23,6 +23,6 @@ public class AuthService : ServiceBase
         var query = new UserQuery();
         query.UserIds.Add(userId);
         await eventBus.PublishAsync(query);
-        return Results.Ok(query.Result.FirstOrDefault());
+        return Results.Ok(query.Result.FirstOrDefault() ?? new());
     }
 }
