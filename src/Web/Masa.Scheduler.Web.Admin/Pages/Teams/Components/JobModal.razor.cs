@@ -463,7 +463,7 @@ public partial class JobModal
             if (nextExcuteTime.HasValue)
             {
                 startTime = nextExcuteTime.Value;
-                sb.AppendLine(startTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.AppendLine(startTime.ToOffset(TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss"));
             }
         }
 
