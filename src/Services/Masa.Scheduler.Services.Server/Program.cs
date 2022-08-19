@@ -18,7 +18,7 @@ builder.AddObservability();
 
 var quartzConnectString = builder.Configuration.GetValue<string>("QuartzConnectString");
 
-builder.Services.AddMasaIdentityModel(IdentityType.MultiEnvironment, options =>
+builder.Services.AddMasaIdentityModel(options =>
 {
     options.Environment = "environment";
     options.UserName = "name";

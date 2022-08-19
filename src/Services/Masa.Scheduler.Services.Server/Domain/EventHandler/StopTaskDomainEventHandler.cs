@@ -59,9 +59,9 @@ public class StopTaskDomainEventHandler
 
         if (!@event.IsRestart)
         {
-            if(task.TaskStatus == TaskRunStatus.WaitToRun)
+            if(task.TaskStatus == TaskRunStatus.WaitToRetry)
             {
-                await _quartzUtils.RemoveDelayTask(task.Id, task.Job.Id);
+                await _quartzUtils.RemoveDelayTask(task.Id, task.JobId);
             }
 
             task.TaskEnd(TaskRunStatus.Failure, $"User manual stop task, OperatorId: {@event.Request.OperatorId}");
