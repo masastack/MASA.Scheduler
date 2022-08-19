@@ -25,20 +25,26 @@ public class UpdateCronJobDomainEventHandler
         }
         else
         {
-            var waitingTasks = await _schedulerTaskRepository.GetListAsync(p => p.JobId == @event.Request.JobId && (p.TaskStatus == TaskRunStatus.WaitToRetry || p.TaskStatus == TaskRunStatus.WaitToRun));
-
-            foreach (var task in waitingTasks)
+            if (!@event.Request.Enabled)
             {
-                task.TaskEnd(TaskRunStatus.Failure, "Job is disabled");
-                await _schedulerTaskRepository.UpdateAsync(task);
-            }
+                var waitingTasks = await _schedulerTaskRepository.GetListAsync(p => p.JobId == @event.Request.JobId && (p.TaskStatus == TaskRunStatus.WaitToRetry || p.TaskStatus == TaskRunStatus.WaitToRun));
 
-            var job = await _schedulerJobRepository.FindAsync(p => p.Id == @event.Request.JobId);
+                foreach (var task in waitingTasks)
+                {
+                    task.TaskEnd(TaskRunStatus.Failure, "Job is disabled");
+                    await _schedulerTaskRepository.UpdateAsync(task);
+                }
 
-            if(job != null)
-            {
-                job.UpdateLastRunDetail(TaskRunStatus.Failure);
-                await _schedulerJobRepository.UpdateAsync(job);
+                if (waitingTasks.Any())
+                {
+                    var job = await _schedulerJobRepository.FindAsync(p => p.Id == @event.Request.JobId);
+
+                    if (job != null)
+                    {
+                        job.UpdateLastRunDetail(TaskRunStatus.Failure);
+                        await _schedulerJobRepository.UpdateAsync(job);
+                    }
+                }
             }
 
             await _quartzUtils.RemoveCronJob(@event.Request.JobId);
