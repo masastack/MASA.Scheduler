@@ -611,6 +611,15 @@ public partial class SchedulerJobs : ProCompontentBase
             return false;
         }
 
+        if(_jobCreateType == JobCreateTypes.Api && string.IsNullOrWhiteSpace(job.Origin))
+        {
+            return false;
+        }
+        else if(_jobCreateType == JobCreateTypes.Manual && !string.IsNullOrWhiteSpace(job.Origin))
+        {
+            return false;
+        }
+
         if(job.BelongProjectIdentity != Project.Identity)
         {
             return false;
