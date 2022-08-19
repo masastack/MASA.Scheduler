@@ -72,6 +72,7 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
         RunCount++;
         TaskRunStartTime = DateTimeOffset.Now;
         TaskStatus = TaskRunStatus.Running;
+        TaskRunEndTime = DateTimeOffset.MinValue;
         RunTime = 0;
     }
 

@@ -60,7 +60,7 @@ public class NotifyTaskRunResultDomainEventHandler
 
         TaskRunStatus status = @event.Request.Status;
 
-        if(status == TaskRunStatus.Failure && task.Job.FailedStrategy == FailedStrategyTypes.Auto)
+        if(!@event.Request.StopManaul && status == TaskRunStatus.Failure && task.Job.FailedStrategy == FailedStrategyTypes.Auto)
         {
             var retryCount = await _distributedCacheClient.HashIncrementAsync($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
 

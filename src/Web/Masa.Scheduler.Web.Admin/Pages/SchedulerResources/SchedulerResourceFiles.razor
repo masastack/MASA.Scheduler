@@ -2,14 +2,17 @@
 @page "/pages/resource"
 
 <div class="d-flex">
-    <MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 165px );">
-        <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 165px );">
+    <MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 126px );">
+        <div class="flex mt-4">
+             <SSearch @bind-Value="SearchName" Class="pb-4" Style="width: 194px; margin: auto"></SSearch>
+        </div>
+        <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 250px );">
             <MList Width="194" Dense>
                 <MListItemGroup Class="rounded-2 scheduler-list"
                                 @bind-Value="@SelectedIdentity"
                                 Mandatory
                                 Color="@Color">
-                    <SSearch @bind-Value="SearchName" Class="pb-4"></SSearch>
+                   
                     @foreach (var project in _projects)
                     {
                         @if (project.Children.Any())
@@ -36,14 +39,17 @@
 
     @if (!string.IsNullOrWhiteSpace(LastSelectedAppIdentity))
     {
-        <MNavigationDrawer Permanent Class="rounded-4 ml-6" Width="242" Style="height:calc(100vh - 165px );">
-            <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 165px );">
+        <MNavigationDrawer Permanent Class="rounded-4 ml-6" Width="242" Style="height:calc(100vh - 126px );">
+            <div class="d-flex mt-4">
+                <MButton Rounded Color="primary" Dark Class="mb-4 ml-6" OnClick="AddResourceFile" Width="194" Style="margin:auto"> @T("AddResourceFiles") </MButton>
+            </div>
+            <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 250px );">
                 <MList Width="194">
                     <MListItemGroup Class="rounded-2"
                                 @bind-Value="@SelectedResourceId"
                                 Mandatory
                                 Color="#A3AED0">
-                        <MButton Rounded Color="primary" Dark Class="full-width mb-4" OnClick="AddResourceFile"> @T("AddResourceFiles") </MButton>
+                        
                         @foreach (var resouce in _resources)
                         {
                             <MListItem Class="rounded-2 project-list" Value="resouce.Id.ToString()" Dense>
@@ -55,14 +61,13 @@
                                 </MListItemIcon>
                             </MListItem>
                         }
-
-                        @if (_resources.Any())
-                        {
-                            <MButton Class="scheduler-delete-resources" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty)" Text Color="red">@T("DeleteResources")</MButton>   
-                        }
                     </MListItemGroup>
                 </MList>
             </div>
+            @if (_resources.Any())
+            {
+                <MButton Class="d-flex" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty)" Style="margin:auto" Text Color="red">@T("DeleteResources")</MButton>   
+            }
         </MNavigationDrawer>
     }
 

@@ -7,19 +7,34 @@ public class StopTaskDomainEventHandler
 {
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly ISchedulerJobRepository _schedulerJobRepository;
-    private readonly IEventBus _eventBus;
     private readonly SchedulerServerManager _serverManager;
+    private readonly SignalRUtils _signalRUtils;
+    private readonly IMapper _mapper;
+    private readonly SchedulerDbContext _dbContext;
+    private readonly IDistributedCacheClient _distributedCacheClient;
+    private readonly IIntegrationEventBus _eventBus;
+    private readonly QuartzUtils _quartzUtils;
 
     public StopTaskDomainEventHandler(
         ISchedulerTaskRepository schedulerTaskRepository,
-        IEventBus eventBus,
+        IIntegrationEventBus eventBus,
         SchedulerServerManager serverManager,
-        ISchedulerJobRepository schedulerJobRepository)
+        ISchedulerJobRepository schedulerJobRepository,
+        SignalRUtils signalRUtils,
+        IMapper mapper,
+        SchedulerDbContext dbContext,
+        IDistributedCacheClient distributedCacheClient,
+        QuartzUtils quartzUtils)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
         _serverManager = serverManager;
         _schedulerJobRepository = schedulerJobRepository;
+        _signalRUtils = signalRUtils;
+        _mapper = mapper;
+        _dbContext = dbContext;
+        _distributedCacheClient = distributedCacheClient;
+        _quartzUtils = quartzUtils;
     }
 
     [EventHandler(1)]
@@ -44,14 +59,44 @@ public class StopTaskDomainEventHandler
 
         if (!@event.IsRestart)
         {
-            var notifyEvent = new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
+            if(task.TaskStatus == TaskRunStatus.WaitToRun)
             {
-                Status = TaskRunStatus.Failure,
-                TaskId = task.Id,
-                Message = $"User manual stop task, OperatorId: {@event.Request.OperatorId}"
-            });
+                await _quartzUtils.RemoveDelayTask(task.Id, task.Job.Id);
+            }
 
-            await _eventBus.PublishAsync(notifyEvent);
+            task.TaskEnd(TaskRunStatus.Failure, $"User manual stop task, OperatorId: {@event.Request.OperatorId}");
+
+            await _schedulerTaskRepository.UpdateAsync(task);
+
+            var job = await _schedulerJobRepository.FindAsync(j => j.Id == task.JobId);
+
+            if (job != null)
+            {
+                job.UpdateLastRunDetail(TaskRunStatus.Failure);
+                await _schedulerJobRepository.UpdateAsync(job);
+            }
+
+            await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
+            await _schedulerTaskRepository.UnitOfWork.CommitAsync();
+
+            var dto = _mapper.Map<SchedulerTaskDto>(task);
+
+            var waitForRunTask = await _dbContext.Tasks.OrderBy(t => t.SchedulerTime).ThenBy(t => t.CreationTime).Include(t => t.Job).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
+
+            if (waitForRunTask != null)
+            {
+                var startWaittingTaskevent = new StartWaitingTaskIntergrationEvent()
+                {
+                    TaskId = waitForRunTask.Id,
+                    OperatorId = task.OperatorId,
+                };
+
+                await _eventBus.PublishAsync(startWaittingTaskevent);
+            }
+
+            _distributedCacheClient.Remove<int>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
+
+            await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, dto);
         }
     }
 }

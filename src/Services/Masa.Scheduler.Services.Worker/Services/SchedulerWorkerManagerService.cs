@@ -37,11 +37,18 @@ public class SchedulerWorkerManagerService : ServiceBase
         return Results.Ok("success");
     }
 
-    public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, StartTaskIntegrationEvent @event)
+    public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, [FromServices] IIntegrationEventBus eventBus, StartTaskIntegrationEvent @event)
     {
         if(@event.TaskId == Guid.Empty || @event.Job == null)
         {
-            _logger.LogError("StartTask Error, Parameter is null");
+            var notifyEvent = new NotifyTaskRunResultIntegrationEvent()
+            {
+                TaskId = @event.TaskId,
+                Status = TaskRunStatus.Failure,
+                Message = "StartTask Error, Job is null"
+            };
+
+            await eventBus.PublishAsync(notifyEvent);
             return;
         }
 
