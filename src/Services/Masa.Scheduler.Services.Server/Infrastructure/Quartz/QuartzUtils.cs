@@ -113,6 +113,8 @@ public class QuartzUtils
 
         var cronExpression = new CronExpression(cron);
 
+        cronExpression.TimeZone = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
+
         while (startTime < endTime)
         {
             var nextExcuteTime = cronExpression.GetNextValidTimeAfter(startTime);
@@ -123,7 +125,7 @@ public class QuartzUtils
 
                 if(nextExcuteTime < endTime)
                 {
-                    excuteTimeList.Add(nextExcuteTime.Value.ToLocalTime());
+                    excuteTimeList.Add(nextExcuteTime.Value);
                 }
             }
         }

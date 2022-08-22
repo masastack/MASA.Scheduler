@@ -106,7 +106,15 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         foreach (var runningTask in runningTaskList)
         {
-            await TaskEnqueue(runningTask);
+            var startTaskDomainEvent = new StartTaskDomainEvent(new StartSchedulerTaskRequest()
+            {
+                TaskId = runningTask.Id,
+                ExcuteTime = runningTask.SchedulerTime,
+                OperatorId = runningTask.OperatorId,
+                IsManual = true
+            }, runningTask);
+
+            await _domainEventBus.PublishAsync(startTaskDomainEvent);
         }
     }
 
@@ -134,7 +142,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 calcStartTime = lastTask.SchedulerTime;
             }
 
+            Logger.LogInformation($"Test ScheduleExpiredStrategy, currentTime: {DateTimeOffset.Now}, calcStartTime: {calcStartTime}");
+
             var excuteTimeList = await _quartzUtils.GetCronExcuteTimeByTimeRange(cronJob.CronExpression, calcStartTime, DateTimeOffset.Now);
+
+            Logger.LogInformation($"excuteTimeList, excuteTimeList: {JsonSerializer.Serialize(excuteTimeList)}");
 
             switch (cronJob.ScheduleExpiredStrategy)
             {
