@@ -142,11 +142,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 calcStartTime = lastTask.SchedulerTime;
             }
 
-            Logger.LogInformation($"Test ScheduleExpiredStrategy, currentTime: {DateTimeOffset.Now}, calcStartTime: {calcStartTime}");
+            Logger.LogInformation($"Test ScheduleExpiredStrategy, currentTime: {DateTimeOffset.Now}, calcStartTime: {calcStartTime}, JobId: {cronJob.Id}");
 
             var excuteTimeList = await _quartzUtils.GetCronExcuteTimeByTimeRange(cronJob.CronExpression, calcStartTime, DateTimeOffset.Now);
 
-            Logger.LogInformation($"excuteTimeList, excuteTimeList: {JsonSerializer.Serialize(excuteTimeList)}");
+            Logger.LogInformation($"ExcuteTimeList, excuteTimeList: {JsonSerializer.Serialize(excuteTimeList)}, JobId: {cronJob.Id}");
 
             switch (cronJob.ScheduleExpiredStrategy)
             {
