@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.2.0" />
-    <PackageReference Include="Masa.BuildingBlocks.Caching" Version="0.6.0-rc.1" />
-    <PackageReference Include="Masa.Contrib.Configuration.ConfigurationApi.Dcc" Version="0.6.0-rc.1" />
+    <PackageReference Include="Masa.BuildingBlocks.Caching" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.Configuration.ConfigurationApi.Dcc" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Utils.Extensions.Validations.FluentValidation" Version="$(MasaFrameworkPackageVersion)" />
