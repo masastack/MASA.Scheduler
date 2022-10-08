@@ -135,7 +135,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         return Task.CompletedTask;
     }
 
-    public async Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
+    public Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
     {
         var cts = new CancellationTokenSource();
         var internalCts = new CancellationTokenSource();
@@ -205,6 +205,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                 managerData.InternalCancellationTokenSources.Remove(taskId, out _);
             }
         }, cts.Token);
+
+        return Task.CompletedTask;
     }
 
     public async Task StopTaskAsync(StopTaskIntegrationEvent @event)
