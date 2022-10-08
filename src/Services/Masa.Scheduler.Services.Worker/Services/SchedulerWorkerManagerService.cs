@@ -8,19 +8,17 @@ public class SchedulerWorkerManagerService : ServiceBase
     private readonly ILogger<SchedulerWorkerManagerService> _logger;
     private readonly SchedulerLogger _schedulerLogger;
 
-    public SchedulerWorkerManagerService(IServiceCollection services, ILogger<SchedulerWorkerManagerService> logger, SchedulerLogger schedulerLogger) : base(services, ConstStrings.SCHEDULER_WORKER_MANAGER_API)
+    public SchedulerWorkerManagerService(IServiceCollection services, ILogger<SchedulerWorkerManagerService> logger, SchedulerLogger schedulerLogger) : base(ConstStrings.SCHEDULER_WORKER_MANAGER_API)
     {
         _logger = logger;
         var host = Dns.GetHostEntry(Dns.GetHostName());
         var serviceId = MD5Utils.Encrypt(EncryptType.Md5, host.HostName);
-        MapGet(OnlineAsync);
-        MapGet(GetServerListAsync);
-        MapGet(Heartbeat);
-        MapPost(StartTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent) + serviceId);
-        MapPost(StopTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StopTaskIntegrationEvent) + serviceId);
+        App.MapPost(ConstStrings.SCHEDULER_WORKER_MANAGER_API + "/start", StartTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent) + serviceId);
+        App.MapPost(ConstStrings.SCHEDULER_WORKER_MANAGER_API + "/stop", StopTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StopTaskIntegrationEvent) + serviceId);
         _schedulerLogger = schedulerLogger;
     }
 
+    [RoutePattern(Pattern = "/online", StartWithBaseUri = true, HttpMethod = "Get")]
     public async Task<IResult> OnlineAsync([FromServices] SchedulerWorkerManager workerManager)
     {
         await workerManager.Online();
@@ -32,11 +30,12 @@ public class SchedulerWorkerManagerService : ServiceBase
         return Results.Ok(data.ServiceList);
     }
 
-    public IResult Heartbeat()
+    public IResult GetHeartbeat()
     {
         return Results.Ok("success");
     }
 
+    [IgnoreRoute]
     public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, [FromServices] IIntegrationEventBus eventBus, StartTaskIntegrationEvent @event)
     {
         if(@event.TaskId == Guid.Empty || @event.Job == null)
@@ -57,6 +56,7 @@ public class SchedulerWorkerManagerService : ServiceBase
         await workerManager.EnqueueTask(@event);
     }
 
+    [IgnoreRoute]
     public async Task StopTask([FromServices] SchedulerWorkerManager workerManager, StopTaskIntegrationEvent @event)
     {
         await workerManager.StopTaskAsync(@event);

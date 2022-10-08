@@ -5,15 +5,11 @@ namespace Masa.Scheduler.Services.Server.Services;
 
 public class SchedulerResourceService : ServiceBase
 {
-    public SchedulerResourceService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_RESOURCE_API)
+    public SchedulerResourceService() : base(ConstStrings.SCHEDULER_RESOURCE_API)
     {
-        MapGet(ListAsync, string.Empty);
-        MapPost(AddAsync, string.Empty);
-        MapPut(UpdateAsync, string.Empty);
-        MapDelete(DeleteAsync, string.Empty);
     }
 
-    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] string jobAppIdentity)
+    public async Task<IResult> GetListAsync(IEventBus eventBus, [FromQuery] string jobAppIdentity)
     {
         var request = new SchedulerResourceListRequest()
         {

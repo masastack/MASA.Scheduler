@@ -10,9 +10,7 @@ public static class ServiceCollectionExtensions
         var option = new SchedulerApiOptions();
 
         configs?.Invoke(option);
-
         services.AddSingleton(option);
-        services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
         services.AddCaller(Assembly.Load("Masa.Scheduler.ApiGateways.Caller"));
         return services;
     }

@@ -14,18 +14,18 @@ public class SchedulerTaskService: ServiceBase
 
     public async Task<SchedulerTaskListResponse> GetListAsync(SchedulerTaskListRequest request)
     {
-        var result = await GetAsync<SchedulerTaskListRequest, SchedulerTaskListResponse>(string.Empty, request);
+        var result = await GetAsync<SchedulerTaskListRequest, SchedulerTaskListResponse>(nameof(GetListAsync), request);
         return result ?? new();
     }
 
     public async Task StartAsync(StartSchedulerTaskRequest request)
     {
-        await PutAsync(nameof(StartAsync), request);
+        await PostAsync(nameof(StartAsync), request);
     }
 
     public async Task StopAsync(StopSchedulerTaskRequest request)
     {
-        await PutAsync(nameof(StopAsync), request);
+        await PostAsync(nameof(StopAsync), request);
     }
 
     public async Task RemoveAsync(RemoveSchedulerTaskRequest request)

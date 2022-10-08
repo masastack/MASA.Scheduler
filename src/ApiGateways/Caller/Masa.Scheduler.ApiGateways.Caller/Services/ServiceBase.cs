@@ -5,6 +5,8 @@ namespace Masa.Scheduler.ApiGateways.Caller.Services;
 
 public abstract class ServiceBase
 {
+    private string[] _trimMethodPrefix = new[] { "Get", "Select", "Post", "Add", "Upsert", "Create", "Put", "Update", "Modify", "Delete", "Remove" };
+
     protected ICaller Caller { get; init; }
 
     protected abstract string BaseUrl { get; set; }
@@ -26,22 +28,22 @@ public abstract class ServiceBase
 
     protected async Task PutAsync<TRequest>(string methodName, TRequest data)
     {
-        var response = await Caller.PutAsync(BuildAdress(methodName), data);
+        await Caller.PutAsync(BuildAdress(methodName), data);
     }
 
     protected async Task PostAsync<TRequest>(string methodName, TRequest data)
     {
-        var response = await Caller.PostAsync(BuildAdress(methodName), data);
+        await Caller.PostAsync(BuildAdress(methodName), data);
     }
 
     protected async Task DeleteAsync<TRequest>(string methodName, TRequest? data = default)
     {
-        var response = await Caller.DeleteAsync(BuildAdress(methodName), data);
+        await Caller.DeleteAsync(BuildAdress(methodName), data);
     }
 
     protected async Task DeleteAsync(string methodName)
     {
-        var response = await Caller.DeleteAsync(BuildAdress(methodName), null);
+        await Caller.DeleteAsync(BuildAdress(methodName), null);
     }
 
     protected async Task SendAsync<TRequest>(string methodName, TRequest? data = default)
@@ -58,6 +60,15 @@ public abstract class ServiceBase
 
     string BuildAdress(string methodName)
     {
+        foreach (var prefix in _trimMethodPrefix)
+        {
+            if (methodName.ToLower().StartsWith(prefix.ToLower()))
+            {
+                methodName = methodName[prefix.Length..];
+                break;
+            }
+        }
+
         return Path.Combine(BaseUrl, methodName.Replace("Async", ""));
     }
 }

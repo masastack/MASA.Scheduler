@@ -19,19 +19,13 @@ public class SignalRUtils
         if (intervalSecond > 0)
         {
             var key = $"{CacheKeys.SIGNALR_NOTIFY}-{group}-{method}";
-            if (await _distributedCacheClient.ExistsAsync<bool>(key))
+            if (await _distributedCacheClient.ExistsAsync(key))
             {
                 return;
             }
             else
             {
-                _distributedCacheClient.Set(key, true, new CombinedCacheEntryOptions<bool>()
-                {
-                    DistributedCacheEntryOptions = new DistributedCacheEntryOptions()
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(intervalSecond)
-                    }
-                });
+                _distributedCacheClient.Set(key, true, TimeSpan.FromSeconds(intervalSecond));
             }
         }
         var groupClient = _hubContext.Clients.Groups(group);

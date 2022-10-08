@@ -15,7 +15,11 @@ if (builder.Environment.IsDevelopment())
         opt.DaprGrpcPort = 10603;
     });
 }
-
+builder.Services.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+});
+var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 builder.Services.AddDaprClient();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
@@ -25,17 +29,15 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.Authority = builder.GetMasaConfiguration().ConfigurationApi.GetDefault().GetValue<string>("AppSettings:IdentityServerUrl");
+    options.Authority = publicConfiguration.GetValue<string>("$public.AppSettings:IdentityServerUrl");
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters.ValidateAudience = false;
     options.MapInboundClaims = false;
 });
-builder.AddMasaConfiguration(configurationBuilder =>
-{
-    configurationBuilder.UseDcc();
-});
-var configuration = builder.GetMasaConfiguration().ConfigurationApi.GetDefault();
-builder.Services.AddMasaRedisCache(configuration.GetSection("RedisConfig").Get<RedisConfigurationOptions>()).AddMasaMemoryCache();
+
+var redisOptions = publicConfiguration.GetSection("$public.RedisConfig").Get<RedisConfigurationOptions>();
+builder.Services.AddStackExchangeRedisCache(redisOptions)
+    .AddMultilevelCache();
 builder.Services.AddMapster();
 builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
@@ -87,7 +89,10 @@ var app = builder.Services
             dbOptions => dbOptions.UseSqlServer().UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
-    .AddServices(builder);
+    .AddServices(builder, options =>
+    {
+        options.MapHttpMethodsForUnmatched = new[] { "Post" };
+    });
 
 app.UseMasaExceptionHandler(opt =>
 {

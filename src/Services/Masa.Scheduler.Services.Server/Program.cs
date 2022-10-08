@@ -16,68 +16,64 @@ if (builder.Environment.IsDevelopment())
 
 builder.AddObservability();
 
-var quartzConnectString = builder.Configuration.GetValue<string>("QuartzConnectString");
+builder.Services.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+});
 
-builder.Services.AddMasaIdentityModel(options =>
+var quartzConnectString = builder.Services.GetMasaConfiguration().Local.GetValue<string>("QuartzConnectString");
+var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
+var ossOptions = publicConfiguration.GetSection("$public.OSS").Get<OssOptions>();
+
+builder.Services.AddAliyunStorage(new AliyunStorageOptions(ossOptions.AccessId, ossOptions.AccessSecret, ossOptions.Endpoint, ossOptions.RoleArn, ossOptions.RoleSessionName)
+{
+    Sts = new AliyunStsOptions()
+    {
+        RegionId = ossOptions.RegionId
+    }
+});
+
+builder.Services.AddMasaIdentity(options =>
 {
     options.Environment = "environment";
     options.UserName = "name";
     options.UserId = "sub";
 });
 
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer("Bearer", options =>
-{
-    options.Authority = builder.GetMasaConfiguration().ConfigurationApi.GetDefault().GetValue<string>("AppSettings:IdentityServerUrl");
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters.ValidateAudience = false;
-    options.MapInboundClaims = false;
-});
-builder.AddMasaConfiguration(configurationBuilder =>
-{
-    configurationBuilder.UseDcc();
-});
-var configuration = builder.GetMasaConfiguration().ConfigurationApi.GetDefault();
+builder.Services
+    .AddAuthorization()
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = publicConfiguration.GetValue<string>("$public.AppSettings:IdentityServerUrl");
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters.ValidateAudience = false;
+        options.MapInboundClaims = false;
+    });
 
-var redisConfigOptions = configuration.GetSection("RedisConfig").Get<RedisConfigurationOptions>();
+var redisOptions = publicConfiguration.GetSection("$public.RedisConfig").Get<RedisConfigurationOptions>();
 
-builder.Services.AddAuthClient(configuration.GetValue<string>("AppSettings:AuthClient:Url"));
-builder.Services.AddMasaRedisCache(redisConfigOptions).AddMasaMemoryCache();
-builder.Services.AddPmClient(configuration.GetValue<string>("AppSettings:PmClient:Url"));
+builder.Services.AddStackExchangeRedisCache(redisOptions)
+    .AddMultilevelCache();
+
+builder.Services
+    .AddAuthClient(publicConfiguration.GetValue<string>("$public.AppSettings:AuthClient:Url"), redisOptions)
+    .AddPmClient(publicConfiguration.GetValue<string>("$public.AppSettings:PmClient:Url"));
+
 builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
-builder.Services.AddMasaSignalR(redisConfigOptions);
+builder.Services.AddMasaSignalR(redisOptions);
 builder.Services.AddQuartzUtils(quartzConnectString);
 builder.Services.AddSchedulerLogger();
 
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
     .AddDbContextCheck<SchedulerDbContext>();
-
-builder.Services.AddAliyunStorage(async serviceProvider =>
-{
-    var daprClient = serviceProvider.GetRequiredService<DaprClient>();
-
-    var secrets = await daprClient.GetSecretAsync("localsecretstore", "masa-scheduler-secret");
-    var accessId = secrets.GetValueOrDefault("access_id", string.Empty);
-    var accessSecret = secrets.GetValueOrDefault("access_secret", string.Empty);
-    var endpoint = secrets.GetValueOrDefault("endpoint", string.Empty);
-    var roleArn = secrets.GetValueOrDefault("roleArn", string.Empty);
-
-    return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest")
-    {
-        Sts = new AliyunStsOptions()
-        {
-            RegionId = "cn-hangzhou"
-        }
-    };
-});
 
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -108,10 +104,7 @@ var app = builder.Services
             }
         });
     })
-    .AddFluentValidation(options =>
-    {
-        options.RegisterValidatorsFromAssemblyContaining<Program>();
-    })
+    .AddFluentValidationAutoValidation()
     .AddDomainEventBus(options =>
     {
         options
@@ -125,7 +118,10 @@ var app = builder.Services
             dbOptions => dbOptions.UseSqlServer().UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
-    .AddServices(builder);
+    .AddServices(builder, options=>
+    {
+        options.MapHttpMethodsForUnmatched = new[] { "Post" }; 
+    });
 
 app.UseMasaExceptionHandler(opt =>
 {
@@ -155,6 +151,15 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapSubscribeHandler();
     endpoints.MapHub<NotificationsHub>("/server-hub/notifications");
+});
+app.MapHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.MapHealthChecks("/liveness", new HealthCheckOptions
+{
+    Predicate = r => r.Name.Contains("self")
 });
 app.UseHttpsRedirection();
 

@@ -1,15 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Scheduler.ApiGateways.Caller;
-using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
-using Masa.Scheduler.Contracts.Server.Infrastructure.SignalRClients;
-using Masa.Stack.Components;
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
-using System.Security.Cryptography.X509Certificates;
-using Masa.Utils.Data.Elasticsearch;
-using Microsoft.Extensions.DependencyInjection;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddObservability(true);
@@ -22,16 +13,32 @@ builder.WebHost.UseKestrel(option =>
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSchedulerApiGateways(options => options.SchedulerServerBaseAddress = builder.Configuration["SchedulerServerBaseAddress"]);
-builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);
-builder.Services.AddElasticsearchClient("auth", option => option.UseNodes("http://10.10.90.44:31920/").UseDefault())
-                   .AddAutoComplete(option => option.UseIndexName(builder.Configuration["UserAutoComplete"]));
+
+var authBaseAddress = builder.Configuration["AuthServiceBaseAddress"];
+var mcBaseAddress = builder.Configuration["McServiceBaseAddress"];
+var schedulerBaseAddress = builder.Configuration["SchedulerServerBaseAddress"];
+var signalRBaseAddress = builder.Configuration["SignalRServiceUrl"];
+
+builder.Services.AddSchedulerApiGateways(options => options.SchedulerServerBaseAddress = schedulerBaseAddress);
+
+builder.AddMasaStackComponentsForServer("wwwroot/i18n", authBaseAddress, mcBaseAddress);
+
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddMapster();
+
 builder.Services.AddGlobalForServer();
-builder.Services.AddMasaSignalRClient(options=> options.SignalRServiceUrl = builder.Configuration["SignalRServiceUrl"]);
-builder.Services.AddMasaOpenIdConnect(builder.Configuration);
+
+builder.Services.AddScoped<TokenProvider>();
+
+builder.Services.AddMasaSignalRClient(options => options.SignalRServiceUrl = signalRBaseAddress);
+
+var oidcOptions = builder.Services.GetMasaConfiguration().Local.GetSection("$public.OIDC:AuthClient").Get<MasaOpenIdConnectOptions>();
+
+builder.Services.AddMasaOpenIdConnect(oidcOptions);
+
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
 var app = builder.Build();

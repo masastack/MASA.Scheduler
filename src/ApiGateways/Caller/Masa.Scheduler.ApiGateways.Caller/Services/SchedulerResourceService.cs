@@ -14,7 +14,7 @@ public class SchedulerResourceService : ServiceBase
 
     public async Task<SchedulerResourceListResponse> GetListAsync(SchedulerResourceListRequest request)
     {
-        var result = await GetAsync<SchedulerResourceListRequest, SchedulerResourceListResponse>(string.Empty, request);
+        var result = await GetAsync<SchedulerResourceListRequest, SchedulerResourceListResponse>(nameof(GetListAsync), request);
         return result ?? new();
     }
 

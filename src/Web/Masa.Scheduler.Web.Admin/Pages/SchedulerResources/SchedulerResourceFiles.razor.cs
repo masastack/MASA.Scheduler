@@ -85,8 +85,6 @@ public partial class SchedulerResourceFiles
 
     private string _searchName = string.Empty;
 
-    private bool _showForm = false;
-
     private bool _isAdd = false;
 
     private bool _showConfirmDialog = false;
@@ -102,8 +100,6 @@ public partial class SchedulerResourceFiles
     private ConfirmDialogTypes _confirmType;
 
     private SchedulerResourceDto Model { get; set; } = new();
-
-    private MForm? _form;
 
     public string LastSelectedAppIdentity
     {

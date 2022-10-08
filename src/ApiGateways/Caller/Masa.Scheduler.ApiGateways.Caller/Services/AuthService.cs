@@ -13,7 +13,7 @@ public class AuthService : ServiceBase
     }
     public async Task<TeamListResponse> GetTeamListAsync()
     {
-        var result = await GetAsync<List<TeamDto>>($"GetTeamList");
+        var result = await GetAsync<List<TeamDto>>(nameof(GetTeamListAsync));
 
         var response = new TeamListResponse()
         {
@@ -25,7 +25,7 @@ public class AuthService : ServiceBase
 
     public async Task<UserDto> GetUserInfoAsync(Guid userId)
     {
-        var result = await GetAsync<UserDto>($"GetUserInfo?userId=" + userId);
+        var result = await GetAsync<UserDto>($"UserInfo?userId=" + userId);
 
         return result;
     }

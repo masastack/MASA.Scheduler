@@ -145,7 +145,7 @@ public partial class JobModal
         return Task.CompletedTask;
     }
 
-    private Task NextStep(EditContext context)
+    private Task NextStep(FormContext context)
     {
         var success = context.Validate();
 
@@ -272,7 +272,7 @@ public partial class JobModal
         return Task.CompletedTask;
     }
 
-    private async Task Submit(EditContext context)
+    private async Task Submit(FormContext context)
     {
         if (context.Validate())
         {
@@ -344,22 +344,22 @@ public partial class JobModal
     {
         if (basicForm is not null)
         {
-            basicForm.ResetValidationAsync();
+            basicForm.ResetValidation();
         }
 
         if (httpForm is not null)
         {
-            httpForm.ResetValidationAsync();
+            httpForm.ResetValidation();
         }
 
         if (jobAppForm is not null)
         {
-            jobAppForm.ResetValidationAsync();
+            jobAppForm.ResetValidation();
         }
 
         if (daprForm is not null)
         {
-            daprForm.ResetValidationAsync();
+            daprForm.ResetValidation();
         }
 
         _isAdd = Model.Id == Guid.Empty;

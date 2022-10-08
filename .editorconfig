@@ -153,6 +153,8 @@ csharp_style_prefer_switch_expression = true:suggestion
 csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_prefer_not_pattern = true:suggestion
 csharp_style_prefer_extended_property_pattern = true:suggestion
+csharp_style_prefer_parameter_null_checking = true:suggestion
+csharp_style_prefer_method_group_conversion = true:silent
 [*.{cs,vb}]
 end_of_line = crlf
 dotnet_style_qualification_for_field = false:suggestion

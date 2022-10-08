@@ -121,7 +121,7 @@ public class NotifyTaskRunResultDomainEventHandler
                 await _eventBus.PublishAsync(startWaittingTaskevent);
             }
 
-            _distributedCacheClient.Remove<int>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
+            _distributedCacheClient.Remove($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
         }
 
         var dto = _mapper.Map<SchedulerTaskDto>(task);

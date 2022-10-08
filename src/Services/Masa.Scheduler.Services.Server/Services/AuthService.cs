@@ -5,10 +5,8 @@ namespace Masa.Scheduler.Services.Server.Services;
 
 public class AuthService : ServiceBase
 {
-    public AuthService(IServiceCollection services) : base(services, ConstStrings.AUTH_API)
+    public AuthService() : base(ConstStrings.AUTH_API)
     {
-        MapGet(GetTeamListAsync);
-        MapGet(GetUserInfoAsync);
     }
 
     public async Task<IResult> GetTeamListAsync(IEventBus eventBus)
