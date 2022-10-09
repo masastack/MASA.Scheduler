@@ -15,7 +15,7 @@ public partial class SchedulerResourceFilesInformation
         set
         {
             _model = value;
-            GetDescription();
+            OnModelChange();
         }
     }
 
@@ -27,6 +27,11 @@ public partial class SchedulerResourceFilesInformation
     {
         await GetDescription();
         await base.OnInitializedAsync();
+    }
+
+    private Task OnModelChange()
+    {
+        return GetDescription();
     }
 
     private async Task GetDescription()

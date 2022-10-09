@@ -90,7 +90,7 @@ public class StartTaskDomainEventHandler
         if (task.TaskStatus == TaskRunStatus.WaitToRetry && @event.Request.IsManual)
         {
             await _quartzUtils.RemoveDelayTask(task.Id, task.Job.Id);
-            await _distributedCacheClient.RemoveAsync<int>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
+            await _distributedCacheClient.RemoveAsync($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
         }
 
         var filterStatus = new List<TaskRunStatus>() { TaskRunStatus.Running, TaskRunStatus.WaitToRetry, TaskRunStatus.Idle, TaskRunStatus.WaitToRun };

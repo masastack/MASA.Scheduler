@@ -4,19 +4,11 @@ namespace Masa.Scheduler.Services.Server.Server.Services;
 
 public class SchedulerJobService : ServiceBase
 {
-    public SchedulerJobService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_JOB_API)
+    public SchedulerJobService() : base(ConstStrings.SCHEDULER_JOB_API)
     {
-        MapGet(ListAsync, string.Empty);
-        MapPost(AddAsync, string.Empty);
-        MapPut(UpdateAsync, string.Empty);
-        MapDelete(DeleteAsync, string.Empty);
-        MapPut(ChangeEnableStatusAsync);
-        MapPut(StartJobAsync);
-        MapPost(AddSchedulerJobBySdkAsync);
-        MapGet(GetSchedulerJobQueryByIdentityAsync);
     }
 
-    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string belongProjectIdentity)
+    public async Task<IResult> GetListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string belongProjectIdentity)
     {
         var request = new SchedulerJobListRequest()
         {

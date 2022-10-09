@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Contrib.StackSdks.Scheduler" Version="0.6.0-preview.5" />
-    <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="0.6.0-preview.5" />
-    <PackageReference Include="Masa.Utils.Security.Authentication.OpenIdConnect" Version="0.6.0-preview.5" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Scheduler" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Utils.Security.Authentication.OpenIdConnect" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.7" />
   </ItemGroup>

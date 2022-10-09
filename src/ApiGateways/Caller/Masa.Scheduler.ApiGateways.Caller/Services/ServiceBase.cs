@@ -5,6 +5,8 @@ namespace Masa.Scheduler.ApiGateways.Caller.Services;
 
 public abstract class ServiceBase
 {
+    private string[] _trimMethodPrefix = new[] { "Get", "Select", "Post", "Add", "Upsert", "Create", "Put", "Update", "Modify", "Delete", "Remove" };
+
     protected ICaller Caller { get; init; }
 
     protected abstract string BaseUrl { get; set; }
@@ -16,32 +18,32 @@ public abstract class ServiceBase
 
     protected async Task<TResponse> GetAsync<TResponse>(string methodName, Dictionary<string, string>? paramters = null)
     {
-        return await Caller.GetAsync<TResponse>(BuildAdress(methodName), paramters ?? new()) ?? throw new UserFriendlyException("The service is abnormal, please contact the administrator!");
+        return await Caller.GetAsync<TResponse>(BuildAddress(methodName), paramters ?? new()) ?? throw new UserFriendlyException("The service is abnormal, please contact the administrator!");
     }
 
     protected async Task<TResponse> GetAsync<TRequest, TResponse>(string methodName, TRequest data) where TRequest : class
     {
-        return await Caller.GetAsync<TRequest, TResponse>(BuildAdress(methodName), data) ?? throw new UserFriendlyException("The service is abnormal, please contact the administrator!");
+        return await Caller.GetAsync<TRequest, TResponse>(BuildAddress(methodName), data) ?? throw new UserFriendlyException("The service is abnormal, please contact the administrator!");
     }
 
     protected async Task PutAsync<TRequest>(string methodName, TRequest data)
     {
-        var response = await Caller.PutAsync(BuildAdress(methodName), data);
+        await Caller.PutAsync(BuildAddress(methodName), data);
     }
 
     protected async Task PostAsync<TRequest>(string methodName, TRequest data)
     {
-        var response = await Caller.PostAsync(BuildAdress(methodName), data);
+        await Caller.PostAsync(BuildAddress(methodName), data);
     }
 
     protected async Task DeleteAsync<TRequest>(string methodName, TRequest? data = default)
     {
-        var response = await Caller.DeleteAsync(BuildAdress(methodName), data);
+        await Caller.DeleteAsync(BuildAddress(methodName), data);
     }
 
     protected async Task DeleteAsync(string methodName)
     {
-        var response = await Caller.DeleteAsync(BuildAdress(methodName), null);
+        await Caller.DeleteAsync(BuildAddress(methodName), null);
     }
 
     protected async Task SendAsync<TRequest>(string methodName, TRequest? data = default)
@@ -53,11 +55,20 @@ public abstract class ServiceBase
 
     protected async Task<TResponse> SendAsync<TRequest, TResponse>(string methodName, TRequest data) where TRequest : class
     {
-        return await Caller.GetAsync<TRequest, TResponse>(BuildAdress(methodName), data) ?? throw new Exception("The service is abnormal, please contact the administrator!");
+        return await Caller.GetAsync<TRequest, TResponse>(BuildAddress(methodName), data) ?? throw new Exception("The service is abnormal, please contact the administrator!");
     }
 
-    string BuildAdress(string methodName)
+    private string BuildAddress(string methodName)
     {
+        foreach (var prefix in _trimMethodPrefix)
+        {
+            if (methodName.ToLower().StartsWith(prefix.ToLower()))
+            {
+                methodName = methodName[prefix.Length..];
+                break;
+            }
+        }
+
         return Path.Combine(BaseUrl, methodName.Replace("Async", ""));
     }
 }

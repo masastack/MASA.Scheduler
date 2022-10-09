@@ -5,9 +5,8 @@ namespace Masa.Scheduler.Services.Server.Services;
 
 public class PMService : ServiceBase
 {
-    public PMService(IServiceCollection services) : base(services, ConstStrings.PM_API)
+    public PMService() : base(ConstStrings.PM_API)
     {
-        MapGet(GetProjectListAsync);
     }
 
     public async Task<IResult> GetProjectListAsync(IEventBus eventBus, Guid? teamId, string environment = "")

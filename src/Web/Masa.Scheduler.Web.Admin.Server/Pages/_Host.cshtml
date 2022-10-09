@@ -3,6 +3,13 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_Layout";
+
+    var tokens = new TokenProvider
+    {
+        AccessToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken),
+        RefreshToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.RefreshToken),
+        IdToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.IdToken)
+    };
 }
 
-<component type="typeof(Masa.Scheduler.Web.Admin.App)" render-mode="ServerPrerendered" />
+<component type="typeof(Masa.Scheduler.Web.Admin.App)" render-mode="ServerPrerendered" param-InitialState="tokens" />

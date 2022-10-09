@@ -1,6 +1,5 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
-
 namespace Masa.Scheduler.ApiGateways.Caller;
 
 public class SchedulerServerCaller : HttpClientCallerBase
@@ -12,7 +11,8 @@ public class SchedulerServerCaller : HttpClientCallerBase
     SchedulerResourceService? _schedulerResourceService;
     OssService? _ossService;
     SchedulerServerManagerService? _schedulerServerManagerService;
-    
+    TokenProvider _tokenProvider;
+
     public SchedulerJobService SchedulerJobService => _schedulerJobService ??= new(Caller);
 
     public AuthService AuthService => _authService ??= new(Caller);
@@ -27,17 +27,23 @@ public class SchedulerServerCaller : HttpClientCallerBase
 
     public SchedulerServerManagerService SchedulerServerManagerService => _schedulerServerManagerService ??= new(Caller);
 
-    public SchedulerServerCaller(IServiceProvider serviceProvider, SchedulerApiOptions options) : base(serviceProvider)
+    public SchedulerServerCaller(
+        IServiceProvider serviceProvider,
+        TokenProvider tokenProvider,
+        SchedulerApiOptions options) : base(serviceProvider)
     {
         Name = nameof(SchedulerServerCaller);
         BaseAddress = options.SchedulerServerBaseAddress;
+        _tokenProvider = tokenProvider;
     }
 
     protected override string BaseAddress { get; set; }
-    public override string Name { get; set; }
 
-    protected override IHttpClientBuilder UseHttpClient()
+    public override string? Name { get; set; }
+
+    protected override void ConfigHttpRequestMessage(HttpRequestMessage requestMessage)
     {
-        return base.UseHttpClient().AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _tokenProvider.AccessToken);
+        base.ConfigHttpRequestMessage(requestMessage);
     }
 }

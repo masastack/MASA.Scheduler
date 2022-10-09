@@ -31,9 +31,9 @@ public partial class AddSchedulerResourceFiles
         };
         return base.OnInitializedAsync();
     }
-    private async Task Submit(EditContext context)
+    private async Task Submit(FormContext context)
     {
-        if(await _ref.ValidateAsync(true))
+        if(!_ref.Validate())
         {
             return;
         }

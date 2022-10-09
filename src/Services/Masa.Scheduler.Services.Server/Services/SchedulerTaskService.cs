@@ -5,16 +5,11 @@ namespace Masa.Scheduler.Services.Server.Services;
 
 public class SchedulerTaskService : ServiceBase
 {
-    public SchedulerTaskService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_TASK_API)
+    public SchedulerTaskService() : base(ConstStrings.SCHEDULER_TASK_API)
     {
-        MapGet(ListAsync, string.Empty);
-        MapPut(StartAsync);
-        MapPut(StopAsync);
-        MapDelete(RemoveAsync, string.Empty);
-        MapPost(StartWaitingTask);
     }
 
-    public async Task<IResult> ListAsync(IEventBus eventBus, [FromQuery] Guid jobId, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTime? queryStartTime, [FromQuery] DateTime? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize)
+    public async Task<IResult> GetListAsync(IEventBus eventBus, [FromQuery] Guid jobId, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTime? queryStartTime, [FromQuery] DateTime? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize)
     {
         var request = new SchedulerTaskListRequest()
         {

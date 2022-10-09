@@ -14,7 +14,7 @@ public class SchedulerJobService : ServiceBase
 
     public async Task<SchedulerJobListResponse> GetListAsync(SchedulerJobListRequest request)
     {
-        var result = await GetAsync<SchedulerJobListRequest,SchedulerJobListResponse>(string.Empty, request);
+        var result = await GetAsync<SchedulerJobListRequest,SchedulerJobListResponse>(nameof(GetListAsync), request);
         return result ?? new();
     }
 
@@ -35,11 +35,11 @@ public class SchedulerJobService : ServiceBase
 
     public async Task ChangeEnableStatusAsync(ChangeEnabledStatusRequest request)
     {
-        await PutAsync(nameof(ChangeEnableStatusAsync), request);
+        await PostAsync(nameof(ChangeEnableStatusAsync), request);
     }
 
     public async Task StartJobAsync(StartSchedulerJobRequest request)
     {
-        await PutAsync(nameof(StartJobAsync), request);
+        await PostAsync(nameof(StartJobAsync), request);
     }
 }

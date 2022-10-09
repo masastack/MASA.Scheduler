@@ -94,7 +94,7 @@ public class StopTaskDomainEventHandler
                 await _eventBus.PublishAsync(startWaittingTaskevent);
             }
 
-            _distributedCacheClient.Remove<int>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
+            _distributedCacheClient.Remove($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
 
             await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, dto);
         }

@@ -5,13 +5,8 @@ namespace Masa.Scheduler.Services.Server.Services;
 
 public class SchedulerServerManagerService : ServiceBase
 {
-    public SchedulerServerManagerService(IServiceCollection services) : base(services, ConstStrings.SCHEDULER_SERVER_MANAGER_API)
+    public SchedulerServerManagerService() : base(ConstStrings.SCHEDULER_SERVER_MANAGER_API)
     {
-        MapGet(OnlineAsync);
-        MapGet(GetWorkerListAsync);
-        MapGet(Heartbeat);
-        MapPost(NotifyTaskRunResultAsync);
-        MapPost(MonitorTaskStartAsync);
     }
 
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(NotifyTaskStartIntegrationEvent))]
@@ -21,6 +16,7 @@ public class SchedulerServerManagerService : ServiceBase
         await eventBus.PublishAsync(command);
     }
 
+    [RoutePattern(Pattern = "/online", StartWithBaseUri = true, HttpMethod = "Get")]
     public async Task<IResult> OnlineAsync([FromServices] SchedulerServerManager serverManager)
     {
         await serverManager.Online();
@@ -32,7 +28,7 @@ public class SchedulerServerManagerService : ServiceBase
         return Results.Ok(data.ServiceList);
     }
 
-    public IResult Heartbeat()
+    public IResult GetHeartbeat()
     {
         return Results.Ok("success");
     }

@@ -157,7 +157,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             @event.IsPong = isResponse;
             @event.OnlineService = service;
 
-            await _redisCacheClient.PublishAsync<TOnlineEvent>(OnlineTopic, handler =>
+            await _redisCacheClient.PublishAsync(OnlineTopic, handler =>
             {
                 if(handler != null)
                 {

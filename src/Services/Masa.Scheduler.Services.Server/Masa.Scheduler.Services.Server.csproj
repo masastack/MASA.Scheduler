@@ -10,43 +10,44 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="IdentityModel" Version="6.0.0" />
+		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
+		<PackageReference Include="IdentityModel" Version="6.1.0-preview.1" />
 		<PackageReference Include="Mapster" Version="7.3.0" />
-		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.BuildingBlocks.ReadWriteSpliting.Cqrs" Version="0.6.0-preview.3" />
-		<PackageReference Include="Masa.BuildingBlocks.Storage.ObjectStorage" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Authentication.Identity" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.StackSdks.Auth" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.StackSdks.Dcc" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Configuration" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Configuration.ConfigurationApi.Dcc" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Data.Contracts.EFCore" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Data.EFCore.SqlServer" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Data.Mapping.Mapster" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore" Version="0.6.0-preview.6" />
+		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.BuildingBlocks.ReadWriteSplitting.Cqrs" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.BuildingBlocks.Storage.ObjectStorage" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Authentication.Identity" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Auth" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Dcc" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Configuration" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Configuration.ConfigurationApi.Dcc" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Data.Contracts.EFCore" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Data.EFCore.SqlServer" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Data.Mapping.Mapster" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="FluentValidation" Version="11.2.0" />
 		<PackageReference Include="FluentValidation.AspNetCore" Version="11.2.0" />
 		<PackageReference Include="Dapr.Actors.AspNetCore" Version="1.7.0" />
 		<PackageReference Include="Dapr.AspNetCore" Version="1.7.0" />
-		<PackageReference Include="Masa.BuildingBlocks.Ddd.Domain" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Ddd.Domain" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EFCore" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.BuildingBlocks.Authentication.Identity" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Isolation" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Isolation.MultiEnvironment" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Isolation.UoW.EFCore" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.ReadWriteSpliting.Cqrs" Version="0.6.0-preview.3" />
-		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Storage.ObjectStorage.Aliyun" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Utils.Caching.Redis" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Utils.Development.Dapr.AspNetCore" Version="0.6.0-preview.6" />
+		<PackageReference Include="Masa.BuildingBlocks.Ddd.Domain" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Ddd.Domain" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EFCore" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.BuildingBlocks.Authentication.Identity" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Isolation" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Isolation.MultiEnvironment" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Isolation.UoW.EFCore" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.ReadWriteSplitting.Cqrs" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Storage.ObjectStorage.Aliyun" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Caching.MultilevelCache" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Caching.Distributed.StackExchangeRedis" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Utils.Development.Dapr.AspNetCore" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
-		<PackageReference Include="Masa.Contrib.Data.UoW.EFCore" Version="0.6.0-preview.6" />
-		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="0.6.0-preview.6" />
+		<PackageReference Include="Masa.Contrib.Data.UoW.EFCore" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
