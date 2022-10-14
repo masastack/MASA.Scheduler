@@ -40,6 +40,7 @@ public class SchedulerTaskService : ServiceBase
         await eventBus.PublishAsync(comman);
     }
 
+    [RoutePattern(HttpMethod = "Put")]
     public async Task<IResult> StartAsync(IEventBus eventBus, [FromBody] StartSchedulerTaskRequest request)
     {
         var comman = new StartSchedulerTaskCommand(request);
@@ -47,6 +48,7 @@ public class SchedulerTaskService : ServiceBase
         return Results.Ok();
     }
 
+    [RoutePattern(HttpMethod = "Put")]
     public async Task<IResult> StopAsync(IEventBus eventBus, [FromBody] StopSchedulerTaskRequest request)
     {
         var comman = new StopSchedulerTaskCommand(request);

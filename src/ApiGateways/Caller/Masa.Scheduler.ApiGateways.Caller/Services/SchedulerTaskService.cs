@@ -20,12 +20,12 @@ public class SchedulerTaskService: ServiceBase
 
     public async Task StartAsync(StartSchedulerTaskRequest request)
     {
-        await PostAsync(nameof(StartAsync), request);
+        await PutAsync(nameof(StartAsync), request);
     }
 
     public async Task StopAsync(StopSchedulerTaskRequest request)
     {
-        await PostAsync(nameof(StopAsync), request);
+        await PutAsync(nameof(StopAsync), request);
     }
 
     public async Task RemoveAsync(RemoveSchedulerTaskRequest request)

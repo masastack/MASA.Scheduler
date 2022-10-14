@@ -51,6 +51,7 @@ public class SchedulerJobService : ServiceBase
         return Results.Ok();
     }
 
+    [RoutePattern(HttpMethod = "Put")]
     public async Task<IResult> ChangeEnableStatusAsync(IEventBus eventBus, [FromBody] ChangeEnabledStatusRequest request)
     {
         var command = new ChangeEnableStatusSchedulerJobCommand(request);
@@ -58,6 +59,7 @@ public class SchedulerJobService : ServiceBase
         return Results.Ok();
     }
 
+    [RoutePattern(HttpMethod = "Put")]
     public async Task<IResult> StartJobAsync(IEventBus eventBus, [FromBody] StartSchedulerJobRequest request)
     {
         var command = new StartSchedulerJobCommand(request);
@@ -65,6 +67,7 @@ public class SchedulerJobService : ServiceBase
         return Results.Ok();
     }
 
+    [RoutePattern("/addSchedulerJobBySdk", StartWithBaseUri = true, HttpMethod = "Post")]
     public async Task<IResult> AddSchedulerJobBySdkAsync(IEventBus eventBus, [FromBody] AddSchedulerJobBySdkRequest request)
     {
         var command = new AddSchedulerJobBySdkCommand(request);
@@ -72,6 +75,7 @@ public class SchedulerJobService : ServiceBase
         return Results.Ok(command.Result.Id);
     }
 
+    [RoutePattern("/getSchedulerJobQueryByIdentity", StartWithBaseUri = true, HttpMethod = "Get")]
     public async Task<IResult> GetSchedulerJobQueryByIdentityAsync(IEventBus eventBus,[FromQuery] string jobIdentity,[FromQuery] string projectIdentity)
     {
         var query = new SchedulerJobQueryByIdentity(new GetSchedulerJobByIdentityRequest()
