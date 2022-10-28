@@ -11,6 +11,6 @@ global using Masa.Utils.Data.Elasticsearch;
 global using Microsoft.Extensions.DependencyInjection;
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.Utils.Security.Authentication.OpenIdConnect;
-global using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Provider;
+global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.IdentityModel.Protocols.OpenIdConnect;

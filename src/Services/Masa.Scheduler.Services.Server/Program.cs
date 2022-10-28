@@ -57,8 +57,7 @@ builder.Services
 
 var redisOptions = publicConfiguration.GetSection("$public.RedisConfig").Get<RedisConfigurationOptions>();
 
-builder.Services.AddStackExchangeRedisCache(redisOptions)
-    .AddMultilevelCache();
+builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
 
 builder.Services
     .AddAuthClient(publicConfiguration.GetValue<string>("$public.AppSettings:AuthClient:Url"), redisOptions)
@@ -74,6 +73,13 @@ builder.Services.AddSchedulerLogger();
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
     .AddDbContextCheck<SchedulerDbContext>();
+
+builder.Services.AddScoped(service =>
+{
+    var content = service.GetRequiredService<IHttpContextAccessor>();
+    AuthenticationHeaderValue.TryParse(content.HttpContext?.Request.Headers.Authorization.ToString(), out var auth);
+    return new TokenProvider { AccessToken = auth?.Parameter };
+});
 
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
