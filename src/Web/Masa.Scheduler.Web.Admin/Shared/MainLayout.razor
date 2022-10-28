@@ -2,15 +2,16 @@
 @using Microsoft.AspNetCore.Components.Rendering
 @inherits LayoutComponentBase
 @inject GlobalConfig GlobalConfig
+@inject Masa.Stack.Components.Configs.GlobalConfig StackGlobalConfig
 @inject NavigationManager Navigation
 
-<SLayout AppId="masa-scheduler-web-admin" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}"
-        Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
-        MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg">
+<SLayout AppId="masa-scheduler-web-admin" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="WhiteUris"
+         Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
+         MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg">
     @Body
 </SLayout>
 
-@code{
+@code {
     [Inject]
     public IPopupService PopupService { get; set; } = default!;
 
@@ -23,6 +24,8 @@
     [Inject]
     private I18n i18n { get; set; } = default!;
 
+    private List<string> WhiteUris = new List<string> { "pages/team/" };
+
     private Task OnError(Exception exception)
     {
         PopupService.AlertAsync(i18n.T(exception.Message), AlertTypes.Error);
@@ -32,7 +35,23 @@
 
     private bool SignOut()
     {
-        Navigation.NavigateTo("/Logout",true);
+        Navigation.NavigateTo("/Logout", true);
         return true;
+    }
+
+    protected override void OnInitialized()
+    {
+        StackGlobalConfig.OnCurrentTeamChanged += CurrentTeamChanged;
+    }
+
+
+    void CurrentTeamChanged(Guid teamId)
+    {
+        Navigation.NavigateTo($"/pages/team/{teamId}");
+    }
+
+    public void Dispose()
+    {
+        StackGlobalConfig.OnCurrentTeamChanged -= CurrentTeamChanged;
     }
 }

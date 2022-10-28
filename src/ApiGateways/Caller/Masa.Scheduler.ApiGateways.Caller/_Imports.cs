@@ -15,5 +15,5 @@ global using Masa.Scheduler.Contracts.Server.Model;
 global using Microsoft.AspNetCore.Authentication;
 global using Masa.Contrib.Service.Caller;
 global using Masa.BuildingBlocks.Service.Caller;
-global using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Provider;
+global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 global using System.Net.Http.Headers;
