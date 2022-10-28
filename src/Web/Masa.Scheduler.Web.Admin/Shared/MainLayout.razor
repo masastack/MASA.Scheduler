@@ -39,6 +39,16 @@
         return true;
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        if (StackGlobalConfig.CurrentTeamId != default)
+        {
+            Navigation.NavigateTo($"/pages/team/{StackGlobalConfig.CurrentTeamId}");
+        }
+    }
+
     protected override void OnInitialized()
     {
         StackGlobalConfig.OnCurrentTeamChanged += CurrentTeamChanged;
