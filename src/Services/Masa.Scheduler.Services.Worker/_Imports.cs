@@ -45,7 +45,6 @@ global using System.IO.Compression;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Utils;
 global using Dapr.Client;
 global using Masa.Contrib.Dispatcher.IntegrationEvents;
-global using Masa.Utils.Development.Dapr.AspNetCore;
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 global using Masa.Contrib.Caching.MultilevelCache;
