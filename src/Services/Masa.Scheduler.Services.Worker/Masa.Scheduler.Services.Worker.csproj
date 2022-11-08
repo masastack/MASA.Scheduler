@@ -35,7 +35,7 @@
     <PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.BuildingBlocks.Caching" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Caching.Distributed.StackExchangeRedis" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Development.Dapr.AspNetCore" Version="$(MasaFrameworkPackageVersion)" />
+	<PackageReference Include="Masa.Contrib.Development.DaprStarter.AspNetCore" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Utils.Exceptions" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
