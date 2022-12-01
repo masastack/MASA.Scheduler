@@ -3,7 +3,7 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddObservability(true);
+builder.Services.AddObservable(builder.Logging, builder.Configuration, true);
 
 builder.WebHost.UseKestrel(option =>
 {

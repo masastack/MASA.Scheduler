@@ -33,7 +33,7 @@ public static class ObservabilityExtensions
         //tracing
         builder.Services.AddMasaTracing(options =>
         {
-            options.AspNetCoreInstrumentationOptions.AppendDefaultFilter(options);
+            options.AspNetCoreInstrumentationOptions.AppendDefaultFilter(options,true);
 
             options.BuildTraceCallback = builder =>
             {

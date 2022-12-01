@@ -14,7 +14,7 @@ if (builder.Environment.IsDevelopment())
     });
 }
 
-builder.AddObservability();
+builder.Services.AddObservable(builder.Logging, builder.Configuration);
 
 builder.Services.AddMasaConfiguration(configurationBuilder =>
 {

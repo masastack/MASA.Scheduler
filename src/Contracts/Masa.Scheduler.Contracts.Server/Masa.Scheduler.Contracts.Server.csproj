@@ -18,4 +18,8 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="6.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\Extensions\" />
+  </ItemGroup>
+
 </Project>
