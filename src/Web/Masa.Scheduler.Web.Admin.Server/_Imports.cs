@@ -2,7 +2,6 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 global using Masa.Scheduler.ApiGateways.Caller;
-global using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.SignalRClients;
 global using Masa.Stack.Components;
 global using Microsoft.AspNetCore.Hosting.StaticWebAssets;

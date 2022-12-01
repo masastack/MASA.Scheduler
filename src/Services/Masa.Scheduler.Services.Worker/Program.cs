@@ -3,7 +3,7 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddObservability();
+builder.Services.AddObservable(builder.Logging, builder.Configuration);
 
 if (builder.Environment.IsDevelopment())
 {
