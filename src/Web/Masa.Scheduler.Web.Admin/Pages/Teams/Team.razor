@@ -36,7 +36,7 @@
 <MTabsItems Value="_curTab" Class="pt-2" Style="background-color:rgb(255 255 255 / 12%)">
     <MTabItem>
         <div class="d-flex">
-            <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="new Guid(TeamId)">
+            <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="_teamId">
             </Projects>
             <div class="pl-6" style="width: calc(100% - 120px); overflow: hidden; display:block;">
                 <SchedulerJobs Project="_project" OnJobSelect="HandleJobSelect" Visible="JobVisible">

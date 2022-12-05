@@ -1,9 +1,11 @@
-﻿@using Masa.Stack.Components.Models
+﻿@using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
+@using Masa.Stack.Components.Models
 @using Microsoft.AspNetCore.Components.Rendering
 @inherits LayoutComponentBase
 @inject GlobalConfig GlobalConfig
 @inject Masa.Stack.Components.Configs.GlobalConfig StackGlobalConfig
 @inject NavigationManager Navigation
+@inject MasaUser MasaUser
 
 <SLayout AppId="masa-scheduler-web-admin" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="WhiteUris"
          Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
@@ -26,6 +28,8 @@
 
     private List<string> WhiteUris = new List<string> { "pages/team/" };
 
+    private Guid _teamId = default;
+
     private Task OnError(Exception exception)
     {
         PopupService.AlertAsync(i18n.T(exception.Message), AlertTypes.Error);
@@ -43,9 +47,9 @@
     {
         base.OnAfterRender(firstRender);
 
-        if (StackGlobalConfig.CurrentTeamId != default)
+        if (firstRender && MasaUser.CurrentTeamId != default)
         {
-            Navigation.NavigateTo($"/pages/team/{StackGlobalConfig.CurrentTeamId}");
+            SetTeamId(MasaUser.CurrentTeamId);
         }
     }
 
@@ -57,11 +61,20 @@
 
     void CurrentTeamChanged(Guid teamId)
     {
-        Navigation.NavigateTo($"/pages/team/{teamId}");
+        SetTeamId(teamId);
     }
 
     public void Dispose()
     {
         StackGlobalConfig.OnCurrentTeamChanged -= CurrentTeamChanged;
+    }
+
+    public void SetTeamId(Guid teamId)
+    {
+        if (_teamId != teamId)
+        {
+            _teamId = teamId;
+            Navigation.NavigateTo($"/pages/team/{_teamId}");
+        }
     }
 }

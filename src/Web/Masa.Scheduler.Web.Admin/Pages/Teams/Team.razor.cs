@@ -8,6 +8,8 @@ public partial class Team
     [Parameter]
     public string TeamId { get; set; } = string.Empty;
 
+    private Guid _teamId = default;
+
     private bool JobVisible => _curTab == 0;
     private bool TaskVisible => _curTab == 1;
     private ProjectDto _project = default!;
@@ -19,6 +21,11 @@ public partial class Team
     {
         _jobTabName = T("Job");
         await base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _teamId = string.IsNullOrEmpty(TeamId) ? default : Guid.Parse(TeamId);
     }
 
     public Task OnProjectChangedAsync(ProjectDto project)
