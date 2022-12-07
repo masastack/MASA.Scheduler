@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using System.Xml.Linq;
+
 namespace Masa.Scheduler.Services.Worker.Domain.Managers.Workers.TaskHandlers;
 
 public class HttpTaskHandler : ITaskHandler
@@ -28,8 +30,8 @@ public class HttpTaskHandler : ITaskHandler
         HttpUtils.AddHttpHeader(client, jobDto.HttpConfig.HttpHeaders);
 
         jobDto.HttpConfig.HttpParameters.Add(new("taskId", taskId.ToString()));
-        jobDto.HttpConfig.HttpParameters.Add(new("excuteTime", excuteTime.ToString()));
-
+        jobDto.HttpConfig.HttpParameters.Add(new("excuteTime", System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)));
+        
         var requestMessage = new HttpRequestMessage()
         {
             Method = HttpUtils.ConvertHttpMethod(jobDto.HttpConfig.HttpMethod),
