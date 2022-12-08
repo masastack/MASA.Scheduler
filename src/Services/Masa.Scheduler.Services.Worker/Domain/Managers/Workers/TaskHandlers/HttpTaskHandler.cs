@@ -28,8 +28,8 @@ public class HttpTaskHandler : ITaskHandler
         HttpUtils.AddHttpHeader(client, jobDto.HttpConfig.HttpHeaders);
 
         jobDto.HttpConfig.HttpParameters.Add(new("taskId", taskId.ToString()));
-        jobDto.HttpConfig.HttpParameters.Add(new("excuteTime", excuteTime.ToString()));
-
+        jobDto.HttpConfig.HttpParameters.Add(new("excuteTime", System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)));
+        
         var requestMessage = new HttpRequestMessage()
         {
             Method = HttpUtils.ConvertHttpMethod(jobDto.HttpConfig.HttpMethod),
