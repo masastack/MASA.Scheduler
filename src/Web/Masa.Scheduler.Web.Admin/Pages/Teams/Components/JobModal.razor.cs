@@ -214,7 +214,7 @@ public partial class JobModal
     }
 
     private async Task GetProjects()
-    {   
+    {
         var projectListResponse = await SchedulerServerCaller.PmService.GetProjectListAsync(null);
         AllProject = projectListResponse.Data;
     }
