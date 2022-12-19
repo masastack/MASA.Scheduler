@@ -13,7 +13,7 @@ public class PmService: ServiceBase
     }
     public async Task<ProjectListResponse> GetProjectListAsync(Guid? teamId, string environment = "")
     {
-        var requestUrl = nameof(GetProjectListAsync) + $"?environment={environment}";
+        var requestUrl = $"ProjectList?environment={environment}";
 
         if (teamId.HasValue)
         {
