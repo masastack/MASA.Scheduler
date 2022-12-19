@@ -24,9 +24,6 @@ public partial class Projects
     [Parameter]
     public EventCallback<ProjectDto> OnProjectChanged { get; set; }
 
-    [Inject]
-    public SchedulerServerCaller SchedulerCaller { get; set; } = default!;
-
     private string _projectName = string.Empty;
     private List<ProjectDto> _projects = new();
     private StringNumber _selectedProjectIdentity = null!;
@@ -67,7 +64,7 @@ public partial class Projects
             return;
         }
 
-        _projects = (await SchedulerCaller.PmService.GetProjectListAsync(_teamId.Value)).Data;
+        _projects = (await SchedulerServerCaller.PmService.GetProjectListAsync(_teamId.Value)).Data;
 
         if (_projects.Any())
         {
