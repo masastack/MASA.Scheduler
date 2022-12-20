@@ -64,8 +64,7 @@ public partial class Projects
             return;
         }
 
-        var response = await SchedulerServerCaller.PmService.GetProjectListAsync(_teamId.Value);
-        _projects = response.Data;
+        _projects = (await SchedulerServerCaller.PmService.GetProjectListAsync(_teamId.Value)).Data;
 
         if (_projects.Any())
         {
