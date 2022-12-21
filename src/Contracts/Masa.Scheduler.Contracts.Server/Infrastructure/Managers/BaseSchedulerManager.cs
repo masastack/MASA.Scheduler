@@ -12,6 +12,8 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
     protected readonly IHttpClientFactory _httpClientFactory;
     private readonly BaseSchedulerManagerData<T> _data;
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
+    private static string envName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty;
+    private static string topicSuffix = !string.IsNullOrEmpty(envName) ? $"-{envName}" : string.Empty;
 
     public BaseSchedulerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -134,7 +136,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     public virtual async Task OnManagerStartAsync()
     {
-        await _redisCacheClient.SubscribeAsync<TMonitorEvent>(MoniterTopic, async handler =>
+        await _redisCacheClient.SubscribeAsync<TMonitorEvent>(MoniterTopic + topicSuffix, async handler =>
         {
             if (handler != null && handler.Value != null)
             {
@@ -157,7 +159,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             @event.IsPong = isResponse;
             @event.OnlineService = service;
 
-            await _redisCacheClient.PublishAsync(OnlineTopic, handler =>
+            await _redisCacheClient.PublishAsync(OnlineTopic + topicSuffix, handler =>
             {
                 if(handler != null)
                 {
