@@ -11,6 +11,10 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     private readonly SchedulerLogger _schedulerLogger;
 
+    private static string envName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty;
+
+    private static string topicSuffix = !string.IsNullOrEmpty(envName) ? $"-{envName}" : string.Empty;
+
     public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory,
         IDistributedCacheClient redisCacheClient,
         IServiceProvider serviceProvider,
@@ -39,9 +43,9 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     protected override string OnlineApi { get; set; } = $"{ConstStrings.SCHEDULER_WORKER_MANAGER_API}/online";
 
-    protected override string OnlineTopic { get; set; } = $"{nameof(SchedulerWorkerOnlineIntegrationEvent)}";
+    protected override string OnlineTopic { get; set; } = $"{nameof(SchedulerWorkerOnlineIntegrationEvent)}{topicSuffix}";
 
-    protected override string MoniterTopic { get; set; } = $"{nameof(SchedulerServerOnlineIntegrationEvent)}";
+    protected override string MoniterTopic { get; set; } = $"{nameof(SchedulerServerOnlineIntegrationEvent)}{topicSuffix}";
 
     protected override ILogger<BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>> Logger => _logger;
 
