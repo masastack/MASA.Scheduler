@@ -11,6 +11,10 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     private readonly SchedulerLogger _schedulerLogger;
 
+    private static string envName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty;
+
+    private static string topicSuffix = !string.IsNullOrEmpty(envName) ? $"-{envName}" : string.Empty;
+
     public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory,
         IDistributedCacheClient redisCacheClient,
         IServiceProvider serviceProvider,
@@ -39,12 +43,12 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     protected override string OnlineApi { get; set; } = $"{ConstStrings.SCHEDULER_WORKER_MANAGER_API}/online";
 
-    protected override string OnlineTopic { get; set; } = $"{nameof(SchedulerWorkerOnlineIntegrationEvent)}";
+    protected override string OnlineTopic { get; set; } = $"{nameof(SchedulerWorkerOnlineIntegrationEvent)}{topicSuffix}";
 
-    protected override string MoniterTopic { get; set; } = $"{nameof(SchedulerServerOnlineIntegrationEvent)}";
+    protected override string MoniterTopic { get; set; } = $"{nameof(SchedulerServerOnlineIntegrationEvent)}{topicSuffix}";
 
     protected override ILogger<BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>> Logger => _logger;
-    
+
     public async Task EnqueueTask(StartTaskIntegrationEvent @event)
     {
         if (@event.Job is null)
@@ -125,7 +129,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                         await StartTaskAsync(data, task.TaskId, task.Job, task.ExcuteTime);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _logger.LogError(ex, "ProcessTaskRunError");
                 }
@@ -174,7 +178,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             }
         });
 
-        if(job.RunTimeoutSecond > 0)
+        if (job.RunTimeoutSecond > 0)
         {
             cts.CancelAfter(TimeSpan.FromSeconds(job.RunTimeoutSecond));
         }
@@ -217,14 +221,14 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
 
-        if(@event.ServiceId == data.ServiceId)
+        if (@event.ServiceId == data.ServiceId)
         {
             if (data.TaskCancellationTokenSources.TryGetValue(@event.TaskId, out var task))
             {
                 data.StopTask.Add(@event.TaskId);
                 task.Cancel();
             }
-            else if(data.TaskQueue.Any(t=> t.TaskId == @event.TaskId))
+            else if (data.TaskQueue.Any(t => t.TaskId == @event.TaskId))
             {
                 data.StopTask.Add(@event.TaskId);
             }
