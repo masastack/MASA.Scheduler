@@ -7,19 +7,17 @@ public class OssService : ServiceBase
 {
     public OssService() : base(ConstStrings.OSS_API)
     {
+
     }
 
-    public async Task<GetSecurityTokenDto> GetSecurityTokenAsync([FromServices] IClient client, [FromServices] DaprClient daprClient)
+    public async Task<SecurityTokenDto> GetSecurityTokenAsync([FromServices] IClient client, [FromServices] IOptions<OssOptions> ossOptions)
     {
         var region = "oss-cn-hangzhou";
         var response = client.GetSecurityToken();
         var stsToken = response.SessionToken;
         var accessId = response.AccessKeyId;
         var accessSecret = response.AccessKeySecret;
-
-        var secrets = await daprClient.GetSecretAsync("localsecretstore", "masa-scheduler-secret");
-        var bucket = secrets.GetValueOrDefault("bucket", string.Empty);
-
-        return await Task.FromResult(new GetSecurityTokenDto(region, accessId, accessSecret, stsToken, bucket));
+        var bucket = ossOptions.Value.Bucket;
+        return await Task.FromResult(new SecurityTokenDto(region, accessId, accessSecret, stsToken, bucket));
     }
 }
