@@ -97,3 +97,4 @@ global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 global using System.Net.Http.Headers;
+global using Microsoft.Extensions.Options;
