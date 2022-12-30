@@ -12,8 +12,8 @@ public class OssService : ServiceBase
         BaseUrl = "api/oss";
     }
 
-    public async Task<SecurityTokenDto> GetSecurityTokenAsync()
+    public async Task<GetSecurityTokenDto> GetSecurityTokenAsync()
     {
-        return await GetAsync<SecurityTokenDto>(nameof(GetSecurityTokenAsync));
+        return await GetAsync<GetSecurityTokenDto>(nameof(GetSecurityTokenAsync));
     }
 }
