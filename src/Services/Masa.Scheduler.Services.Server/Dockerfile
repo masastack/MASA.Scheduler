@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/masa/dotnet_sdk:6.0.100 AS publish
+FROM registry.cn-hangzhou.aliyuncs.com/masa/dotnet_sdk:6.0.403 AS publish
 WORKDIR /src
 COPY . .
 ENV CSPROJ="src/Services/Masa.Scheduler.Services.Server/Masa.Scheduler.Services.Server.csproj"
