@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Contracts.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Web.Admin", "src\Web\MASA.Scheduler.Web.Admin\Masa.Scheduler.Web.Admin.csproj", "{305FE577-BDE7-4EBA-95D5-1C8D4EA06453}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Services.Server", "src\Services\MASA.Scheduler.Services.Server\Masa.Scheduler.Services.Server.csproj", "{EFCB6CEB-3CD3-4A5F-A736-576C04E29F70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Services.Server", "src\Services\Masa.Scheduler.Services.Server\Masa.Scheduler.Services.Server.csproj", "{EFCB6CEB-3CD3-4A5F-A736-576C04E29F70}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Scheduler.Services.Worker", "src\Services\Masa.Scheduler.Services.Worker\Masa.Scheduler.Services.Worker.csproj", "{65C78DF1-C46A-4C26-B402-12038D60D3DD}"
 EndProject
