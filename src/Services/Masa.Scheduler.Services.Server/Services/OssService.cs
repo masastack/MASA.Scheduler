@@ -10,7 +10,7 @@ public class OssService : ServiceBase
 
     }
 
-    public async Task<GetSecurityTokenDto> GetSecurityTokenAsync([FromServices] IClient client, [FromServices] IOptions<OssOptions> ossOptions)
+    public async Task<SecurityTokenDto> GetSecurityTokenAsync([FromServices] IClient client, [FromServices] IOptions<OssOptions> ossOptions)
     {
         var region = "oss-cn-hangzhou";
         var response = client.GetSecurityToken();
@@ -18,6 +18,6 @@ public class OssService : ServiceBase
         var accessId = response.AccessKeyId;
         var accessSecret = response.AccessKeySecret;
         var bucket = ossOptions.Value.Bucket;
-        return await Task.FromResult(new GetSecurityTokenDto(region, accessId, accessSecret, stsToken, bucket));
+        return await Task.FromResult(new SecurityTokenDto(region, accessId, accessSecret, stsToken, bucket));
     }
 }
