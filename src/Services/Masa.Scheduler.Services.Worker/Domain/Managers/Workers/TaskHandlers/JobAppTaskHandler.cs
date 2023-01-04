@@ -106,7 +106,7 @@ public class JobAppTaskHandler : ITaskHandler
 
     private string GetJobShellRunParameter(SchedulerJobDto dto, string jobExtractPath, Guid taskId, DateTimeOffset excuteTime)
     {
-        var otlpEndpoint = _configuration.GetValue<string>("Local:OTLP:Endpoint");
+        var otlpEndpoint = _configuration.GetValue<string>("Local:Masa:Observable:OtlpUrl");
         var parameterList = new List<string>()
         {
             _rootPath + Path.Combine(JOB_SHELL_SOURCE_PATH, JOB_SHELL_NAME),
