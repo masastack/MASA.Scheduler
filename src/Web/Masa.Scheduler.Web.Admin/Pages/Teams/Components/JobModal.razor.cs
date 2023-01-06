@@ -505,5 +505,17 @@ public partial class JobModal
 
         return Task.CompletedTask;
     }
+
+    private string GetTitle()
+    {
+        if (_step == 1)
+        {
+            return T("PleaseSelectJobType");
+        }
+        else
+        {
+            return Model.Id == Guid.Empty ? T("Job.Add") : T("Job.Update");
+        }
+    }
 }
 

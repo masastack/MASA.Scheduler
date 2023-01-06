@@ -1,42 +1,38 @@
 ﻿@inherits ProCompontentBase
 
-<div Class="env-toolbar ml-4 rounded-4" Style="background:#fff; width:66%">
+<SSimpleModal Value="_visible" ValueChanged="HandleVisibleChanged" OnSave="Submit" SaveText="@T("Submit")"
+              Title="@T("AddResourceFiles")" HeaderClass="mr-4">
     <MForm Model=Model EnableValidation @ref="_form" Class="full-height">
-        <div class="full-height flex-column">
-            <div class="mt-2 pl-4 pr-4 full-height">
-            <MRow Class="my-1">
-                <MCol Cols="4">
-                    <MFileInput TValue="IBrowserFile"
+         <div class="rounded-6 d-flex flex-column align-center" style="border: 4px dashed #E2E7F4;padding-top:80px;padding-bottom:80px">
+            <MHover OpenDelay="200" Context="hover">
+                <div @attributes="hover.Attrs" class="@($"{hover.Class}")">
+                    <MProgressCircular Value="_progress" Size="258" Width="18" Color="gradient">
+                        <div class="upload-btn">
+                            <MImage Width=80 Height=80 Class="d-flex justify-center align-center" ContentClass="text-center"
+                                    Src="@(_isUploadSuccess.HasValue?(_isUploadSuccess==false?"_content/Masa.Scheduler.Web.Admin/img/upload/upload-error.png":"_content/Masa.Scheduler.Web.Admin/img/upload/upload-complete.png"):hover.Hover?"_content/Masa.Scheduler.Web.Admin/img/upload/upload-active.png":"_content/Masa.Scheduler.Web.Admin/img/upload/upload.png")">
+                            </MImage>
+                            <MFileInput TValue="IBrowserFile"
                                 @ref="_ref"
                                 Dense
                                 Outlined
                                 Accept=".zip, .dll"
                                 Rules="_rules"
                                 @bind-Value="_browserFile"
+                                Class="full-width full-height"
                                 HideDetails="@("auto")"
                                 Label="@T("PleaseUploadFiles")"
                                 Placeholder="@T("PleaseUploadFiles")" OnChange="HandleFileChange"></MFileInput>
-                </MCol>
-            </MRow>
-            <div class="pl-2">
-                <p class="mb-0">@T("Explain"):</p>
-                <p>@T("UploadFiles.Tips")</p>
-            </div>
-            <MRow Class="mt-1">
-                <MCol Cols="4">
-                    <MTextField @bind-Value="Model.Version" Label="@T(nameof(Model.Version))" HideDetails="@("auto")" Outlined Dense />
-                </MCol>
-            </MRow>
-            <MRow>
-                <MCol Cols="12">
-                    <MTextarea @bind-Value="Model.Description" Label="@T(nameof(Model.Description))" HideDetails="@("auto")" Outlined/>
-                </MCol>
-            </MRow>
-            <div class="d-flex mt-4">
-                <MSpacer></MSpacer>
-                <MButton Color="primary" Class="small-button ml-6" OnClick="()=> Submit(context)">@T("Submit")</MButton>
-            </div>
+                        </div>
+                    </MProgressCircular>
+
+                </div>
+            </MHover>
+            <div class="d-flex flex-column align-center mt-6">
+                <div class="h6 regular--text">@(_isUploadSuccess==true?T("UploadComplete"):T("UploadFile"))</div>
+                <div class="body regular3--text mt-2">@T("UploadFiles.Tips")</div>
             </div>
         </div>
+        <STextField @bind-Value="Model.Version" Label="@T(nameof(Model.Version))" Class="mt-9" />
+        <STextarea @bind-Value="Model.Description" Label="@T(nameof(Model.Description))" Class="mt-9" HideDetails="@("auto")" Outlined />
     </MForm>
-</div>
+</SSimpleModal>

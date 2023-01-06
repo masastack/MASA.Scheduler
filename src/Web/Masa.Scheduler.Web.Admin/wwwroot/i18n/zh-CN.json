@@ -130,7 +130,7 @@
   "Explain": "说明",
   "UploadFiles.Tips": "仅可上传 “.zip”，“.dll” 格式的文件，最大上传100M",
   "Version": "版本号",
-  "ResourceFileUploadDescription": "{0} 于{1} 上传源文件",
+  "ResourceFileUploadDescription": "{0} {1}",
   "Download": "下载",
   "Rerun": "重跑",
   "StopTask": "中断任务",
@@ -178,5 +178,10 @@
   "Enabled": "启用",
   "CronExpressionNotHasNextRunTime": "您的表达式计算不出下一次运行时间",
   "ExpectedNextRunTime": "预计未来5次运行时间",
-  "UploadFileFailed":  "上传失败, 请重新上传"
+  "UploadFileFailed": "上传失败, 请重新上传",
+  "PleaseSelectStartTime": "请选择开始时间",
+  "PleaseSelectEndTime": "请选择结束时间",
+  "Project": "项目",
+  "UploadComplete": "上传完成",
+  "UploadFile": "上传文件"
 }

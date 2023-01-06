@@ -1,0 +1,28 @@
+﻿<div class="full-height flex-column d-flex @Class">
+    @HeaderContent
+    <div class="flex-height-auto @AutoClass @(Overflow?"overflow-y pr-4":"")">
+        @AutoHeightContent
+    </div>
+    @FooterContent
+</div>
+
+
+@code {
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? AutoHeightContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; }
+
+    [Parameter]
+    public string AutoClass { get; set; } = "";
+
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    [Parameter]
+    public bool Overflow { get; set; }
+}

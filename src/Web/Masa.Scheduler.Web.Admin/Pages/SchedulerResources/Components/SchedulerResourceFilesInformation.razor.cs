@@ -5,7 +5,6 @@ namespace Masa.Scheduler.Web.Admin.Pages.SchedulerResources.Components;
 
 public partial class SchedulerResourceFilesInformation
 {
-    [Parameter]
     public SchedulerResourceDto Model
     {
         get
@@ -23,11 +22,7 @@ public partial class SchedulerResourceFilesInformation
 
     private SchedulerResourceDto _model = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        await GetDescription();
-        await base.OnInitializedAsync();
-    }
+    private bool _visible;
 
     private Task OnModelChange()
     {
@@ -63,6 +58,27 @@ public partial class SchedulerResourceFilesInformation
         }
 
         NavigationManager.NavigateTo(Model.FilePath);
+    }
+
+    private void HandleVisibleChanged(bool val)
+    {
+        if (!val) HandleCancel();
+    }
+
+    private void HandleCancel()
+    {
+        _visible = false;
+    }
+
+    public async Task OpenModalAsync(SchedulerResourceDto model)
+    {
+        Model = model;
+
+        await InvokeAsync(() =>
+        {
+            _visible = true;
+            StateHasChanged();
+        });
     }
 }
 

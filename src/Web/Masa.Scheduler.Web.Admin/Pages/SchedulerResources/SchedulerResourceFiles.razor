@@ -1,91 +1,69 @@
 ﻿@inherits ProCompontentBase
 @page "/pages/resource"
-
-<div class="d-flex">
-    <MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 126px );">
-        <div class="flex mt-4">
-             <SSearch @bind-Value="SearchName" Class="pb-4" Style="width: 194px; margin: auto"></SSearch>
-        </div>
-        <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 250px );">
-            <MList Width="194" Dense>
-                <MListItemGroup Class="rounded-2 scheduler-list"
-                                @bind-Value="@SelectedIdentity"
-                                Mandatory
-                                Color="@Color">
-                   
-                    @foreach (var project in _projects)
+<MTabs Value="_selectedProjectIdentity" ValueChanged="HandleProjectIdentityChanged">
+    @foreach (var project in _projects)
+    {
+        <MTab Value="project.Identity" Class="px-12 py-3">
+            <span class="@(_selectedProjectIdentity==project.Identity?"primary--text h8":"regular2--text btn")">@project.Identity</span>
+        </MTab>
+    }
+</MTabs>
+<div class="mt-6">
+    @foreach (var app in _resourceData)
+    {
+        <MCard Flat Class="rounded-4 mb-6">
+            <MCardTitle>
+                <div>
+                    <span class="emphasis--text h6">@app.Identity</span>
+                    <MIcon Size="20" Color="emphasis2">keyboard_arrow_right</MIcon>
+                </div>
+                <MSpacer></MSpacer>
+                @if (app.Resources.Any())
+                {
+                    <MIcon Size="24" Color="error" Class="align-self-center mr-6" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty,app.Identity)">mdi-delete</MIcon>
+                }
+                <MButton Fab OnClick="()=>AddResourceFile(app.Identity)" Small Dark Color="primary">
+                    <MIcon>mdi-plus</MIcon>
+                </MButton>
+            </MCardTitle>
+            <MCardText>
+                <MRow>
+                    @foreach (var item in app.Resources)
                     {
-                        @if (project.Children.Any())
-                        {
-                            <MListGroup @bind-Value="project.Expanded" SubGroup NoAction>
-                                <ActivatorContent>
-                                    <MListItemTitle>@project.Title</MListItemTitle>
-                                </ActivatorContent>
-                                <ChildContent>
-                                    @foreach (var subitem in project.Children)
+                        <MCol Cols="12" Md="3">
+                            <MHover>
+                                <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
+                                    @if (context.Hover)
                                     {
-                                        <MListItem Link Value="@subitem.Identity" Style="padding-left:50px;" Class="rounded-2 project-list">
-                                            <MListItemTitle>@subitem.Title</MListItemTitle>
-                                        </MListItem>
+                                        <MIcon Size="24" Color="error" Class="align-self-center" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">mdi-delete</MIcon>
+                                        <span class="d-flex" style="height: 24px;padding-left:60px;padding-right:60px">
+                                            <MDivider Vertical />
+                                        </span>
+                                        <MIcon Size="24" Color="emphasis2" Class="align-self-center" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">mdi-eye</MIcon>
                                     }
-                                </ChildContent>
-                            </MListGroup>
-                        }
+                                    else
+                                    {
+                                        <span>@item.Version</span>
+                                    }
+                                </div>
+                            </MHover>
+
+                        </MCol>
                     }
-                </MListItemGroup>
-            </MList>
-        </div>
-    </MNavigationDrawer>
-
-    @if (!string.IsNullOrWhiteSpace(LastSelectedAppIdentity))
-    {
-        <MNavigationDrawer Permanent Class="rounded-4 ml-6" Width="242" Style="height:calc(100vh - 126px );">
-            <div class="d-flex mt-4">
-                <MButton Rounded Color="primary" Dark Class="mb-4 ml-6" OnClick="AddResourceFile" Width="194" Style="margin:auto"> @T("AddResourceFiles") </MButton>
-            </div>
-            <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 250px );">
-                <MList Width="194">
-                    <MListItemGroup Class="rounded-2"
-                                @bind-Value="@SelectedResourceId"
-                                Mandatory
-                                Color="#A3AED0">
-                        
-                        @foreach (var resouce in _resources)
-                        {
-                            <MListItem Class="rounded-2 project-list" Value="resouce.Id.ToString()" Dense>
-                                <MListItemTitle>
-                                    @resouce.Version
-                                </MListItemTitle>
-                                <MListItemIcon>
-                                    <MIcon OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, resouce.Id)"> mdi-delete-outline </MIcon>
-                                </MListItemIcon>
-                            </MListItem>
-                        }
-                    </MListItemGroup>
-                </MList>
-            </div>
-            @if (_resources.Any())
-            {
-                <MButton Class="d-flex" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty)" Style="margin:auto" Text Color="red">@T("DeleteResources")</MButton>   
-            }
-        </MNavigationDrawer>
-    }
-
-    <SSimpleDialog OkText="@T("SureDelete")" OnOk="OnSureDelete" @bind-Value="_showConfirmDialog" Title="@_confirmTitle" HideCancel OkColor="#FF5252" OkClass="full-width scheduler-confirm-dialog-ok-button">
-        <ChildContent>
-            <span class="d-flex d-flex flex-column justify-center align-center" style="text-align:center">
-                @_confirmMessage
-            </span>
-        </ChildContent>
-    </SSimpleDialog>
-
-    @if (_isAdd)
-    {
-        <AddSchedulerResourceFiles Model="Model" OnAfterSubmit="AfterSubmit" Resources="_resources">
-        </AddSchedulerResourceFiles>
-    }
-    else if(_selectedResourceDto != null)
-    {
-        <SchedulerResourceFilesInformation Model="_selectedResourceDto"></SchedulerResourceFilesInformation>
+                </MRow>
+            </MCardText>
+        </MCard>
     }
 </div>
+<SSimpleDialog OkText="@T("SureDelete")" OnOk="OnSureDelete" @bind-Value="_showConfirmDialog" Title="@_confirmTitle" HideCancel OkColor="#FF5252" OkClass="full-width scheduler-confirm-dialog-ok-button">
+    <ChildContent>
+        <span class="d-flex d-flex flex-column justify-center align-center" style="text-align:center">
+            @_confirmMessage
+        </span>
+    </ChildContent>
+</SSimpleDialog>
+
+<AddSchedulerResourceFiles @ref="_addResourceModal" OnAfterSubmit="GetResourceData">
+</AddSchedulerResourceFiles>
+
+<SchedulerResourceFilesInformation @ref="_resourceInfoModal"></SchedulerResourceFilesInformation>
