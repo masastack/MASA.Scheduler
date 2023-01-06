@@ -81,17 +81,17 @@
                                 @job.Name
                             </div>
                         </MCardTitle>
-                        <MCardText Style="height:24px; display:inline-flex;">
+                        <MCardText Class="d-flex">
                             <MButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
                                 <MIcon>mdi-checkbox-blank-circle</MIcon>
                             </MButton>
                             <div class="job-text run-text pl-2 body2" style="color:@(GetJobColor(job))">
                                 @GetJobRunText(job)
                             </div>
-                            <div class="d-flex px-1" style="height: 8px">
+                            <div class="d-flex px-1 mt-2" style="height: 8px">
                                 <MDivider Vertical />
                             </div>
-                            <div class="caption regular3--text">@job.ModificationTime.Humanize(culture:LanguageProvider.Culture) </div>
+                            <div class="body2 regular3--text">@job.ModificationTime.Humanize(culture:LanguageProvider.Culture) </div>
                             <MSpacer></MSpacer>
                             @if (_jobCreateType == JobCreateTypes.Api)
                             {
