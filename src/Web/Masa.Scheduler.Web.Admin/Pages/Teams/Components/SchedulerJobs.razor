@@ -3,7 +3,7 @@
     <HeaderContent>
         <div class="search-panel my-6">
             <MRow Class="flex-none fold d-inline-flex" NoGutters Style="@(_jobCreateType == JobCreateTypes.Manual?"width: calc(100% - 378px)":"width: calc(100% - 256px)")">
-                <MCol Md="1">
+                <MCol Md="1" Style="min-width: 144px">
                     <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
                     </Projects>
                 </MCol>
