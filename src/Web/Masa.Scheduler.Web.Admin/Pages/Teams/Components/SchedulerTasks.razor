@@ -3,7 +3,7 @@
     <HeaderContent>
         <MRow Class="flex-none fold d-inline-flex my-6" NoGutters>
             <MCol Md="5">
-                <DateTimeRangePicker StartTime="_queryStartTime" EndTime="_queryEndTime" StartTimeChanged="QueryStartTimeChanged" EndTimeChanged="QueryEndTimeChanged" />
+                <DateTimeRangePicker @bind-StartTime="_queryStartTime" @bind-EndTime="_queryEndTime" OnChange="()=>OnQueryDataChanged()" />
             </MCol>
             <MCol Md="2" Class="ml-6">
                 <SSelect Small @bind-Value="_queryTimeType"

@@ -13,9 +13,9 @@ public class SchedulerJobListRequest: PaginationRequest
 
     public JobQueryTimeTypes QueryTimeType { get; set; }
 
-    public DateTimeOffset? QueryStartTime { get; set; }
+    public DateTime? QueryStartTime { get; set; }
 
-    public DateTimeOffset? QueryEndTime { get; set; }
+    public DateTime? QueryEndTime { get; set; }
 
     public string BelongProjectIdentity { get; set; } = string.Empty;
 

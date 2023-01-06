@@ -136,31 +136,35 @@ public partial class SchedulerJobs : ProCompontentBase
         }
     }
 
-    public DateTime? QueryStartTime
-    {
-        get => _queryStartTime; 
-        set
-        {
-            if (_queryStartTime != value)
-            {
-                _queryStartTime = value;
-                OnQueryDataChanged();
-            }
-        }
-    }
+    public DateTime? QueryStartTime { get; set; }
 
-    public DateTime? QueryEndTime
-    {
-        get => _queryEndTime;
-        set
-        {
-            if (_queryEndTime != value)
-            {
-                _queryEndTime = value;
-                OnQueryDataChanged();
-            }
-        }
-    }
+    public DateTime? QueryEndTime { get; set; }
+
+    //public DateTime? QueryStartTime
+    //{
+    //    get => _queryStartTime; 
+    //    set
+    //    {
+    //        if (_queryStartTime != value)
+    //        {
+    //            _queryStartTime = value;
+    //            OnQueryDataChanged();
+    //        }
+    //    }
+    //}
+
+    //public DateTime? QueryEndTime
+    //{
+    //    get => _queryEndTime;
+    //    set
+    //    {
+    //        if (_queryEndTime != value)
+    //        {
+    //            _queryEndTime = value;
+    //            OnQueryDataChanged();
+    //        }
+    //    }
+    //}
 
     private int TotalPage
     {
@@ -301,9 +305,6 @@ public partial class SchedulerJobs : ProCompontentBase
             return;
         }
 
-        DateTimeOffset? queryEndTimeDateTimeOffset = QueryEndTime.HasValue ? new DateTimeOffset(QueryEndTime.Value, TimezoneOffset) : null;
-        DateTimeOffset? queryStartTimeDateTimeOffset = QueryStartTime.HasValue ? new DateTimeOffset(QueryStartTime.Value, TimezoneOffset) : null;
-
         var request = new SchedulerJobListRequest()
         {
             FilterStatus = QueryStatus,
@@ -313,8 +314,8 @@ public partial class SchedulerJobs : ProCompontentBase
             Origin = QueryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = queryEndTimeDateTimeOffset.HasValue ? queryEndTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
-            QueryStartTime = queryStartTimeDateTimeOffset.HasValue ? queryStartTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
+            QueryEndTime = QueryEndTime,
+            QueryStartTime = QueryStartTime,
             QueryTimeType = _queryTimeType,
             BelongProjectIdentity = Project.Identity,
         };
