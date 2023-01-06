@@ -1,18 +1,19 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Ddd.Domain.Entities;
+
 namespace Masa.Scheduler.Web.Admin.Pages.SchedulerResources.Components;
 
 public partial class AddSchedulerResourceFiles
 {
     [Parameter]
-    public SchedulerResourceDto Model { get; set; } = new();
-
-    [Parameter]
     public EventCallback OnAfterSubmit { get; set; }
 
     [Parameter]
     public List<SchedulerResourceDto> Resources { get; set; } = new();
+
+    public SchedulerResourceDto Model { get; set; } = new();
 
     private MForm? _form;
 
@@ -21,6 +22,12 @@ public partial class AddSchedulerResourceFiles
     private IBrowserFile _browserFile = default!;
 
     private List<Func<IBrowserFile, StringBoolean>> _rules = default!;
+
+    private bool _visible;
+
+    private int _progress = 0;
+
+    private bool? _isUploadSuccess;
 
     protected override Task OnInitializedAsync()
     {
@@ -31,9 +38,11 @@ public partial class AddSchedulerResourceFiles
         };
         return base.OnInitializedAsync();
     }
-    private async Task Submit(FormContext context)
+    private async Task Submit()
     {
-        if(!_ref.Validate())
+        MasaArgumentException.ThrowIfNull(_form, "form");
+
+        if (!_form.Validate())
         {
             return;
         }
@@ -44,7 +53,7 @@ public partial class AddSchedulerResourceFiles
             return;
         }
 
-        if (context.Validate())
+        if (_form.Validate())
         {
             if (Resources.Any(p => p.Version == Model.Version))
             {
@@ -61,6 +70,10 @@ public partial class AddSchedulerResourceFiles
 
             await PopupService.ToastAsync(T("AddResourceSuccess"), AlertTypes.Success);
 
+            _visible = false;
+
+            ResetForm();
+
             if (OnAfterSubmit.HasDelegate)
             {
                 await OnAfterSubmit.InvokeAsync();
@@ -70,8 +83,10 @@ public partial class AddSchedulerResourceFiles
 
     private async void HandleFileChange(IBrowserFile file)
     {
-        if(file == null)
+        _progress = 0;
+        if (file == null)
         {
+            _isUploadSuccess = false;
             return;
         }
 
@@ -84,12 +99,14 @@ public partial class AddSchedulerResourceFiles
         if(!filterExtension.Contains(Path.GetExtension(file.Name)))
         {
             await PopupService.ToastAsync(T("FileNotValid"), AlertTypes.Error);
+            _isUploadSuccess = false;
             return;
         }
 
         if(file.Size > 100 * 1024 * 1024)
         {
             await PopupService.ToastAsync(T("FileSizeNotValid"), AlertTypes.Error);
+            _isUploadSuccess = false;
             return;
         }
 
@@ -100,6 +117,7 @@ public partial class AddSchedulerResourceFiles
         if(securityToken == null)
         {
             await PopupService.ToastAsync(T("GetOssTokenFailed"), AlertTypes.Error);
+            _isUploadSuccess = false;
             return;
         }
 
@@ -112,11 +130,44 @@ public partial class AddSchedulerResourceFiles
         if(uploadUrl == null)
         {
             await PopupService.ToastAsync(T("UploadFileFailed"), AlertTypes.Error);
+            _isUploadSuccess = false;
             return;
         }
 
         Model.FilePath = uploadUrl;
 
         Model.UploadTime = DateTimeOffset.Now;
+
+        _progress = 100;
+        _isUploadSuccess = true;
+    }
+
+    private void HandleVisibleChanged(bool val)
+    {
+        if (!val) HandleCancel();
+    }
+
+    private void HandleCancel()
+    {
+        _visible = false;
+        ResetForm();
+    }
+
+    private void ResetForm()
+    {
+        Model = new();
+    }
+
+    public async Task OpenModalAsync(SchedulerResourceDto model)
+    {
+        Model= model;
+
+        await InvokeAsync(() =>
+        {
+            _visible = true;
+            StateHasChanged();
+        });
+
+        _form?.ResetValidation();
     }
 }

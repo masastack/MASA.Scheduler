@@ -39,3 +39,5 @@ global using Masa.BuildingBlocks.Authentication.Identity;
 global using static Masa.Stack.Components.JsInitVariables;
 global using Masa.BuildingBlocks.Data.Mapping;
 global using System.Text;
+global using Masa.Stack.Components.Models;
+global using Microsoft.AspNetCore.Components.Rendering;

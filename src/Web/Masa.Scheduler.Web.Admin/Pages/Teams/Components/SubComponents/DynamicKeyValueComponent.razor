@@ -4,14 +4,15 @@
     var index = i;
     var length = i + 1;
     var total = GetValueCount();
-    <MRow Class="mt-2">
-        <MCol Cols="3">
-            <MTextField Value="kv.Key" Label="Key" HideDetails="@("auto")" Dense Outlined ValueChanged="(string key)=> OnModifyKey(index, key)"/>
+    <MRow NoGutters Class="mt-9">
+        <MCol Md="4">
+            <STextField Value="kv.Key" Label="Key" HideDetails="@("auto")" Dense Outlined ValueChanged="(string key)=> OnModifyKey(index, key)" />
         </MCol>
-        <MCol Cols="3">
-            <MTextField Value="kv.Value" Label="Value" HideDetails="@("auto")" Dense Outlined ValueChanged="(string value) => OnModifyValue(index, value)"/>
+        <MCol Md="4">
+            <STextField Class="ml-6" Value="kv.Value" Label="Value" HideDetails="@("auto")" Dense Outlined ValueChanged="(string value) => OnModifyValue(index, value)"/>
         </MCol>
-        <MCol Cols="1">
+        <MSpacer></MSpacer>
+        <MCol Md="2" Class="my-auto">
             @if(total > 1)
             {
                 <MButton Icon OnClick="()=> OnRemoveKeyValue(index)">

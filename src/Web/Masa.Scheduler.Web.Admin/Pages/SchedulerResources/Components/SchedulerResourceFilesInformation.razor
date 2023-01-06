@@ -1,29 +1,19 @@
 ﻿@inherits ProCompontentBase
 
-<div Class="env-toolbar ml-4 rounded-4" Style="background:#fff; width:66%">
-    <div class="full-height flex-column">
-        <div class="mt-2 pl-4 pr-4"> @_description </div>
-        <MRow Class="my-1" Style="text-align:center">
-            <MCol Cols="12">
-                <MIcon Large>
-                    mdi-file-multiple
-                </MIcon>
-            </MCol>
-        </MRow>
-        <MRow Class="mt-1" Style="text-align:center">
-            <MCol Cols="12">
-                @Model.Name
-            </MCol>
-        </MRow>
-        <MRow Class="mt-1" Style="text-align:center">
-            <MCol Cols="12">
-                <a class="text-decoration-none" @onclick="Download">@T("Download")</a>
-            </MCol>
-        </MRow>
-        <MRow Class="pl-4 pr-4">
-            <MCol Cols="12">
-                <MTextarea Readonly Value="@Model.Description" Label="@T(nameof(Model.Description))" HideDetails="@("auto")" Outlined />
-            </MCol>
-        </MRow>
+<SSimpleModal Value="_visible" ValueChanged="HandleVisibleChanged" OnSave="Download" SaveText="@T("Download")"
+              Title="@Model.Version" HeaderClass="mr-4">
+    <div class="rounded-6 d-flex flex-column align-center py-9" style="border: 4px dashed #E2E7F4;">
+        <MImage Width=80 Height=80 Class="d-flex justify-center align-center" ContentClass="text-center"
+                Src="_content/Masa.Scheduler.Web.Admin/img/upload/upload-complete.png">
+                        </MImage>
+        <div class="d-flex flex-column align-center mt-6">
+            <div class="h6 regular--text">@Model.Name.Substring(0, Model.Name.LastIndexOf("."))</div>
+            <div class="body regular3--text mt-2">@Model.Name.Substring(Model.Name.LastIndexOf("."))</div>
+        </div>
     </div>
-</div>
+    <div class="d-flex mt-2">
+        <MSpacer></MSpacer>
+        <span class="body regular3--text">@_description</span>
+    </div>
+    <STextarea Class="mt-9" Readonly Value="@Model.Description" Label="@T(nameof(Model.Description))" HideDetails="@("auto")" Outlined />
+</SSimpleModal>

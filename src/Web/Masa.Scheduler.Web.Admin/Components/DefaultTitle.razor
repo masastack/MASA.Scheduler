@@ -1,0 +1,11 @@
+﻿<div class="@Class subtitle2 emphasis--text">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Class { get; set; } = "mt-9 mb-6";
+}

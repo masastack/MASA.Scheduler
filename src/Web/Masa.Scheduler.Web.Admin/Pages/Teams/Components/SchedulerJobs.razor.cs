@@ -6,6 +6,8 @@ namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 public partial class SchedulerJobs : ProCompontentBase
 {
     [Parameter]
+    public Guid? TeamId { get; set; }
+
     public ProjectDto? Project
     {
         get
@@ -374,13 +376,13 @@ public partial class SchedulerJobs : ProCompontentBase
         switch (job.LastRunStatus)
         {
             case TaskRunStatus.Success:
-                return "white";
+                return "#00B42A";
             case TaskRunStatus.Failure:
                 return "#FF5252";
             case TaskRunStatus.Timeout:
                 return "#FF7D00";
             case TaskRunStatus.TimeoutSuccess:
-                return "#FFF8ED";
+                return "#FF7D00";
             default:
                 return "white";
         }
@@ -686,5 +688,11 @@ public partial class SchedulerJobs : ProCompontentBase
 
             StateHasChanged();
         }
+    }
+
+    public Task OnProjectChangedAsync(ProjectDto project)
+    {
+        Project = project;
+        return Task.CompletedTask;
     }
 }

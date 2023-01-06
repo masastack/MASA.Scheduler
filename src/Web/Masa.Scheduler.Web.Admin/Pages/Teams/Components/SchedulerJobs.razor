@@ -1,92 +1,110 @@
 ﻿@inherits ProCompontentBase
-
-<div class="pl-6" style="overflow: hidden; display:block;">
-    <MRow Class="mx-1 my-2">
-        <MButtonGroup Value="_jobCreateType.ToString()" Class="rounded-lg elevation-tab" Group Tile Dense Mandatory Borderless>
-            @foreach (var (key, value) in GetEnumMap<JobCreateTypes>())
-            {
-                <MButton OnClick="async() => await SwitchJobCreateType(value)" Value="@value.ToString()" Ripple=false Class="rounded-lg" MinWidth=100>
-                    @T(nameof(JobCreateTypes)+"."+key)
-                </MButton>
-            }
-        </MButtonGroup>
-    </MRow>
-    <div Class="env-toolbar rounded-4" Style="background:#fff;padding:0 12px;">
-        <MRow NoGutters Align="AlignTypes.Center">
-            <div class="d-flex" style="width:100%; padding-top:5px; padding-bottom:5px">
-                <MRadioGroup @bind-Value="QueryStatus" Row Style="margin-top:0px; padding-top:8px;" OnClick="RadioGroupClickHandler">
-                    @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
-                    {
-                        <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
-                            <LabelContent>
-                                <span style="color: @ComputedStatusColor(pair.Value)"> @T(pair.Key) </span>
-                            </LabelContent>
-                        </MRadio>
-                    }
-                </MRadioGroup>
-                <MSpacer></MSpacer>
-                <MTextField @bind-Value="QueryJobName" Color="primary" Class="rounded-2 search" Style="max-width:340px;" Placeholder="@T("Search")" HideDetails="@("auto")" Flat Dense Solo BackgroundColor="fill-lighten-1">
-                    <PrependInnerContent>
-                        <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
-                    </PrependInnerContent>
-                </MTextField>
-
-                <MButton Icon OnClick="ShowFilter">
-                    <MIcon>
-                        @_filterIcon
-                    </MIcon>
-                </MButton>
-
-                @if(_jobCreateType == JobCreateTypes.Manual)
-                {
-                    <MButton Color="primary" Class="rounded-4" OnClick="AddJob">
-                        @T("Add")
-                    </MButton>
-                }
-            </div>
-        </MRow>
-        @if (_showFilter)
-        {
-            <MRow NoGutters Align="AlignTypes.Center" >
-                <MCol Cols="2" Class="pa-2">
-                    <MSelect @bind-Value="QueryJobType" HideDetails="@("auto")" Placeholder="@T("JobType")" Outlined Dense Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
-                    </MSelect>
+<AutoHeight Overflow>
+    <HeaderContent>
+        <div class="search-panel my-6">
+            <MRow Class="flex-none fold d-inline-flex" NoGutters Style="@(_jobCreateType == JobCreateTypes.Manual?"width: calc(100% - 378px)":"width: calc(100% - 256px)")">
+                <MCol Md="1" Style="min-width: 144px">
+                    <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
+                    </Projects>
                 </MCol>
-
+                <MCol Md="3" Class="ml-6">
+                    <SLabeledRadioGroup Value="_jobCreateType" ActiveClass="fill-background" Class="white" Dense TValue="JobCreateTypes" ValueChanged="SwitchJobCreateType">
+                        @foreach (var item in Enum.GetValues<JobCreateTypes>())
+                        {
+                            <SLabeledRadio Value="item" Class="px-6">
+                                <span class="@(_jobCreateType == item ? "subtitle2 emphasis2--text" : "btn regular2--text")">@T(nameof(JobCreateTypes)+"."+item)</span>
+                            </SLabeledRadio>
+                        }
+                    </SLabeledRadioGroup>
+                </MCol>
+                <MSpacer></MSpacer>
+                <MCol Md="@(_jobCreateType == JobCreateTypes.Manual?5:4)" Class="ml-6">
+                    <DateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" />
+                </MCol>
+                <MCol Md="1" Class="ml-6">
+                    <SSelect Small @bind-Value="QueryJobType"
+                             Items="Enum.GetValues<JobTypes>().ToList()"
+                             Label="@T("JobType")"
+                             ItemText="e => T(e==default?string.Empty:e.ToString())"
+                             ItemValue="e=> e"
+                             BackgroundColor="white"
+                             Class="rounded-2 body2">
+                    </SSelect>
+                </MCol>
                 @if (_jobCreateType == JobCreateTypes.Api)
                 {
-                    <MCol Cols="2" Class="pa-2">
-                        <MSelect @bind-Value="QueryOrigin" HideDetails="@("auto")" Placeholder="@T("Origin")" Outlined Dense Clearable Items="_originList" ItemText="origin=>origin" ItemValue="origin=>origin">
-                        </MSelect>
+                    <MCol Md="1" Class="ml-6">
+                        <SSelect Small @bind-Value="QueryOrigin"
+                             Items="_originList"
+                             Label="@T("Origin")"
+                             ItemText="e => e"
+                             ItemValue="e=> e"
+                             BackgroundColor="white"
+                             Class="rounded-2 body2">
+                        </SSelect>
                     </MCol>
                 }
             </MRow>
-        }
-    </div>
-    
-    <div class="rounded-2 mt-6" style="height:calc(100vh - @(_contentHeight)); overflow-y:auto; overflow-x:hidden">
-       <MRow Style="min-height:10px;">
-            @foreach(var job in _jobs)
+            <div class="d-flex search-panel-right">
+                <OutlinedSearchTextField @bind-Value="QueryJobName" BackgroundColor="white" PrependInnerIcon="@IconConstants.Search" />
+                @if (_jobCreateType == JobCreateTypes.Manual)
+                {
+                    <SButton Small Color="primary" BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="AddJob">@T("Add")</SButton>
+                }
+            </div>
+        </div>
+        <MRadioGroup @bind-Value="QueryStatus" Row OnClick="RadioGroupClickHandler">
+            @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
             {
-                <MCol Cols="12">
-                    <MCard Height="69" Style="border-radius:10px !important;" Class="@GetJobClass(job)" Color="@GetJobColor(job)" OnClick="()=> HandleJobSelect(job)">
-                        <MCardTitle Style="padding-top: 6px; padding-left:10px; padding-bottom:6px;">
-                            <MChip
-                               Class="job-text"
-                               TextColor="primary"
+                <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
+                    <LabelContent>
+                        <span style="color: @ComputedStatusColor(pair.Value)"> @T(pair.Key) </span>
+                    </LabelContent>
+                </MRadio>
+            }
+        </MRadioGroup>
+    </HeaderContent>
+    <AutoHeightContent>
+        <MRow Class="mt-6" Style="height:0px">
+            @foreach (var job in _jobs)
+            {
+                <MCol Md="6">
+                    <MCard Height="115" Style="border-radius:10px !important;" Class="pt-2" OnClick="()=> HandleJobSelect(job)">
+                        <MCardTitle>
+                            <MChip Class="job-text btn"
+                               TextColor="emphasis2"
                                Style="height:25px; background-color:#F0F3FA"
                                Label>
                                 @T(job.JobType.ToString())
                             </MChip>
-                            <div style="padding-left:8px; font-weight:500; max-width:70%" class="job-text job-name text-truncate">
+                            <div class="job-text job-name text-truncate emphasis2--text h7 ml-2">
                                 @job.Name
                             </div>
-                            <MSpacer />
-                            @if(!string.IsNullOrWhiteSpace(job.UserName))
+                        </MCardTitle>
+                        <MCardText Class="d-flex">
+                            <MButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
+                                <MIcon>mdi-checkbox-blank-circle</MIcon>
+                            </MButton>
+                            <div class="job-text run-text pl-2 body2" style="color:@(GetJobColor(job))">
+                                @GetJobRunText(job)
+                            </div>
+                            <div class="d-flex px-1 mt-2" style="height: 8px">
+                                <MDivider Vertical />
+                            </div>
+                            <div class="body2 regular3--text">@job.ModificationTime.Humanize(culture:LanguageProvider.Culture) </div>
+                            <MSpacer></MSpacer>
+                            @if (_jobCreateType == JobCreateTypes.Api)
+                            {
+                                <MChip Class="job-text emphasis2--text btn"
+                               Style="height:25px; background-color:#F0F3FA">
+                                    @job.Origin
+                                </MChip>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(job.UserName))
                             {
                                 <MTooltip Top>
                                     <ActivatorContent>
-                                        <MAvatar Size="24" @attributes="@context.Attrs">
+                                        <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
                                             <MImage Src="@job.Avator"></MImage>
                                         </MAvatar>
                                     </ActivatorContent>
@@ -95,28 +113,10 @@
                                     </ChildContent>
                                 </MTooltip>
                             }
-                            @if(_jobCreateType == JobCreateTypes.Api)
-                            {
-                                <MChip
-                                   Class="job-text ml-1"
-                                   Style="height:25px; background-color:#F0F3FA"
-                                   >
-                                    @job.Origin
-                                </MChip>
-                            }
-                        </MCardTitle>
-                        <MCardText Style="height:24px; padding-left:10px; padding-right:16px; display:inline-flex">
-                            <MButton Icon XSmall Class="run-icon" Style="cursor:default">
-                                <MIcon >mdi-checkbox-blank-circle</MIcon>
-                            </MButton>
-                            <div style="padding-left:8px;padding-top: 2px;" class="job-text run-text">
-                                @GetJobRunText(job)
-                            </div>
-                            <MSpacer></MSpacer>
                             <MMenu Bottom Left>
                                 <ActivatorContent>
-                                    <MButton Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation>
-                                        <MIcon>mdi-dots-horizontal</MIcon>
+                                    <MButton Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation Class="ml-4">
+                                        <MIcon>mdi-dots-vertical</MIcon>
                                     </MButton>
                                 </ActivatorContent>
                                 <ChildContent>
@@ -150,7 +150,7 @@
                                         }
                                         else
                                         {
-                                             <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.EnabledJob, job.Id)">
+                                            <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.EnabledJob, job.Id)">
                                                 <MListItemContent>
                                                     <MListItemTitle>
                                                         @T("Enabled")
@@ -167,12 +167,13 @@
                 </MCol>
             }
         </MRow>
-        <SPagination Class="mt-4" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
+    </AutoHeightContent>
+    <FooterContent>
+        <SPagination Class="mt-3 mx-6 pb-6" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
+    </FooterContent>
+</AutoHeight>
 
-        <JobModal Model="modalModel" Visible="_modalVisible" VisibleChanged="OnVisibleChanged" Project="Project" OnAfterDataChange="OnAfterDataChange"></JobModal>
-    </div>
-</div>
-
+<JobModal Model="modalModel" Visible="_modalVisible" VisibleChanged="OnVisibleChanged" Project="Project" OnAfterDataChange="OnAfterDataChange"></JobModal>
 <SSimpleDialog OkText="@T("Sure")" OnOk="OnSure" @bind-Value="_showConfirmDialog" Title="@_confirmTitle" HideCancel OkColor="#FF5252" OkClass="full-width scheduler-confirm-dialog-ok-button">
     <ChildContent>
         <span class="d-flex flex-column justify-center align-center" style="text-align:center">

@@ -26,10 +26,10 @@ public partial class Projects
 
     private string _projectName = string.Empty;
     private List<ProjectDto> _projects = new();
-    private StringNumber _selectedProjectIdentity = null!;
+    private string _selectedProjectIdentity = null!;
     private Guid? _teamId = null;
 
-    public StringNumber SelectedProjectIdentity
+    public string SelectedProjectIdentity
     {
         get 
         { 
@@ -43,7 +43,7 @@ public partial class Projects
 
                 if (OnProjectChanged.HasDelegate)
                 {
-                    var project = _projects.FirstOrDefault(p => p.Identity == _selectedProjectIdentity.AsT0);
+                    var project = _projects.FirstOrDefault(p => p.Identity == _selectedProjectIdentity);
 
                     OnProjectChanged.InvokeAsync(project);
                 }
@@ -68,7 +68,12 @@ public partial class Projects
 
         if (_projects.Any())
         {
-            SelectedProjectIdentity = _projects.FirstOrDefault()!.Identity;
+            var project = _projects.FirstOrDefault();
+            SelectedProjectIdentity = project!.Identity;
+            if (project!=null)
+            {
+               await OnProjectChanged.InvokeAsync(project);
+            }
         }
         else
         {

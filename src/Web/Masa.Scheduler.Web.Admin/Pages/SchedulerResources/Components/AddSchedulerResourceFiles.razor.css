@@ -1,0 +1,17 @@
+﻿.upload-btn ::deep .m-input {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.upload-btn ::deep .m-input__control {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.upload-btn ::deep .m-input__slot {
+    height: 100%;
+    width: 100%;
+}

@@ -1,0 +1,84 @@
+﻿@inherits ProCompontentBase
+
+<div class="d-flex fill rounded-2 full-width @Class" style="height: 40px;">
+    <MIcon Size=20 Color="emphasis2--text" Class="@($"pl-2 {IconClass}")">mdi-calendar-month</MIcon>
+    <MMenu @bind-Value="StartTimeVisible" CloseOnContentClick="false" OffsetY Transition="scale-transition">
+        <ActivatorContent>
+            <div class="ml-2 text-btn my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
+                @(StartTime?.ToString(T("$DateTimeFormat")) ?? T("PleaseSelectStartTime"))
+            </div>
+        </ActivatorContent>
+        <ChildContent>
+            <SDateTimePicker Value=_internalStartTime Max=_internalEndTime ValueChanged=UpdateStartTimeAsync></SDateTimePicker>
+        </ChildContent>
+    </MMenu>
+    <MDivider Vertical Class="ma-2" Style="display:initial"></MDivider>
+    <MMenu @bind-Value="EndTimeVisible" CloseOnContentClick="false" OffsetY Transition="scale-transition">
+        <ActivatorContent>
+            <div class="text-btn my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
+                @(EndTime?.ToString(T("$DateTimeFormat")) ?? T("PleaseSelectEndTime"))
+            </div>
+        </ActivatorContent>
+        <ChildContent>
+            <SDateTimePicker Value=_internalEndTime Min=_internalStartTime ValueChanged=UpdateEndTimeAsync></SDateTimePicker>
+        </ChildContent>
+    </MMenu>
+</div>
+
+@code {
+    [Parameter]
+    public DateTime? StartTime { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> StartTimeChanged { get; set; }
+
+    [Parameter]
+    public DateTime? EndTime { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> EndTimeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnChange { get; set; }
+
+    [Parameter]
+    public string IconClass { get; set; } = default!;
+
+    private bool StartTimeVisible { get; set; }
+
+    private bool EndTimeVisible { get; set; }
+
+    private DateTime? _internalStartTime { get; set; }
+
+    private DateTime? _internalEndTime { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _internalStartTime = StartTime;
+        _internalEndTime = EndTime;
+    }
+
+    private async Task UpdateStartTimeAsync(DateTime? dateTime)
+    {
+        var startTime = dateTime;
+        if (startTime > EndTime) OpenWarningMessage(T("Start time cannot be greater than end time"));
+        else
+        {
+            StartTime = startTime;
+            if (StartTimeChanged.HasDelegate) await StartTimeChanged.InvokeAsync(StartTime != null ? StartTime.Value : null);
+            if (OnChange.HasDelegate) await OnChange.InvokeAsync();
+        }
+    }
+
+    private async Task UpdateEndTimeAsync(DateTime? dateTime)
+    {
+        var endTime = dateTime;
+        if (endTime < StartTime) OpenWarningMessage(T("End time cannot be less than start time"));
+        else
+        {
+            EndTime = endTime;
+            if (StartTimeChanged.HasDelegate) await EndTimeChanged.InvokeAsync(EndTime != null ? EndTime.Value : null);
+            if (OnChange.HasDelegate) await OnChange.InvokeAsync();
+        }
+    }
+}
