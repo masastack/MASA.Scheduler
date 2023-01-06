@@ -140,32 +140,6 @@ public partial class SchedulerJobs : ProCompontentBase
 
     public DateTime? QueryEndTime { get; set; }
 
-    //public DateTime? QueryStartTime
-    //{
-    //    get => _queryStartTime; 
-    //    set
-    //    {
-    //        if (_queryStartTime != value)
-    //        {
-    //            _queryStartTime = value;
-    //            OnQueryDataChanged();
-    //        }
-    //    }
-    //}
-
-    //public DateTime? QueryEndTime
-    //{
-    //    get => _queryEndTime;
-    //    set
-    //    {
-    //        if (_queryEndTime != value)
-    //        {
-    //            _queryEndTime = value;
-    //            OnQueryDataChanged();
-    //        }
-    //    }
-    //}
-
     private int TotalPage
     {
         get
