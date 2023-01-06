@@ -207,9 +207,6 @@ public partial class SchedulerTasks
             return;
         }
 
-        DateTimeOffset? queryEndTimeDateTimeOffset = _queryEndTime.HasValue ? new DateTimeOffset(_queryEndTime.Value, TimezoneOffset) : null;
-        DateTimeOffset? queryStartTimeDateTimeOffset = _queryStartTime.HasValue ? new DateTimeOffset(_queryStartTime.Value, TimezoneOffset) : null;
-
         var request = new SchedulerTaskListRequest()
         {
             JobId = _job.Id,
@@ -217,8 +214,8 @@ public partial class SchedulerTasks
             Origin = _queryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = queryEndTimeDateTimeOffset.HasValue ? queryEndTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
-            QueryStartTime = queryStartTimeDateTimeOffset.HasValue ? queryStartTimeDateTimeOffset.Value.ToLocalTime().DateTime : null,
+            QueryEndTime = _queryEndTime,
+            QueryStartTime = _queryStartTime,
             QueryTimeType = _queryTimeType
         };
 

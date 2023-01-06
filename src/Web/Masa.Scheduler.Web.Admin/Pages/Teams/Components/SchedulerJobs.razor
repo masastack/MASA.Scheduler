@@ -19,7 +19,7 @@
                 </MCol>
                 <MSpacer></MSpacer>
                 <MCol Md="@(_jobCreateType == JobCreateTypes.Manual?5:4)" Class="ml-6">
-                    <DateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" />
+                    <DateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
                 </MCol>
                 <MCol Md="1" Class="ml-6">
                     <SSelect Small @bind-Value="QueryJobType"

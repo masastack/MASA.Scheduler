@@ -8,7 +8,7 @@ public class SchedulerJobService : ServiceBase
     {
     }
 
-    public async Task<IResult> GetListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTimeOffset? queryStartTime, [FromQuery] DateTimeOffset? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string belongProjectIdentity)
+    public async Task<IResult> GetListAsync(IEventBus eventBus, [FromQuery] bool isCreatedByManual, [FromQuery] TaskRunStatus? filterStatus, [FromQuery] string? jobName, [FromQuery] JobTypes? jobType, [FromQuery] string? origin, [FromQuery] JobQueryTimeTypes? queryTimeType, [FromQuery] DateTime? queryStartTime, [FromQuery] DateTime? queryEndTime, [FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string belongProjectIdentity)
     {
         var request = new SchedulerJobListRequest()
         {
