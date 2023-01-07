@@ -69,7 +69,7 @@
             @foreach (var job in _jobs)
             {
                 <MCol Md="6">
-                    <MCard Height="115" Style="border-radius:10px !important;" Class="pt-2" OnClick="()=> HandleJobSelect(job)">
+                    <MCard Height="115" Class="pt-2" OnClick="()=> HandleJobSelect(job)" Style="@($"border-radius:10px !important; {(job.Enabled?"":"opacity: 0.6")}")">
                         <MCardTitle>
                             <MChip Class="job-text btn"
                                TextColor="emphasis2"

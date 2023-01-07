@@ -53,3 +53,5 @@ global using Masa.Utils.Security.Cryptography;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Logger;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Full;
 global using Masa.BuildingBlocks.Caching;
+global using Masa.BuildingBlocks.Isolation;
+global using Masa.BuildingBlocks.Ddd.Domain.Repositories;

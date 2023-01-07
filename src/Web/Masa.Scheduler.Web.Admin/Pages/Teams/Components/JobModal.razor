@@ -9,7 +9,7 @@
                         @foreach (var (key, value) in GetEnumMap<JobTypes>())
                         {
                             <MCard Outlined Class="d-flex justify-center align-center rounded-6 mb-6" Style="@GetStyle(value)" OnClick="()=> SelectJobType(value)" Height="210">
-                                <MButton Class="regular--text h6" Ripple=false Plain OnClick="()=> SelectJobType(value)" Color="@GetColor(value)">@T(key)</MButton>
+                                <MButton Class="h6 regular--text" ActiveClass="h6 fill--text" IsActive="value == Model.JobType" Ripple=false Plain OnClick="()=> SelectJobType(value)" Color="@GetColor(value)">@T(key)</MButton>
                             </MCard>
                         }
                     </MStepperContent>
@@ -20,7 +20,7 @@
                                     <DefaultTitle Class="mt-0 mb-6">@T("BasicInformation")</DefaultTitle>
                                     <MRow NoGutters>
                                         <MCol Md="6">
-                                            <STextField @bind-Value="@Model.Name" Label="@T("PleaseInputJobName")" HideDetails="@("auto")" />
+                                            <STextField @bind-Value="@Model.Name" Label="@T("JobName")" HideDetails="@("auto")" />
                                         </MCol>
                                         @if (!_isAdd)
                                         {
@@ -32,7 +32,7 @@
                                     </MRow>
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
-                                            <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Outlined Label="@T("Owner")" Solo="false" Flat="false" Placeholder="@Model.Owner" PersistentPlaceholder="true"></SUserAutoComplete>
+                                            <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Outlined Label="@T("Owner")" Solo="false" Flat="false" Placeholder="@Model.Owner"></SUserAutoComplete>
                                         </MCol>
                                     </MRow>
                                     <MRow NoGutters Class="mt-9">
@@ -220,7 +220,7 @@
                                                 <span class="d-flex px-6" style="height: 12px">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="RemoveJobAsync">mdi-delete</MIcon>
+                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="HandleDel">mdi-delete</MIcon>
                                             }
                                             <MSpacer></MSpacer>
                                             <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
@@ -287,7 +287,7 @@
                                                 <span class="d-flex px-6" style="height: 12px">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="RemoveJobAsync">mdi-delete</MIcon>
+                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="HandleDel">mdi-delete</MIcon>
                                             }
                                             <MSpacer></MSpacer>
                                             <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
@@ -340,7 +340,7 @@
                                                 <span class="d-flex px-6" style="height: 12px">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="RemoveJobAsync">mdi-delete</MIcon>
+                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="HandleDel">mdi-delete</MIcon>
                                             }
                                             <MSpacer></MSpacer>
                                             <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>

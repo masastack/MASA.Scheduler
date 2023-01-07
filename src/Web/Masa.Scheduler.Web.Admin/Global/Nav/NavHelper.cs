@@ -69,7 +69,7 @@ public class NavHelper
 
         SameLevelNavs.Where(nav => nav.Href is not null).ForEach(nav =>
         {
-            PageTabItems.Add(new PageTabItem(nav.Title, nav.Href, nav.ParentIcon, nav.Href != GlobalVariables.DefaultRoute));
+            PageTabItems.Add(new PageTabItem(nav.Title, nav.Href??string.Empty, nav.ParentIcon, nav.Href != GlobalVariables.DefaultRoute));
         });
     }
 

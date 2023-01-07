@@ -32,7 +32,7 @@ public partial class JobModal
         }
         set
         {
-            if(_visible != value)
+            if (_visible != value)
             {
                 _visible = value;
 
@@ -74,7 +74,7 @@ public partial class JobModal
             if (_allProject != value)
             {
                 _allProject = value;
-                _serviceApp = _allProject.SelectMany(p=> p.ProjectApps).Where(p => p.Type == ProjectAppTypes.Service).ToList();
+                _serviceApp = _allProject.SelectMany(p => p.ProjectApps).Where(p => p.Type == ProjectAppTypes.Service).ToList();
             }
         }
     }
@@ -127,7 +127,7 @@ public partial class JobModal
     protected override async Task OnInitializedAsync()
     {
         _isAdd = Model.Id == Guid.Empty;
-      
+
         await GetWorkerList();
 
         await GetProjects();
@@ -148,6 +148,22 @@ public partial class JobModal
     private Task NextStep(FormContext context)
     {
         var success = context.Validate();
+
+        var startTime = DateTimeOffset.Now;
+        var cronExpression = new CronExpression(Model.CronExpression);
+        var nextExcuteTime = cronExpression.GetNextValidTimeAfter(startTime);
+
+        if (!nextExcuteTime.HasValue)
+        {
+            OpenWarningMessage(T("CronExpressionNotHasNextRunTime"));
+            return Task.CompletedTask;
+        }
+
+        if ((nextExcuteTime.Value - startTime).Minutes < 1)
+        {
+            OpenWarningMessage(T("RunningIntervalTips"));
+            return Task.CompletedTask;
+        }
 
         if (success)
         {
@@ -265,7 +281,7 @@ public partial class JobModal
     {
         _resourceVersionType = resourceVersionType;
 
-        if(_resourceVersionType == ResourceVersionTypes.Latest)
+        if (_resourceVersionType == ResourceVersionTypes.Latest)
         {
             Model.JobAppConfig.Version = string.Empty;
         }
@@ -277,13 +293,13 @@ public partial class JobModal
     {
         if (context.Validate())
         {
-            if(Model.JobType == JobTypes.Http)
+            if (Model.JobType == JobTypes.Http)
             {
                 Model.HttpConfig.HttpParameters.RemoveAll(p => string.IsNullOrEmpty(p.Key) && string.IsNullOrEmpty(p.Value));
                 Model.HttpConfig.HttpHeaders.RemoveAll(p => string.IsNullOrEmpty(p.Key) && string.IsNullOrEmpty(p.Value));
             }
 
-            if(Model.ScheduleType == ScheduleTypes.Cron && !CronExpression.IsValidExpression(Model.CronExpression))
+            if (Model.ScheduleType == ScheduleTypes.Cron && !CronExpression.IsValidExpression(Model.CronExpression))
             {
                 OpenErrorMessage(T("CronExpressionInvalid"));
                 return;
@@ -314,7 +330,7 @@ public partial class JobModal
 
             if (OnAfterDataChange.HasDelegate)
             {
-               await OnAfterDataChange.InvokeAsync();
+                await OnAfterDataChange.InvokeAsync();
             }
 
             await HandleVisibleChanged();
@@ -385,7 +401,7 @@ public partial class JobModal
         {
             GetNextRunTime();
         }
-       
+
         if (Model.JobType == JobTypes.JobApp && !string.IsNullOrEmpty(Model.JobAppConfig.JobAppIdentity))
         {
             return GetVersionList(Model.JobAppConfig.JobAppIdentity);
@@ -396,7 +412,7 @@ public partial class JobModal
 
     private Task DaprServiceAppChange(string daprServiceAppIdentity)
     {
-        if(daprServiceAppIdentity != Model.DaprServiceInvocationConfig.DaprServiceIdentity)
+        if (daprServiceAppIdentity != Model.DaprServiceInvocationConfig.DaprServiceIdentity)
         {
             Model.DaprServiceInvocationConfig.DaprServiceIdentity = daprServiceAppIdentity;
         }
@@ -410,7 +426,7 @@ public partial class JobModal
 
         var owner = _userAutoComplete.UserSelect.FirstOrDefault();
 
-        if(owner != null && !string.IsNullOrWhiteSpace(owner.Name))
+        if (owner != null && !string.IsNullOrWhiteSpace(owner.Name))
         {
             Model.Owner = owner.Name;
         }
@@ -420,7 +436,7 @@ public partial class JobModal
 
     private Task OnScheduleTypeChanged(ScheduleTypes scheduleType)
     {
-        if(Model.ScheduleType != scheduleType)
+        if (Model.ScheduleType != scheduleType)
         {
             Model.ScheduleType = scheduleType;
             if (Model.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(Model.CronExpression))
@@ -434,7 +450,7 @@ public partial class JobModal
 
     private Task OnCronValueChange(string cronValue)
     {
-        if(Model.CronExpression != cronValue)
+        if (Model.CronExpression != cronValue)
         {
             Model.CronExpression = cronValue;
             GetNextRunTime();
@@ -483,7 +499,7 @@ public partial class JobModal
         }
     }
 
-    private Task OpenCronModal() 
+    private Task OpenCronModal()
     {
         _cronVisible = true;
         _tempCron = Model.CronExpression;
@@ -516,6 +532,11 @@ public partial class JobModal
         {
             return Model.Id == Guid.Empty ? T("Job.Add") : T("Job.Update");
         }
+    }
+
+    private async Task HandleDel()
+    {
+        await ConfirmAsync(T("DeletionConfirmationMessage"), RemoveJobAsync, AlertTypes.Warning);
     }
 }
 

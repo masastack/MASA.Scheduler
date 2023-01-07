@@ -49,7 +49,7 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
             methodName = jobDto.DaprServiceInvocationConfig.MethodName + "?";
         }
 
-        methodName += $"taskId={taskId}&excuteTime={excuteTime}";
+        methodName += $"taskId={taskId}&excuteTime={System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)}";
 
         var appId = jobDto.DaprServiceInvocationConfig.DaprServiceIdentity;
 

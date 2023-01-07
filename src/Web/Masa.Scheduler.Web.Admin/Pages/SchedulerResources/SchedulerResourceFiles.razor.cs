@@ -95,11 +95,12 @@ public partial class SchedulerResourceFiles
 
             if (resource != null)
             {
-                _showConfirmDialog = true;
                 _confirmMessage = string.Format(T("DeleteResourceVersionMessage"), app?.Name, resource.Version);
                 _confirmTitle = T("DeleteResourceVersion");
                 _deleteResourceId = resourceId;
                 _confirmType = confirmType;
+
+                await ConfirmAsync(_confirmTitle, _confirmMessage, OnSureDelete, AlertTypes.Warning);
             }
         }
         else if (confirmType == ConfirmDialogTypes.DeleteResources)
@@ -108,12 +109,13 @@ public partial class SchedulerResourceFiles
 
             if (app != null)
             {
-                _showConfirmDialog = true;
                 _confirmMessage = string.Format(T("DeleteResourceMessage"), app.Name);
                 _confirmTitle = T("DeleteResources");
                 _deleteResourceId = Guid.Empty;
                 _confirmType = confirmType;
                 _deleteIdentityResource = app.Identity;
+
+                await ConfirmAsync(_confirmTitle, _confirmMessage, OnSureDelete, AlertTypes.Warning);
             }
         }
         else

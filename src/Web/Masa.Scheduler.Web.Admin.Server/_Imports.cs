@@ -9,7 +9,7 @@ global using System.Security.Cryptography.X509Certificates;
 global using Masa.Utils.Data.Elasticsearch;
 global using Microsoft.Extensions.DependencyInjection;
 global using Masa.BuildingBlocks.Configuration;
-global using Masa.Utils.Security.Authentication.OpenIdConnect;
 global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+global using Masa.Stack.Components.Extensions.OpenIdConnect;

@@ -41,3 +41,4 @@ global using Masa.BuildingBlocks.Data.Mapping;
 global using System.Text;
 global using Masa.Stack.Components.Models;
 global using Microsoft.AspNetCore.Components.Rendering;
+global using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
