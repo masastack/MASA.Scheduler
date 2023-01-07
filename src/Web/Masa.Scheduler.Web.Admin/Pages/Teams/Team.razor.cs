@@ -8,6 +8,9 @@ public partial class Team
     [Parameter]
     public string TeamId { get; set; } = string.Empty;
 
+    [Inject]
+    public MasaUser MasaUser { get; set; } = default!;
+
     private Guid _teamId = default;
 
     private bool JobVisible => _curTab == 0;
@@ -20,12 +23,23 @@ public partial class Team
     protected override async Task OnInitializedAsync()
     {
         _jobTabName = T("Job");
+
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (string.IsNullOrEmpty(TeamId))
+        {
+            _teamId = MasaUser.CurrentTeamId;
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     protected override void OnParametersSet()
     {
-        _teamId = string.IsNullOrEmpty(TeamId) ? default : Guid.Parse(TeamId);
+        _teamId = string.IsNullOrEmpty(TeamId) ? MasaUser.CurrentTeamId : Guid.Parse(TeamId);
     }
 
     public Task OnProjectChangedAsync(ProjectDto project)

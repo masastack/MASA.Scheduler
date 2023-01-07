@@ -343,13 +343,10 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private string GetJobColor(SchedulerJobDto job)
     {
-        if (!job.Enabled)
-        {
-            return "#a3aed0";
-        }
-
         switch (job.LastRunStatus)
         {
+            case TaskRunStatus.Idle:
+                return "#A3AED0";
             case TaskRunStatus.Success:
                 return "#00B42A";
             case TaskRunStatus.Failure:
@@ -359,7 +356,7 @@ public partial class SchedulerJobs : ProCompontentBase
             case TaskRunStatus.TimeoutSuccess:
                 return "#FF7D00";
             default:
-                return "white";
+                return "#485585";
         }
     }
 
@@ -505,7 +502,6 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private Task ShowDialog(ConfirmDialogTypes confirmDialogType, Guid jobId)
     {
-        _showConfirmDialog = true;
         _confirmJobId = jobId;
         _confirmDialogType = confirmDialogType;
         var job = _jobs.FirstOrDefault(p => p.Id == jobId);
@@ -535,7 +531,7 @@ public partial class SchedulerJobs : ProCompontentBase
                 break;
         }
 
-        return Task.CompletedTask;
+        return ConfirmAsync(_confirmTitle, _confirmMessage, OnSure, AlertTypes.Warning);
     }
 
     private async Task OnSure()

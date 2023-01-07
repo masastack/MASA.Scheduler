@@ -77,7 +77,7 @@
   "FailedStrategy": "失败策略",
   "FailedRetryInterval": "失败重试间隔(秒)",
   "FailedRetryCount": "失败重试次数",
-  "Description": "描述说明",
+  "Description": "描述",
   "Owner": "负责人",
   "RoundRobin": "轮询",
   "DynamicRatioApm": "自动负载",
@@ -183,5 +183,9 @@
   "PleaseSelectEndTime": "请选择结束时间",
   "Project": "项目",
   "UploadComplete": "上传完成",
-  "UploadFile": "上传文件"
+  "UploadFile": "上传文件",
+  "RunningIntervalTips": "运行时间间隔不能小于1分钟",
+  "JobName": "名称",
+  "DeletionConfirmationMessage": "确定删除吗",
+  "OperationConfirmation": "操作确认"
 }

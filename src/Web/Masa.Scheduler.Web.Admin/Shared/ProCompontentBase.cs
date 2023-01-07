@@ -120,6 +120,16 @@ public abstract class ProCompontentBase : BDomComponentBase
         PopupService.ToastErrorAsync(message);
     }
 
+    public async Task ConfirmAsync(string messgae, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
+    {
+        if (await PopupService.ConfirmAsync(T("OperationConfirmation"), messgae, type)) await callback.Invoke();
+    }
+
+    public async Task ConfirmAsync(string title, string messgae, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
+    {
+        if (await PopupService.ConfirmAsync(title, messgae, type)) await callback.Invoke();
+    }
+
 
     protected string GetRunTimeDescription(double runTime)
     {
