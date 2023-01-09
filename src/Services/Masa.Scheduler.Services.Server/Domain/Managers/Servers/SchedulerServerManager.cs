@@ -72,7 +72,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         await _quartzUtils.StartQuartzScheduler();
 
-        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => (t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry) && t.Job.Enabled).AsNoTracking().ToListAsync();
+        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => (t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry) && t.Job.Enabled).ToListAsync();
 
         await LoadRunningTaskAsync(allTask);
 
