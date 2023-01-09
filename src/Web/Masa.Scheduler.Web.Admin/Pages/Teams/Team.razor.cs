@@ -52,7 +52,6 @@ public partial class Team
     public Task HandleJobSelect(SchedulerJobDto job)
     {
         _selectedJob = job;
-        _jobTabName = _selectedJob.Name;
         _curTab = 1;
         return Task.CompletedTask;
     }

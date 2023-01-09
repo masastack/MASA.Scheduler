@@ -156,7 +156,7 @@
                             <MForm Model=Model.HttpConfig EnableValidation @ref="httpForm" Class="full-height">
                                 <AutoHeight Overflow>
                                     <AutoHeightContent>
-                                        <MRow NoGutters>
+                                        <MRow NoGutters Class="mt-1">
                                             <MCol Md="6">
                                                 <SSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                                 </SSelect>
@@ -234,7 +234,7 @@
                             <MForm Model=Model.JobAppConfig EnableValidation @ref="jobAppForm" Class="full-height">
                                 <AutoHeight Overflow>
                                     <AutoHeightContent>
-                                        <MRow NoGutters>
+                                        <MRow NoGutters Class="mt-1">
                                             <MCol Md="6">
                                                 <SSelect Value="Model.JobAppConfig.JobAppIdentity" ValueExpression="()=> Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="_jobApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                                 </SSelect>
@@ -301,7 +301,7 @@
                             <MForm Model=Model.DaprServiceInvocationConfig EnableValidation @ref="daprForm" Class="full-height">
                                 <AutoHeight Overflow>
                                     <AutoHeightContent>
-                                        <MRow NoGutters>
+                                        <MRow NoGutters Class="mt-1">
                                             <MCol Md="6">
                                                 <SSelect Value="Model.DaprServiceInvocationConfig.DaprServiceIdentity" TValue="string" TItemValue="string" TItem="ProjectAppDto" ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="_serviceApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                                 </SSelect>

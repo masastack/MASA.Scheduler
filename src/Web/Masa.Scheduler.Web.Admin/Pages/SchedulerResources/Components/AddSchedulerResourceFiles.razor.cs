@@ -140,6 +140,7 @@ public partial class AddSchedulerResourceFiles
 
         _progress = 100;
         _isUploadSuccess = true;
+        StateHasChanged();
     }
 
     private void HandleVisibleChanged(bool val)
@@ -156,6 +157,8 @@ public partial class AddSchedulerResourceFiles
     private void ResetForm()
     {
         Model = new();
+        _progress = 0;
+        _isUploadSuccess = null;
     }
 
     public async Task OpenModalAsync(SchedulerResourceDto model)

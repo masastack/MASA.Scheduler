@@ -29,7 +29,7 @@
             </MHover>
             <div class="d-flex flex-column align-center mt-6">
                 <div class="h6 regular--text">@(_isUploadSuccess==true?T("UploadComplete"):T("UploadFile"))</div>
-                <div class="body regular3--text mt-2">@T("UploadFiles.Tips")</div>
+                <div class="body regular3--text mt-2">@(_isUploadSuccess == true ? Model.Name : T("UploadFiles.Tips"))</div>
             </div>
         </div>
         <STextField @bind-Value="Model.Version" Label="@T(nameof(Model.Version))" Class="mt-9" />

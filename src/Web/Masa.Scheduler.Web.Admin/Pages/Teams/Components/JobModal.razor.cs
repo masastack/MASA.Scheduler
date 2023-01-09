@@ -161,7 +161,15 @@ public partial class JobModal
                 return Task.CompletedTask;
             }
 
-            if ((nextExcuteTime.Value - startTime).Minutes < 1)
+            var nextExcuteTime2 = cronExpression.GetNextValidTimeAfter(nextExcuteTime.Value);
+
+            if (!nextExcuteTime2.HasValue)
+            {
+                OpenWarningMessage(T("CronExpressionNotHasNextRunTime"));
+                return Task.CompletedTask;
+            }
+
+            if ((nextExcuteTime2.Value - nextExcuteTime.Value).Minutes < 1)
             {
                 OpenWarningMessage(T("RunningIntervalTips"));
                 return Task.CompletedTask;
