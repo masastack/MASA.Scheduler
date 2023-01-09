@@ -244,7 +244,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         await using var scope = ServiceProvider.CreateAsyncScope();
         var eventBus = scope.ServiceProvider.GetRequiredService<IIntegrationEventBus>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        unitOfWork.UseTransaction = false;
         await eventBus.PublishAsync(@event);
-        await eventBus.CommitAsync();
     }
 }

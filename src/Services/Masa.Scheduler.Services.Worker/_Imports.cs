@@ -55,3 +55,4 @@ global using Masa.BuildingBlocks.Ddd.Domain.Entities.Full;
 global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
+global using Masa.BuildingBlocks.Data.UoW;
