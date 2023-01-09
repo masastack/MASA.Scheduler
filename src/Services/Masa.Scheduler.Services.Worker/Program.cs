@@ -11,9 +11,8 @@ if (builder.Environment.IsDevelopment())
     {
         opt.AppId = "masa-scheduler-service-worker";
         opt.AppIdSuffix = "";
-        opt.DaprHttpPort = 10604;
-        opt.DaprGrpcPort = 10603;
-    });
+        opt.AppPort = 19602;
+    }, false);
 }
 builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
