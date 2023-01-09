@@ -149,20 +149,23 @@ public partial class JobModal
     {
         var success = context.Validate();
 
-        var startTime = DateTimeOffset.Now;
-        var cronExpression = new CronExpression(Model.CronExpression);
-        var nextExcuteTime = cronExpression.GetNextValidTimeAfter(startTime);
-
-        if (!nextExcuteTime.HasValue)
+        if (Model.ScheduleType == ScheduleTypes.Cron)
         {
-            OpenWarningMessage(T("CronExpressionNotHasNextRunTime"));
-            return Task.CompletedTask;
-        }
+            var startTime = DateTimeOffset.Now;
+            var cronExpression = new CronExpression(Model.CronExpression);
+            var nextExcuteTime = cronExpression.GetNextValidTimeAfter(startTime);
 
-        if ((nextExcuteTime.Value - startTime).Minutes < 1)
-        {
-            OpenWarningMessage(T("RunningIntervalTips"));
-            return Task.CompletedTask;
+            if (!nextExcuteTime.HasValue)
+            {
+                OpenWarningMessage(T("CronExpressionNotHasNextRunTime"));
+                return Task.CompletedTask;
+            }
+
+            if ((nextExcuteTime.Value - startTime).Minutes < 1)
+            {
+                OpenWarningMessage(T("RunningIntervalTips"));
+                return Task.CompletedTask;
+            }
         }
 
         if (success)

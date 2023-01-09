@@ -99,3 +99,4 @@ global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 global using System.Net.Http.Headers;
 global using Microsoft.Extensions.Options;
 global using Masa.BuildingBlocks.Isolation;
+global using Masa.BuildingBlocks.Ddd.Domain.Services;
