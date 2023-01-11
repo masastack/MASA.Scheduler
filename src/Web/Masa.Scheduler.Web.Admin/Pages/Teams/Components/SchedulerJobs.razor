@@ -173,7 +173,7 @@
     </FooterContent>
 </AutoHeight>
 
-<JobModal Model="modalModel" Visible="_modalVisible" VisibleChanged="OnVisibleChanged" Project="Project" OnAfterDataChange="OnAfterDataChange"></JobModal>
+<JobModal @ref="_jobModal" Project="Project" OnAfterDataChange="OnAfterDataChange"></JobModal>
 <SSimpleDialog OkText="@T("Sure")" OnOk="OnSure" @bind-Value="_showConfirmDialog" Title="@_confirmTitle" HideCancel OkColor="#FF5252" OkClass="full-width scheduler-confirm-dialog-ok-button">
     <ChildContent>
         <span class="d-flex flex-column justify-center align-center" style="text-align:center">
