@@ -93,7 +93,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
             {
                 await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(cronJob.Id, cronJob.CronExpression);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(ex, $"RegisterCronJob Error, JobId: {cronJob.Id}, CronExpression: {cronJob.CronExpression}");
             }
@@ -122,7 +122,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     {
         foreach (var cronJob in cronJobList)
         {
-            if(cronJob.ScheduleExpiredStrategy == ScheduleExpiredStrategyTypes.Ignore)
+            if (cronJob.ScheduleExpiredStrategy == ScheduleExpiredStrategyTypes.Ignore)
             {
                 continue;
             }
@@ -135,9 +135,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
             var calcStartTime = cronJob.UpdateExpiredStrategyTime;
 
-            var lastTask = await _dbContext.Tasks.OrderByDescending(t => t.SchedulerTime).AsNoTracking().FirstOrDefaultAsync();
+            var lastTask = await _dbContext.Tasks.Where(x => x.JobId == cronJob.Id).OrderByDescending(t => t.SchedulerTime).AsNoTracking().FirstOrDefaultAsync();
 
-            if(lastTask != null && calcStartTime < lastTask.SchedulerTime)
+            if (lastTask != null && calcStartTime < lastTask.SchedulerTime)
             {
                 calcStartTime = lastTask.SchedulerTime;
             }
@@ -180,7 +180,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         }
     }
 
-    public async Task<WorkerModel?> GetWorker(SchedulerServerManagerData data,RoutingStrategyTypes routingType)
+    public async Task<WorkerModel?> GetWorker(SchedulerServerManagerData data, RoutingStrategyTypes routingType)
     {
         if (!data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Any())
         {
@@ -198,8 +198,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 Console.WriteLine($"CurrentRunCount: {currentRunCount}, currentUesIndex: {currentUesIndex}, serviceCount: {serviceCount}");
                 worker = data.ServiceList[currentUesIndex];
                 break;
-            //case RoutingStrategyTypes.DynamicRatioApm:
-            //    break;
+                //case RoutingStrategyTypes.DynamicRatioApm:
+                //    break;
         }
         return worker!;
     }
@@ -214,8 +214,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         }
 
         var uri = new Uri(workerHost);
-       
-        if(uri.Scheme == Uri.UriSchemeHttp)
+
+        if (uri.Scheme == Uri.UriSchemeHttp)
         {
             workerModel = data.ServiceList.FirstOrDefault(w => w.HttpServiceUrl == workerHost && w.Status == ServiceStatus.Normal);
         }
@@ -223,7 +223,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             workerModel = data.ServiceList.FirstOrDefault(w => w.HttpsServiceUrl == workerHost && w.Status == ServiceStatus.Normal);
         }
-        
+
         return Task.FromResult(workerModel);
     }
 
@@ -231,13 +231,13 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     {
         var taskDto = _mapper.Map<SchedulerTaskDto>(task);
 
-        if(taskDto.Job.JobType == JobTypes.JobApp && taskDto.Job.JobAppConfig != null)
+        if (taskDto.Job.JobType == JobTypes.JobApp && taskDto.Job.JobAppConfig != null)
         {
             var resourceList = await _resourceRepository.GetListAsync(r => r.JobAppIdentity == taskDto.Job.JobAppConfig.JobAppIdentity, nameof(SchedulerResource.CreationTime));
 
             var resource = !string.IsNullOrEmpty(taskDto.Job.JobAppConfig.Version) ? resourceList.FirstOrDefault(r => r.Version == taskDto.Job.JobAppConfig.Version) : resourceList.FirstOrDefault();
 
-            if(resource != null)
+            if (resource != null)
             {
                 taskDto.Job.JobAppConfig.SchedulerResourceDto = _mapper.Map<SchedulerResourceDto>(resource);
             }
@@ -264,7 +264,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         @event.Topic = nameof(StartTaskIntegrationEvent) + worker.ServiceId;
 
         var eventBus = provider.GetRequiredService<IIntegrationEventBus>();
-        
+
         await eventBus.PublishAsync(@event);
         await eventBus.CommitAsync();
     }
@@ -274,7 +274,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         await using var scope = ServiceProvider.CreateAsyncScope();
         var data = scope.ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
 
-        if(data.TaskQueue.Any(p => p.Id == taskId))
+        if (data.TaskQueue.Any(p => p.Id == taskId))
         {
             data.StopTask.Add(taskId);
         }
@@ -282,7 +282,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             var worker = await GetWorker(data, workerHost);
 
-            if(worker != null)
+            if (worker != null)
             {
                 data.StopByManual.Add(taskId);
 
@@ -327,7 +327,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                     continue;
                 }
 
-                if(!data.ServiceList.Any())
+                if (!data.ServiceList.Any())
                 {
                     await Task.Delay(100);
                     continue;
@@ -386,9 +386,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
                         await CheckHeartbeat(workerModel!);
 
-                        if(workerModel.Status != ServiceStatus.Normal)
+                        if (workerModel.Status != ServiceStatus.Normal)
                         {
-                            _schedulerLogger.LogInformation($"WorkerModel Status is not Normal, wait to retry", WriterTypes.Server, taskDto.Id, taskDto.JobId);                            
+                            _schedulerLogger.LogInformation($"WorkerModel Status is not Normal, wait to retry", WriterTypes.Server, taskDto.Id, taskDto.JobId);
                             data.TaskQueue.Enqueue(taskDto);
                             await Task.Delay(100);
                             continue;
@@ -408,9 +408,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                         await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, _mapper.Map<SchedulerTaskDto>(task));
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    if(taskDto != null)
+                    if (taskDto != null)
                     {
                         _schedulerLogger.LogError(ex, $"Task Assign Error", WriterTypes.Server, taskDto.Id, taskDto.JobId);
                         data.TaskQueue.Enqueue(taskDto);

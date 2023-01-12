@@ -1,26 +1,44 @@
 ﻿@inherits ProCompontentBase
 
-<div class="d-flex fill rounded-2 full-width @Class" style="height: 40px;">
+<div class="d-flex fill fill-card @Class" style="height: 40px;@Style">
     <MIcon Size=20 Color="emphasis2--text" Class="@($"pl-2 {IconClass}")">mdi-calendar-month</MIcon>
     <MMenu @bind-Value="StartTimeVisible" CloseOnContentClick="false" OffsetY Transition="scale-transition">
         <ActivatorContent>
-            <div class="ml-2 text-btn my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
-                @(StartTime?.ToString(T("$DateTimeFormat")) ?? T("PleaseSelectStartTime"))
+            <div class="text-btn ml-2 my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
+                @if (StartTime.HasValue)
+                {
+                    <span class="regular--text">@StartTime?.Add(TimezoneOffset).ToString(T("$DateTimeFormat"))</span>
+                }
+                else
+                {
+                    <span class="text-btn">@T("PleaseSelectStartTime")</span>
+                }
             </div>
         </ActivatorContent>
         <ChildContent>
-            <SDateTimePicker Value=_internalStartTime Max=_internalEndTime ValueChanged=UpdateStartTimeAsync></SDateTimePicker>
+            <SDateTimePicker @bind-Value=_internalStartTime Max=_internalEndTime>
+                <MButton Text Color="primary" OnClick="async() => await UpdateStartTimeAsync()">@T("Confirm")</MButton>
+            </SDateTimePicker>
         </ChildContent>
     </MMenu>
     <MDivider Vertical Class="ma-2" Style="display:initial"></MDivider>
     <MMenu @bind-Value="EndTimeVisible" CloseOnContentClick="false" OffsetY Transition="scale-transition">
         <ActivatorContent>
             <div class="text-btn my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
-                @(EndTime?.ToString(T("$DateTimeFormat")) ?? T("PleaseSelectEndTime"))
+                @if (EndTime.HasValue)
+                {
+                    <span class="regular--text">@EndTime?.Add(TimezoneOffset).ToString(T("$DateTimeFormat"))</span>
+                }
+                else
+                {
+                    <span class="text-btn">@T("PleaseSelectEndTime")</span>
+                }
             </div>
         </ActivatorContent>
         <ChildContent>
-            <SDateTimePicker Value=_internalEndTime Min=_internalStartTime ValueChanged=UpdateEndTimeAsync></SDateTimePicker>
+            <SDateTimePicker @bind-Value=_internalEndTime Min=_internalStartTime>
+                <MButton Text Color="primary" OnClick="async() => await UpdateEndTimeAsync()">@T("Confirm")</MButton>
+            </SDateTimePicker>
         </ChildContent>
     </MMenu>
 </div>
@@ -58,26 +76,26 @@
         _internalEndTime = EndTime;
     }
 
-    private async Task UpdateStartTimeAsync(DateTime? dateTime)
+    private async Task UpdateStartTimeAsync()
     {
-        var startTime = dateTime;
-        if (startTime > EndTime) OpenWarningMessage(T("Start time cannot be greater than end time"));
+        StartTimeVisible = false;
+        if (_internalStartTime > EndTime) await PopupService.AlertAsync(T("Start time cannot be greater than end time"), AlertTypes.Warning);
         else
         {
-            StartTime = startTime;
-            if (StartTimeChanged.HasDelegate) await StartTimeChanged.InvokeAsync(StartTime != null ? StartTime.Value : null);
+            if (StartTimeChanged.HasDelegate) await StartTimeChanged.InvokeAsync(_internalStartTime);
+            else StartTime = _internalStartTime;
             if (OnChange.HasDelegate) await OnChange.InvokeAsync();
         }
     }
 
-    private async Task UpdateEndTimeAsync(DateTime? dateTime)
+    private async Task UpdateEndTimeAsync()
     {
-        var endTime = dateTime;
-        if (endTime < StartTime) OpenWarningMessage(T("End time cannot be less than start time"));
+        EndTimeVisible = false;
+        if (_internalEndTime < StartTime) await PopupService.AlertAsync(T("End time cannot be less than start time"), AlertTypes.Warning);
         else
         {
-            EndTime = endTime;
-            if (StartTimeChanged.HasDelegate) await EndTimeChanged.InvokeAsync(EndTime != null ? EndTime.Value : null);
+            if (EndTimeChanged.HasDelegate) await EndTimeChanged.InvokeAsync(_internalEndTime);
+            else EndTime = _internalEndTime;
             if (OnChange.HasDelegate) await OnChange.InvokeAsync();
         }
     }

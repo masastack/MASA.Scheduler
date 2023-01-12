@@ -24,27 +24,6 @@ public partial class JobModal
     }
 
     [Parameter]
-    public bool Visible
-    {
-        get
-        {
-            return _visible;
-        }
-        set
-        {
-            if (_visible != value)
-            {
-                _visible = value;
-
-                OnVisibleChange();
-            }
-        }
-    }
-
-    [Parameter]
-    public EventCallback<bool> VisibleChanged { get; set; }
-
-    [Parameter]
     public ProjectDto Project
     {
         get
@@ -135,14 +114,27 @@ public partial class JobModal
         await base.OnInitializedAsync();
     }
 
-    private Task HandleVisibleChanged()
+    public async Task OpenModalAsync(SchedulerJobDto model)
     {
-        Visible = false;
-        if (VisibleChanged.HasDelegate)
+        Model = model;
+
+        await InvokeAsync(() =>
         {
-            VisibleChanged.InvokeAsync(_visible);
-        }
-        return Task.CompletedTask;
+            _visible = true;
+            StateHasChanged();
+        });
+
+        await ResetValidation();
+    }
+
+    private void HandleVisibleChanged(bool val)
+    {
+        if (!val) HandleCancel();
+    }
+
+    private void HandleCancel()
+    {
+        _visible = false;
     }
 
     private Task NextStep(FormContext context)
@@ -169,7 +161,7 @@ public partial class JobModal
                 return Task.CompletedTask;
             }
 
-            if ((nextExcuteTime2.Value - nextExcuteTime.Value).Minutes < 1)
+            if ((nextExcuteTime2.Value - nextExcuteTime.Value).TotalMinutes < 1)
             {
                 OpenWarningMessage(T("RunningIntervalTips"));
                 return Task.CompletedTask;
@@ -344,7 +336,9 @@ public partial class JobModal
                 await OnAfterDataChange.InvokeAsync();
             }
 
-            await HandleVisibleChanged();
+            _visible = false;
+
+            ResetForm();
         }
     }
 
@@ -365,10 +359,10 @@ public partial class JobModal
             await OnAfterDataChange.InvokeAsync();
         }
 
-        await HandleVisibleChanged();
+        HandleVisibleChanged(false);
     }
 
-    private Task OnVisibleChange()
+    private Task ResetValidation()
     {
         if (basicForm is not null)
         {
@@ -401,6 +395,11 @@ public partial class JobModal
         }
 
         return Task.CompletedTask;
+    }
+
+    private void ResetForm()
+    {
+        Model = new();
     }
 
     private Task OnModelChange()

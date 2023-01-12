@@ -109,6 +109,8 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private List<string> _originList = new();
 
+    private JobModal? _jobModal;
+
     public List<KeyValuePair<string, JobQueryTimeTypes>> JobQueryTimeTypes { get; set; } = new();
     public TaskRunStatus QueryStatus
     {
@@ -288,8 +290,8 @@ public partial class SchedulerJobs : ProCompontentBase
             Origin = QueryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = QueryEndTime,
-            QueryStartTime = QueryStartTime,
+            QueryEndTime = QueryEndTime?.Add(TimezoneOffset),
+            QueryStartTime = QueryStartTime?.Add(TimezoneOffset),
             QueryTimeType = _queryTimeType,
             BelongProjectIdentity = Project.Identity,
         };
@@ -396,12 +398,12 @@ public partial class SchedulerJobs : ProCompontentBase
         await GetProjectJobs();
     }
 
-    private Task AddJob()
+    private async Task AddJob()
     {
         if(Project == null)
         {
-            PopupService.ToastAsync("Project is null", AlertTypes.Warning);
-            return Task.CompletedTask;
+            await PopupService.ToastAsync("Project is null", AlertTypes.Warning);
+            return;
         }
 
         modalModel = new();
@@ -409,16 +411,15 @@ public partial class SchedulerJobs : ProCompontentBase
         modalModel.BelongTeamId = Project.TeamId;
         modalModel.Enabled = true;
 
-        _modalVisible = true;
-        return Task.CompletedTask;
+        await _jobModal?.OpenModalAsync(modalModel)!;
     }
 
-    private Task EditJob(SchedulerJobDto dto)
+    private async Task EditJob(SchedulerJobDto dto)
     {
         _modalVisible = true;
         modalModel = Mapper.Map<SchedulerJobDto>(dto);
 
-        return Task.CompletedTask;
+        await _jobModal?.OpenModalAsync(modalModel)!;
     }
 
     private async Task DisabledJob(Guid jobId)

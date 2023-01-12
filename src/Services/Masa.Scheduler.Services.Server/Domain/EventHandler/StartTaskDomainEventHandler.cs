@@ -159,8 +159,6 @@ public class StartTaskDomainEventHandler
         }
 
         await _schedulerTaskRepository.UpdateAsync(task);
-        await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
-        await _schedulerTaskRepository.UnitOfWork.CommitAsync();
 
         if (allowEnqueue)
         {

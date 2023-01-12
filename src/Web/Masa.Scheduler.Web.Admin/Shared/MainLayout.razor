@@ -43,16 +43,6 @@
         return true;
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);
-
-        if (firstRender && MasaUser.CurrentTeamId != default)
-        {
-            SetTeamId(MasaUser.CurrentTeamId);
-        }
-    }
-
     protected override void OnInitialized()
     {
         StackGlobalConfig.OnCurrentTeamChanged += CurrentTeamChanged;
