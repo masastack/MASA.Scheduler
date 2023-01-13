@@ -56,3 +56,5 @@ global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using Masa.BuildingBlocks.Data.UoW;
+global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
+global using Masa.Contrib.StackSdks.Config;

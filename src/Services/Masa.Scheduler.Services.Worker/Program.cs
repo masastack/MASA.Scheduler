@@ -1,9 +1,24 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-var builder = WebApplication.CreateBuilder(args);
+using Masa.Contrib.StackSdks.Tsc;
 
-builder.Services.AddObservable(builder.Logging, builder.Configuration);
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddMasaStackConfig();
+var masaStackConfig = builder.Services.GetMasaStackConfig();
+
+builder.Services.AddObservable(builder.Logging, () =>
+{
+    return new MasaObservableOptions
+    {
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = masaStackConfig.Version,
+        ServiceName = masaStackConfig.GetServiceId("scheduler", "worker")
+    };
+}, () =>
+{
+    return masaStackConfig.OtlpUrl;
+});
 
 if (builder.Environment.IsDevelopment())
 {
@@ -14,11 +29,10 @@ if (builder.Environment.IsDevelopment())
         opt.AppPort = 19602;
     }, false);
 }
-builder.Services.AddMasaConfiguration(configurationBuilder =>
-{
-    configurationBuilder.UseDcc();
-});
+DccOptions dccOptions = masaStackConfig.GetDccMiniOptions<DccOptions>();
+builder.Services.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(dccOptions));
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
+var identityServerUrl = masaStackConfig.GetSsoDomain();
 builder.Services.AddDaprClient();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
@@ -28,13 +42,24 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.Authority = publicConfiguration.GetValue<string>("$public.AppSettings:IdentityServerUrl");
+    options.Authority = identityServerUrl;
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters.ValidateAudience = false;
     options.MapInboundClaims = false;
 });
 
-var redisOptions = publicConfiguration.GetSection("$public.RedisConfig").Get<RedisConfigurationOptions>();
+var redisOptions = new RedisConfigurationOptions
+{
+    Servers = new List<RedisServerOptions> {
+        new RedisServerOptions()
+        {
+            Host= masaStackConfig.RedisModel.RedisHost,
+            Port=   masaStackConfig.RedisModel.RedisPort
+        }
+    },
+    DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
+    Password = masaStackConfig.RedisModel.RedisPassword
+};
 builder.Services.AddStackExchangeRedisCache(redisOptions)
     .AddMultilevelCache();
 builder.Services.AddMapster();
@@ -85,7 +110,7 @@ var app = builder.Services
          })
          .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
-            dbOptions => dbOptions.UseSqlServer().UseFilter())
+            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("scheduler_dev")).UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder, options =>

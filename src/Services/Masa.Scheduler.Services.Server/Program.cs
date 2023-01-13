@@ -1,8 +1,17 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-var builder = WebApplication.CreateBuilder(args);
+using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Consts;
+using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
+using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
+using Masa.Contrib.StackSdks.Config;
+using Masa.Contrib.StackSdks.Tsc;
+using Masa.Scheduler.Services.Server.Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
 
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddMasaStackConfig();
+var masaStackConfig = builder.Services.GetMasaStackConfig();
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter(opt =>
@@ -13,15 +22,24 @@ if (builder.Environment.IsDevelopment())
     }, false);
 }
 
-builder.Services.AddObservable(builder.Logging, builder.Configuration);
-
-builder.Services.AddMasaConfiguration(configurationBuilder =>
+builder.Services.AddObservable(builder.Logging, () =>
 {
-    configurationBuilder.UseDcc();
+    return new MasaObservableOptions
+    {
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = masaStackConfig.Version,
+        ServiceName = masaStackConfig.GetServiceId("scheduler", "server")
+    };
+}, () =>
+{
+    return masaStackConfig.OtlpUrl;
 });
 
-var quartzConnectString = builder.Services.GetMasaConfiguration().Local.GetValue<string>("QuartzConnectString");
+DccOptions dccOptions = masaStackConfig.GetDccMiniOptions<DccOptions>();
+builder.Services.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(dccOptions));
+var quartzConnectString = masaStackConfig.GetConnectionString("scheduler_dev");
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
+var identityServerUrl = masaStackConfig.GetSsoDomain();
 var ossOptions = publicConfiguration.GetSection("$public.OSS").Get<OssOptions>();
 
 builder.Services.AddAliyunStorage(new AliyunStorageOptions(ossOptions.AccessId, ossOptions.AccessSecret, ossOptions.Endpoint, ossOptions.RoleArn, ossOptions.RoleSessionName)
@@ -37,6 +55,9 @@ builder.Services.AddMasaIdentity(options =>
     options.Environment = "environment";
     options.UserName = "name";
     options.UserId = "sub";
+    options.Mapping(nameof(MasaUser.CurrentTeamId), IdentityClaimConsts.CURRENT_TEAM);
+    options.Mapping(nameof(MasaUser.StaffId), IdentityClaimConsts.STAFF);
+    options.Mapping(nameof(MasaUser.Account), IdentityClaimConsts.ACCOUNT);
 });
 
 builder.Services
@@ -48,19 +69,30 @@ builder.Services
     })
     .AddJwtBearer("Bearer", options =>
     {
-        options.Authority = publicConfiguration.GetValue<string>("$public.AppSettings:IdentityServerUrl");
+        options.Authority = identityServerUrl;
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters.ValidateAudience = false;
         options.MapInboundClaims = false;
     });
 
-var redisOptions = publicConfiguration.GetSection("$public.RedisConfig").Get<RedisConfigurationOptions>();
+var redisOptions = new RedisConfigurationOptions
+{
+    Servers = new List<RedisServerOptions> {
+        new RedisServerOptions()
+        {
+            Host= masaStackConfig.RedisModel.RedisHost,
+            Port=   masaStackConfig.RedisModel.RedisPort
+        }
+    },
+    DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
+    Password = masaStackConfig.RedisModel.RedisPassword
+};
 
 builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
 
 builder.Services
-    .AddAuthClient(publicConfiguration.GetValue<string>("$public.AppSettings:AuthClient:Url"), redisOptions)
-    .AddPmClient(publicConfiguration.GetValue<string>("$public.AppSettings:PmClient:Url"));
+    .AddAuthClient(masaStackConfig.GetAuthServiceDomain(), redisOptions)
+    .AddPmClient(masaStackConfig.GetPmServiceDomain());
 
 builder.Services.AddMapster();
 builder.Services.AddServerManager();
@@ -120,14 +152,14 @@ var app = builder.Services
         })
         .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
-            dbOptions => dbOptions.UseSqlServer().UseFilter())
+            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("scheduler_dev")).UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder, options=>
     {
         options.MapHttpMethodsForUnmatched = new[] { "Post" }; 
     });
-
+await builder.MigrateDbContextAsync<SchedulerDbContext>();
 app.UseMasaExceptionHandler(opt =>
 {
     opt.ExceptionHandler = context =>
