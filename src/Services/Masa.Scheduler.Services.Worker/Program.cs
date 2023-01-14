@@ -13,7 +13,7 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServiceId("scheduler", "worker")
+        ServiceName = masaStackConfig.GetServerId("scheduler", "worker")
     };
 }, () =>
 {

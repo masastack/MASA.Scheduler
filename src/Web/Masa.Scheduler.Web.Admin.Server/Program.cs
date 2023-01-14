@@ -14,7 +14,7 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServiceId("scheduler", "ui")
+        ServiceName = masaStackConfig.GetUiId("scheduler")
     };
 }, () =>
 {
@@ -64,7 +64,7 @@ builder.Services.AddMasaSignalRClient(options => options.SignalRServiceUrl = sig
 MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
 {
     Authority = masaStackConfig.GetSsoDomain(),
-    ClientId = masaStackConfig.GetServiceId("scheduler", "ui"),
+    ClientId = masaStackConfig.GetUiId("scheduler"),
     Scopes = new List<string> { "offline_access" }
 }; ;
 
