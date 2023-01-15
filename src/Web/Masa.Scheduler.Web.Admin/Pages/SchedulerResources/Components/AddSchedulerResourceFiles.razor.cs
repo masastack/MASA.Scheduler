@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Ddd.Domain.Entities;
-
 namespace Masa.Scheduler.Web.Admin.Pages.SchedulerResources.Components;
 
 public partial class AddSchedulerResourceFiles
@@ -19,7 +17,7 @@ public partial class AddSchedulerResourceFiles
 
     private MFileInput<IBrowserFile> _ref = default!;
 
-    private IBrowserFile _browserFile = default!;
+    private IBrowserFile? _browserFile;
 
     private List<Func<IBrowserFile, StringBoolean>> _rules = default!;
 
@@ -163,8 +161,8 @@ public partial class AddSchedulerResourceFiles
 
     public async Task OpenModalAsync(SchedulerResourceDto model)
     {
-        Model= model;
-
+        Model = model;
+        _browserFile = null;
         await InvokeAsync(() =>
         {
             _visible = true;
