@@ -187,5 +187,6 @@
   "RunningIntervalTips": "运行时间间隔不能小于1分钟",
   "JobName": "名称",
   "DeletionConfirmationMessage": "确定删除吗",
-  "OperationConfirmation": "操作确认"
+  "OperationConfirmation": "操作确认",
+  "ProjectTeam": "项目团队"
 }
