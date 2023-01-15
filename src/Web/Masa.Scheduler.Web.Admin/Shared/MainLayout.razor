@@ -10,7 +10,7 @@
 @inject MasaUser MasaUser
 @inject IMasaStackConfig MasaStackConfig
 
-<SLayout AppId="@MasaStackConfig.GetUiId("scheduler")" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="WhiteUris"
+<SLayout AppId="@MasaStackConfig.GetWebId(MasaStackConstant.SCHEDULER)" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="WhiteUris"
          Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
          MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg" Exact="false">
     @Body

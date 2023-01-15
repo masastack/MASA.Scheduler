@@ -1,6 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.StackSdks.Config;
 using Masa.Contrib.StackSdks.Config;
 using Masa.Contrib.StackSdks.Tsc;
 using Microsoft.IdentityModel.Logging;
@@ -14,7 +15,7 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetUiId("scheduler")
+        ServiceName = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER)
     };
 }, () =>
 {
@@ -64,7 +65,7 @@ builder.Services.AddMasaSignalRClient(options => options.SignalRServiceUrl = sig
 MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
 {
     Authority = masaStackConfig.GetSsoDomain(),
-    ClientId = masaStackConfig.GetUiId("scheduler"),
+    ClientId = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER),
     Scopes = new List<string> { "offline_access" }
 }; ;
 

@@ -1,6 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.StackSdks.Config;
 using Masa.Contrib.StackSdks.Tsc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServerId("scheduler", "worker")
+        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker")
     };
 }, () =>
 {
@@ -110,7 +111,7 @@ var app = builder.Services
          })
          .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
-            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("scheduler_dev")).UseFilter())
+            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("scheduler")).UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder, options =>
@@ -130,11 +131,8 @@ app.UseMasaExceptionHandler(opt =>
 });
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsProduction())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseRouting();
 

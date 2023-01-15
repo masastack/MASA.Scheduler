@@ -8,6 +8,7 @@ using Masa.Contrib.StackSdks.Config;
 using Masa.Contrib.StackSdks.Tsc;
 using Masa.Scheduler.Services.Server.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Masa.BuildingBlocks.StackSdks.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMasaStackConfig();
@@ -28,7 +29,7 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServerId("scheduler")
+        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER)
     };
 }, () =>
 {
@@ -37,7 +38,7 @@ builder.Services.AddObservable(builder.Logging, () =>
 
 DccOptions dccOptions = masaStackConfig.GetDccMiniOptions<DccOptions>();
 builder.Services.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(dccOptions));
-var quartzConnectString = masaStackConfig.GetConnectionString("scheduler");
+var quartzConnectString = masaStackConfig.GetConnectionString(MasaStackConstant.SCHEDULER);
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 var ossOptions = publicConfiguration.GetSection("$public.OSS").Get<OssOptions>();
@@ -148,6 +149,7 @@ var app = builder.Services
         .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseDapr().UseEventLog<SchedulerDbContext>())
         .UseEventBus(eventBusBuilder =>
         {
+            eventBusBuilder.UseMiddleware(typeof(DisabledCommandMiddleware<>));
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
         .UseIsolationUoW<SchedulerDbContext>(
@@ -172,11 +174,8 @@ app.UseMasaExceptionHandler(opt =>
 });
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsProduction())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseRouting();
 
