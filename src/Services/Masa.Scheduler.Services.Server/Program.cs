@@ -161,7 +161,8 @@ var app = builder.Services
     {
         options.MapHttpMethodsForUnmatched = new[] { "Post" }; 
     });
-await builder.MigrateDbContextAsync<SchedulerDbContext>();
+//await builder.MigrateDbContextAsync<SchedulerDbContext>();
+await builder.Services.MigrateAsync();
 app.UseMasaExceptionHandler(opt =>
 {
     opt.ExceptionHandler = context =>
