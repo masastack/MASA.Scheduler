@@ -12,8 +12,10 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Production",
         "CLUSTER": "Default",
+        "DCC_SECRET": "masastack.com",
+        "ADMIN_PWD": "admin123",
         "DOMAIN_NAME": "masastack.com",
         "NAMESPACE": "masastack",
         "TLS_NAME": "masastack",
