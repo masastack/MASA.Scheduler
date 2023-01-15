@@ -111,7 +111,7 @@ var app = builder.Services
          })
          .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
-            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("scheduler")).UseFilter())
+            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("scheduler_demo")).UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder, options =>
