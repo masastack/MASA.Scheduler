@@ -1,5 +1,6 @@
 ﻿@inherits ProCompontentBase
 @page "/pages/resource"
+<PageTitle>@T("ResourceFiles")</PageTitle>
 <MTabs Value="_selectedProjectIdentity" ValueChanged="HandleProjectIdentityChanged">
     @foreach (var project in _projects)
     {
