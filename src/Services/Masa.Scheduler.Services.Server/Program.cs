@@ -38,7 +38,8 @@ builder.Services.AddObservable(builder.Logging, () =>
 
 DccOptions dccOptions = masaStackConfig.GetDccMiniOptions<DccOptions>();
 builder.Services.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(dccOptions));
-var quartzConnectString = masaStackConfig.GetConnectionString("scheduler");
+var connectString = masaStackConfig.GetConnectionString("scheduler_demo4");
+var quartzConnectString = connectString;
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 var ossOptions = publicConfiguration.GetSection("$public.OSS").Get<OssOptions>();
@@ -154,7 +155,7 @@ var app = builder.Services
         })
         .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
-            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("scheduler_demo")).UseFilter())
+            dbOptions => dbOptions.UseSqlServer(connectString).UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder, options=>
