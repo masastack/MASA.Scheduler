@@ -38,7 +38,7 @@ builder.Services.AddObservable(builder.Logging, () =>
 
 DccOptions dccOptions = masaStackConfig.GetDccMiniOptions<DccOptions>();
 builder.Services.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(dccOptions));
-var quartzConnectString = masaStackConfig.GetConnectionString("scheduler");
+var quartzConnectString = masaStackConfig.GetConnectionString("scheduler_demo");
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 var ossOptions = publicConfiguration.GetSection("$public.OSS").Get<OssOptions>();
