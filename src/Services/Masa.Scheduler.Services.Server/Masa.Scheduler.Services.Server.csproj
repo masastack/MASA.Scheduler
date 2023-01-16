@@ -74,5 +74,11 @@
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 	
+	<ItemGroup>
+	  <None Update="init-db.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+	
 	<ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>
