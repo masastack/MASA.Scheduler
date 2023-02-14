@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddObservable(builder.Logging, builder.Configuration, true);
@@ -23,8 +25,8 @@ var signalRBaseAddress = builder.Configuration["SignalRServiceUrl"];
 
 builder.Services.AddSchedulerApiGateways(options => options.SchedulerServerBaseAddress = schedulerBaseAddress);
 
-builder.AddMasaStackComponentsForServer("wwwroot/i18n", authBaseAddress, mcBaseAddress);
-
+builder.AddMasaStackComponentsForServer();
+var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddMapster();
@@ -35,9 +37,8 @@ builder.Services.AddScoped<TokenProvider>();
 
 builder.Services.AddMasaSignalRClient(options => options.SignalRServiceUrl = signalRBaseAddress);
 
-var oidcOptions = builder.Services.GetMasaConfiguration().Local.GetSection("$public.OIDC:AuthClient").Get<MasaOpenIdConnectOptions>();
-
-builder.Services.AddMasaOpenIdConnect(oidcOptions);
+var masaOpenIdConnectOptions = publicConfiguration.GetSection("$public.OIDC").Get<MasaOpenIdConnectOptions>();
+builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 

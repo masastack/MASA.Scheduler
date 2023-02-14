@@ -127,7 +127,7 @@ var app = builder.Services
     {
         options.MapHttpMethodsForUnmatched = new[] { "Post" }; 
     });
-
+await builder.Services.MigrateAsync();
 app.UseMasaExceptionHandler(opt =>
 {
     opt.ExceptionHandler = context =>
