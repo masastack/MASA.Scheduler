@@ -184,7 +184,7 @@
   "Project": "项目",
   "UploadComplete": "上传完成",
   "UploadFile": "上传文件",
-  "RunningIntervalTips": "运行时间间隔不能小于1分钟",
+  "RunningIntervalTips": "运行时间间隔不能小于30秒",
   "JobName": "名称",
   "DeletionConfirmationMessage": "确定删除吗",
   "OperationConfirmation": "操作确认",
