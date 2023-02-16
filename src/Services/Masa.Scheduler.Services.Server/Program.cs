@@ -13,8 +13,6 @@ if (builder.Environment.IsDevelopment())
     }, false);
 }
 
-builder.Services.AddObservable(builder.Logging, builder.Configuration);
-
 builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
     configurationBuilder.UseDcc();
@@ -23,6 +21,19 @@ builder.Services.AddMasaConfiguration(configurationBuilder =>
 var quartzConnectString = builder.Services.GetMasaConfiguration().Local.GetValue<string>("QuartzConnectString");
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var ossOptions = publicConfiguration.GetSection("$public.OSS").Get<OssOptions>();
+
+builder.Services.AddObservable(builder.Logging, () =>
+{
+    return new MasaObservableOptions
+    {
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = "1.0.0",
+        ServiceName = "masa-scheduler-services-server"
+    };
+}, () =>
+{
+    return publicConfiguration.GetValue<string>("$public.AppSettings:OtlpUrl");
+});
 
 builder.Services.AddAliyunStorage(new AliyunStorageOptions(ossOptions.AccessId, ossOptions.AccessSecret, ossOptions.Endpoint, ossOptions.RoleArn, ossOptions.RoleSessionName)
 {

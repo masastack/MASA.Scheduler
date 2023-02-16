@@ -101,3 +101,4 @@ global using Microsoft.Extensions.Options;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Ddd.Domain.Services;
 global using Masa.Scheduler.Services.Server.Infrastructure.Extensions;
+global using Masa.Contrib.StackSdks.Tsc;

@@ -1,11 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
-
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddObservable(builder.Logging, builder.Configuration, true);
 
 builder.WebHost.UseKestrel(option =>
 {
@@ -27,6 +23,20 @@ builder.Services.AddSchedulerApiGateways(options => options.SchedulerServerBaseA
 
 builder.AddMasaStackComponentsForServer();
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
+
+builder.Services.AddObservable(builder.Logging, () =>
+{
+    return new MasaObservableOptions
+    {
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = "1.0.0",
+        ServiceName = "masa-scheduler-web-admin"
+    };
+}, () =>
+{
+    return publicConfiguration.GetValue<string>("$public.AppSettings:OtlpUrl");
+}, true);
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddMapster();
