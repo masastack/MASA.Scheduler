@@ -123,7 +123,7 @@ docker-build-prd-iot:
   before_script:
     - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
   only:
-    - /^local-iot-*$/
+    - /^local-iot-.*$/
   script:
     - docker build -f $DOCKER_Scheduler_Server_PATH -t $NEW_IMAGE_Scheduler_Server .
     - docker push $NEW_IMAGE_Scheduler_Server
@@ -143,7 +143,7 @@ deploy-prd-iot:
   before_script:
     - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
   only:
-    - /^local-iot-*$/
+    - /^local-iot-.*$/
   script:
     - echo $KUBE_CONFIG_IOT  | base64 -d > ./config
     - kubectl --kubeconfig ./config set image deployment/masa-scheduler-services-server masa-scheduler-services-server=$NEW_IMAGE_Scheduler_Server -n loncloud
