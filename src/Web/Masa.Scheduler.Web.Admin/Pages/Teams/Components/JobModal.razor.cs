@@ -161,7 +161,7 @@ public partial class JobModal
                 return Task.CompletedTask;
             }
 
-            if ((nextExcuteTime2.Value - nextExcuteTime.Value).TotalMinutes < 1)
+            if ((nextExcuteTime2.Value - nextExcuteTime.Value).TotalSeconds < 30)
             {
                 OpenWarningMessage(T("RunningIntervalTips"));
                 return Task.CompletedTask;

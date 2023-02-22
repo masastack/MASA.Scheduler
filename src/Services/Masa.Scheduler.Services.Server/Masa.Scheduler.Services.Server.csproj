@@ -74,7 +74,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <None Update="init-db.txt">
+	  <None Update="init-qrtz-db.txt">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
