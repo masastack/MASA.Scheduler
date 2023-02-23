@@ -7,7 +7,7 @@
             <div class="text-btn ml-2 my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
                 @if (StartTime.HasValue)
                 {
-                    <span class="regular--text">@StartTime?.Add(TimezoneOffset).ToString(T("$DateTimeFormat"))</span>
+                    <span class="regular--text">@StartTime?.Add(JsInitVariables.TimezoneOffset).ToString(T("$DateTimeFormat"))</span>
                 }
                 else
                 {
@@ -27,7 +27,7 @@
             <div class="text-btn my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
                 @if (EndTime.HasValue)
                 {
-                    <span class="regular--text">@EndTime?.Add(TimezoneOffset).ToString(T("$DateTimeFormat"))</span>
+                    <span class="regular--text">@EndTime?.Add(JsInitVariables.TimezoneOffset).ToString(T("$DateTimeFormat"))</span>
                 }
                 else
                 {

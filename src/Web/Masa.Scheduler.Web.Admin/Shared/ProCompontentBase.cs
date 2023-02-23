@@ -75,6 +75,9 @@ public abstract class ProCompontentBase : BDomComponentBase
     [Inject]
     public IUserContext UserContext { get; set; } = default!;
 
+    [Inject]
+    public JsInitVariables JsInitVariables { get; set; } = default!;
+
     public List<KeyValuePair<string, TEnum>> GetEnumMap<TEnum>() where TEnum : struct, Enum
     {
         return Enum.GetValues<TEnum>().Select(e => new KeyValuePair<string, TEnum>(e.ToString(), e)).ToList();

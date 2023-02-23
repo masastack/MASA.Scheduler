@@ -46,7 +46,7 @@ public partial class DateTimeFormat
     {
         if (Value != DateTimeOffset.MinValue)
         {
-            _valueFormatString = Value.ToOffset(TimezoneOffset).ToString(Format);
+            _valueFormatString = Value.ToOffset(JsInitVariables.TimezoneOffset).ToString(Format);
         }
         else
         {

@@ -3,8 +3,6 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddObservable(builder.Logging, builder.Configuration, true);
-
 builder.WebHost.UseKestrel(option =>
 {
     option.ConfigureHttpsDefaults(options =>
@@ -16,14 +14,27 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddServerSideBlazor();
 
-var authBaseAddress = builder.Configuration["AuthServiceBaseAddress"];
-var mcBaseAddress = builder.Configuration["McServiceBaseAddress"];
-var schedulerBaseAddress = builder.Configuration["SchedulerServerBaseAddress"];
-var signalRBaseAddress = builder.Configuration["SignalRServiceUrl"];
+builder.AddMasaStackComponentsForServer();
+
+var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
+var authBaseAddress = publicConfiguration.GetValue<string>("$public.AppSettings:AuthClient:Url");
+var mcBaseAddress = publicConfiguration.GetValue<string>("$public.AppSettings:McClient:Url");
+var schedulerBaseAddress = publicConfiguration.GetValue<string>("$public.AppSettings:SchedulerClient:Url");
+var signalRBaseAddress = schedulerBaseAddress + "/server-hub/notifications";
 
 builder.Services.AddSchedulerApiGateways(options => options.SchedulerServerBaseAddress = schedulerBaseAddress);
-
-builder.AddMasaStackComponentsForServer("wwwroot/i18n", authBaseAddress, mcBaseAddress);
+builder.Services.AddObservable(builder.Logging, () =>
+{
+    return new MasaObservableOptions
+    {
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = "1.0.0",
+        ServiceName = "masa-scheduler-web-admin"
+    };
+}, () =>
+{
+    return publicConfiguration.GetValue<string>("$public.AppSettings:OtlpUrl");
+}, true);
 
 builder.Services.AddHttpContextAccessor();
 
@@ -35,9 +46,7 @@ builder.Services.AddScoped<TokenProvider>();
 
 builder.Services.AddMasaSignalRClient(options => options.SignalRServiceUrl = signalRBaseAddress);
 
-var oidcOptions = builder.Services.GetMasaConfiguration().Local.GetSection("$public.OIDC:AuthClient").Get<MasaOpenIdConnectOptions>();
-
-builder.Services.AddMasaOpenIdConnect(oidcOptions);
+builder.Services.AddMasaOpenIdConnect(publicConfiguration.GetSection("$public.OIDC").Get<MasaOpenIdConnectOptions>());
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 

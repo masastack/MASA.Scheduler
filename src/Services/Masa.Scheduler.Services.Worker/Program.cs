@@ -3,8 +3,6 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddObservable(builder.Logging, builder.Configuration);
-
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter(opt =>
@@ -19,6 +17,18 @@ builder.Services.AddMasaConfiguration(configurationBuilder =>
     configurationBuilder.UseDcc();
 });
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
+builder.Services.AddObservable(builder.Logging, () =>
+{
+    return new MasaObservableOptions
+    {
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = "1.0.0",
+        ServiceName = "masa-scheduler-service-worker"
+    };
+}, () =>
+{
+    return publicConfiguration.GetValue<string>("$public.AppSettings:OtlpUrl");
+});
 builder.Services.AddDaprClient();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>

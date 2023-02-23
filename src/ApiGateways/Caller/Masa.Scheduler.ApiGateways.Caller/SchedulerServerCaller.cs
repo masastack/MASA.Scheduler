@@ -33,14 +33,11 @@ public class SchedulerServerCaller : HttpClientCallerBase
         TokenProvider tokenProvider,
         SchedulerApiOptions options) : base(serviceProvider)
     {
-        Name = nameof(SchedulerServerCaller);
         BaseAddress = options.SchedulerServerBaseAddress;
         _tokenProvider = tokenProvider;
     }
 
     protected override string BaseAddress { get; set; }
-
-    public override string? Name { get; set; }
 
     protected override async Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {

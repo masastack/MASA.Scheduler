@@ -290,8 +290,8 @@ public partial class SchedulerJobs : ProCompontentBase
             Origin = QueryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = QueryEndTime?.Add(TimezoneOffset),
-            QueryStartTime = QueryStartTime?.Add(TimezoneOffset),
+            QueryEndTime = QueryEndTime?.Add(JsInitVariables.TimezoneOffset),
+            QueryStartTime = QueryStartTime?.Add(JsInitVariables.TimezoneOffset),
             QueryTimeType = _queryTimeType,
             BelongProjectIdentity = Project.Identity,
         };

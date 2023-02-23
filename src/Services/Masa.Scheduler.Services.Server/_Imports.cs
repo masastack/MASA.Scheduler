@@ -100,3 +100,6 @@ global using System.Net.Http.Headers;
 global using Microsoft.Extensions.Options;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Ddd.Domain.Services;
+global using Masa.Contrib.StackSdks.Tsc;
+global using Masa.Contrib.Storage.ObjectStorage.Aliyun;
+global using Masa.Scheduler.Services.Server.Infrastructure.Extensions;
