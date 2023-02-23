@@ -8,12 +8,14 @@ public class ProjectQueryHandler
     private readonly IPmClient _pmClient;
     private readonly IMapper _mapper;
     private readonly IMultiEnvironmentUserContext _userContext;
+    private readonly IWebHostEnvironment _environment;
 
-    public ProjectQueryHandler(IPmClient pmClient, IMapper mapper, IMultiEnvironmentUserContext userContext)
+    public ProjectQueryHandler(IPmClient pmClient, IMapper mapper, IMultiEnvironmentUserContext userContext, IWebHostEnvironment environment)
     {
         _pmClient = pmClient;
         _mapper = mapper;
         _userContext = userContext;
+        _environment = environment;
     }
 
     [EventHandler]
@@ -21,7 +23,7 @@ public class ProjectQueryHandler
     {
         if (string.IsNullOrWhiteSpace(query.Environment))
         {
-            query.Environment = _userContext.Environment ?? string.Empty;
+            query.Environment = _userContext.Environment ?? _environment.EnvironmentName;
         }
 
         var projectList = await _pmClient.ProjectService.GetProjectAppsAsync(query.Environment);
