@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="Masa.Contrib.Service.Caller.Authentication.OpenIdConnect" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Service.Caller" Version="$(MasaFrameworkPackageVersion)" />
   </ItemGroup>
 
 	<ItemGroup>

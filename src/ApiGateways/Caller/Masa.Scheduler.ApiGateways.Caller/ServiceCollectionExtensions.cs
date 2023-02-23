@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
 
         configs?.Invoke(option);
         services.AddSingleton(option);
-        services.AddCaller(Assembly.Load("Masa.Scheduler.ApiGateways.Caller"));
+        services.AddAutoRegistrationCaller(Assembly.Load("Masa.Scheduler.ApiGateways.Caller"));
         return services;
     }
 }

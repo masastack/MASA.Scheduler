@@ -214,8 +214,8 @@ public partial class SchedulerTasks
             Origin = _queryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = _queryEndTime?.Add(TimezoneOffset),
-            QueryStartTime = _queryStartTime?.Add(TimezoneOffset),
+            QueryEndTime = _queryEndTime?.Add(JsInitVariables.TimezoneOffset),
+            QueryStartTime = _queryStartTime?.Add(JsInitVariables.TimezoneOffset),
             QueryTimeType = _queryTimeType
         };
 
