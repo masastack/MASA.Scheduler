@@ -53,7 +53,7 @@ public partial class SchedulerResourceFilesInformation
     {
         if (string.IsNullOrEmpty(Model.FilePath))
         {
-            await PopupService.ToastAsync("File path is empty", AlertTypes.Error);
+            await PopupService.ToastAsync(T("File path is empty"), AlertTypes.Error);
             return;
         }
 
