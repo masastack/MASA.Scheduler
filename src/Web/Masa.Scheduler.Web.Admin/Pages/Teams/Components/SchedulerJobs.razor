@@ -17,8 +17,18 @@
                         }
                     </SLabeledRadioGroup>
                 </MCol>
-                <MSpacer></MSpacer>
-                <MCol Md="@(_jobCreateType == JobCreateTypes.Manual?5:4)" Class="ml-6">
+              @*  <MSpacer></MSpacer>*@
+                <MCol Md="1" Style="min-width: 144px">
+                    <SSelect Small @bind-Value="QueryTimeType"
+                             Items="Enum.GetValues<JobQueryTimeTypes>().ToList()"
+                             Label="@T("JobQueryTimeType")"
+                             ItemText="e => T(e==default?string.Empty:e.ToString())"
+                             ItemValue="e=> e"
+                             BackgroundColor="white"
+                             Class="rounded-2 body2">
+                    </SSelect>
+                </MCol>
+                <MCol Md="4" Class="ml-6">
                     <DateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
                 </MCol>
                 <MCol Md="1" Class="ml-6">
