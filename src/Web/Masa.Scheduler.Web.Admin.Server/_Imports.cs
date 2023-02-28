@@ -15,3 +15,6 @@ global using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 global using Masa.Stack.Components.Extensions.OpenIdConnect;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 global using Masa.Contrib.StackSdks.Tsc;
+global using Masa.BuildingBlocks.StackSdks.Config;
+global using Masa.Contrib.StackSdks.Config;
+global using Microsoft.IdentityModel.Logging;

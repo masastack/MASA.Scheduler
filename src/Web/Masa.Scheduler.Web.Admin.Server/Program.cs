@@ -2,11 +2,35 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
+await builder.Services.AddMasaStackConfigAsync();
+var masaStackConfig = builder.Services.GetMasaStackConfig();
+builder.Services.AddObservable(builder.Logging, () =>
+{
+    return new MasaObservableOptions
+    {
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = masaStackConfig.Version,
+        ServiceName = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER)
+    };
+}, () =>
+{
+    return masaStackConfig.OtlpUrl;
+}, true);
 
 builder.WebHost.UseKestrel(option =>
 {
     option.ConfigureHttpsDefaults(options =>
-    options.ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "7348307__lonsid.cn.pfx"), "cqUza0MN"));
+    {
+        if (string.IsNullOrEmpty(masaStackConfig.TlsName))
+        {
+            options.ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "7348307__lonsid.cn.pfx"), "cqUza0MN");
+        }
+        else
+        {
+            options.ServerCertificate = X509Certificate2.CreateFromPemFile("./ssl/tls.crt", "./ssl/tls.key");
+        }
+        options.CheckCertificateRevocation = false;
+    });
 });
 
 // Add services to the container.
@@ -14,27 +38,14 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddServerSideBlazor();
 
-builder.AddMasaStackComponentsForServer();
-
-var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
-var authBaseAddress = publicConfiguration.GetValue<string>("$public.AppSettings:AuthClient:Url");
-var mcBaseAddress = publicConfiguration.GetValue<string>("$public.AppSettings:McClient:Url");
-var schedulerBaseAddress = publicConfiguration.GetValue<string>("$public.AppSettings:SchedulerClient:Url");
+var authBaseAddress = masaStackConfig.GetAuthServiceDomain();
+var mcBaseAddress = masaStackConfig.GetMcServiceDomain();
+var schedulerBaseAddress = masaStackConfig.GetSchedulerServiceDomain();
 var signalRBaseAddress = schedulerBaseAddress + "/server-hub/notifications";
 
 builder.Services.AddSchedulerApiGateways(options => options.SchedulerServerBaseAddress = schedulerBaseAddress);
-builder.Services.AddObservable(builder.Logging, () =>
-{
-    return new MasaObservableOptions
-    {
-        ServiceNameSpace = builder.Environment.EnvironmentName,
-        ServiceVersion = "1.0.0",
-        ServiceName = "masa-scheduler-web-admin"
-    };
-}, () =>
-{
-    return publicConfiguration.GetValue<string>("$public.AppSettings:OtlpUrl");
-}, true);
+
+builder.AddMasaStackComponentsForServer("wwwroot/i18n", authBaseAddress, mcBaseAddress);
 
 builder.Services.AddHttpContextAccessor();
 
@@ -46,8 +57,15 @@ builder.Services.AddScoped<TokenProvider>();
 
 builder.Services.AddMasaSignalRClient(options => options.SignalRServiceUrl = signalRBaseAddress);
 
-builder.Services.AddMasaOpenIdConnect(publicConfiguration.GetSection("$public.OIDC").Get<MasaOpenIdConnectOptions>());
+MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
+{
+    Authority = masaStackConfig.GetSsoDomain(),
+    ClientId = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER),
+    Scopes = new List<string> { "offline_access" }
+}; ;
 
+IdentityModelEventSource.ShowPII = true;
+builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
 var app = builder.Build();

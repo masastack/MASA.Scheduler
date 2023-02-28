@@ -5,7 +5,7 @@ COPY . .
 # RUN cd src/Web/Masa.Scheduler.Web.Admin.Server&&  dotnet restore $CSPROJ && dotnet publish $CSPROJ -c Release -o /app/publish
 RUN cd src/Web/Masa.Scheduler.Web.Admin.Server &&  dotnet restore  && dotnet publish  -c Release -o /app/publish
 
-FROM registry.cn-hangzhou.aliyuncs.com/masa/dotnet_aspnet:6.0.0
+FROM registry.cn-hangzhou.aliyuncs.com/masa/dotnet_aspnet:6.0.4
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENV ASPNETCORE_URLS=https://0.0.0.0:443

@@ -1,4 +1,6 @@
 ﻿@using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
+@using Masa.BuildingBlocks.StackSdks.Config;
+@using Masa.Contrib.StackSdks.Config;
 @using Masa.Stack.Components.Models
 @using Microsoft.AspNetCore.Components.Rendering
 @inherits LayoutComponentBase
@@ -6,8 +8,9 @@
 @inject Masa.Stack.Components.Configs.GlobalConfig StackGlobalConfig
 @inject NavigationManager Navigation
 @inject MasaUser MasaUser
+@inject IMasaStackConfig MasaStackConfig
 
-<SLayout AppId="masa-scheduler-web-admin" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="WhiteUris"
+<SLayout AppId="@MasaStackConfig.GetWebId(MasaStackConstant.SCHEDULER)" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="WhiteUris"
          Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
          MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg" Exact="false">
     @Body

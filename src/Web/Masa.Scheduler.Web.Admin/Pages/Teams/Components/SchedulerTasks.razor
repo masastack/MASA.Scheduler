@@ -1,4 +1,7 @@
-﻿@inherits ProCompontentBase
+﻿@using Masa.BuildingBlocks.StackSdks.Config;
+@using Masa.Contrib.StackSdks.Config;
+@inherits ProCompontentBase
+@inject IMasaStackConfig MasaStackConfig
 <AutoHeight Overflow>
     <HeaderContent>
         <MRow Class="flex-none fold d-inline-flex my-6" NoGutters>
@@ -90,7 +93,7 @@
                         case "Action":
                             <MTooltip Bottom>
                                 <ActivatorContent Context="tooltips">
-                                    <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation>
+                                    <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Link Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/log/{context.Item.Id}")">
                                         <MIcon>plagiarism</MIcon>
                                     </MButton>
                                 </ActivatorContent>
@@ -98,7 +101,7 @@
                                     <span>@T("TaskLog")</span>
                                 </ChildContent>
                             </MTooltip>
-                            <MTooltip Bottom>
+                           @* <MTooltip Bottom>
                                 <ActivatorContent Context="tooltips">
                                     <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Class="ml-6">
                                         <MIcon>mdi-chart-timeline-variant</MIcon>
@@ -107,7 +110,7 @@
                                 <ChildContent>
                                     <span>@T("TaskTrace")</span>
                                 </ChildContent>
-                            </MTooltip>
+                            </MTooltip>*@
                             @if (@context.Item.TaskStatus == TaskRunStatus.WaitToRun)
                             {
                                 <SIcon Small Color="neutral-lighten-2" Class="ml-6" Size="20" OnClick="()=> OnShowConfirmDialog(ConfirmDialogTypes.StopTask,context.Item.Id)" Tooltip="@T("StopTask")">
