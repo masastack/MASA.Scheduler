@@ -12,7 +12,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Production",
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "CLUSTER": "Default",
         "DCC_SECRET": "masastack.com",
         "ADMIN_PWD": "admin123",

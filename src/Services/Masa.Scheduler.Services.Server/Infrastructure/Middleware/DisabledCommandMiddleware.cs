@@ -1,12 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
-using Masa.BuildingBlocks.StackSdks.Config;
-
 namespace Masa.Scheduler.Services.Server.Infrastructure.Middleware;
 
-public class DisabledCommandMiddleware<TEvent> : Middleware<TEvent>
+public class DisabledCommandMiddleware<TEvent> : IEventMiddleware<TEvent>
     where TEvent : notnull, IEvent
 {
     readonly ILogger<DisabledCommandMiddleware<TEvent>> _logger;
@@ -23,7 +20,9 @@ public class DisabledCommandMiddleware<TEvent> : Middleware<TEvent>
         _masaStackConfig = masaStackConfig;
     }
 
-    public override async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
+    public bool SupportRecursive => true;
+
+    public async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
     {
         var user = _userContext.GetUser<MasaUser>();
         if (_masaStackConfig.IsDemo && user?.Account?.ToLower() == "guest" && @event is ICommand)

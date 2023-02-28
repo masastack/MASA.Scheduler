@@ -44,7 +44,7 @@ public class AuthQueryHandler
 
         if(response == null)
         {
-            var userInfos = await _authClient.UserService.GetUsersAsync(query.UserIds.ToArray());
+            var userInfos = await _authClient.UserService.GetListByIdsAsync(query.UserIds.ToArray());
 
             if (userInfos.Any())
             {

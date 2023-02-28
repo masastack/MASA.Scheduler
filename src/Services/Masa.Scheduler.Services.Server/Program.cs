@@ -1,18 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Consts;
-using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
-using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
-using Masa.Contrib.StackSdks.Config;
-using Masa.Contrib.StackSdks.Tsc;
-using Masa.Scheduler.Services.Server.Infrastructure.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Masa.BuildingBlocks.StackSdks.Config;
-
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMasaStackConfig();
+
+await builder.Services.AddMasaStackConfigAsync();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
+
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter(opt =>
@@ -36,20 +29,18 @@ builder.Services.AddObservable(builder.Logging, () =>
     return masaStackConfig.OtlpUrl;
 });
 
-DccOptions dccOptions = masaStackConfig.GetDccMiniOptions<DccOptions>();
-builder.Services.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(dccOptions));
-var quartzConnectString = masaStackConfig.GetConnectionString("scheduler_demo");
+var quartzConnectString = masaStackConfig.GetConnectionString(AppSettings.Get("DBName"));
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
-var ossOptions = publicConfiguration.GetSection("$public.OSS").Get<OssOptions>();
 
-builder.Services.AddAliyunStorage(new AliyunStorageOptions(ossOptions.AccessId, ossOptions.AccessSecret, ossOptions.Endpoint, ossOptions.RoleArn, ossOptions.RoleSessionName)
+var ossOptions = publicConfiguration.GetSection("$public.OSS").Get<OssOptions>();
+builder.Services.AddObjectStorage(option => option.UseAliyunStorage(new AliyunStorageOptions(ossOptions.AccessId, ossOptions.AccessSecret, ossOptions.Endpoint, ossOptions.RoleArn, ossOptions.RoleSessionName)
 {
     Sts = new AliyunStsOptions()
     {
         RegionId = ossOptions.RegionId
     }
-});
+}));
 
 builder.Services.AddMasaIdentity(options =>
 {
@@ -154,7 +145,7 @@ var app = builder.Services
         })
         .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
-            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("scheduler_demo")).UseFilter())
+            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder, options=>

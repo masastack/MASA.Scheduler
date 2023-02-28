@@ -1,13 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Config;
-using Masa.Contrib.StackSdks.Config;
-using Masa.Contrib.StackSdks.Tsc;
-using Microsoft.IdentityModel.Logging;
-
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMasaStackConfig();
+await builder.Services.AddMasaStackConfigAsync();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 builder.Services.AddObservable(builder.Logging, () =>
 {
@@ -26,7 +21,7 @@ builder.WebHost.UseKestrel(option =>
 {
     option.ConfigureHttpsDefaults(options =>
     {
-        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TLS_NAME")))
+        if (string.IsNullOrEmpty(masaStackConfig.TlsName))
         {
             options.ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "7348307__lonsid.cn.pfx"), "cqUza0MN");
         }

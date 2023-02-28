@@ -1,11 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Config;
-using Masa.Contrib.StackSdks.Tsc;
-
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMasaStackConfig();
+
+await builder.Services.AddMasaStackConfigAsync();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 builder.Services.AddObservable(builder.Logging, () =>
@@ -30,8 +28,7 @@ if (builder.Environment.IsDevelopment())
         opt.AppPort = 19602;
     }, false);
 }
-DccOptions dccOptions = masaStackConfig.GetDccMiniOptions<DccOptions>();
-builder.Services.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(dccOptions));
+
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 builder.Services.AddDaprClient();
@@ -111,7 +108,7 @@ var app = builder.Services
          })
          .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
-            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("scheduler_demo")).UseFilter())
+            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder, options =>
