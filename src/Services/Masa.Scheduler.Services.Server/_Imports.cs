@@ -109,3 +109,4 @@ global using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Consts;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 global using Masa.Contrib.StackSdks.Config;
 global using Masa.Utils.Configuration.Json;
+global using System.Text.RegularExpressions;
