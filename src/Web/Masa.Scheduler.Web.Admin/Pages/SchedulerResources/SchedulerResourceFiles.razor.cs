@@ -152,7 +152,7 @@ public partial class SchedulerResourceFiles
         {
             _showConfirmDialog = false;
 
-            await PopupService.ToastAsync("Delete success", AlertTypes.Success);
+            await PopupService.ToastAsync(T("DeleteSuccess"), AlertTypes.Success);
 
             await GetResourceData();
         }

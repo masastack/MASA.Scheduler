@@ -290,8 +290,8 @@ public partial class SchedulerJobs : ProCompontentBase
             Origin = QueryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = QueryEndTime?.Add(TimezoneOffset),
-            QueryStartTime = QueryStartTime?.Add(TimezoneOffset),
+            QueryEndTime = QueryEndTime?.Add(JsInitVariables.TimezoneOffset),
+            QueryStartTime = QueryStartTime?.Add(JsInitVariables.TimezoneOffset),
             QueryTimeType = _queryTimeType,
             BelongProjectIdentity = Project.Identity,
         };
@@ -402,7 +402,7 @@ public partial class SchedulerJobs : ProCompontentBase
     {
         if(Project == null)
         {
-            await PopupService.ToastAsync("Project is null", AlertTypes.Warning);
+            await PopupService.ToastAsync(T("Project is null"), AlertTypes.Warning);
             return;
         }
 
@@ -528,7 +528,7 @@ public partial class SchedulerJobs : ProCompontentBase
             default:
                 _showConfirmDialog = false;
                 _confirmJobId = Guid.Empty;
-                PopupService.ToastErrorAsync("Confirm type eror");
+                PopupService.ToastErrorAsync("Confirm type error");
                 break;
         }
 

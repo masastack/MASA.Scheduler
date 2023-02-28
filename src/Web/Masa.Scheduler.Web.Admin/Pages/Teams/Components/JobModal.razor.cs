@@ -161,7 +161,7 @@ public partial class JobModal
                 return Task.CompletedTask;
             }
 
-            if ((nextExcuteTime2.Value - nextExcuteTime.Value).TotalMinutes < 1)
+            if ((nextExcuteTime2.Value - nextExcuteTime.Value).TotalSeconds < 30)
             {
                 OpenWarningMessage(T("RunningIntervalTips"));
                 return Task.CompletedTask;
@@ -483,7 +483,7 @@ public partial class JobModal
 
         var cronExpression = new CronExpression(Model.CronExpression);
 
-        var timezone = TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(p => p.BaseUtcOffset == TimezoneOffset);
+        var timezone = TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(p => p.BaseUtcOffset == JsInitVariables.TimezoneOffset);
 
         if (timezone != null)
             cronExpression.TimeZone = timezone;
@@ -495,7 +495,7 @@ public partial class JobModal
             if (nextExcuteTime.HasValue)
             {
                 startTime = nextExcuteTime.Value;
-                sb.AppendLine(startTime.ToOffset(TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.AppendLine(startTime.ToOffset(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss"));
             }
         }
 

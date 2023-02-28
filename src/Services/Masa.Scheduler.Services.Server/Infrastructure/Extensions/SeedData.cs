@@ -21,10 +21,10 @@ public static class SeedData
     {
         try
         {
-            var path = "init-db.txt";
-            if (!File.Exists("init-db.txt"))
+            var path = "init-qrtz-db.txt";
+            if (!File.Exists("init-qrtz-db.txt"))
             {
-                Console.WriteLine("init-db.txt not exists, init db failed");
+                Console.WriteLine("init-qrtz-db.txt not exists, init db failed");
                 return;
             }
             using var file = File.OpenText(path);
