@@ -51,7 +51,7 @@ public partial class SchedulerResourceFiles
         }
         catch (Exception ex)
         {
-            await PopupService.ToastAsync(ex.Message, AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Error);
         }
     }
 
@@ -146,7 +146,7 @@ public partial class SchedulerResourceFiles
         {
             _showConfirmDialog = false;
 
-            await PopupService.ToastAsync(T("DeleteSuccess"), AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync(T("DeleteSuccess"), AlertTypes.Success);
 
             await GetResourceData();
         }
