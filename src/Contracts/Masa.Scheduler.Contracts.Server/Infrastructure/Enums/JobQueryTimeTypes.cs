@@ -6,7 +6,9 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
 public enum JobQueryTimeTypes
 {
     ScheduleTime = 1,
-    RunStartTime,
-    RunEndTime
+    RunStartTime = 2,
+    RunEndTime = 3,
+    CreationTime = 4,
+    ModificationTime = 5
 }
 
