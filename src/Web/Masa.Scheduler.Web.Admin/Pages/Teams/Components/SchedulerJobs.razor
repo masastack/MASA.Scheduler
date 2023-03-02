@@ -112,15 +112,28 @@
                             @if (!string.IsNullOrWhiteSpace(job.Avator))
                             {
                                 <MTooltip Top>
-                                <ActivatorContent>
-                                    <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
-                                        <MImage Src="@job.Avator"></MImage>
-                                    </MAvatar>
+                                    <ActivatorContent>
+                                        <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
+                                            <MImage Src="@job.Avator"></MImage>
+                                        </MAvatar>
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <span>@T("Owner"): @job.UserName</span>
+                                    </ChildContent>
+                            </MTooltip>
+                            }
+                            else
+                            {
+                                <MTooltip>
+                                        <ActivatorContent>
+                                            <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
+                                                <MImage Src=""></MImage>
+                                            </MAvatar>
                                 </ActivatorContent>
                                 <ChildContent>
-                                    <span>@T("Owner"): @job.UserName</span>
+                                    <span></span>
                                 </ChildContent>
-                            </MTooltip>
+                                </MTooltip>
                             }
                             <MMenu Bottom Left>
                             <ActivatorContent>
