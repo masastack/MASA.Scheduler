@@ -111,7 +111,6 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private JobModal? _jobModal;
 
-    //public List<KeyValuePair<string, JobQueryTimeTypes>> JobQueryTimeTypes { get; set; } = new();
     public TaskRunStatus QueryStatus
     {
         get => _queryStatus;
@@ -224,8 +223,6 @@ public partial class SchedulerJobs : ProCompontentBase
         {
             await SignalRNotifyDataHandler(schedulerTaskDto);
         });
-
-        //JobQueryTimeTypes = GetEnumMap<JobQueryTimeTypes>();
 
         _queryStatusList = GetEnumMap<TaskRunStatus>();
 
