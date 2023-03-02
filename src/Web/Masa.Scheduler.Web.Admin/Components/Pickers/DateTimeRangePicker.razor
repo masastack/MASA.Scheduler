@@ -79,7 +79,7 @@
     private async Task UpdateStartTimeAsync()
     {
         StartTimeVisible = false;
-        if (_internalStartTime > EndTime) await PopupService.AlertAsync(T("Start time cannot be greater than end time"), AlertTypes.Warning);
+        if (_internalStartTime > EndTime) await PopupService.EnqueueSnackbarAsync(T("Start time cannot be greater than end time"), AlertTypes.Warning);
         else
         {
             if (StartTimeChanged.HasDelegate) await StartTimeChanged.InvokeAsync(_internalStartTime);
@@ -91,7 +91,7 @@
     private async Task UpdateEndTimeAsync()
     {
         EndTimeVisible = false;
-        if (_internalEndTime < StartTime) await PopupService.AlertAsync(T("End time cannot be less than start time"), AlertTypes.Warning);
+        if (_internalEndTime < StartTime) await PopupService.EnqueueSnackbarAsync(T("End time cannot be less than start time"), AlertTypes.Warning);
         else
         {
             if (EndTimeChanged.HasDelegate) await EndTimeChanged.InvokeAsync(_internalEndTime);

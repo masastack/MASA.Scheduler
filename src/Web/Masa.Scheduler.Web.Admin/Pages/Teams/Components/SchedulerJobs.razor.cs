@@ -403,7 +403,7 @@ public partial class SchedulerJobs : ProCompontentBase
 
         await SchedulerServerCaller.SchedulerJobService.StartJobAsync(startJobRequest);
 
-        await PopupService.ToastSuccessAsync(T("RequestSuccess"));
+        await PopupService.EnqueueSnackbarAsync(T("RequestSuccess"), AlertTypes.Success);
 
         await GetProjectJobs();
     }
@@ -412,7 +412,7 @@ public partial class SchedulerJobs : ProCompontentBase
     {
         if (Project == null)
         {
-            await PopupService.ToastAsync(T("Project is null"), AlertTypes.Warning);
+            await PopupService.EnqueueSnackbarAsync(T("Project is null"), AlertTypes.Warning);
             return;
         }
 
@@ -442,7 +442,7 @@ public partial class SchedulerJobs : ProCompontentBase
 
         await SchedulerServerCaller.SchedulerJobService.ChangeEnableStatusAsync(request);
 
-        await PopupService.ToastSuccessAsync(T("RequestSuccess"));
+        await PopupService.EnqueueSnackbarAsync(T("RequestSuccess"), AlertTypes.Success);
 
         await GetProjectJobs();
     }
@@ -457,7 +457,7 @@ public partial class SchedulerJobs : ProCompontentBase
 
         await SchedulerServerCaller.SchedulerJobService.ChangeEnableStatusAsync(request);
 
-        await PopupService.ToastSuccessAsync(T("RequestSuccess"));
+        await PopupService.EnqueueSnackbarAsync(T("RequestSuccess"), AlertTypes.Success);
 
         await GetProjectJobs();
     }
@@ -521,7 +521,7 @@ public partial class SchedulerJobs : ProCompontentBase
             _showConfirmDialog = false;
             _confirmJobId = Guid.Empty;
             _confirmDialogType = 0;
-            PopupService.ToastErrorAsync("JobId error");
+            PopupService.EnqueueSnackbarAsync("JobId error",AlertTypes.Error);
             return Task.CompletedTask;
         }
 
@@ -538,7 +538,7 @@ public partial class SchedulerJobs : ProCompontentBase
             default:
                 _showConfirmDialog = false;
                 _confirmJobId = Guid.Empty;
-                PopupService.ToastErrorAsync("Confirm type error");
+                PopupService.EnqueueSnackbarAsync("Confirm type error", AlertTypes.Error);
                 break;
         }
 
@@ -551,7 +551,7 @@ public partial class SchedulerJobs : ProCompontentBase
         {
             _confirmDialogType = 0;
             _showConfirmDialog = false;
-            await PopupService.ToastErrorAsync("Confirm Job Id Error");
+            await PopupService.EnqueueSnackbarAsync("Confirm Job Id Error", AlertTypes.Error);
             return;
         }
 
@@ -564,7 +564,7 @@ public partial class SchedulerJobs : ProCompontentBase
                 await EnabledJob(_confirmJobId);
                 break;
             default:
-                await PopupService.ToastErrorAsync("Confirm type eror");
+                await PopupService.EnqueueSnackbarAsync("Confirm type eror", AlertTypes.Error);
                 break;
         }
         _showConfirmDialog = false;

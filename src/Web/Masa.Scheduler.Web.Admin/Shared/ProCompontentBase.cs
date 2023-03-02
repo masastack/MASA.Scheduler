@@ -105,22 +105,22 @@ public abstract class ProCompontentBase : BDomComponentBase
 
     public void OpenInformationMessage(string message)
     {
-        PopupService.ToastInfoAsync(message);
+        PopupService.EnqueueSnackbarAsync(message, AlertTypes.Info);
     }
 
     public void OpenSuccessMessage(string message)
     {
-        PopupService.ToastSuccessAsync(message);
+        PopupService.EnqueueSnackbarAsync(message, AlertTypes.Success);
     }
 
     public void OpenWarningMessage(string message)
     {
-        PopupService.ToastWarningAsync(message);
+        PopupService.EnqueueSnackbarAsync(message, AlertTypes.Warning);
     }
 
     public void OpenErrorMessage(string message)
     {
-        PopupService.ToastErrorAsync(message);
+        PopupService.EnqueueSnackbarAsync(message, AlertTypes.Error);
     }
 
     public async Task ConfirmAsync(string messgae, Func<Task> callback, AlertTypes type = AlertTypes.Warning)

@@ -325,7 +325,7 @@ public partial class SchedulerTasks
                 await StartTask(_confirmTaskId);
                 break;
             default:
-                await PopupService.ToastErrorAsync("Confirm type eror");
+                await PopupService.EnqueueSnackbarAsync("Confirm type eror", AlertTypes.Error);
                 break;
         }
 
@@ -355,7 +355,7 @@ public partial class SchedulerTasks
             default:
                 _showConfirmDialog = false;
                 _confirmTaskId = Guid.Empty;
-                PopupService.ToastErrorAsync("Confirm type eror");
+                PopupService.EnqueueSnackbarAsync("Confirm type eror", AlertTypes.Error);
                 break;
         }
 
