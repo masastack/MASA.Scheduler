@@ -13,23 +13,23 @@
     @foreach (var app in _resourceData)
     {
         <MCard Flat Class="rounded-4 mb-6">
-            <MCardTitle>
-                <div>
-                    <span class="emphasis--text h6">@app.Identity</span>
-                    <MIcon Size="20" Color="emphasis2">keyboard_arrow_right</MIcon>
-                </div>
-                <MSpacer></MSpacer>
-                @if (app.Resources.Any())
+        <MCardTitle>
+            <div>
+                <span class="emphasis--text h6">@app.Identity</span>
+                <MIcon Size="20" Color="emphasis2">keyboard_arrow_right</MIcon>
+            </div>
+            <MSpacer></MSpacer>
+            @if (app.Resources.Any())
                 {
                     <MIcon Size="24" Color="error" Class="align-self-center mr-6" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty,app.Identity)">mdi-delete</MIcon>
                 }
                 <MButton Fab OnClick="()=>AddResourceFile(app.Identity)" Small Dark Color="primary">
-                    <MIcon>mdi-plus</MIcon>
+                <MIcon>mdi-plus</MIcon>
                 </MButton>
-            </MCardTitle>
-            <MCardText>
+                </MCardTitle>
+                <MCardText>
                 <MRow>
-                    @foreach (var item in app.Resources)
+                @foreach (var item in app.Resources.Take(3))
                     {
                         <MCol Cols="12" Md="3">
                             <MHover>
@@ -48,10 +48,43 @@
                                     }
                                 </div>
                             </MHover>
-
                         </MCol>
                     }
+                    @if (app.Resources.Count > 3)
+                    {
+                        <MCol Cols="12" Md="3">
+                            <MButton Icon OnClick="() => resourceShow = !resourceShow">
+                            <MIcon>@(resourceShow ? "mdi-chevron-down" : "mdi-chevron-up")</MIcon>
+                                </MButton>
+                            </MCol>
+                    }
                 </MRow>
+                @if (app.Resources.Count > 3)
+                {
+                    <MRow style="@(resourceShow ? "": "display:none")">
+                        @foreach (var item in app.Resources.Skip(3))
+                        {
+                            <MCol Cols="12" Md="3">
+                                <MHover>
+                                    <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
+                                        @if (context.Hover)
+                                        {
+                                            <MIcon Size="24" Color="error" Class="align-self-center" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">mdi-delete</MIcon>
+                                            <span class="d-flex" style="height: 24px;padding-left:60px;padding-right:60px">
+                                                <MDivider Vertical />
+                                            </span>
+                                            <MIcon Size="24" Color="emphasis2" Class="align-self-center" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">mdi-eye</MIcon>
+                                        }
+                                        else
+                                        {
+                                            <span>@item.Version</span>
+                                        }
+                                    </div>
+                                </MHover>
+                            </MCol>
+                        }
+                    </MRow>
+                }
             </MCardText>
         </MCard>
     }
@@ -68,3 +101,7 @@
 </AddSchedulerResourceFiles>
 
 <SchedulerResourceFilesInformation @ref="_resourceInfoModal"></SchedulerResourceFilesInformation>
+
+@code {
+    bool resourceShow = false;
+}
