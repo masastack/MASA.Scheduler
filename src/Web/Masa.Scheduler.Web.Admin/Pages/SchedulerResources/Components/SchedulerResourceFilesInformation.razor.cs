@@ -57,7 +57,7 @@ public partial class SchedulerResourceFilesInformation
             return;
         }
 
-        NavigationManager.NavigateTo(Model.FilePath);
+        await Js!.InvokeVoidAsync("_blazorDownloadFile", Model.FilePath, Model.Name);
     }
 
     private void HandleVisibleChanged(bool val)
