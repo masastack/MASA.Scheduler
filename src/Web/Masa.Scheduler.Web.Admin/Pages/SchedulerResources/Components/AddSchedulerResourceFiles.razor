@@ -28,7 +28,7 @@
                 </div>
             </MHover>
             <div class="d-flex flex-column align-center mt-6">
-                <div class="h6 regular--text">@(_isUploadSuccess==true?T("UploadComplete"):T("UploadFile"))</div>
+                        <div class="h6 regular--text">@(_isUploadSuccess == null ? T("UploadFile") : (_isUploadSuccess == true ? T("UploadComplete") : T("UploadFileFailed")))</div>
                 <div class="body regular3--text mt-2">@(_isUploadSuccess == true ? Model.Name : T("UploadFiles.Tips"))</div>
             </div>
         </div>
