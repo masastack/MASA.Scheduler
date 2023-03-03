@@ -3,7 +3,7 @@
     <HeaderContent>
         <div class="search-panel my-6">
             <MRow Class="flex-none fold d-inline-flex" NoGutters Style="@(_jobCreateType == JobCreateTypes.Manual?"width: calc(100% - 378px)":"width: calc(100% - 256px)")">
-                <MCol Md="1" Style="min-width: 144px">
+                <MCol Md="1" Style="min-width: 174px">
                     <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
                     </Projects>
                 </MCol>
@@ -17,8 +17,8 @@
                         }
                     </SLabeledRadioGroup>
                 </MCol>
-              @*  <MSpacer></MSpacer>*@
-                <MCol Md="1" Style="min-width: 144px">
+                <MSpacer></MSpacer>
+                @*<MCol Md="1" Style="min-width: 144px">
                     <SSelect Small @bind-Value="QueryTimeType"
                              Items="Enum.GetValues<JobQueryTimeTypes>().ToList()"
                              Label="@T("JobQueryTimeType")"
@@ -27,7 +27,7 @@
                              BackgroundColor="white"
                              Class="rounded-2 body2">
                     </SSelect>
-                </MCol>
+                </MCol>*@
                 <MCol Md="4" Class="ml-6">
                     <DateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
                 </MCol>
