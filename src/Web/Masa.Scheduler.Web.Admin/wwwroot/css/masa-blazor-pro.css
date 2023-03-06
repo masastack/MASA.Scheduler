@@ -822,12 +822,3 @@ input::-webkit-input-placeholder {
 .gradient--text {
     color: #4318FF !important;
 }
-
-.m-input--radio-group{
-    margin-left:8px;
-}
-
-.project-name {
-    font-size: 1.5rem !important;
-    font-weight: 700 !important;
-}
