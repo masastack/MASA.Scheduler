@@ -2,8 +2,8 @@
 <AutoHeight Overflow>
     <HeaderContent>
         <div class="search-panel my-6">
-            <MRow Class="flex-none fold d-inline-flex" NoGutters Style="@(_jobCreateType == JobCreateTypes.Manual?"width: calc(100% - 378px)":"width: calc(100% - 256px)")">
-                <MCol Md="1" Style="min-width: 174px">
+            <MRow Class="flex-none d-inline-flex" NoGutters Style="@(_jobCreateType == JobCreateTypes.Manual?"width: calc(100% - 378px)":"width: calc(100% - 236px)")">
+                <MCol Md="1" Style="min-width: 154px">
                     <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
                     </Projects>
                 </MCol>
@@ -17,7 +17,7 @@
                         }
                     </SLabeledRadioGroup>
                 </MCol>
-                <MCol Md="1" Class="ml-6" Style="min-width: 144px">
+                <MCol Md="1" Class="ml-6" Style="min-width: 140px">
                     <SSelect Small @bind-Value="QueryTimeType"
                              Items="Enum.GetValues<JobQueryTimeTypes>().ToList()"
                              Label="@T("JobQueryTimeType")"
@@ -26,8 +26,8 @@
                              BackgroundColor="white"
                              Class="rounded-2 body2">
                     </SSelect>
-                </MCol>*@
-                <MCol Md="4" Class="ml-6">
+                </MCol>
+                <MCol Md="4" Class="ml-6" Style="max-width:420px">
                     <DateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
                 </MCol>
                 <MCol Md="1" Class="ml-6">
@@ -55,7 +55,7 @@
                 }
             </MRow>
             <div class="d-flex search-panel-right">
-                <OutlinedSearchTextField @bind-Value="QueryJobName" BackgroundColor="white" PrependInnerIcon="@IconConstants.Search" />
+                <OutlinedSearchTextField Style="max-width:140px" @bind-Value="QueryJobName" BackgroundColor="white" PrependInnerIcon="@IconConstants.Search" />
                 @if (_jobCreateType == JobCreateTypes.Manual)
                 {
                     <SButton Small Color="primary" BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="AddJob">@T("Add")</SButton>
