@@ -11,8 +11,6 @@ public class SchedulerResourceDto
 
     public string Description { get; set; } = string.Empty;
 
-    public bool EnableDescription { get; set; } = false;
-
     public string FilePath { get; set; } = string.Empty;
 
     public string Version { get; set; } = string.Empty;
