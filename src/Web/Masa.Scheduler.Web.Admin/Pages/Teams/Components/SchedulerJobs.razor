@@ -7,7 +7,7 @@
                     <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
                     </Projects>
                 </MCol>
-                <MCol Md="3" Class="ml-6">
+                <MCol Md="3" Class="ml-6" Style="min-width: 144px; max-width: 230px">
                     <SLabeledRadioGroup Value="_jobCreateType" ActiveClass="fill-background" Class="white" Dense TValue="JobCreateTypes" ValueChanged="SwitchJobCreateType">
                         @foreach (var item in Enum.GetValues<JobCreateTypes>())
                         {
@@ -17,8 +17,7 @@
                         }
                     </SLabeledRadioGroup>
                 </MCol>
-                <MSpacer></MSpacer>
-                @*<MCol Md="1" Style="min-width: 144px">
+                <MCol Md="1" Class="ml-6" Style="min-width: 144px">
                     <SSelect Small @bind-Value="QueryTimeType"
                              Items="Enum.GetValues<JobQueryTimeTypes>().ToList()"
                              Label="@T("JobQueryTimeType")"
@@ -84,16 +83,16 @@
                             <MChip Class="job-text btn"
                                TextColor="emphasis2"
                                Style="height:25px; background-color:#F0F3FA"
-                               Label>
-                                @T(job.JobType.ToString())
-                            </MChip>
-                            <div class="job-text job-name text-truncate emphasis2--text h7 ml-2">
-                                @job.Name
-                            </div>
-                        </MCardTitle>
-                        <MCardText Class="d-flex">
-                            <MButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
-                                <MIcon>mdi-checkbox-blank-circle</MIcon>
+                                  Label>
+                            @T(job.JobType.ToString())
+                        </MChip>
+                        <div class="job-text job-name text-truncate emphasis2--text h7 ml-2">
+                            @job.Name
+                        </div>
+                    </MCardTitle>
+                    <MCardText Class="d-flex">
+                        <MButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
+                            <MIcon>mdi-checkbox-blank-circle</MIcon>
                             </MButton>
                             <div class="job-text run-text pl-2 body2" style="color:@(GetJobColor(job))">
                                 @GetJobRunText(job)
@@ -113,59 +112,59 @@
                             @if (!string.IsNullOrWhiteSpace(job.UserName))
                             {
                                 <MTooltip Top>
-                                    <ActivatorContent>
-                                        <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
-                                            <MImage Src="@job.Avator"></MImage>
-                                        </MAvatar>
-                                    </ActivatorContent>
-                                    <ChildContent>
-                                        <span>@T("Owner"): @job.UserName</span>
-                                    </ChildContent>
-                                </MTooltip>
+                                <ActivatorContent>
+                                    <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
+                                        <MImage Src="@job.Avator"></MImage>
+                                    </MAvatar>
+                                </ActivatorContent>
+                                <ChildContent>
+                                    <span>@T("Owner"): @job.UserName</span>
+                                </ChildContent>
+                            </MTooltip>
                             }
                             <MMenu Bottom Left>
-                                <ActivatorContent>
-                                    <MButton Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation Class="ml-4">
-                                        <MIcon>mdi-dots-vertical</MIcon>
+                            <ActivatorContent>
+                                <MButton Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation Class="ml-4">
+                                    <MIcon>mdi-dots-vertical</MIcon>
                                     </MButton>
                                 </ActivatorContent>
                                 <ChildContent>
                                     <MList>
-                                        @if (job.Enabled)
+                                    @if (job.Enabled)
                                         {
                                             <MListItem Link OnClick="()=> RunJob(job)">
-                                                <MListItemContent>
-                                                    <MListItemTitle>
-                                                        @T("Run")
-                                                    </MListItemTitle>
-                                                </MListItemContent>
+                                            <MListItemContent>
+                                            <MListItemTitle>
+                                                @T("Run")
+                                            </MListItemTitle>
+                                            </MListItemContent>
                                             </MListItem>
                                         }
                                         <MListItem Link OnClick="()=> EditJob(job)">
-                                            <MListItemContent>
-                                                <MListItemTitle>
-                                                    @T("Edit")
-                                                </MListItemTitle>
-                                            </MListItemContent>
+                                        <MListItemContent>
+                                            <MListItemTitle>
+                                                @T("Edit")
+                                            </MListItemTitle>
+                                        </MListItemContent>
                                         </MListItem>
                                         @if (job.Enabled)
                                         {
                                             <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.DisabledJob, job.Id)">
-                                                <MListItemContent>
-                                                    <MListItemTitle>
-                                                        @T("Disabled")
-                                                    </MListItemTitle>
-                                                </MListItemContent>
+                                            <MListItemContent>
+                                            <MListItemTitle>
+                                                @T("Disabled")
+                                            </MListItemTitle>
+                                            </MListItemContent>
                                             </MListItem>
                                         }
                                         else
                                         {
                                             <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.EnabledJob, job.Id)">
-                                                <MListItemContent>
-                                                    <MListItemTitle>
-                                                        @T("Enabled")
-                                                    </MListItemTitle>
-                                                </MListItemContent>
+                                            <MListItemContent>
+                                            <MListItemTitle>
+                                                @T("Enabled")
+                                            </MListItemTitle>
+                                            </MListItemContent>
                                             </MListItem>
                                         }
 
