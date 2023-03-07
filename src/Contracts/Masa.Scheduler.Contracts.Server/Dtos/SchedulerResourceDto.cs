@@ -20,7 +20,5 @@ public class SchedulerResourceDto
     public DateTimeOffset UploadTime { get; set; }
 
     public Guid Creator { get; set; }
-
-  
 }
 
