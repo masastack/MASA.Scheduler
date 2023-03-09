@@ -106,7 +106,7 @@ builder.Services.AddScoped(service =>
     return new TokenProvider { AccessToken = auth?.Parameter };
 });
 
-var app = builder.Services
+builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
@@ -148,13 +148,14 @@ var app = builder.Services
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
             dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
-    })
-    .AddServices(builder, options=>
-    {
-        options.MapHttpMethodsForUnmatched = new[] { "Post" }; 
     });
 builder.Services.AddStackMiddleware();
 await builder.Services.MigrateAsync();
+
+var app = builder.AddServices(options =>
+{
+    options.MapHttpMethodsForUnmatched = new string[] { "Post" };
+});
 app.UseMasaExceptionHandler(opt =>
 {
     opt.ExceptionHandler = context =>
