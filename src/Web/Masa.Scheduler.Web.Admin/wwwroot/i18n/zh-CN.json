@@ -195,5 +195,6 @@
   "Confirm Job Id Error": "Job Id错误",
   "CreationTime": "创建时间",
   "ModificationTime": "修改时间",
-  "JobQueryTimeType": "Job查询时间类型"
+  "JobQueryTimeType": "Job查询时间类型",
+  "All": "全部"
 }

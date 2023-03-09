@@ -73,7 +73,7 @@ public partial class SchedulerTasks
         return Task.CompletedTask;
     }
 
-    private JobQueryTimeTypes _queryTimeType;
+    private JobQueryTimeTypes _queryTimeType = JobQueryTimeTypes.ScheduleTime;
 
     private DateTime? _queryStartTime;
 
@@ -366,7 +366,7 @@ public partial class SchedulerTasks
     {
         _queryStatus = default;
         _lastQueryStatus = default;
-        _queryTimeType = default;
+        _queryTimeType = JobQueryTimeTypes.ScheduleTime;
         _queryStartTime = default;
         _queryEndTime = default;
         _page = 1;

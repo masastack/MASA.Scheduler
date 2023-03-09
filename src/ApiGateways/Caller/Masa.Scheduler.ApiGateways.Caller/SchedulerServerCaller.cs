@@ -13,6 +13,7 @@ public class SchedulerServerCaller : HttpClientCallerBase
     OssService? _ossService;
     SchedulerServerManagerService? _schedulerServerManagerService;
     TokenProvider _tokenProvider;
+    JwtTokenValidator _jwtTokenValidator;
 
     public SchedulerJobService SchedulerJobService => _schedulerJobService ??= new(Caller);
 
@@ -31,17 +32,24 @@ public class SchedulerServerCaller : HttpClientCallerBase
     public SchedulerServerCaller(
         IServiceProvider serviceProvider,
         TokenProvider tokenProvider,
-        SchedulerApiOptions options) : base(serviceProvider)
+        SchedulerApiOptions options,
+        JwtTokenValidator jwtTokenValidator) : base(serviceProvider)
     {
         BaseAddress = options.SchedulerServerBaseAddress;
         _tokenProvider = tokenProvider;
+        _jwtTokenValidator = jwtTokenValidator;
     }
 
     protected override string BaseAddress { get; set; }
 
     protected override async Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {
-        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _tokenProvider.AccessToken);
+        if (!string.IsNullOrWhiteSpace(_tokenProvider.AccessToken))
+        {
+            await _jwtTokenValidator.ValidateAccessTokenAsync(_tokenProvider);
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _tokenProvider.AccessToken);
+        }
+
         await base.ConfigHttpRequestMessageAsync(requestMessage);
     }
 }
