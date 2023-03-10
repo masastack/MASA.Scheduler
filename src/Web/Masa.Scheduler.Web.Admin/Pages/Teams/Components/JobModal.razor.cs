@@ -526,7 +526,7 @@ public partial class JobModal
         }
         else
         {
-            PopupService.ToastErrorAsync(T("CronExpressionInvalid"));
+            PopupService.EnqueueSnackbarAsync(T("CronExpressionInvalid"), AlertTypes.Error);
         }
 
         return Task.CompletedTask;

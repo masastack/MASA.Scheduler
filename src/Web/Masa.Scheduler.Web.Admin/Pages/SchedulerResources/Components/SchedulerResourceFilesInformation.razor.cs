@@ -53,11 +53,11 @@ public partial class SchedulerResourceFilesInformation
     {
         if (string.IsNullOrEmpty(Model.FilePath))
         {
-            await PopupService.ToastAsync(T("File path is empty"), AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(T("File path is empty"), AlertTypes.Error);
             return;
         }
 
-        NavigationManager.NavigateTo(Model.FilePath);
+        await Js!.InvokeVoidAsync("_blazorDownloadFile", Model.FilePath, Model.Name);
     }
 
     private void HandleVisibleChanged(bool val)

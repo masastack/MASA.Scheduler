@@ -52,6 +52,10 @@ public class SchedulerJobQueryHandler
                 condition = condition.And(request.QueryStartTime.HasValue, job => job.LastRunEndTime >= request.QueryStartTime);
                 condition = condition.And(request.QueryEndTime.HasValue, job => job.LastRunEndTime < request.QueryEndTime);
                 break;
+            case JobQueryTimeTypes.ModificationTime:
+                condition = condition.And(request.QueryStartTime.HasValue, job => job.ModificationTime >= request.QueryStartTime);
+                condition = condition.And(request.QueryEndTime.HasValue, job => job.ModificationTime < request.QueryEndTime);
+                break;
             default:
                 condition = condition.And(request.QueryStartTime.HasValue, job => job.CreationTime >= request.QueryStartTime);
                 condition = condition.And(request.QueryEndTime.HasValue, job => job.CreationTime < request.QueryEndTime);

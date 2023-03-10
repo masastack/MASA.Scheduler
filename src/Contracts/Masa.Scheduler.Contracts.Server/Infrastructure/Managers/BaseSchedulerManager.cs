@@ -188,9 +188,8 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             HeartbeatApi = HeartbeatApi,
             Status = ServiceStatus.Normal
         };
-
-        var host = Dns.GetHostEntry(Dns.GetHostName());
-        _data.ServiceId = MD5Utils.Encrypt(EncryptType.Md5, host.HostName);
+        
+        _data.ServiceId = MD5Utils.Encrypt(DnsHelper.GetHostName(Logger));
 
         service.ServiceId = _data.ServiceId;
 

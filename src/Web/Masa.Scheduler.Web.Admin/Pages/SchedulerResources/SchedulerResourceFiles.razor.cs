@@ -2,7 +2,6 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 using Masa.Scheduler.Web.Admin.Pages.SchedulerResources.Components;
-using Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
 namespace Masa.Scheduler.Web.Admin.Pages.SchedulerResources;
 
@@ -14,7 +13,7 @@ public partial class SchedulerResourceFiles
 
     private List<AppResourceViewModel> _resourceData = new();
 
-    private bool _showConfirmDialog = false;
+    private bool _showConfirmDialog;
 
     private string _confirmMessage = string.Empty;
 
@@ -28,13 +27,11 @@ public partial class SchedulerResourceFiles
 
     private SchedulerResourceDto Model { get; set; } = new();
 
-    private SchedulerResourceDto? _selectedResourceDto;
-
     private SchedulerResourceFilesInformation? _resourceInfoModal;
 
     private AddSchedulerResourceFiles? _addResourceModal;
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         await GetProjects();
 
@@ -46,7 +43,7 @@ public partial class SchedulerResourceFiles
         try
         {
             var response = await SchedulerServerCaller.PmService.GetProjectListAsync(null);
-            _projects = response.Data.Where(x => x.ProjectApps.Any(x => x.Type == ProjectAppTypes.Job)).ToList();
+            _projects = response.Data.Where(x => x.ProjectApps.Any(pa => pa.Type == ProjectAppTypes.Job)).ToList();
 
             var defaultProject = _projects.FirstOrDefault();
             _selectedProjectIdentity = defaultProject?.Identity ?? string.Empty;
@@ -54,7 +51,7 @@ public partial class SchedulerResourceFiles
         }
         catch (Exception ex)
         {
-            await PopupService.ToastAsync(ex.Message, AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Error);
         }
     }
 
@@ -74,13 +71,13 @@ public partial class SchedulerResourceFiles
         {
             var request = new SchedulerResourceListRequest() { JobAppIdentity = job.Identity };
             var response = await SchedulerServerCaller.SchedulerResourceService.GetListAsync(request);
-            var _resources = response.Data;
+            var resourceDtos = response.Data;
 
             resources.Add(new AppResourceViewModel
             {
                 Identity = job.Identity,
                 Name = job.Name,
-                Resources = _resources
+                Resources = resourceDtos
             });
         }
         _resourceData = resources;
@@ -100,7 +97,7 @@ public partial class SchedulerResourceFiles
                 _deleteResourceId = resourceId;
                 _confirmType = confirmType;
 
-                await ConfirmAsync(_confirmTitle, _confirmMessage, OnSureDelete, AlertTypes.Warning);
+                await ConfirmAsync(_confirmTitle, _confirmMessage, OnSureDelete, AlertTypes.Error);
             }
         }
         else if (confirmType == ConfirmDialogTypes.DeleteResources)
@@ -115,7 +112,7 @@ public partial class SchedulerResourceFiles
                 _confirmType = confirmType;
                 _deleteIdentityResource = app.Identity;
 
-                await ConfirmAsync(_confirmTitle, _confirmMessage, OnSureDelete, AlertTypes.Warning);
+                await ConfirmAsync(_confirmTitle, _confirmMessage, OnSureDelete, AlertTypes.Error);
             }
         }
         else
@@ -125,10 +122,7 @@ public partial class SchedulerResourceFiles
             _deleteResourceId = null;
         }
 
-        await InvokeAsync(() =>
-        {
-            StateHasChanged();
-        });
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task OnSureDelete()
@@ -152,7 +146,7 @@ public partial class SchedulerResourceFiles
         {
             _showConfirmDialog = false;
 
-            await PopupService.ToastAsync(T("DeleteSuccess"), AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync(T("DeleteSuccess"), AlertTypes.Success);
 
             await GetResourceData();
         }
@@ -169,14 +163,14 @@ public partial class SchedulerResourceFiles
     private Task<string> GetDefaultVersion()
     {
         var app = _resourceData.FirstOrDefault(p => p.Identity == Model.JobAppIdentity);
-        var _resources = app?.Resources ?? new();
-        if (!_resources.Any())
+        var resources = app?.Resources ?? new();
+        if (!resources.Any())
         {
             return Task.FromResult("1.0.0");
         }
         else
         {
-            var lastResource = _resources.FirstOrDefault()!;
+            var lastResource = resources.FirstOrDefault()!;
 
             var lastVersionArr = lastResource.Version.Split(".");
 

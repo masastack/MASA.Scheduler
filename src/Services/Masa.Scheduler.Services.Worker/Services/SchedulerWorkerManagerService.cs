@@ -11,8 +11,7 @@ public class SchedulerWorkerManagerService : ServiceBase
     public SchedulerWorkerManagerService(IServiceCollection services, ILogger<SchedulerWorkerManagerService> logger, SchedulerLogger schedulerLogger) : base(ConstStrings.SCHEDULER_WORKER_MANAGER_API)
     {
         _logger = logger;
-        var host = Dns.GetHostEntry(Dns.GetHostName());
-        var serviceId = MD5Utils.Encrypt(EncryptType.Md5, host.HostName);
+        var serviceId = MD5Utils.Encrypt(DnsHelper.GetHostName(_logger));
         App.MapPost(ConstStrings.SCHEDULER_WORKER_MANAGER_API + "/start", StartTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StartTaskIntegrationEvent) + serviceId);
         App.MapPost(ConstStrings.SCHEDULER_WORKER_MANAGER_API + "/stop", StopTask).WithTopic(ConstStrings.PUB_SUB_NAME, nameof(StopTaskIntegrationEvent) + serviceId);
         _schedulerLogger = schedulerLogger;

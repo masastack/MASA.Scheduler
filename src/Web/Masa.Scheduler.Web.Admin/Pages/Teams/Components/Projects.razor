@@ -5,4 +5,7 @@
          Items="_projects"
          ItemText="e => e.Name"
          ItemValue="e=> e.Identity">
+    <SelectionContent Context="data">
+        <div class="m-select__selection m-select__selection--comma project-name regular--text">@data.Item.Name</div>
+    </SelectionContent>
 </SSelect>

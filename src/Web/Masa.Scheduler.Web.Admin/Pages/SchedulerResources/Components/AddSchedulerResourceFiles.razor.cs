@@ -47,7 +47,7 @@ public partial class AddSchedulerResourceFiles
 
         if (string.IsNullOrWhiteSpace(Model.FilePath))
         {
-            await PopupService.ToastAsync(T("PleaseUploadFiles"), AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(T("PleaseUploadFiles"), AlertTypes.Error);
             return;
         }
 
@@ -55,7 +55,7 @@ public partial class AddSchedulerResourceFiles
         {
             if (Resources.Any(p => p.Version == Model.Version))
             {
-                await PopupService.ToastAsync(T("VersionAlreadyExists"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("VersionAlreadyExists"), AlertTypes.Error);
                 return;
             }
 
@@ -66,7 +66,7 @@ public partial class AddSchedulerResourceFiles
 
             await SchedulerServerCaller.SchedulerResourceService.AddAsync(request);
 
-            await PopupService.ToastAsync(T("AddResourceSuccess"), AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync(T("AddResourceSuccess"), AlertTypes.Success);
 
             _visible = false;
 
@@ -96,14 +96,14 @@ public partial class AddSchedulerResourceFiles
 
         if(!filterExtension.Contains(Path.GetExtension(file.Name)))
         {
-            await PopupService.ToastAsync(T("FileNotValid"), AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(T("FileNotValid"), AlertTypes.Error);
             _isUploadSuccess = false;
             return;
         }
 
         if(file.Size > 100 * 1024 * 1024)
         {
-            await PopupService.ToastAsync(T("FileSizeNotValid"), AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(T("FileSizeNotValid"), AlertTypes.Error);
             _isUploadSuccess = false;
             return;
         }
@@ -114,7 +114,7 @@ public partial class AddSchedulerResourceFiles
 
         if(securityToken == null)
         {
-            await PopupService.ToastAsync(T("GetOssTokenFailed"), AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(T("GetOssTokenFailed"), AlertTypes.Error);
             _isUploadSuccess = false;
             return;
         }
@@ -127,7 +127,7 @@ public partial class AddSchedulerResourceFiles
 
         if(uploadUrl == null)
         {
-            await PopupService.ToastAsync(T("UploadFileFailed"), AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(T("UploadFileFailed"), AlertTypes.Error);
             _isUploadSuccess = false;
             return;
         }

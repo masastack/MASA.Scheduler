@@ -84,5 +84,6 @@ public record SchedulerJobQueryByIdentity(GetSchedulerJobByIdentityRequest Reque
     {
         _eventId = original._eventId;
         _creationTime = original._creationTime;
+        Request = original.Request;
     }
 }
