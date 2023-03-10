@@ -39,11 +39,11 @@
                             {
                                 if (colIndex >= resourcePageData.Count)
                                 {
-                                    <MCol Style="width:24%"></MCol>
+                                    <MCol Style="width:calc(25% - 11px)"></MCol>
                                     continue;
                                 }
                                 var item = resourcePageData[colIndex];
-                                <MCol Style="width:24%">
+                                <MCol Style="width:calc(25% - 11px)">
                                     <MHover>
                                         <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
                                             @if (context.Hover)
@@ -62,7 +62,7 @@
                                     </MHover>
                                 </MCol>
                             }
-                            <div Style="width:4%">
+                            <div Style="width:44px">
                                 <MButton Icon OnClick="() => resourceShow = !resourceShow" Style="@(resourcePageIndex==0?"transform: translate(-12%, 120%);float :right;":"display:none")" Class="m-size--small"> <MIcon>@(resourceShow ? "mdi-chevron-down" : "mdi-chevron-up")</MIcon></MButton>
                                 </div>
                             </MRow>
