@@ -28,47 +28,39 @@
                 </MButton>
                 </MCardTitle>
                 <MCardText>
-                @{
-                    int rowCount = app.Resources.Count % resourcePageCount == 0 ? app.Resources.Count / resourcePageCount : app.Resources.Count / resourcePageCount + 1;
-                    for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
-                    {
-                        var resourcePageIndex = rowIndex;
-                        var resourcePageData = app.Resources.Skip(resourcePageIndex * resourcePageCount).Take(resourcePageCount).ToList();
-                        <MRow style="@(resourcePageIndex == 0 || resourceShow ? "": "display:none")">
-                            @for (var colIndex = 0; colIndex < resourcePageCount; colIndex++)
-                            {
-                                if (colIndex >= resourcePageData.Count)
+                    <MRow>
+                        <div style="width:calc(100% - 44px);display: flex;flex-wrap: wrap;">
+                        @{
+                                var resourcesIndex = 0;
+                                foreach (var item in app.Resources)
                                 {
-                                    <MCol Style="width:calc(25% - 11px)"></MCol>
-                                    continue;
+                                    var colIndex = resourcesIndex++;
+                                        <MCol Style="@(colIndex >= 4 && !resourceShow ? "display:none" : "")" Cols="12" Md="3">
+                                            <MHover>
+                                                <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
+                                                    @if (context.Hover)
+                                                    {
+                                                        <MIcon Size="24" Color="error" Class="align-self-center" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">mdi-delete</MIcon>
+                                                        <span class="d-flex" style="height: 24px;padding-left:60px;padding-right:60px">
+                                                            <MDivider Vertical />
+                                                        </span>
+                                                        <MIcon Size="24" Color="emphasis2" Class="align-self-center" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">mdi-eye</MIcon>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>@item.Version</span>
+                                                    }
+                                                </div>
+                                            </MHover>
+                                        </MCol>
                                 }
-                                var item = resourcePageData[colIndex];
-                                <MCol Style="width:calc(25% - 11px)">
-                                    <MHover>
-                                        <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
-                                            @if (context.Hover)
-                                            {
-                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">mdi-delete</MIcon>
-                                                <span class="d-flex" style="height: 24px;padding-left:60px;padding-right:60px">
-                                                    <MDivider Vertical />
-                                                </span>
-                                                <MIcon Size="24" Color="emphasis2" Class="align-self-center" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">mdi-eye</MIcon>
-                                            }
-                                            else
-                                            {
-                                                <span>@item.Version</span>
-                                            }
-                                        </div>
-                                    </MHover>
-                                </MCol>
-                            }
-                            <div Style="width:44px">
-                                <MButton Icon OnClick="() => resourceShow = !resourceShow" Style="@(resourcePageIndex==0?"transform: translate(-12%, 120%);float :right;":"display:none")" Class="m-size--small"> <MIcon>@(resourceShow ? "mdi-chevron-down" : "mdi-chevron-up")</MIcon></MButton>
-                                </div>
-                            </MRow>
-                    }
-                }
-            </MCardText>
+                         }
+                        </div>
+                        <div Style="width:44px">
+                            <MButton Icon OnClick="() => resourceShow = !resourceShow" Style="transform: translate(-12%, 120%);float :right;" Class="m-size--small"> <MIcon>@(resourceShow ? "mdi-chevron-down" : "mdi-chevron-up")</MIcon></MButton>
+                         </div>
+                    </MRow>
+                </MCardText>
         </MCard>
     }
 </div>
