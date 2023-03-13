@@ -18,17 +18,19 @@ public class JobAppTaskHandler : ITaskHandler
     private readonly ILogger<JobAppTaskHandler> _logger;
     private readonly IConfiguration _configuration;
     private readonly SchedulerLogger _schedulerLogger;
+    private readonly IMasaStackConfig _masaStackConfig;
     private Guid _taskId;
     private Guid _jobId;
     private string _message = string.Empty;
 
-    public JobAppTaskHandler(IHttpClientFactory httpClientFactory, ILogger<JobAppTaskHandler> logger, ILoggerFactory loggerFactory, IConfiguration configuration, SchedulerLogger schedulerLogger)
+    public JobAppTaskHandler(IHttpClientFactory httpClientFactory, ILogger<JobAppTaskHandler> logger, ILoggerFactory loggerFactory, IConfiguration configuration, SchedulerLogger schedulerLogger, IMasaStackConfig masaStackConfig)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _loggerFactory = loggerFactory;
         _configuration = configuration;
         _schedulerLogger = schedulerLogger;
+        _masaStackConfig = masaStackConfig;
     }
 
     TaskRunStatus _runStatus = TaskRunStatus.Failure;
@@ -106,7 +108,7 @@ public class JobAppTaskHandler : ITaskHandler
 
     private string GetJobShellRunParameter(SchedulerJobDto dto, string jobExtractPath, Guid taskId, DateTimeOffset excuteTime)
     {
-        var otlpEndpoint = _configuration.GetValue<string>("Local:Masa:Observable:OtlpUrl");
+        var otlpEndpoint = _masaStackConfig.OtlpUrl;
         var parameterList = new List<string>()
         {
             _rootPath + Path.Combine(JOB_SHELL_SOURCE_PATH, JOB_SHELL_NAME),

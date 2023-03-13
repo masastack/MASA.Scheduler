@@ -17,7 +17,7 @@
                         }
                     </SLabeledRadioGroup>
                 </MCol>
-                <MCol Md="1" Class="ml-6" Style="min-width: 140px">
+                <MCol Md="1" Class="ml-6" Style="min-width: 114px">
                     <SSelect Small @bind-Value="QueryTimeType"
                              Items="Enum.GetValues<JobQueryTimeTypes>().ToList()"
                              Label="@T("JobQueryTimeType")"
@@ -30,13 +30,14 @@
                 <MCol Md="4" Class="ml-6" Style="max-width:420px">
                     <DateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
                 </MCol>
-                <MCol Md="1" Class="ml-6">
+                <MCol Md="1" Class="ml-6" Style="min-width:139px">
                     <SSelect Small @bind-Value="QueryJobType"
                              Items="Enum.GetValues<JobTypes>().ToList()"
                              Label="@T("JobType")"
                              ItemText="e => T(e==default?string.Empty:e.ToString())"
                              ItemValue="e=> e"
                              BackgroundColor="white"
+                             Clearable
                              Class="rounded-2 body2">
                     </SSelect>
                 </MCol>
@@ -63,6 +64,11 @@
             </div>
         </div>
         <MRadioGroup @bind-Value="QueryStatus" Row OnClick="RadioGroupClickHandler">
+            <MRadio TValue="TaskRunStatus" Value="default" Color="green--text">
+                <LabelContent>
+                    <span class="green--text">@T("All")</span>
+                </LabelContent>
+            </MRadio>
             @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
             {
                 <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
@@ -90,7 +96,7 @@
                             @job.Name
                         </div>
                     </MCardTitle>
-                    <MCardText Class="d-flex">
+                    <MCardText Class="d-flex height-inherit">
                         <MButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
                             <MIcon>mdi-checkbox-blank-circle</MIcon>
                             </MButton>

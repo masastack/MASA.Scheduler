@@ -13,11 +13,12 @@ public class SchedulerJobDtoValidator : AbstractValidator<SchedulerJobDto>
         RuleFor(job => job.ScheduleExpiredStrategy).Required();
         RuleFor(job => job.ScheduleBlockStrategy).Required();
         RuleFor(job => job.RunTimeoutStrategy).Required();
-        RuleFor(job => job.Name).Required().Length(0,100);
-        RuleFor(job => job.CronExpression).Length(0,100);
+        RuleFor(job => job.Name).Required().Length(0, 100);
+        RuleFor(job => job.CronExpression).Length(0, 100);
         RuleFor(job => job.FailedRetryCount).GreaterThanOrEqualTo(0);
         RuleFor(job => job.FailedRetryInterval).GreaterThanOrEqualTo(0);
         RuleFor(job => job.RunTimeoutSecond).GreaterThanOrEqualTo(0);
-        RuleFor(job => job.Description).Length(0,255);
+        RuleFor(job => job.Description).Length(0, 255);
+        RuleFor(job => job.SpecifiedWorkerHost).Required().When(job => job.RoutingStrategy == RoutingStrategyTypes.Specified);
     }
 }

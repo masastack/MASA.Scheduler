@@ -104,7 +104,7 @@ builder.Services.AddScoped(service =>
     return new TokenProvider { AccessToken = auth?.Parameter };
 });
 
-var app = builder.Services
+builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
@@ -140,20 +140,20 @@ var app = builder.Services
         .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseDapr().UseEventLog<SchedulerDbContext>())
         .UseEventBus(eventBusBuilder =>
         {
-            eventBusBuilder.UseMiddleware(typeof(DisabledCommandMiddleware<>));
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
         .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
             dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
-    })
-    .AddServices(builder, options=>
-    {
-        options.MapHttpMethodsForUnmatched = new[] { "Post" }; 
     });
-//await builder.MigrateDbContextAsync<SchedulerDbContext>();
+builder.Services.AddStackMiddleware();
 await builder.Services.MigrateAsync();
+
+var app = builder.AddServices(options =>
+{
+    options.MapHttpMethodsForUnmatched = new string[] { "Post" };
+});
 app.UseMasaExceptionHandler(opt =>
 {
     opt.ExceptionHandler = context =>
@@ -173,21 +173,12 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseAddStackMiddleware();
 app.UseCloudEvents();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapSubscribeHandler();
     endpoints.MapHub<NotificationsHub>("/server-hub/notifications");
-});
-app.MapHealthChecks("/hc", new HealthCheckOptions()
-{
-    Predicate = _ => true,
-    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-});
-app.MapHealthChecks("/liveness", new HealthCheckOptions
-{
-    Predicate = r => r.Name.Contains("self")
 });
 app.UseHttpsRedirection();
 

@@ -6,3 +6,11 @@
     font-size: 1.5rem !important;
     font-weight: 700 !important;
 }
+
+.height-inherit {
+    height: initial;
+}
+
+.full-height.d-flex.flex-column .m-data-table__wrapper {
+    flex-grow: 1 !important;
+}

@@ -102,10 +102,6 @@ public class NotifyTaskRunResultDomainEventHandler
 
         await _schedulerTaskRepository.UpdateAsync(task);
 
-        await _schedulerJobRepository.UnitOfWork.SaveChangesAsync();
-
-        await _schedulerJobRepository.UnitOfWork.CommitAsync();
-
         if (task.TaskStatus != TaskRunStatus.WaitToRetry)
         {
             var waitForRunTask = await _dbContext.Tasks.OrderBy(t => t.SchedulerTime).ThenBy(t => t.CreationTime).Include(t => t.Job).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
@@ -121,7 +117,7 @@ public class NotifyTaskRunResultDomainEventHandler
                 await _eventBus.PublishAsync(startWaittingTaskevent);
             }
 
-            _distributedCacheClient.Remove($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
+            await _distributedCacheClient.RemoveAsync<long>($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
         }
 
         var dto = _mapper.Map<SchedulerTaskDto>(task);

@@ -41,7 +41,11 @@ public class SchedulerServerCaller : HttpClientCallerBase
 
     protected override async Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {
-        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _tokenProvider.AccessToken);
+        if (!string.IsNullOrWhiteSpace(_tokenProvider.AccessToken))
+        {
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _tokenProvider.AccessToken);
+        }
+
         await base.ConfigHttpRequestMessageAsync(requestMessage);
     }
 }
