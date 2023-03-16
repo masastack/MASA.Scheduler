@@ -7,7 +7,7 @@
         <MRow Class="flex-none fold d-inline-flex my-6" NoGutters>
             <MCol Md="2">
                 <SSelect Small @bind-Value="_queryTimeType"
-                         Items="Enum.GetValues<JobQueryTimeTypes>().ToList()"
+                         Items="Enum.GetValues<JobQueryTimeTypes>().Where(t => t != JobQueryTimeTypes.CreationTime && t != JobQueryTimeTypes.ModificationTime).ToList()"
                          Label="@T("QueryTimeType")"
                          ItemText="e => T(e==default?string.Empty:e.ToString())"
                          ItemValue="e=> e"
