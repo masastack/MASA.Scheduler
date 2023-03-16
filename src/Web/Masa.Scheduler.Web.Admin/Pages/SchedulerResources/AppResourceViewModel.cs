@@ -9,5 +9,7 @@ public class AppResourceViewModel
 
     public string Identity { get; set; } = string.Empty;
 
+    public bool IsExpand { get; set; }
+
     public List<SchedulerResourceDto> Resources { get; set; } = new();
 }

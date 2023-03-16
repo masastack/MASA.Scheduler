@@ -4,7 +4,7 @@
 <MTabs Value="_selectedProjectIdentity" ValueChanged="HandleProjectIdentityChanged">
     @foreach (var project in _projects)
     {
-        <MTab Value="project.Identity" Class="px-12 py-3">
+        <MTab Value="project.Identity" Class="px-12 py-3 text-capitalize">
             <span class="@(_selectedProjectIdentity==project.Identity?"primary--text h8":"regular2--text btn")">@project.Identity</span>
         </MTab>
     }
@@ -13,54 +13,59 @@
     @foreach (var app in _resourceData)
     {
         <MCard Flat Class="rounded-4 mb-6">
-        <MCardTitle>
-            <div>
-                <span class="emphasis--text h6">@app.Identity</span>
-                <MIcon Size="20" Color="emphasis2">keyboard_arrow_right</MIcon>
-            </div>
-            <MSpacer></MSpacer>
-            @if (app.Resources.Any())
+            <MCardTitle>
+                <div>
+                    <span class="emphasis--text h6">@app.Identity</span>
+                    <MIcon Size="20" Color="emphasis2">keyboard_arrow_right</MIcon>
+                </div>
+                <MSpacer></MSpacer>
+                @if (app.Resources.Any())
                 {
                     <MIcon Size="24" Color="error" Class="align-self-center mr-6" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty,app.Identity)">mdi-delete</MIcon>
                 }
                 <MButton Fab OnClick="()=>AddResourceFile(app.Identity)" Small Dark Color="primary">
-                <MIcon>mdi-plus</MIcon>
+                    <MIcon>mdi-plus</MIcon>
                 </MButton>
-                </MCardTitle>
-                <MCardText>
-                    <MRow>
-                        <div style="width:calc(100% - 44px);" class="d-flex flex-wrap">
-                        @{
-                                var resourcesIndex = 0;
-                                foreach (var item in app.Resources)
-                                {
-                                    var colIndex = resourcesIndex++;
-                                        <MCol Style="@(colIndex >= 4 && !resourceShow ? "display:none" : "")" Cols="12" Md="3">
-                                            <MHover>
-                                                <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
-                                                    @if (context.Hover)
-                                                    {
-                                                        <MIcon Size="24" Color="error" Class="align-self-center" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">mdi-delete</MIcon>
-                                                        <span class="d-flex px-15" style="height: 24px;">
-                                                            <MDivider Vertical />
-                                                        </span>
-                                                        <MIcon Size="24" Color="emphasis2" Class="align-self-center" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">mdi-eye</MIcon>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span>@item.Version</span>
-                                                    }
-                                                </div>
-                                            </MHover>
-                                        </MCol>
-                                }
-                         }
-                        </div>
-                        <div class="ml-1">
-                            <MButton Icon OnClick="() => resourceShow = !resourceShow" Style="transform: translate(-12%, 120%);" Class="m-size--small float-right"> <MIcon>@(resourceShow ? "mdi-chevron-down" : "mdi-chevron-up")</MIcon></MButton>
-                         </div>
-                    </MRow>
-                </MCardText>
+            </MCardTitle>
+            <MCardText>
+                <MRow>
+                @{
+                    var resourcesIndex = 0;
+                    var isShowExpandIcon = app.Resources.Count > 4;
+                    <div style="width:calc(100% - 44px);" class="d-flex flex-wrap">
+                        @foreach (var item in app.Resources)
+                        {
+                            var colIndex = resourcesIndex++;
+                            <MCol Style="@(colIndex >= 4 && !app.IsExpand ? "display:none" : "")" Cols="12" Md="3">
+                                <MHover>
+                                    <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
+                                        @if (context.Hover)
+                                        {
+                                            <MIcon Size="24" Color="error" Class="align-self-center" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">mdi-delete</MIcon>
+                                            <span class="d-flex px-15" style="height: 24px;">
+                                                <MDivider Vertical />
+                                            </span>
+                                            <MIcon Size="24" Color="emphasis2" Class="align-self-center" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">mdi-eye</MIcon>
+                                        }
+                                        else
+                                        {
+                                            <span>@item.Version</span>
+                                        }
+                                    </div>
+                                </MHover>
+                            </MCol>
+                        }
+                    </div>
+                    @if (isShowExpandIcon)
+                    {
+                    <div class="ml-1">
+                        <MButton Icon OnClick="() => app.IsExpand = !app.IsExpand" Style="transform: translate(-12%, 120%);" Class="m-size--small float-right"> <MIcon>@(app.IsExpand ? "mdi-chevron-down" : "mdi-chevron-up")</MIcon></MButton>
+                    </div>
+                            
+                    }
+                }
+                </MRow>
+            </MCardText>
         </MCard>
     }
 </div>
@@ -76,7 +81,3 @@
 </AddSchedulerResourceFiles>
 
 <SchedulerResourceFilesInformation @ref="_resourceInfoModal"></SchedulerResourceFilesInformation>
-
-@code {
-    bool resourceShow = false;
-}

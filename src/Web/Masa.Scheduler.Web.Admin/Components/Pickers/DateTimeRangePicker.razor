@@ -1,10 +1,10 @@
 ﻿@inherits ProCompontentBase
 
-<div class="d-flex fill rounded-lg @Class" style="height: 40px;@Style">
+<div class="d-flex fill rounded-lg datetimerangepicker @Class" style="@Style">
     <MIcon Size=20 Color="emphasis2--text" Class="@($"pl-2 {IconClass}")">mdi-calendar-month</MIcon>
     <MMenu @bind-Value="StartTimeVisible" CloseOnContentClick="false" OffsetY Transition="scale-transition">
         <ActivatorContent>
-            <div class="text-btn ml-2 my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
+            <div class="text-btn ml-1 my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
                 @if (StartTime.HasValue)
                 {
                     <span class="regular--text">@StartTime?.Add(JsInitVariables.TimezoneOffset).ToString(T("$DateTimeFormat"))</span>
@@ -21,7 +21,7 @@
             </SDateTimePicker>
         </ChildContent>
     </MMenu>
-    <MDivider Vertical Class="ma-2" Style="display:initial"></MDivider>
+    <MDivider Vertical></MDivider>
     <MMenu @bind-Value="EndTimeVisible" CloseOnContentClick="false" OffsetY Transition="scale-transition">
         <ActivatorContent>
             <div class="text-btn my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
