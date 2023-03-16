@@ -96,6 +96,7 @@ public partial class SchedulerJobs : ProCompontentBase
     private SchedulerJobDto modalModel = new();
 
     private List<KeyValuePair<string, TaskRunStatus>> _queryStatusList = new();
+    List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
 
     private bool _showConfirmDialog;
 
@@ -225,8 +226,9 @@ public partial class SchedulerJobs : ProCompontentBase
         });
 
         _queryStatusList = GetEnumMap<TaskRunStatus>();
-
         _queryStatusList.RemoveAll(p => p.Value == TaskRunStatus.WaitToRun);
+
+        _jobQueryTimeTypeList = Enum.GetValues<JobQueryTimeTypes>().Where(t => t == JobQueryTimeTypes.CreationTime || t == JobQueryTimeTypes.ModificationTime).ToList();
 
         await base.OnInitializedAsync();
     }

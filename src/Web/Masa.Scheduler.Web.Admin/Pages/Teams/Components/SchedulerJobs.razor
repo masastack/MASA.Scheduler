@@ -19,7 +19,7 @@
                 </MCol>
                 <MCol Md="1" Class="ml-6" Style="min-width: 114px">
                     <SSelect Small @bind-Value="QueryTimeType"
-                             Items="Enum.GetValues<JobQueryTimeTypes>().ToList()"
+                             Items="_jobQueryTimeTypeList"
                              Label="@T("JobQueryTimeType")"
                              ItemText="e => T(e==default?string.Empty:e.ToString())"
                              ItemValue="e=> e"
