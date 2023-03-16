@@ -24,5 +24,6 @@ public class SchedulerJobEntityTypeConfiguraion : IEntityTypeConfiguration<Sched
         builder.Property(x => x.DaprServiceInvocationConfig).HasConversion(new JsonValueConverter<SchedulerJobDaprServiceInvocationConfig>());
         builder.Property(x => x.BelongProjectIdentity).HasMaxLength(100);
         builder.Property(x => x.JobIdentity).HasMaxLength(100);
+        builder.Property(x => x.NotifyUrl).HasMaxLength(255);
     }
 }

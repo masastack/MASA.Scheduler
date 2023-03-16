@@ -28,6 +28,7 @@ public class SchedulerDbContext : IsolationDbContext
 
     protected override void OnModelCreatingExecuting(ModelBuilder builder)
     {
+        builder.ApplyConfiguration(new IntegrationEventLogEntityTypeConfiguration());
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreatingExecuting(builder);
     }

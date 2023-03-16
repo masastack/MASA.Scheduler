@@ -30,6 +30,8 @@ public class RemoveSchedulerJobDomainEventHandler
             throw new UserFriendlyException($"Job id {@event.Request.JobId}, not found");
         }
 
+        job.NotifyJobStatus(JobNotifyStatus.Delete);
+
         await _schedulerJobRepository.RemoveAsync(job);
 
         var filterStatus = new List<TaskRunStatus>() { TaskRunStatus.Running, TaskRunStatus.WaitToRun, TaskRunStatus.WaitToRetry };

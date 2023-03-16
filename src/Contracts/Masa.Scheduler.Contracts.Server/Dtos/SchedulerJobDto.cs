@@ -78,4 +78,6 @@ public class SchedulerJobDto
     public DateTime CreationTime { get; set; }
 
     public DateTime ModificationTime { get; set; }
+
+    public string NotifyUrl { get; set; } = string.Empty;
 }

@@ -123,5 +123,7 @@ public class NotifyTaskRunResultDomainEventHandler
         var dto = _mapper.Map<SchedulerTaskDto>(task);
 
         await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, dto);
+
+
     }
 }
