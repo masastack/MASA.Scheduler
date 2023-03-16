@@ -548,5 +548,11 @@ public partial class JobModal
     {
         await ConfirmAsync(T("DeletionConfirmationMessage"), RemoveJobAsync, AlertTypes.Warning);
     }
+
+    private async Task CloseModal()
+    {
+        _visible = false;
+        ResetForm();
+    }
 }
 
