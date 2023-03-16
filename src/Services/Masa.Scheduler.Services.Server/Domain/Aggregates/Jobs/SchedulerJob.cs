@@ -1,6 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
+using static Quartz.Logging.OperationName;
+
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
 public class SchedulerJob : FullAggregateRoot<Guid, Guid>
@@ -56,6 +59,8 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
     public string BelongProjectIdentity { get; private set; } = string.Empty;
 
     public string Origin { get; private set; } = string.Empty;
+
+    public string NotifyUrl { get; private set; } = string.Empty;
 
     public DateTimeOffset UpdateExpiredStrategyTime { get; private set; } = DateTimeOffset.MinValue;
 
@@ -144,6 +149,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         FailedRetryCount = dto.FailedRetryCount;
         Description = dto.Description;
         UpdateExpiredStrategyTime = dto.UpdateExpiredStrategyTime;
+        NotifyUrl = dto.NotifyUrl;
 
         switch (dto.JobType)
         {
@@ -178,15 +184,27 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
             case TaskRunStatus.Success:
             case TaskRunStatus.TimeoutSuccess:
             case TaskRunStatus.Timeout:
+                NotifyJobStatus(JobNotifyStatus.Timeout);
+                break;
             case TaskRunStatus.Failure:
                 LastRunEndTime = DateTimeOffset.Now;
+                NotifyJobStatus(JobNotifyStatus.Failure);
                 break;
+        }
+    }
+
+    public void NotifyJobStatus(JobNotifyStatus status)
+    {
+        if (!string.IsNullOrEmpty(NotifyUrl))
+        {
+            AddDomainEvent(new NotifyJobStatusDomainEvent(Id, NotifyUrl, status));
         }
     }
 
     public void ChangeEnableStatus(bool enabled)
     {
         Enabled = enabled;
+        NotifyJobStatus(enabled ? JobNotifyStatus.Enabled : JobNotifyStatus.Disable);
     }
 
     public void SetJobAppConfig(SchedulerJobAppConfigDto? dto)

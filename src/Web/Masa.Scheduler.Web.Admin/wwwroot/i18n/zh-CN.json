@@ -196,5 +196,6 @@
   "CreationTime": "创建时间",
   "ModificationTime": "修改时间",
   "JobQueryTimeType": "Job查询时间类型",
-  "All": "全部"
+  "All": "全部",
+  "JobNotifyUrl": "运行结果通知回调地址"
 }

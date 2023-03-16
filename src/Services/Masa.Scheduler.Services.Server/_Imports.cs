@@ -111,3 +111,4 @@ global using Masa.Contrib.StackSdks.Config;
 global using Masa.Utils.Configuration.Json;
 global using System.Text.RegularExpressions;
 global using Masa.Contrib.StackSdks.Middleware;
+global using Microsoft.EntityFrameworkCore.Design;
