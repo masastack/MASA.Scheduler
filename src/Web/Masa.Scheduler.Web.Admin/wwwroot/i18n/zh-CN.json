@@ -1,7 +1,7 @@
 {
   "$DefaultLanguage": "true",
   "$Text": "中文简体",
-  "$DateTimeFormat": "yyyy年MM月dd日 HH:mm:ss",
+  "$DateTimeFormat": "yyyy-MM-dd HH:mm:ss",
   "$DateFormat": "yyyy-MM-dd",
   "$TimeFormat": "HH:mm:ss",
   "Dashboard": "仪表盘",

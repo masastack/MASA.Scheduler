@@ -15,7 +15,7 @@
     flex-grow: 1 !important;
 }
 .datetimerangepicker {
-    width: 360px;
+    min-width: 350px;
     height: 40px;
 }
 .datetimerangepicker .regular--text {
