@@ -11,9 +11,9 @@ public partial class Projects
         {
             return _teamId;
         }
-        set 
-        { 
-            if(_teamId != value)
+        set
+        {
+            if (_teamId != value)
             {
                 _teamId = value;
                 OnTeamChangeAsync();
@@ -26,18 +26,18 @@ public partial class Projects
 
     private string _projectName = string.Empty;
     private List<ProjectDto> _projects = new();
-    private string _selectedProjectIdentity = null!;
+    private string _selectedProjectIdentity = string.Empty;
     private Guid? _teamId = null;
 
     public string SelectedProjectIdentity
     {
-        get 
-        { 
-            return _selectedProjectIdentity; 
+        get
+        {
+            return _selectedProjectIdentity;
         }
         set
         {
-            if(_selectedProjectIdentity != value)
+            if (_selectedProjectIdentity != value)
             {
                 _selectedProjectIdentity = value;
 
@@ -58,7 +58,7 @@ public partial class Projects
 
     private async Task GetProjectList()
     {
-        if(_teamId == null)
+        if (_teamId == null)
         {
             _projects = new();
             return;
@@ -69,10 +69,15 @@ public partial class Projects
         if (_projects.Any())
         {
             var project = _projects.FirstOrDefault();
-            SelectedProjectIdentity = project!.Identity;
-            if (project!=null)
+
+            NextTick(async () =>
             {
-               await OnProjectChanged.InvokeAsync(project);
+                await Task.Delay(1);
+                SelectedProjectIdentity = project!.Identity;
+            });
+            if (project != null)
+            {
+                await OnProjectChanged.InvokeAsync(project);
             }
         }
         else

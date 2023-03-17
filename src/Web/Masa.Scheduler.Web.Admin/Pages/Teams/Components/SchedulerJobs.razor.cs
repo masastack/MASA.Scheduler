@@ -578,7 +578,7 @@ public partial class SchedulerJobs : ProCompontentBase
         _queryStartTime = null;
         _queryJobName = string.Empty;
         _queryOrigin = string.Empty;
-        _queryTimeType = 0;
+        _queryTimeType = JobQueryTimeTypes.CreationTime;
         _queryStatus = 0;
         _queryJobType = 0;
         _page = 1;
