@@ -1,9 +1,10 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+
 namespace Masa.Scheduler.ApiGateways.Caller;
 
-public class SchedulerServerCaller : HttpClientCallerBase
+public class SchedulerServerCaller : StackHttpClientCaller
 {
     SchedulerJobService? _schedulerJobService;
     AuthService? _authService;
@@ -12,7 +13,6 @@ public class SchedulerServerCaller : HttpClientCallerBase
     SchedulerResourceService? _schedulerResourceService;
     OssService? _ossService;
     SchedulerServerManagerService? _schedulerServerManagerService;
-    TokenProvider _tokenProvider;
 
     public SchedulerJobService SchedulerJobService => _schedulerJobService ??= new(Caller);
 
@@ -28,24 +28,10 @@ public class SchedulerServerCaller : HttpClientCallerBase
 
     public SchedulerServerManagerService SchedulerServerManagerService => _schedulerServerManagerService ??= new(Caller);
 
-    public SchedulerServerCaller(
-        IServiceProvider serviceProvider,
-        TokenProvider tokenProvider,
-        SchedulerApiOptions options) : base(serviceProvider)
+    public SchedulerServerCaller(SchedulerApiOptions options)
     {
         BaseAddress = options.SchedulerServerBaseAddress;
-        _tokenProvider = tokenProvider;
     }
 
     protected override string BaseAddress { get; set; }
-
-    protected override async Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
-    {
-        if (!string.IsNullOrWhiteSpace(_tokenProvider.AccessToken))
-        {
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _tokenProvider.AccessToken);
-        }
-
-        await base.ConfigHttpRequestMessageAsync(requestMessage);
-    }
 }
