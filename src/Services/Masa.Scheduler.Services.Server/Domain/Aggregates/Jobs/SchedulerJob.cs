@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
-using static Quartz.Logging.OperationName;
-
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
 public class SchedulerJob : FullAggregateRoot<Guid, Guid>
