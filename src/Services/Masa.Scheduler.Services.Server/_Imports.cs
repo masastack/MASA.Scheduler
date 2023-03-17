@@ -113,3 +113,4 @@ global using Masa.Contrib.StackSdks.Middleware;
 global using Microsoft.EntityFrameworkCore.Design;
 global using Masa.Contrib.StackSdks.Caller;
 global using FluentValidation.Resources;
+global using Masa.BuildingBlocks.StackSdks.Alert;

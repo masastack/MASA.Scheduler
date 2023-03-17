@@ -62,6 +62,8 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
     public string NotifyUrl { get; private set; } = string.Empty;
 
+    public Guid AlarmRuleId { get; private set; }
+
     public DateTimeOffset UpdateExpiredStrategyTime { get; private set; } = DateTimeOffset.MinValue;
 
     public DateTimeOffset LastScheduleTime { get; private set; } = DateTimeOffset.MinValue;
@@ -201,6 +203,11 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         }
     }
 
+    public void UpsertAlarmRule(NotificationConfig notificationConfig)
+    {
+        AddDomainEvent(new UpsertAlarmRuleDomainEvent(Id, notificationConfig));  
+    }
+    
     public void ChangeEnableStatus(bool enabled)
     {
         Enabled = enabled;
