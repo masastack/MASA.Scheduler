@@ -1,9 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Scheduler.Web.Admin.Model;
+namespace Masa.Scheduler.Contracts.Server.Dtos;
 
-public class NotificationConfigViewModel
+public class NotificationConfigDto
 {
     public string ChannelCode { get; set; } = default!;
 

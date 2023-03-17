@@ -1,7 +1,7 @@
 ﻿@inherits ProCompontentBase
 <MRow NoGutters Class="@Class">
-    <MCol Md="5" @onclick="HandleTemplateClick">
-        <STextField @bind-Value="Value.TemplateName" Label="@T("MessageTemplate")" Readonly BackgroundColor="@ItemBackgroundColor">
+    <MCol @onclick="HandleTemplateClick">
+        <STextField @bind-Value="Value.TemplateName" Label="@T("MessageTemplate")" Readonly Dense Outlined BackgroundColor="@ItemBackgroundColor">
             <PrependContent>
                 @if (!string.IsNullOrEmpty(PrependText))
                 {
@@ -10,8 +10,8 @@
             </PrependContent>
         </STextField>
     </MCol>
-    <MCol Md="7">
-        <UserAutoComplete @bind-Value="Value.Receivers" Class="ml-2" Label="@T("Receiver")"></UserAutoComplete>
+    <MCol>
+        <UserAutoComplete @bind-Value="Value.Receivers" Class="ml-6" Label="@T("Receiver")"></UserAutoComplete>
         <MInput @bind-Value="Value.Receivers" />
     </MCol>
 </MRow>
@@ -66,7 +66,7 @@
 
 @code {
     [Parameter]
-    public NotificationConfigViewModel Value { get; set; } = new();
+    public NotificationConfigDto Value { get; set; } = new();
 
     [Parameter]
     public string PrependText { get; set; } = string.Empty;
