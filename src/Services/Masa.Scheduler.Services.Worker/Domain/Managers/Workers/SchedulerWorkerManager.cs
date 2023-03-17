@@ -3,13 +3,14 @@
 
 namespace Masa.Scheduler.Services.Worker.Managers.Workers;
 
-public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>
+public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>, IDisposable
 {
     private ILogger<SchedulerWorkerManager> _logger;
 
     private readonly TaskHanlderFactory _taskHandlerFactory;
 
     private readonly SchedulerLogger _schedulerLogger;
+    private readonly SchedulerWorkerManagerData _schedulerWorkerManagerData;
 
     public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory,
         IDistributedCacheClient redisCacheClient,
@@ -33,6 +34,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         _logger = logger;
         _taskHandlerFactory = taskHandlerFactory;
         _schedulerLogger = schedulerLogger;
+        _schedulerWorkerManagerData = data;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_WORKER_MANAGER_API}/heartbeat";
@@ -53,14 +55,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             throw new UserFriendlyException("Job cannot be null");
         }
 
-        await using var scope = ServiceProvider.CreateAsyncScope();
-
-        var provider = scope.ServiceProvider;
-
-        var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
-
         _schedulerLogger.LogInformation($"Task Enqueue", WriterTypes.Worker, @event.TaskId, @event.Job.Id);
-        data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime });
+        _schedulerWorkerManagerData.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime });
     }
 
     public override async Task OnManagerStartAsync()
@@ -83,11 +79,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         {
             while (true)
             {
-                await using var scope = ServiceProvider.CreateAsyncScope();
-
-                var provider = scope.ServiceProvider;
-
-                var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
+                var data = _schedulerWorkerManagerData;
 
                 try
                 {
@@ -135,7 +127,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         return Task.CompletedTask;
     }
 
-    public Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
+    private Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
     {
         var cts = new CancellationTokenSource();
         var internalCts = new CancellationTokenSource();
@@ -154,17 +146,15 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             {
                 _schedulerLogger.LogInformation($"Task Cancel", WriterTypes.Worker, taskId, job.Id);
 
-                await using var scope = ServiceProvider.CreateAsyncScope();
+                var data = _schedulerWorkerManagerData;
 
-                var _data = scope.ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
-
-                if (!_data.StopTask.Contains(taskId) && job.RunTimeoutSecond > 0 && (DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
+                if (!data.StopTask.Contains(taskId) && job.RunTimeoutSecond > 0 && (DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
                 {
                     await NotifyTaskRunResult(TaskRunStatus.Timeout, taskId, job.Id);
                 }
                 else
                 {
-                    _data.InternalCancellationTokenSources.TryGetValue(taskId, out var internalCancellationToken);
+                    data.InternalCancellationTokenSources.TryGetValue(taskId, out var internalCancellationToken);
                     internalCancellationToken?.Cancel();
                 }
             }
@@ -181,9 +171,10 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         _ = Task.Run(async () =>
         {
-            await using var scope = ServiceProvider.CreateAsyncScope();
-            var provider = scope.ServiceProvider;
-            var managerData = provider.GetRequiredService<SchedulerWorkerManagerData>();
+            //await using var scope = ServiceProvider.CreateAsyncScope();
+            //var provider = scope.ServiceProvider;
+            //var managerData = provider.GetRequiredService<SchedulerWorkerManagerData>();
+            var managerData = _schedulerWorkerManagerData;
 
             try
             {
@@ -211,11 +202,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     public async Task StopTaskAsync(StopTaskIntegrationEvent @event)
     {
-        await using var scope = ServiceProvider.CreateAsyncScope();
-
-        var provider = scope.ServiceProvider;
-
-        var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
+        var data = _schedulerWorkerManagerData;
 
         if (@event.ServiceId == data.ServiceId)
         {
@@ -244,8 +231,11 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         await using var scope = ServiceProvider.CreateAsyncScope();
         var eventBus = scope.ServiceProvider.GetRequiredService<IIntegrationEventBus>();
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        unitOfWork.UseTransaction = false;
         await eventBus.PublishAsync(@event);
+    }
+
+    public void Dispose()
+    {
+        Console.WriteLine("客户端被释放");
     }
 }
