@@ -7,11 +7,18 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSchedulerApiGateways(this IServiceCollection services, Action<SchedulerApiOptions>? configs = null)
     {
-        var option = new SchedulerApiOptions();
-
-        configs?.Invoke(option);
-        services.AddSingleton(option);
-        services.AddAutoRegistrationCaller(Assembly.Load("Masa.Scheduler.ApiGateways.Caller"));
+        services.AddSingleton<IResponseMessage, SchedulerResponseMessage>();
+        var options = new SchedulerApiOptions();
+        configs?.Invoke(options);
+        services.AddSingleton(options);
+        services.AddStackCaller(Assembly.Load("Masa.Scheduler.ApiGateways.Caller"), (serviceProvider) => { return new TokenProvider(); }, jwtTokenValidatorOptions =>
+        {
+            jwtTokenValidatorOptions.AuthorityEndpoint = options.AuthorityEndpoint;
+        }, clientRefreshTokenOptions =>
+        {
+            clientRefreshTokenOptions.ClientId = options.ClientId;
+            clientRefreshTokenOptions.ClientSecret = options.ClientSecret;
+        });
         return services;
     }
 }

@@ -45,3 +45,4 @@ global using System.Text.Json;
 global using static Masa.Stack.Components.JsInitVariables;
 global using Masa.BuildingBlocks.SearchEngine.AutoComplete;
 global using Masa.BuildingBlocks.StackSdks.Auth;
+global using Masa.Contrib.StackSdks.Caller;
