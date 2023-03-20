@@ -106,5 +106,6 @@
   "CronExpressionNotHasNextRunTime": "Cannot calculate the next run time from this expression",
   "ExpectedNextRunTime": "Expected next 5 run times",
   "UploadFileFailed": "Upload files failed, please reupload",
-  "UploadComplete": "Upload complete"
+  "UploadComplete": "Upload complete",
+  "Ago": " ago"
 }

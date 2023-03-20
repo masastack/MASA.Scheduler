@@ -388,8 +388,8 @@ public partial class SchedulerJobs : ProCompontentBase
             case TaskRunStatus.Success:
             case TaskRunStatus.Failure:
             case TaskRunStatus.Timeout:
-            case TaskRunStatus.TimeoutSuccess:
-                return job.LastRunEndTime.Humanize(culture: LanguageProvider.Culture) + T(job.LastRunStatus.ToString());
+            case TaskRunStatus.TimeoutSuccess: 
+                return TimeSpan.FromMilliseconds((DateTime.UtcNow - job.LastRunEndTime).TotalMilliseconds).Humanize(culture: LanguageProvider.Culture, minUnit: TimeUnit.Second, maxUnit: TimeUnit.Year) + T("Ago") + T(job.LastRunStatus.ToString());
         }
 
         return "";
