@@ -11,8 +11,9 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddDaprStarter(opt =>
     {
         opt.AppId = "masa-scheduler-service-server";
-        opt.AppIdSuffix = "";
+        //opt.AppIdSuffix = "";
         opt.AppPort = 19601;
+        opt.DaprGrpcPort = 19501;
     }, false);
 }
 
@@ -28,8 +29,8 @@ builder.Services.AddObservable(builder.Logging, () =>
 {
     return masaStackConfig.OtlpUrl;
 });
-
-var quartzConnectString = masaStackConfig.GetConnectionString(AppSettings.Get("DBName"));
+var connectString = "Server=.;Database=scheduler_dev;User Id=sa;Password=Tcsnwzh425;";
+var quartzConnectString = connectString;
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 
@@ -144,7 +145,7 @@ builder.Services
         })
         .UseIsolationUoW<SchedulerDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
-            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
+            dbOptions => dbOptions.UseSqlServer(connectString).UseFilter())
         .UseRepository<SchedulerDbContext>();
     });
 builder.Services.AddStackMiddleware();
