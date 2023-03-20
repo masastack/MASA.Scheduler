@@ -149,6 +149,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         Description = dto.Description;
         UpdateExpiredStrategyTime = dto.UpdateExpiredStrategyTime;
         NotifyUrl = dto.NotifyUrl;
+        AlarmRuleId = dto.AlarmRuleId;
 
         switch (dto.JobType)
         {
@@ -200,10 +201,10 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         }
     }
 
-    public void UpsertAlarmRule(NotificationConfig notificationConfig)
-    {
-        AddDomainEvent(new UpsertAlarmRuleDomainEvent(Id, notificationConfig));  
-    }
+    //public void UpsertAlarmRule(NotificationConfig notificationConfig)
+    //{
+    //    AddDomainEvent(new UpsertAlarmRuleDomainEvent(Id, notificationConfig));  
+    //}
     
     public void ChangeEnableStatus(bool enabled)
     {

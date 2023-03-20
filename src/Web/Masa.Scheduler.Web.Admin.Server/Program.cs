@@ -49,7 +49,7 @@ schedulerBaseAddress = "https://localhost:19611";
 var signalRBaseAddress = schedulerBaseAddress + "/server-hub/notifications";
 
 builder.AddMasaStackComponentsForServer("wwwroot/i18n", authBaseAddress, mcBaseAddress);
-
+builder.Services.AddTscClient(masaStackConfig.GetTscServiceDomain()).AddAlertClient(masaStackConfig.GetAlertServiceDomain());
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddMapster();

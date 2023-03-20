@@ -1,6 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Scheduler.Web.Admin.Components.AlarmRules;
+using Nest;
+
 namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
 public partial class JobModal
@@ -102,6 +105,8 @@ public partial class JobModal
     private string _nextRunTimeStr = string.Empty;
 
     private string _tempCron = string.Empty;
+
+    private LogAlarmRuleUpsertModal? _logUpsertModal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -553,6 +558,38 @@ public partial class JobModal
     {
         _visible = false;
         ResetForm();
+    }
+
+    private async Task HandleAlarmRuleUpsert()
+    {
+
+    }
+
+    private async Task HandleAlertException()
+    {
+        if (_logUpsertModal != null && Model.IsAlertException)
+        {
+            var alarmRule = new AlarmRuleUpsertViewModel
+            {
+                Type = AlarmRuleType.Log,
+                ProjectIdentity = "scheduler",
+                AppIdentity = "masa-scheduler-service-worker",
+                CheckFrequency = new CheckFrequencyModel
+                {
+                    Type = AlarmCheckFrequencyType.Cron,
+                    CronExpression = Model.CronExpression
+                },
+                IsEnabled = true,
+                LogMonitorItems = new List<LogMonitorItemModel> {
+                    new LogMonitorItemModel {
+                        Field = "Attributes.JobId",
+                        AggregationType = LogAggregationType.Count,
+                        Alias = "JobId"
+                    }
+                }
+            };
+            await _logUpsertModal.OpenModalAsync(Model.Id, alarmRule);
+        }
     }
 }
 

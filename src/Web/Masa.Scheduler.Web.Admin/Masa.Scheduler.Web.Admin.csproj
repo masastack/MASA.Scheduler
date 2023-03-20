@@ -23,6 +23,7 @@
     <PackageReference Include="Masa.Stack.Components" Version="0.0.267" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.2" />
     <PackageReference Include="Quartz.AspNetCore" Version="3.6.2" />
+	<PackageReference Include="Masa.Contrib.StackSdks.Alert" Version="$(MasaFrameworkPackageVersion)" />
   </ItemGroup>
 	
   <ItemGroup>

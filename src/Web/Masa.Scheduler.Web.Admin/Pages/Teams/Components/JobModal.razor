@@ -37,7 +37,7 @@
                                     </MRow>
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
-                                            <MSwitch @bind-Value="Model.IsAlertException" Label="@T("IsAlertException")" Style="padding-top: 0px; margin-top:0px;" Class="ml-3"></MSwitch>
+                                            <MSwitch @bind-Value="Model.IsAlertException" Label="@T("IsAlertException")" Class="ml-3 pt-0 mt-0" TValue="bool" OnChange="HandleAlertException"></MSwitch>
                                         </MCol>
                                     </MRow>
 
@@ -144,21 +144,6 @@
                                     </div>
                                 </FooterContent>
                             </AutoHeight>
-
-                            @*<div class="full-height flex-column">
-
-                            <div class="mt-2" style="overflow-y: auto;overflow-x: hidden;max-height: 740px;">
-                            <div class="d-flex mt-2 mr-2">
-                            <MSpacer></MSpacer>
-                            @if (Model.Id == Guid.Empty)
-                            {
-                            <SButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep" Text>@T("PreviousStep")</SButton>
-                            }
-                            <SButton Color="primary" Class="small-button ml-6" OnClick="() => NextStep(context)">@T("NextStep")</SButton>
-                            </div>
-                            </div>
-
-                            </div>*@
                         </MForm>
                     </MStepperContent>
                     <MStepperContent Step="3" Class="full-height pa-0">
@@ -370,3 +355,5 @@
         </PCron>
     </SSimpleModal>
 </div>
+
+<LogAlarmRuleUpsertModal @ref="_logUpsertModal" OnOk="HandleAlarmRuleUpsert" />
