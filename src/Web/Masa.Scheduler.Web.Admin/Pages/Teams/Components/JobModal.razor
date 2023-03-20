@@ -41,11 +41,6 @@
                                         </MCol>
                                     </MRow>
 
-                                    @if (Model.IsAlertException)
-                                    {
-                                        <NotificationConfig @bind-value="Model.NotificationConfig" Class="mt-9"></NotificationConfig>
-                                    }
- 
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
                                             <SSelect Value="Model.ScheduleType" ValueExpression="()=>Model.ScheduleType" TValue="ScheduleTypes" TItemValue="ScheduleTypes" TItem="KeyValuePair<string,ScheduleTypes>" ValueChanged="OnScheduleTypeChanged" Label="@T("ScheduleType")" HideDetails="@("auto")" SingleLine Attach="true" Dense Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">

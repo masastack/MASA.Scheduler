@@ -49,6 +49,10 @@ public partial class LogAlarmRuleUpsertModal : ProCompontentBase
         {
             await GetFormDataAsync();
         }
+        else
+        {
+            await HandleProjectChange();
+        }
 
         FillData();
 

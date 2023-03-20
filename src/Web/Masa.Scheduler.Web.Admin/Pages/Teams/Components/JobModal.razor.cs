@@ -1,8 +1,10 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.StackSdks.Config;
+using Masa.Contrib.StackSdks.Config;
 using Masa.Scheduler.Web.Admin.Components.AlarmRules;
-using Nest;
+using System.Linq.Expressions;
 
 namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
@@ -64,6 +66,9 @@ public partial class JobModal
     [Parameter]
     public EventCallback<Task> OnAfterDataChange { get; set; }
 
+    [Inject]
+    public IMasaStackConfig MasaStackConfig { get; set; } = default!;
+
     private List<WorkerModel> _workerList = new();
 
     private bool _visible;
@@ -107,6 +112,8 @@ public partial class JobModal
     private string _tempCron = string.Empty;
 
     private LogAlarmRuleUpsertModal? _logUpsertModal;
+
+    private Guid _jobId = Guid.NewGuid();
 
     protected override async Task OnInitializedAsync()
     {
@@ -315,6 +322,7 @@ public partial class JobModal
 
             if (_isAdd)
             {
+                Model.Id = _jobId;
                 var request = new AddSchedulerJobRequest()
                 {
                     Data = Model
@@ -560,24 +568,31 @@ public partial class JobModal
         ResetForm();
     }
 
-    private async Task HandleAlarmRuleUpsert()
+    private void HandleAlarmRuleUpsert(Guid alarmRuleId)
     {
-
+        Model.AlarmRuleId = alarmRuleId;
     }
 
     private async Task HandleAlertException()
     {
         if (_logUpsertModal != null && Model.IsAlertException)
         {
+            var whereExpression = $@"{{""bool"":{{""must"":[{{""term"":{{""Attributes.JobId.keyword"":""{_jobId}""}}}},{{""term"":{{""SeverityText.keyword"":""Error""}}}}]}}}}";
+            var ruleExpression = @"{""Rules"":[{""RuleName"":""CheckWorkerErrorJob"",""ErrorMessage"":""Log with error level."",""ErrorType"":""Error"",""RuleExpressionType"":""LambdaExpression"",""Expression"":""JobId > 0""}]}";
             var alarmRule = new AlarmRuleUpsertViewModel
             {
                 Type = AlarmRuleType.Log,
+                DisplayName = Model.Name,
                 ProjectIdentity = "scheduler",
-                AppIdentity = "masa-scheduler-service-worker",
+                AppIdentity = MasaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
                 CheckFrequency = new CheckFrequencyModel
                 {
                     Type = AlarmCheckFrequencyType.Cron,
-                    CronExpression = Model.CronExpression
+                    CronExpression = "* 0/10 * * * ? ",
+                    FixedInterval = new TimeIntervalModel
+                    {
+                        IntervalTimeType = TimeType.Minute
+                    }
                 },
                 IsEnabled = true,
                 LogMonitorItems = new List<LogMonitorItemModel> {
@@ -586,9 +601,24 @@ public partial class JobModal
                         AggregationType = LogAggregationType.Count,
                         Alias = "JobId"
                     }
+                },
+                WhereExpression = whereExpression,
+                Items = new List<AlarmRuleItemModel> {
+                    new AlarmRuleItemModel {
+                        Expression=ruleExpression,
+                        AlertSeverity = AlertSeverity.High
+                    }
+                },
+                SilenceCycle = new SilenceCycleModel
+                {
+                    Type = SilenceCycleType.Time,
+                    TimeInterval = new TimeIntervalModel
+                    {
+                        IntervalTimeType = TimeType.Minute
+                    }
                 }
             };
-            await _logUpsertModal.OpenModalAsync(Model.Id, alarmRule);
+            await _logUpsertModal.OpenModalAsync(Model.AlarmRuleId, alarmRule);
         }
     }
 }

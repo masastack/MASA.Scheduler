@@ -81,7 +81,5 @@ public class SchedulerJobDto
 
     public string NotifyUrl { get; set; } = string.Empty;
 
-    public NotificationConfigDto NotificationConfig { get; set; } = new();
-
     public Guid AlarmRuleId { get; set; }
 }
