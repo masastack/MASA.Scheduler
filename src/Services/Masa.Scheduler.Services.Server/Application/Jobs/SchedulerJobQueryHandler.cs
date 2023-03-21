@@ -94,7 +94,7 @@ public class SchedulerJobQueryHandler
 
                 if (user != null)
                 {
-                    item.UserName = user.Name;
+                    item.UserName = user.DisplayName ?? user.Name;
                     item.Avator = user.Avatar;
                 }
             }
