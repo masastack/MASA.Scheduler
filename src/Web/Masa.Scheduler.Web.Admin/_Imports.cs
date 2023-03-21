@@ -57,3 +57,4 @@ global using Mapster;
 global using Masa.BuildingBlocks.StackSdks.Config;
 global using Masa.Contrib.StackSdks.Config;
 global using Masa.Scheduler.Web.Admin.Components.AlarmRules;
+global using Humanizer.Localisation;
