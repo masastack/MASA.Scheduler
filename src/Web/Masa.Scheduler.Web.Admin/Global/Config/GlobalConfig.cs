@@ -12,7 +12,6 @@ public class GlobalConfig
     private bool _expandOnHover;
     private bool _navigationMini;
     private string? _favorite;
-    private NavModel? _currentNav;
     private CookieStorage? _cookieStorage;
     private bool _loading;
 
@@ -70,15 +69,6 @@ public class GlobalConfig
         }
     }
 
-    public NavModel? CurrentNav
-    {
-        get => _currentNav;
-        set
-        {
-            _currentNav = value;
-            OnCurrentNavChanged?.Invoke();
-        }
-    }
     public bool Loading
     {
         get => _loading;

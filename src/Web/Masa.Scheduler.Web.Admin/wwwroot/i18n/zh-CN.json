@@ -265,6 +265,11 @@
     "NextRunTimeTip": "预计未来5次检查时间：",
     "IntervalTime": "间隔时间",
     "IntervalTimeType": "间隔时间类型",
-    "SilenceCycleValue": "沉默周期"
+    "SilenceCycleValue": "沉默周期",
+    "Serious": "严重",
+    "High": "高",
+    "Secondary": "中",
+    "Low": "低",
+    "Report": "报告"
   }
 }

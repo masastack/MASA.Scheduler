@@ -21,7 +21,6 @@ global using Masa.Scheduler.Contracts.Server.Requests.SchedulerTasks;
 global using Masa.Scheduler.Contracts.Server.Responses;
 global using Masa.Scheduler.Web.Admin.Data.Base;
 global using Masa.Scheduler.Web.Admin.Global;
-global using Masa.Scheduler.Web.Admin.Global.Nav.Model;
 global using Masa.Scheduler.Web.Admin.Model;
 global using Masa.Scheduler.Web.Admin.Pages.SchedulerResources.Components;
 global using Masa.Stack.Components;
