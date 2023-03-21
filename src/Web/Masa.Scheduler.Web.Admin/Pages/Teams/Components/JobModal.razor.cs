@@ -1,11 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Config;
-using Masa.Contrib.StackSdks.Config;
-using Masa.Scheduler.Web.Admin.Components.AlarmRules;
-using System.Linq.Expressions;
-
 namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
 public partial class JobModal

@@ -54,3 +54,6 @@ global using Masa.BuildingBlocks.StackSdks.Pm.Model;
 global using Masa.BuildingBlocks.StackSdks.Tsc;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model;
 global using Mapster;
+global using Masa.BuildingBlocks.StackSdks.Config;
+global using Masa.Contrib.StackSdks.Config;
+global using Masa.Scheduler.Web.Admin.Components.AlarmRules;

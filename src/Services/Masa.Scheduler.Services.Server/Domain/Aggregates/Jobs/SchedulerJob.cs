@@ -200,11 +200,6 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
             AddDomainEvent(new NotifyJobStatusDomainEvent(Id, NotifyUrl, status));
         }
     }
-
-    //public void UpsertAlarmRule(NotificationConfig notificationConfig)
-    //{
-    //    AddDomainEvent(new UpsertAlarmRuleDomainEvent(Id, notificationConfig));  
-    //}
     
     public void ChangeEnableStatus(bool enabled)
     {
