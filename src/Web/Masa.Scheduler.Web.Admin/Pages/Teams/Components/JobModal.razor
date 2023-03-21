@@ -1,7 +1,7 @@
 ﻿@inherits ProCompontentBase
 
 <div @ref="Ref">
-    <SSimpleModal Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(GetTitle())" Class="full-height" HeaderClass="mr-4">
+    <SSimpleModal Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(GetTitle())" Class="full-height" HeaderClass="mr-4" OnCancel="CloseModal">
         <ChildContent>
             <MStepper Value="_step" Class="d-flex flex-column full-height">
                 <MStepperItems Class="full-height">
@@ -37,12 +37,13 @@
                                     </MRow>
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
-                                            <MSwitch @bind-Value="Model.IsAlertException" Label="@T("IsAlertException")" Style="padding-top: 0px; margin-top:0px;" Class="ml-3"></MSwitch>
+                                            <MSwitch @bind-Value="Model.IsAlertException" Label="@T("IsAlertException")" Class="ml-3 pt-0 mt-0" TValue="bool" OnChange="HandleAlertException"></MSwitch>
                                         </MCol>
                                     </MRow>
+
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
-                                            <SSelect Value="Model.ScheduleType" ValueExpression="()=>Model.ScheduleType" TValue="ScheduleTypes" TItemValue="ScheduleTypes" TItem="KeyValuePair<string,ScheduleTypes>" ValueChanged="OnScheduleTypeChanged" Label="@T("ScheduleType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <SSelect Value="Model.ScheduleType" ValueExpression="()=>Model.ScheduleType" TValue="ScheduleTypes" TItemValue="ScheduleTypes" TItem="KeyValuePair<string,ScheduleTypes>" ValueChanged="OnScheduleTypeChanged" Label="@T("ScheduleType")" HideDetails="@("auto")" SingleLine Attach="true" Dense Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
                                         </MCol>
                                         @if (Model.ScheduleType == ScheduleTypes.Cron)
@@ -64,33 +65,38 @@
                                                         </pre>
                                         </div>
                                     }
+                                    <MRow NoGutters Class="mt-9">
+                                         <MCol>
+                                            <STextField @bind-Value="Model.NotifyUrl" Label="@T("JobNotifyUrl")" HideDetails="@("auto")" Dense Outlined />
+                                        </MCol>
+                                    </MRow>
                                     <DefaultTitle>@T("RunStrategy")</DefaultTitle>
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
-                                            <SSelect Value="Model.RoutingStrategy" ValueExpression="()=>Model.RoutingStrategy" ValueChanged="OnRoutingStrategyChanged" TValue="RoutingStrategyTypes" TItem="KeyValuePair<string, RoutingStrategyTypes>" TItemValue="RoutingStrategyTypes" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <SSelect Value="Model.RoutingStrategy" ValueExpression="()=>Model.RoutingStrategy" ValueChanged="OnRoutingStrategyChanged" TValue="RoutingStrategyTypes" TItem="KeyValuePair<string, RoutingStrategyTypes>" TItemValue="RoutingStrategyTypes" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
                                         </MCol>
                                         @if (Model.RoutingStrategy == RoutingStrategyTypes.Specified)
                                         {
                                             <MCol Md="6">
-                                                <SSelect Class="ml-6" @bind-Value="Model.SpecifiedWorkerHost" Label="Worker" HideDetails="@("auto")" Dense Outlined Clearable Items="_workerList" ItemText="worker => worker.GetServiceUrl()" ItemValue="worker=> worker.GetServiceUrl()">
+                                                <SSelect Class="ml-6" @bind-Value="Model.SpecifiedWorkerHost" Label="Worker" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="_workerList" ItemText="worker => worker.GetServiceUrl()" ItemValue="worker=> worker.GetServiceUrl()">
                                                 </SSelect>
                                             </MCol>
                                         }
                                     </MRow>
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
-                                            <SSelect @bind-Value="Model.ScheduleExpiredStrategy" Label="@T("ScheduleExpiredStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleExpiredStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <SSelect @bind-Value="Model.ScheduleExpiredStrategy" Label="@T("ScheduleExpiredStrategy")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<ScheduleExpiredStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
                                         </MCol>
                                         <MCol Md="6">
-                                            <SSelect Class="ml-6" @bind-Value="Model.ScheduleBlockStrategy" Label="@T("ScheduleBlockStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<ScheduleBlockStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <SSelect Class="ml-6" @bind-Value="Model.ScheduleBlockStrategy" Label="@T("ScheduleBlockStrategy")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<ScheduleBlockStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
                                         </MCol>
                                     </MRow>
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
-                                            <SSelect @bind-Value="Model.RunTimeoutStrategy" Label="@T("RunTimeoutStrategy")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<RunTimeoutStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <SSelect @bind-Value="Model.RunTimeoutStrategy" Label="@T("RunTimeoutStrategy")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<RunTimeoutStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
                                         </MCol>
                                         <MCol Md="6">
@@ -133,21 +139,6 @@
                                     </div>
                                 </FooterContent>
                             </AutoHeight>
-
-                            @*<div class="full-height flex-column">
-
-                            <div class="mt-2" style="overflow-y: auto;overflow-x: hidden;max-height: 740px;">
-                            <div class="d-flex mt-2 mr-2">
-                            <MSpacer></MSpacer>
-                            @if (Model.Id == Guid.Empty)
-                            {
-                            <SButton Outlined Color="primary" Class="small-button" OnClick="PreviousStep" Text>@T("PreviousStep")</SButton>
-                            }
-                            <SButton Color="primary" Class="small-button ml-6" OnClick="() => NextStep(context)">@T("NextStep")</SButton>
-                            </div>
-                            </div>
-
-                            </div>*@
                         </MForm>
                     </MStepperContent>
                     <MStepperContent Step="3" Class="full-height pa-0">
@@ -158,7 +149,7 @@
                                     <AutoHeightContent>
                                         <MRow NoGutters Class="mt-1">
                                             <MCol Md="6">
-                                                <SSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                            <SSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                                 </SSelect>
                                             </MCol>
                                         </MRow>
@@ -201,7 +192,7 @@
                                         }
                                         <MRow NoGutters Class="mt-9">
                                             <MCol Md="6">
-                                                <SSelect @bind-Value="Model.HttpConfig.HttpVerifyType" Label="@T("HttpVerifyType")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<HttpVerifyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=> kv.Value">
+                                            <SSelect @bind-Value="Model.HttpConfig.HttpVerifyType" Label="@T("HttpVerifyType")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpVerifyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=> kv.Value">
                                                 </SSelect>
                                             </MCol>
                                         </MRow>
@@ -236,7 +227,7 @@
                                     <AutoHeightContent>
                                         <MRow NoGutters Class="mt-1">
                                             <MCol Md="6">
-                                                <SSelect Value="Model.JobAppConfig.JobAppIdentity" ValueExpression="()=> Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="_jobApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
+                                            <SSelect Value="Model.JobAppConfig.JobAppIdentity" ValueExpression="()=> Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="_jobApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                                 </SSelect>
                                             </MCol>
                                         </MRow>
@@ -273,7 +264,7 @@
                                             @if (_resourceVersionType == ResourceVersionTypes.SpecifiedVersion)
                                             {
                                                 <MCol Md="6">
-                                                    <SSelect @bind-Value="Model.JobAppConfig.Version" Label="@T("ResourceVersion")" HideDetails="@("auto")" Dense Outlined Clearable Items="_versionList" ItemText="version => version" ItemValue="version=> version">
+                                                    <SSelect @bind-Value="Model.JobAppConfig.Version" Label="@T("ResourceVersion")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="_versionList" ItemText="version => version" ItemValue="version=> version">
                                                     </SSelect>
                                                 </MCol>
                                             }
@@ -303,7 +294,7 @@
                                     <AutoHeightContent>
                                         <MRow NoGutters Class="mt-1">
                                             <MCol Md="6">
-                                                <SSelect Value="Model.DaprServiceInvocationConfig.DaprServiceIdentity" TValue="string" TItemValue="string" TItem="ProjectAppDto" ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Dense Outlined Clearable Items="_serviceApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
+                                                <SSelect Value="Model.DaprServiceInvocationConfig.DaprServiceIdentity" TValue="string" TItemValue="string" TItem="ProjectAppDto" ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="_serviceApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                                 </SSelect>
                                             </MCol>
                                         </MRow>
@@ -321,7 +312,7 @@
                                         </MRow>
                                         <MRow NoGutters Class="mt-9">
                                             <MCol Md="6">
-                                                <SSelect @bind-Value="Model.DaprServiceInvocationConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                                <SSelect @bind-Value="Model.DaprServiceInvocationConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                                 </SSelect>
                                             </MCol>
                                         </MRow>
@@ -359,3 +350,5 @@
         </PCron>
     </SSimpleModal>
 </div>
+
+<LogAlarmRuleUpsertModal @ref="_logUpsertModal" OnOk="HandleAlarmRuleUpsert" />

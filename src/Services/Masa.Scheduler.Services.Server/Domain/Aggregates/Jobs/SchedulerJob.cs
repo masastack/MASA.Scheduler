@@ -57,6 +57,10 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
 
     public string Origin { get; private set; } = string.Empty;
 
+    public string NotifyUrl { get; private set; } = string.Empty;
+
+    public Guid AlarmRuleId { get; private set; }
+
     public DateTimeOffset UpdateExpiredStrategyTime { get; private set; } = DateTimeOffset.MinValue;
 
     public DateTimeOffset LastScheduleTime { get; private set; } = DateTimeOffset.MinValue;
@@ -144,6 +148,8 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         FailedRetryCount = dto.FailedRetryCount;
         Description = dto.Description;
         UpdateExpiredStrategyTime = dto.UpdateExpiredStrategyTime;
+        NotifyUrl = dto.NotifyUrl;
+        AlarmRuleId = dto.AlarmRuleId;
 
         switch (dto.JobType)
         {
@@ -178,15 +184,27 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
             case TaskRunStatus.Success:
             case TaskRunStatus.TimeoutSuccess:
             case TaskRunStatus.Timeout:
+                NotifyJobStatus(JobNotifyStatus.Timeout);
+                break;
             case TaskRunStatus.Failure:
                 LastRunEndTime = DateTimeOffset.Now;
+                NotifyJobStatus(JobNotifyStatus.Failure);
                 break;
         }
     }
 
+    public void NotifyJobStatus(JobNotifyStatus status)
+    {
+        if (!string.IsNullOrEmpty(NotifyUrl))
+        {
+            AddDomainEvent(new NotifyJobStatusDomainEvent(Id, NotifyUrl, status));
+        }
+    }
+    
     public void ChangeEnableStatus(bool enabled)
     {
         Enabled = enabled;
+        NotifyJobStatus(enabled ? JobNotifyStatus.Enabled : JobNotifyStatus.Disable);
     }
 
     public void SetJobAppConfig(SchedulerJobAppConfigDto? dto)

@@ -60,6 +60,7 @@ public partial class SchedulerTasks
     private ConfirmDialogTypes _confirmDialogType;
     private Guid _confirmTaskId;
     private List<string> _orginList = new();
+    List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
     private bool IsApiCreate => _job != null && !string.IsNullOrWhiteSpace(_job.Origin);
 
     private Task QueryStatusChanged(TaskRunStatus status)
@@ -172,8 +173,9 @@ public partial class SchedulerTasks
         };
 
         _queryStatusList = GetEnumMap<TaskRunStatus>();
-
         _queryStatusList.RemoveAll(p => p.Value == TaskRunStatus.Idle);
+
+        _jobQueryTimeTypeList = Enum.GetValues<JobQueryTimeTypes>().Where(t => t != JobQueryTimeTypes.CreationTime && t != JobQueryTimeTypes.ModificationTime).ToList();
 
         await base.OnInitializedAsync();
     }

@@ -1,0 +1,150 @@
+﻿@inherits ProCompontentBase
+<MRow NoGutters Class="@Class">
+    <MCol @onclick="HandleTemplateClick">
+        <STextField @bind-Value="Value.TemplateName" Label="@T("MessageTemplate")" Readonly Dense Outlined BackgroundColor="@ItemBackgroundColor">
+            <PrependContent>
+                @if (!string.IsNullOrEmpty(PrependText))
+                {
+                    <span class="default--text subtitle2 my-auto">@PrependText</span>
+                }
+            </PrependContent>
+        </STextField>
+    </MCol>
+    <MCol>
+        <UserAutoComplete @bind-Value="Value.Receivers" Class="ml-6" Label="@T("Receiver")"></UserAutoComplete>
+        <MInput @bind-Value="Value.Receivers" />
+    </MCol>
+</MRow>
+
+<SModal Value="@_visible" Title="@T("MessageTemplate")" HeaderClass="py-2" BodyClass="pt-0" OnSave="()=>_visible=false" OnCancel="()=>_visible=false">
+    <MRow Class="mt-0">
+        <MCol>
+            <SSelect @bind-Value="@Value.ChannelType"
+                     Items="Enum.GetValues<ChannelTypes>().ToList()"
+                     Label="@T("ChannelType")"
+                     ItemText="item => T(item.ToString())"
+                     ItemValue="item => (int)item"
+                     TItem="ChannelTypes"
+                     TItemValue="int"
+                     TValue="int"
+                     OnSelectedItemUpdate="HandleChannelTypeChangeAsync">
+            </SSelect>
+        </MCol>
+    </MRow>
+    <MRow Class="mt-6">
+        <MCol>
+            <SSelect @bind-Value="Value.ChannelCode"
+                     Items="@_channelItems"
+                     Label="@T("Channel")"
+                     ItemText="item => item.DisplayName"
+                     ItemValue="item => item.Code"
+                     TItem="ChannelModel"
+                     TItemValue="string"
+                     TValue="string"
+                     OnSelectedItemUpdate="HandleChannelChangeAsync">
+            </SSelect>
+        </MCol>
+    </MRow>
+    <MRow Class="mt-6">
+        <MCol>
+            <SAutoComplete Items="_templateItems" @bind-Value="Value.TemplateCode"
+                           Label="@T("Template")"
+                           ItemText="x=>x.DisplayName"
+                           ItemValue="x=>x.Code"
+                           Dense
+                           Outlined
+                           HideDetails="@("auto")"
+                           TItem="MessageTemplateModel"
+                           TItemValue="string"
+                           TValue="string"
+                           OnSelectedItemUpdate="HandleTemplateSelectedAsync">
+            </SAutoComplete>
+        </MCol>
+    </MRow>
+</SModal>
+
+
+@code {
+    [Parameter]
+    public NotificationConfigModel Value { get; set; } = new();
+
+    [Parameter]
+    public string PrependText { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ItemClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ItemBackgroundColor { get; set; } = string.Empty;
+
+    private List<string> _items = new();
+
+    [Inject]
+    public IMcClient McClient { get; set; } = default!;
+
+    private List<ChannelModel> _channelItems = new();
+    private List<MessageTemplateModel> _templateItems = new();
+    private Guid TemplateId = default;
+    private bool _visible = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadData();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task LoadData()
+    {
+        await HandleChannelTypeChangeAsync();
+        await HandleChannelChangeAsync();
+    }
+
+    private async Task HandleChannelTypeChangeAsync()
+    {
+        var input = new GetChannelModel()
+            {
+                Page = 1,
+                PageSize = 99,
+                Type = (ChannelTypes)Value.ChannelType
+            };
+
+        _channelItems = Value.ChannelType > 0 ? (await McClient.ChannelService.GetListAsync(input)).Result : new();
+    }
+
+    private async Task HandleChannelChangeAsync()
+    {
+        var channelId = _channelItems.FirstOrDefault(x => x.Code == Value.ChannelCode)?.Id;
+
+        if (channelId == null) return;
+
+        var input = new GetMessageTemplateModel
+            {
+                Page = 1,
+                PageSize = 99,
+                AuditStatus = MessageTemplateAuditStatuses.Approved,
+                ChannelId = channelId.Value
+            };
+
+        _templateItems = (await McClient.MessageTemplateService.GetListAsync(input)).Result;
+    }
+
+    private void HandleTemplateSelectedAsync(MessageTemplateModel item)
+    {
+        Value.TemplateCode = item.Code;
+        Value.TemplateName = item.DisplayName;
+    }
+
+    private async Task HandleTemplateClick()
+    {
+        await LoadData();
+
+        await InvokeAsync(() =>
+        {
+            _visible = true;
+            StateHasChanged();
+        });
+    }
+}

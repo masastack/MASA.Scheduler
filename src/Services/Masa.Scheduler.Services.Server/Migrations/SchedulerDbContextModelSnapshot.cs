@@ -63,11 +63,11 @@ namespace Masa.Scheduler.Services.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "EventId", "RowVersion" }, "index_eventid_version");
+                    b.HasIndex(new[] { "EventId", "RowVersion" }, "IX_EventId_Version");
 
-                    b.HasIndex(new[] { "State", "ModificationTime" }, "index_state_modificationtime");
+                    b.HasIndex(new[] { "State", "ModificationTime" }, "IX_State_MTime");
 
-                    b.HasIndex(new[] { "State", "TimesSent", "ModificationTime" }, "index_state_timessent_modificationtime");
+                    b.HasIndex(new[] { "State", "TimesSent", "ModificationTime" }, "IX_State_TimesSent_MTime");
 
                     b.ToTable("IntegrationEventLog", (string)null);
                 });
@@ -76,6 +76,9 @@ namespace Masa.Scheduler.Services.Server.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AlarmRuleId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BelongProjectIdentity")
@@ -162,6 +165,11 @@ namespace Masa.Scheduler.Services.Server.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NotifyUrl")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Origin")
                         .IsRequired()

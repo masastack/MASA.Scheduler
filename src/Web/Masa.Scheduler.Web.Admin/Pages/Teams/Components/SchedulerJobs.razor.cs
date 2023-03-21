@@ -96,6 +96,7 @@ public partial class SchedulerJobs : ProCompontentBase
     private SchedulerJobDto modalModel = new();
 
     private List<KeyValuePair<string, TaskRunStatus>> _queryStatusList = new();
+    List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
 
     private bool _showConfirmDialog;
 
@@ -225,8 +226,9 @@ public partial class SchedulerJobs : ProCompontentBase
         });
 
         _queryStatusList = GetEnumMap<TaskRunStatus>();
-
         _queryStatusList.RemoveAll(p => p.Value == TaskRunStatus.WaitToRun);
+
+        _jobQueryTimeTypeList = Enum.GetValues<JobQueryTimeTypes>().Where(t => t == JobQueryTimeTypes.CreationTime || t == JobQueryTimeTypes.ModificationTime).ToList();
 
         await base.OnInitializedAsync();
     }
@@ -386,8 +388,8 @@ public partial class SchedulerJobs : ProCompontentBase
             case TaskRunStatus.Success:
             case TaskRunStatus.Failure:
             case TaskRunStatus.Timeout:
-            case TaskRunStatus.TimeoutSuccess:
-                return job.LastRunEndTime.Humanize(culture: LanguageProvider.Culture) + T(job.LastRunStatus.ToString());
+            case TaskRunStatus.TimeoutSuccess: 
+                return TimeSpan.FromMilliseconds((DateTime.UtcNow - job.LastRunEndTime).TotalMilliseconds).Humanize(culture: LanguageProvider.Culture, minUnit: TimeUnit.Second, maxUnit: TimeUnit.Year) + T("Ago") + T(job.LastRunStatus.ToString());
         }
 
         return "";
@@ -576,7 +578,7 @@ public partial class SchedulerJobs : ProCompontentBase
         _queryStartTime = null;
         _queryJobName = string.Empty;
         _queryOrigin = string.Empty;
-        _queryTimeType = 0;
+        _queryTimeType = JobQueryTimeTypes.CreationTime;
         _queryStatus = 0;
         _queryJobType = 0;
         _page = 1;

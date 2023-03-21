@@ -83,9 +83,18 @@ public abstract class ProCompontentBase : BDomComponentBase
         return Enum.GetValues<TEnum>().Select(e => new KeyValuePair<string, TEnum>(e.ToString(), e)).ToList();
     }
 
+    protected virtual string? PageName { get; set; }
+
     public string T(string key)
     {
-        return LanguageProvider.T(key) ?? key;
+        if (string.IsNullOrEmpty(key)) return key;
+        if (PageName is not null) return LanguageProvider?.T(PageName, key, false) ?? LanguageProvider?.T(key, false) ?? key;
+        else return LanguageProvider?.T(key, true) ?? key;
+    }
+
+    public string T(string formatkey, params string[] args)
+    {
+        return string.Format(T(formatkey), args);
     }
 
     public async Task<bool> OpenConfirmDialog(string content)

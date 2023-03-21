@@ -14,3 +14,14 @@
 .full-height.d-flex.flex-column .m-data-table__wrapper {
     flex-grow: 1 !important;
 }
+.datetimerangepicker {
+    min-width: 350px;
+    height: 40px;
+}
+.datetimerangepicker .regular--text {
+    white-space: nowrap;
+}
+.datetimerangepicker .m-divider__wrapper {
+    margin: 8px 4px;
+    display: block !important;
+}

@@ -1,5 +1,5 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
-// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,29 +53,29 @@ builder.Services.AddMasaIdentity(options =>
 });
 
 builder.Services
-    .AddAuthorization()
-    .AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer("Bearer", options =>
-    {
-        options.Authority = identityServerUrl;
-        options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters.ValidateAudience = false;
-        options.MapInboundClaims = false;
-    });
+.AddAuthorization()
+.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer("Bearer", options =>
+{
+    options.Authority = identityServerUrl;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters.ValidateAudience = false;
+    options.MapInboundClaims = false;
+});
 
 var redisOptions = new RedisConfigurationOptions
 {
     Servers = new List<RedisServerOptions> {
-        new RedisServerOptions()
-        {
-            Host= masaStackConfig.RedisModel.RedisHost,
-            Port=   masaStackConfig.RedisModel.RedisPort
-        }
-    },
+new RedisServerOptions()
+{
+Host= masaStackConfig.RedisModel.RedisHost,
+Port= masaStackConfig.RedisModel.RedisPort
+}
+},
     DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
     Password = masaStackConfig.RedisModel.RedisPassword
 };
@@ -83,8 +83,9 @@ var redisOptions = new RedisConfigurationOptions
 builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
 
 builder.Services
-    .AddAuthClient(masaStackConfig.GetAuthServiceDomain(), redisOptions)
-    .AddPmClient(masaStackConfig.GetPmServiceDomain());
+.AddAuthClient(masaStackConfig.GetAuthServiceDomain(), redisOptions)
+.AddPmClient(masaStackConfig.GetPmServiceDomain())
+.AddAlertClient(masaStackConfig.GetAlertServiceDomain());
 
 builder.Services.AddMapster();
 builder.Services.AddServerManager();
@@ -92,20 +93,9 @@ builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR(redisOptions);
 builder.Services.AddQuartzUtils(quartzConnectString);
 builder.Services.AddSchedulerLogger();
+builder.Services.AddStackMiddleware();
 
-builder.Services.AddHealthChecks()
-    .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
-    .AddDbContextCheck<SchedulerDbContext>();
-
-builder.Services.AddScoped(service =>
-{
-    var content = service.GetRequiredService<IHttpContextAccessor>();
-    AuthenticationHeaderValue.TryParse(content.HttpContext?.Request.Headers.Authorization.ToString(), out var auth);
-    return new TokenProvider { AccessToken = auth?.Parameter };
-});
-
-builder.Services
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+var app = builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
     {
@@ -116,7 +106,7 @@ builder.Services
             Scheme = "Bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer xxxxxxxxxxxxxxx\"",
+            Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer xxxxxxxxxxxxxxx\"",
         });
         options.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
@@ -129,7 +119,7 @@ builder.Services
                         Id = "Bearer"
                     }
                 },
-                new string[] {}
+                Array.Empty<string>()
             }
         });
     })
@@ -143,17 +133,15 @@ builder.Services
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
         .UseIsolationUoW<SchedulerDbContext>(
-            isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
-            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
+        isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
+        dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
+    })
+    .AddServices(builder, options =>
+    {
+        options.MapHttpMethodsForUnmatched = new[] { "Post" };
     });
-builder.Services.AddStackMiddleware();
 await builder.Services.MigrateAsync();
-
-var app = builder.AddServices(options =>
-{
-    options.MapHttpMethodsForUnmatched = new string[] { "Post" };
-});
 app.UseMasaExceptionHandler(opt =>
 {
     opt.ExceptionHandler = context =>
@@ -165,7 +153,7 @@ app.UseMasaExceptionHandler(opt =>
     };
 });
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -173,13 +161,18 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseAddStackMiddleware();
+
 app.UseCloudEvents();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapSubscribeHandler();
     endpoints.MapHub<NotificationsHub>("/server-hub/notifications");
 });
+
+app.UseStackMiddleware();
+
 app.UseHttpsRedirection();
 
 app.Run();
+
+

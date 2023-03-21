@@ -5,9 +5,9 @@
 <AutoHeight Overflow>
     <HeaderContent>
         <MRow Class="flex-none fold d-inline-flex my-6" NoGutters>
-            <MCol Md="2">
+            <MCol Cols="2">
                 <SSelect Small @bind-Value="_queryTimeType"
-                         Items="Enum.GetValues<JobQueryTimeTypes>().ToList()"
+                         Items="_jobQueryTimeTypeList"
                          Label="@T("QueryTimeType")"
                          ItemText="e => T(e==default?string.Empty:e.ToString())"
                          ItemValue="e=> e"
@@ -15,10 +15,10 @@
                          Class="rounded-2 body2">
                 </SSelect>
             </MCol>
-            <MCol Md="5" Class="ml-6">
+            <MCol Cols="5" Class="ml-6">
                 <DateTimeRangePicker @bind-StartTime="_queryStartTime" @bind-EndTime="_queryEndTime" OnChange="()=>OnQueryDataChanged()" />
             </MCol>
-            <MCol Md="2" Class="ml-6">
+            <MCol Cols="2" Class="ml-6">
                 <SSelect Small Value="_queryOrigin" TItem="string" TItemValue="string" TValue="string" ValueChanged="QueryOriginChanged" Label="@T("Origin")" BackgroundColor="white" Class="rounded-2 body2" Clearable Items="_orginList" ItemText="origin => origin" ItemValue="origin=>origin">
                 </SSelect>
             </MCol>
