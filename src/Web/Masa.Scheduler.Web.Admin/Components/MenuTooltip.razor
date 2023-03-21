@@ -1,0 +1,22 @@
+﻿<MMenu OpenOnHover
+       CloseOnContentClick="false"
+       AllowOverflow
+       ContentClass="m-ellipsis-text__tooltip"
+       OffsetY>
+    <ActivatorContent>
+        <span @attributes="@context.Attrs">
+            <MIcon Class="@Class" Color="info" Size="16">mdi-help-circle-outline</MIcon>
+        </span>
+    </ActivatorContent>
+    <ChildContent>
+        @((MarkupString)Tooltip)
+    </ChildContent>
+</MMenu>
+
+@code {
+    [Parameter]
+    public string Tooltip { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+}

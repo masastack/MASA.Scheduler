@@ -80,4 +80,6 @@ public class SchedulerJobDto
     public DateTime ModificationTime { get; set; }
 
     public string NotifyUrl { get; set; } = string.Empty;
+
+    public Guid AlarmRuleId { get; set; }
 }

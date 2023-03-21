@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
-using static Quartz.Logging.OperationName;
-
 namespace Masa.Scheduler.Services.Server.Domain.Aggregates.Jobs;
 
 public class SchedulerJob : FullAggregateRoot<Guid, Guid>
@@ -61,6 +58,8 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
     public string Origin { get; private set; } = string.Empty;
 
     public string NotifyUrl { get; private set; } = string.Empty;
+
+    public Guid AlarmRuleId { get; private set; }
 
     public DateTimeOffset UpdateExpiredStrategyTime { get; private set; } = DateTimeOffset.MinValue;
 
@@ -150,6 +149,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         Description = dto.Description;
         UpdateExpiredStrategyTime = dto.UpdateExpiredStrategyTime;
         NotifyUrl = dto.NotifyUrl;
+        AlarmRuleId = dto.AlarmRuleId;
 
         switch (dto.JobType)
         {
@@ -200,7 +200,7 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
             AddDomainEvent(new NotifyJobStatusDomainEvent(Id, NotifyUrl, status));
         }
     }
-
+    
     public void ChangeEnableStatus(bool enabled)
     {
         Enabled = enabled;

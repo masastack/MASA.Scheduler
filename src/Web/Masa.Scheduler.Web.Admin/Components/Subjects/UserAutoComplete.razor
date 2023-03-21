@@ -1,0 +1,61 @@
+﻿@inherits ProCompontentBase
+
+<SAutoComplete Value="Value"
+               ValueChanged="ValueChanged"
+               TValue="List<Guid>"
+               TItem="UserSelectModel"
+               TItemValue="Guid"
+               Filter="FilterItem" NoFilter
+               Items="Users"
+                  Chips
+               OnSearchInputUpdate="QuerySelection"
+               Loading="_loading"
+               Disabled=Readonly
+               Label="@Label"
+               ItemText="t=>TextView(t)"
+               ItemValue="t=>t.Id"
+                  Multiple
+               Attach="true"
+               Class="@Class">
+    <SelectionContent Context="data">
+        <MChip Close OnCloseClick="()=>Remove(data.Item)">
+            @if (!string.IsNullOrEmpty(data.Item.Avatar))
+            {
+                <MAvatar Left>
+                <MImage Src="@data.Item.Avatar"></MImage>
+            </MAvatar>
+            }
+            <span class="body2 regular--text">
+                @data.Item.DisplayName
+            </span>
+        </MChip>
+    </SelectionContent>
+    <ItemContent Context="data">
+        @if (!string.IsNullOrEmpty(data.Item.Avatar))
+        {
+            <MListItemAvatar>
+                <img src="@data.Item.Avatar">
+            </MListItemAvatar>
+        }
+        <MListItemContent>
+            <MListItemTitle>
+                <span class="subtitle2 emphasis2--text">
+                    @data.Item.DisplayName
+                </span>
+                <MDivider Vertical Class="mx-1" Style="@((!string.IsNullOrEmpty(data.Item.DisplayName) && !string.IsNullOrEmpty(data.Item.Name))?"height:12px;":"height:0px;")" />
+                <span class="caption regular2--text">
+                    @data.Item.Name
+                </span>
+                </MListItemTitle>
+                <MListItemSubtitle>
+                <span class="body2 regular2--text">
+                    @data.Item.PhoneNumber
+                </span>
+                <MDivider Vertical Class="mx-1" Style="@((!string.IsNullOrEmpty(data.Item.PhoneNumber) && !string.IsNullOrEmpty(data.Item.Email))?"height:12px;":"height:0px;")" />
+                <span class="body2 regular2--text">
+                    @data.Item.Email
+                </span>
+                </MListItemSubtitle>
+                </MListItemContent>
+            </ItemContent>
+            </SAutoComplete>

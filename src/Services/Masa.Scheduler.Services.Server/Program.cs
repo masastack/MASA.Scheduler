@@ -84,7 +84,8 @@ builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCach
 
 builder.Services
 .AddAuthClient(masaStackConfig.GetAuthServiceDomain(), redisOptions)
-.AddPmClient(masaStackConfig.GetPmServiceDomain());
+.AddPmClient(masaStackConfig.GetPmServiceDomain())
+.AddAlertClient(masaStackConfig.GetAlertServiceDomain());
 
 builder.Services.AddMapster();
 builder.Services.AddServerManager();

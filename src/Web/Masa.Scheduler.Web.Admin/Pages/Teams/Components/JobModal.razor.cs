@@ -61,6 +61,9 @@ public partial class JobModal
     [Parameter]
     public EventCallback<Task> OnAfterDataChange { get; set; }
 
+    [Inject]
+    public IMasaStackConfig MasaStackConfig { get; set; } = default!;
+
     private List<WorkerModel> _workerList = new();
 
     private bool _visible;
@@ -102,6 +105,10 @@ public partial class JobModal
     private string _nextRunTimeStr = string.Empty;
 
     private string _tempCron = string.Empty;
+
+    private LogAlarmRuleUpsertModal? _logUpsertModal;
+
+    private Guid _jobId = Guid.NewGuid();
 
     protected override async Task OnInitializedAsync()
     {
@@ -310,6 +317,7 @@ public partial class JobModal
 
             if (_isAdd)
             {
+                Model.Id = _jobId;
                 var request = new AddSchedulerJobRequest()
                 {
                     Data = Model
@@ -553,6 +561,60 @@ public partial class JobModal
     {
         _visible = false;
         ResetForm();
+    }
+
+    private void HandleAlarmRuleUpsert(Guid alarmRuleId)
+    {
+        Model.AlarmRuleId = alarmRuleId;
+    }
+
+    private async Task HandleAlertException()
+    {
+        if (_logUpsertModal != null && Model.IsAlertException)
+        {
+            var whereExpression = $@"{{""bool"":{{""must"":[{{""term"":{{""Attributes.JobId.keyword"":""{_jobId}""}}}},{{""term"":{{""SeverityText.keyword"":""Error""}}}}]}}}}";
+            var ruleExpression = @"{""Rules"":[{""RuleName"":""CheckWorkerErrorJob"",""ErrorMessage"":""Log with error level."",""ErrorType"":""Error"",""RuleExpressionType"":""LambdaExpression"",""Expression"":""JobId > 0""}]}";
+            var alarmRule = new AlarmRuleUpsertViewModel
+            {
+                Type = AlarmRuleType.Log,
+                DisplayName = Model.Name,
+                ProjectIdentity = "scheduler",
+                AppIdentity = MasaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
+                CheckFrequency = new CheckFrequencyModel
+                {
+                    Type = AlarmCheckFrequencyType.Cron,
+                    CronExpression = "* 0/10 * * * ? ",
+                    FixedInterval = new TimeIntervalModel
+                    {
+                        IntervalTimeType = TimeType.Minute
+                    }
+                },
+                IsEnabled = true,
+                LogMonitorItems = new List<LogMonitorItemModel> {
+                    new LogMonitorItemModel {
+                        Field = "Attributes.JobId",
+                        AggregationType = LogAggregationType.Count,
+                        Alias = "JobId"
+                    }
+                },
+                WhereExpression = whereExpression,
+                Items = new List<AlarmRuleItemModel> {
+                    new AlarmRuleItemModel {
+                        Expression=ruleExpression,
+                        AlertSeverity = AlertSeverity.High
+                    }
+                },
+                SilenceCycle = new SilenceCycleModel
+                {
+                    Type = SilenceCycleType.Time,
+                    TimeInterval = new TimeIntervalModel
+                    {
+                        IntervalTimeType = TimeType.Minute
+                    }
+                }
+            };
+            await _logUpsertModal.OpenModalAsync(Model.AlarmRuleId, alarmRule);
+        }
     }
 }
 
