@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Stack.Components.Extensions;
+
 namespace Masa.Scheduler.Web.Admin;
 
 public abstract class ProCompontentBase : BDomComponentBase
@@ -99,17 +101,17 @@ public abstract class ProCompontentBase : BDomComponentBase
 
     public async Task<bool> OpenConfirmDialog(string content)
     {
-        return await PopupService.ConfirmAsync(T("Operation confirmation"), content, AlertTypes.Error);
+        return await PopupService.SimpleConfirmAsync(T("Operation confirmation"), content, AlertTypes.Error);
     }
 
     public async Task<bool> OpenConfirmDialog(string title, string content)
     {
-        return await PopupService.ConfirmAsync(title, content);
+        return await PopupService.SimpleConfirmAsync(title, content);
     }
 
     public async Task<bool> OpenConfirmDialog(string title, string content, AlertTypes type)
     {
-        return await PopupService.ConfirmAsync(title, content, type);
+        return await PopupService.SimpleConfirmAsync(title, content, type);
     }
 
     public void OpenInformationMessage(string message)
@@ -134,12 +136,12 @@ public abstract class ProCompontentBase : BDomComponentBase
 
     public async Task ConfirmAsync(string messgae, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
     {
-        if (await PopupService.ConfirmAsync(T("OperationConfirmation"), messgae, type)) await callback.Invoke();
+        if (await PopupService.SimpleConfirmAsync(T("OperationConfirmation"), messgae, type)) await callback.Invoke();
     }
 
     public async Task ConfirmAsync(string title, string messgae, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
     {
-        if (await PopupService.ConfirmAsync(title, messgae, type)) await callback.Invoke();
+        if (await PopupService.SimpleConfirmAsync(title, messgae, type)) await callback.Invoke();
     }
 
 

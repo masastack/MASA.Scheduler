@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
         var options = new SchedulerApiOptions();
         configs?.Invoke(options);
         services.AddSingleton(options);
-        services.AddStackCaller(Assembly.Load("Masa.Scheduler.ApiGateways.Caller"), (serviceProvider) => { return new TokenProvider(); }, jwtTokenValidatorOptions =>
+        services.AddStackCaller(Assembly.Load("Masa.Scheduler.ApiGateways.Caller"), jwtTokenValidatorOptions =>
         {
             jwtTokenValidatorOptions.AuthorityEndpoint = options.AuthorityEndpoint;
         }, clientRefreshTokenOptions =>
