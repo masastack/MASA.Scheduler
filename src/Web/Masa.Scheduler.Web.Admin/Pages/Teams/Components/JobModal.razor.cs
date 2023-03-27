@@ -520,7 +520,7 @@ public partial class JobModal
     private Task OpenCronModal()
     {
         _cronVisible = true;
-        _tempCron = Model.CronExpression;
+        _tempCron = !string.IsNullOrEmpty(Model.CronExpression) ? Model.CronExpression : "* * * * * ?";
         return Task.CompletedTask;
     }
 
