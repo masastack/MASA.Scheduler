@@ -356,7 +356,6 @@ MigrationBackup/
 /src/Services/Masa.Scheduler.Services.Worker/JobShell/runtimes/win-x86/native
 /src/Services/Masa.Scheduler.Services.Worker/ResourceFiles
 /src/Services/Masa.Scheduler.Services.Worker/JobShell/runtimes/unix/lib/netcoreapp3.0
-/power.ps1
 
 
 .idea/
