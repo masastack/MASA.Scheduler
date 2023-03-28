@@ -74,7 +74,6 @@ StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configurat
 builder.Services.AddSchedulerApiGateways(options =>
 {
     options.SchedulerServerBaseAddress = schedulerBaseAddress;
-
     options.AuthorityEndpoint = masaOpenIdConnectOptions.Authority;
     options.ClientId = masaOpenIdConnectOptions.ClientId;
     options.ClientSecret = masaOpenIdConnectOptions.ClientSecret;
