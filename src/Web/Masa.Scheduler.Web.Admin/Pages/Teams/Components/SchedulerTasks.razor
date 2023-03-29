@@ -117,16 +117,19 @@
                                         <span>@T("TaskLog")</span>
                                     </ChildContent>
                                 </MTooltip>
-                                @* <MTooltip Bottom>
-                        <ActivatorContent Context="tooltips">
-                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Class="ml-6">
-                        <MIcon>mdi-chart-timeline-variant</MIcon>
-                        </MButton>
-                        </ActivatorContent>
-                        <ChildContent>
-                        <span>@T("TaskTrace")</span>
-                        </ChildContent>
-                        </MTooltip>*@
+                                @if (context.Item.Job.JobType == JobTypes.Http)
+                                {
+                                    <MTooltip Bottom>
+                                    <ActivatorContent Context="tooltips">
+                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Class="ml-6" Link Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/trace/{context.Item.TraceId}")">
+                                            <MIcon>mdi-chart-timeline-variant</MIcon>
+                                            </MButton>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span>@T("TaskTrace")</span>
+                                        </ChildContent>
+                                        </MTooltip>
+                                }
                                 @if (@context.Item.TaskStatus == TaskRunStatus.WaitToRun)
                                 {
                                     <SIcon Small Color="neutral-lighten-2" Class="ml-6" Size="20" OnClick="()=> OnShowConfirmDialog(ConfirmDialogTypes.StopTask,context.Item.Id)" Tooltip="@T("StopTask")">

@@ -37,4 +37,9 @@ public class SchedulerTaskDto
     public string OperatorName { get; set; } = String.Empty;
 
     public DateTime CreationTime { get; set; }
+
+    /// <summary>
+    /// TSC's Trace Id
+    /// </summary>
+    public string TraceId { get; private set; } = string.Empty;
 }

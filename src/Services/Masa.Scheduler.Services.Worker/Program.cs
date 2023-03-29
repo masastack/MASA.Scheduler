@@ -6,21 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 await builder.Services.AddMasaStackConfigAsync();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
-builder.Services.AddObservable(builder.Logging, () =>
-{
-    return new MasaObservableOptions
-    {
-        ServiceNameSpace = builder.Environment.EnvironmentName,
-        ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
-        Layer = masaStackConfig.Namespace,
-        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
-    };
-}, () =>
-{
-    return masaStackConfig.OtlpUrl;
-});
-
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter(opt =>
@@ -94,12 +79,12 @@ builder.Services
                 },
                 new string[] {}
             }
-        });
+       });
     })
-    .AddFluentValidation(options =>
-    {
-        options.RegisterValidatorsFromAssemblyContaining<Program>();
-    })
+   .AddFluentValidation(options =>
+   {
+       options.RegisterValidatorsFromAssemblyContaining<Program>();
+   })
     .AddDomainEventBus(options =>
     {
         options
@@ -112,6 +97,7 @@ builder.Services
         .UseRepository<SchedulerDbContext>();
     }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment("env"));
 
+builder.AddObservable(masaStackConfig);
 
 var app = builder.AddServices(options =>
 {

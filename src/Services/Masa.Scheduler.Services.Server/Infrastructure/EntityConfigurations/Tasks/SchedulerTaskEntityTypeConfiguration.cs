@@ -14,6 +14,7 @@ public class SchedulerTaskEntityTypeConfiguration : IEntityTypeConfiguration<Sch
         builder.Property(x => x.Origin).HasMaxLength(50);
         builder.Property(x => x.WorkerHost).HasMaxLength(100);
         builder.Property(x => x.Message).HasMaxLength(255);
+        builder.Property(x => x.TraceId).HasMaxLength(255);
         builder.HasOne(x => x.Job).WithMany(p => p.SchedulerTasks).HasForeignKey(x => x.JobId);
     }
 }

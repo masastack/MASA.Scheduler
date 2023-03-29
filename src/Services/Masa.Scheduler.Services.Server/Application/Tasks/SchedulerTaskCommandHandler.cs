@@ -62,4 +62,19 @@ public class SchedulerTaskCommandHandler
 
         await _schedulerTaskRepository.UpdateAsync(task);
     }
+
+    [EventHandler]
+    public async Task SetTraceIdAsync(SetSchedulerTaskCommand command)
+    {
+        var task = await _schedulerTaskRepository.FindAsync(t=> t.Id == command.TaskId);
+
+        if (task == null)
+        {
+            throw new UserFriendlyException($"SchedulerTask not found, TaskId: {command.TaskId}");
+        }
+
+        task.SetTraceId(command.TraceId);
+
+        await _schedulerTaskRepository.UpdateAsync(task);
+    }
 }
