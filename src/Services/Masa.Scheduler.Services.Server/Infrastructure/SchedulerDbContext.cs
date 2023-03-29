@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Infrastructure;
 
-public class SchedulerDbContext : IsolationDbContext
+public class SchedulerDbContext : MasaDbContext<SchedulerDbContext>
 {
     public const string SERVER_SCHEMA = "server";
 

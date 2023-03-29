@@ -1,13 +1,15 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Masa.Scheduler.Services.Worker.Infrastructure;
 
-public class SchedulerDbContext : IsolationDbContext
+public class SchedulerDbContext : MasaDbContext<SchedulerDbContext>
 {
     public const string WORKER_SCHEMA = "woker";
 
-    public SchedulerDbContext(MasaDbContextOptions options) : base(options)
+    public SchedulerDbContext(MasaDbContextOptions<SchedulerDbContext> options) : base(options)
     {
     }
 

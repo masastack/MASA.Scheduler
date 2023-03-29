@@ -80,7 +80,8 @@ Port= masaStackConfig.RedisModel.RedisPort
     Password = masaStackConfig.RedisModel.RedisPassword
 };
 
-builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
+builder.Services.AddDistributedCache(distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisOptions));
+//builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
 
 builder.Services
 .AddAuthClient(masaStackConfig.GetAuthServiceDomain(), redisOptions)
@@ -132,9 +133,7 @@ var app = builder.Services
         {
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
-        .UseIsolationUoW<SchedulerDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
-        dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
+        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
     })
     .AddServices(builder, options =>

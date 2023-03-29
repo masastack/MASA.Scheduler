@@ -21,7 +21,6 @@ global using Masa.Scheduler.Services.Server.Infrastructure;
 global using Masa.Scheduler.Services.Server.Infrastructure.Middleware;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.Contrib.Isolation.MultiEnvironment;
-global using Masa.Contrib.Isolation.UoW.EFCore;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.OpenApi.Models;
