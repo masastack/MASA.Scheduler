@@ -61,6 +61,8 @@ var redisOptions = new RedisConfigurationOptions
 };
 builder.Services.AddStackExchangeRedisCache(redisOptions)
     .AddMultilevelCache();
+builder.Services.AddDistributedLock(medallionBuilder => medallionBuilder.UseRedis("127.0.0.1:6379"));
+
 builder.Services.AddMapster();
 builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();

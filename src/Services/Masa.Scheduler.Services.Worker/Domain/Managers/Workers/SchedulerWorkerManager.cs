@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Data;
+
 namespace Masa.Scheduler.Services.Worker.Managers.Workers;
 
 public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, SchedulerWorkerOnlineIntegrationEvent, SchedulerServerOnlineIntegrationEvent>, IDisposable
@@ -98,23 +100,35 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
                     if (data.TaskQueue.TryDequeue(out var task))
                     {
-                        _schedulerLogger.LogInformation($"Task Dequeue", WriterTypes.Worker, task.TaskId, task.Job.Id);
-
-                        if (task.ServiceId != data.ServiceId)
+                        var distributedLock = ServiceProvider.GetRequiredService<IDistributedLock>();
+                        using (var lockObj = distributedLock.TryGet("WorkerProcessTask_"+ task.Job.Id))
                         {
-                            _schedulerLogger.LogInformation($"ServiceId not same, Task serviceId: {task.ServiceId}, CurrentWorkerServiceId: {data.ServiceId}", WriterTypes.Worker, task.TaskId, task.Job.Id);
-                            continue;
-                        }
+                            if (lockObj != null)
+                            {
+                                _schedulerLogger.LogInformation($"Task Dequeue", WriterTypes.Worker, task.TaskId, task.Job.Id);
 
-                        if (data.StopTask.Any(p => p == task.TaskId))
-                        {
-                            _schedulerLogger.LogInformation($"Task Stop", WriterTypes.Worker, task.TaskId, task.Job.Id);
-                            data.StopTask.Remove(task.TaskId);
-                            continue;
-                        }
+                                if (task.ServiceId != data.ServiceId)
+                                {
+                                    _schedulerLogger.LogInformation($"ServiceId not same, Task serviceId: {task.ServiceId}, CurrentWorkerServiceId: {data.ServiceId}", WriterTypes.Worker, task.TaskId, task.Job.Id);
+                                    continue;
+                                }
 
-                        _schedulerLogger.LogInformation($"Worker ready to Start Task", WriterTypes.Worker, task.TaskId, task.Job.Id);
-                        await StartTaskAsync(data, task.TaskId, task.Job, task.ExcuteTime);
+                                if (data.StopTask.Any(p => p == task.TaskId))
+                                {
+                                    _schedulerLogger.LogInformation($"Task Stop", WriterTypes.Worker, task.TaskId, task.Job.Id);
+                                    data.StopTask.Remove(task.TaskId);
+                                    continue;
+                                }
+
+                                _schedulerLogger.LogInformation($"Worker ready to Start Task", WriterTypes.Worker, task.TaskId, task.Job.Id);
+                                await StartTaskAsync(data, task.TaskId, task.Job, task.ExcuteTime);
+                            }
+                            else
+                            {
+                                data.TaskQueue.Enqueue(task);
+                            }
+                        }
+                        
                     }
                 }
                 catch (Exception ex)
@@ -127,7 +141,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         return Task.CompletedTask;
     }
 
-    private Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
+    private async Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
     {
         var cts = new CancellationTokenSource();
         var internalCts = new CancellationTokenSource();
@@ -169,35 +183,54 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             cts.CancelAfter(TimeSpan.FromSeconds(job.RunTimeoutSecond));
         }
 
-        _ = Task.Run(async () =>
+        //_ = Task.Run(async () =>
+        //{
+
+        //    var managerData = _schedulerWorkerManagerData;
+
+        //    try
+        //    {
+        //        _schedulerLogger.LogInformation($"Task run", WriterTypes.Worker, taskId, job.Id);
+        //        var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, internalCts.Token);
+        //        await NotifyTaskRunResult(runStatus, taskId, job.Id);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await NotifyTaskRunResult(TaskRunStatus.Failure, taskId, job.Id, ex.Message);
+        //        _schedulerLogger.LogError(ex, $"TaskHandler RunTask Error, Exception message: {ex.Message}", WriterTypes.Worker, taskId, job.Id);
+        //    }
+        //    finally
+        //    {
+        //        cts?.Dispose();
+        //        internalCts?.Dispose();
+
+        //        managerData.TaskCancellationTokenSources.Remove(taskId, out _);
+        //        managerData.InternalCancellationTokenSources.Remove(taskId, out _);
+        //    }
+        //}, cts.Token);
+        var managerData = _schedulerWorkerManagerData;
+
+        try
         {
-            //await using var scope = ServiceProvider.CreateAsyncScope();
-            //var provider = scope.ServiceProvider;
-            //var managerData = provider.GetRequiredService<SchedulerWorkerManagerData>();
-            var managerData = _schedulerWorkerManagerData;
+            _schedulerLogger.LogInformation($"Task run", WriterTypes.Worker, taskId, job.Id);
+            var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, internalCts.Token);
+            await NotifyTaskRunResult(runStatus, taskId, job.Id);
+        }
+        catch (Exception ex)
+        {
+            await NotifyTaskRunResult(TaskRunStatus.Failure, taskId, job.Id, ex.Message);
+            _schedulerLogger.LogError(ex, $"TaskHandler RunTask Error, Exception message: {ex.Message}", WriterTypes.Worker, taskId, job.Id);
+        }
+        finally
+        {
+            cts?.Dispose();
+            internalCts?.Dispose();
 
-            try
-            {
-                _schedulerLogger.LogInformation($"Task run", WriterTypes.Worker, taskId, job.Id);
-                var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, internalCts.Token);
-                await NotifyTaskRunResult(runStatus, taskId, job.Id);
-            }
-            catch (Exception ex)
-            {
-                await NotifyTaskRunResult(TaskRunStatus.Failure, taskId, job.Id, ex.Message);
-                _schedulerLogger.LogError(ex, $"TaskHandler RunTask Error, Exception message: {ex.Message}", WriterTypes.Worker, taskId, job.Id);
-            }
-            finally
-            {
-                cts?.Dispose();
-                internalCts?.Dispose();
+            managerData.TaskCancellationTokenSources.Remove(taskId, out _);
+            managerData.InternalCancellationTokenSources.Remove(taskId, out _);
+        }
 
-                managerData.TaskCancellationTokenSources.Remove(taskId, out _);
-                managerData.InternalCancellationTokenSources.Remove(taskId, out _);
-            }
-        }, cts.Token);
-
-        return Task.CompletedTask;
+       
     }
 
     public async Task StopTaskAsync(StopTaskIntegrationEvent @event)

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 await builder.Services.AddMasaStackConfigAsync();
@@ -93,6 +95,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR(redisOptions);
 builder.Services.AddQuartzUtils(quartzConnectString);
 builder.Services.AddSchedulerLogger();
+builder.Services.AddDistributedLock(medallionBuilder => medallionBuilder.UseRedis("127.0.0.1:6379"));
 
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
