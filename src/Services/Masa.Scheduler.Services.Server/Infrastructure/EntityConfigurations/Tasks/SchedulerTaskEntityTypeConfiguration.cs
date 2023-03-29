@@ -10,6 +10,7 @@ public class SchedulerTaskEntityTypeConfiguration : IEntityTypeConfiguration<Sch
         builder.ToTable(nameof(SchedulerTask), SchedulerDbContext.SERVER_SCHEMA);
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.JobId);
+        builder.HasIndex(x => new { x.JobId, x.TaskStatus });
         builder.Property(x => x.Origin).HasMaxLength(50);
         builder.Property(x => x.WorkerHost).HasMaxLength(100);
         builder.Property(x => x.Message).HasMaxLength(255);
