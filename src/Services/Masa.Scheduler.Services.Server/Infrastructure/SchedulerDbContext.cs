@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Services.Server.Infrastructure;
 
-public class SchedulerDbContext : IsolationDbContext
+public class SchedulerDbContext : MasaDbContext<SchedulerDbContext>
 {
     public const string SERVER_SCHEMA = "server";
 
@@ -15,7 +15,7 @@ public class SchedulerDbContext : IsolationDbContext
 
     public SchedulerDbContext(MasaDbContextOptions<SchedulerDbContext> options) : base(options)
     {
-
+        base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -22,7 +22,9 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER)
+        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER),
+        Layer = masaStackConfig.Namespace,
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
     };
 }, () =>
 {
@@ -95,7 +97,7 @@ builder.Services.AddQuartzUtils(quartzConnectString);
 builder.Services.AddSchedulerLogger();
 builder.Services.AddStackMiddleware();
 
-var app = builder.Services
+builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
     {
@@ -132,16 +134,16 @@ var app = builder.Services
         {
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
-        .UseIsolationUoW<SchedulerDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiEnvironment("env_key"),
-        dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
+        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
-    })
-    .AddServices(builder, options =>
-    {
-        options.MapHttpMethodsForUnmatched = new[] { "Post" };
-    });
+    }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT));
+
 await builder.Services.MigrateAsync();
+
+var app = builder.AddServices(options =>
+{
+    options.MapHttpMethodsForUnmatched = new[] { "Post" };
+});
 app.UseMasaExceptionHandler(opt =>
 {
     opt.ExceptionHandler = context =>

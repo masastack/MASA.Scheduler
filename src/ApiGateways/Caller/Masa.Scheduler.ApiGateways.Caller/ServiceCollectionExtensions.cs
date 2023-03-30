@@ -5,13 +5,13 @@ namespace Masa.Scheduler.ApiGateways.Caller;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddSchedulerApiGateways(this IServiceCollection services, Action<SchedulerApiOptions>? configs = null)
+    public static IServiceCollection AddSchedulerApiGateways(this IServiceCollection services, Action<SchedulerApiOptions> configs)
     {
         services.AddSingleton<IResponseMessage, SchedulerResponseMessage>();
         var options = new SchedulerApiOptions();
         configs?.Invoke(options);
         services.AddSingleton(options);
-        services.AddStackCaller(Assembly.Load("Masa.Scheduler.ApiGateways.Caller"), (serviceProvider) => { return new TokenProvider(); }, jwtTokenValidatorOptions =>
+        services.AddStackCaller(Assembly.Load("Masa.Scheduler.ApiGateways.Caller"), jwtTokenValidatorOptions =>
         {
             jwtTokenValidatorOptions.AuthorityEndpoint = options.AuthorityEndpoint;
         }, clientRefreshTokenOptions =>

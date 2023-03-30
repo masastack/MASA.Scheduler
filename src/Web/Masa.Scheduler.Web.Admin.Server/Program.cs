@@ -10,28 +10,26 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER)
+        ServiceName = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER),
+        Layer = masaStackConfig.Namespace,
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
     };
 }, () =>
 {
     return masaStackConfig.OtlpUrl;
 }, true);
 
-builder.WebHost.UseKestrel(option =>
+if (!builder.Environment.IsDevelopment())
 {
-    option.ConfigureHttpsDefaults(options =>
+    builder.WebHost.UseKestrel(option =>
     {
-        if (string.IsNullOrEmpty(masaStackConfig.TlsName))
-        {
-            options.ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "7348307__lonsid.cn.pfx"), "cqUza0MN");
-        }
-        else
+        option.ConfigureHttpsDefaults(options =>
         {
             options.ServerCertificate = X509Certificate2.CreateFromPemFile("./ssl/tls.crt", "./ssl/tls.key");
-        }
-        options.CheckCertificateRevocation = false;
+            options.CheckCertificateRevocation = false;
+        });
     });
-});
+}
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -74,7 +72,6 @@ StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configurat
 builder.Services.AddSchedulerApiGateways(options =>
 {
     options.SchedulerServerBaseAddress = schedulerBaseAddress;
-
     options.AuthorityEndpoint = masaOpenIdConnectOptions.Authority;
     options.ClientId = masaOpenIdConnectOptions.ClientId;
     options.ClientSecret = masaOpenIdConnectOptions.ClientSecret;
