@@ -22,7 +22,9 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER)
+        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER),
+        Layer = masaStackConfig.Namespace,
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
     };
 }, () =>
 {
@@ -80,8 +82,7 @@ Port= masaStackConfig.RedisModel.RedisPort
     Password = masaStackConfig.RedisModel.RedisPassword
 };
 
-builder.Services.AddDistributedCache(distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisOptions));
-//builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
+builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
 
 builder.Services
 .AddAuthClient(masaStackConfig.GetAuthServiceDomain(), redisOptions)

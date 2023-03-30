@@ -15,7 +15,7 @@ public class SchedulerDbContext : MasaDbContext<SchedulerDbContext>
 
     public SchedulerDbContext(MasaDbContextOptions<SchedulerDbContext> options) : base(options)
     {
-
+        base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

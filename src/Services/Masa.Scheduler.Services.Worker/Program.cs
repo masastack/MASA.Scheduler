@@ -14,7 +14,9 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker")
+        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
+        Layer = masaStackConfig.Namespace,
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
     };
 }, () =>
 {
@@ -60,7 +62,7 @@ var redisOptions = new RedisConfigurationOptions
     DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
     Password = masaStackConfig.RedisModel.RedisPassword
 };
-builder.Services.AddDistributedCache(distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisOptions));
+builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
 
 builder.Services.AddMapster();
 builder.Services.AddWorkerManager();
