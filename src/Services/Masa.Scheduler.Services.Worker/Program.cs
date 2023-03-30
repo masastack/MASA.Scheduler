@@ -69,7 +69,7 @@ builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddSchedulerLogger();
 
-var app = builder.Services
+builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
@@ -112,11 +112,13 @@ var app = builder.Services
          })
          .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
-    })
-    .AddServices(builder, options =>
-    {
-        options.MapHttpMethodsForUnmatched = new[] { "Post" };
-    });
+    }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment("env"));
+
+
+var app = builder.AddServices(options =>
+{
+    options.MapHttpMethodsForUnmatched = new[] { "Post" };
+});
 
 app.UseMasaExceptionHandler(opt =>
 {
