@@ -25,3 +25,68 @@
     margin: 8px 4px;
     display: block !important;
 }
+.masa-modal .m-input {
+    font-size: 14px;
+}
+.masa-stepper {
+    box-shadow: inherit !important;
+}
+.masa-buttongroup > .m-btn {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 8px !important;
+    gap: 4px;
+    height: 25px !important;
+    border-radius: 18px !important;
+    border: 1px solid #E4E8F3 !important;
+}
+.masa-buttongroup .m-btn .m-btn__content {
+    color: #323D6F;
+}
+.masa-buttongroup .m-btn.m-btn--active {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 21px !important;
+    background-color: #4318FF !important;
+    border: none !important;
+}
+.masa-buttongroup .m-btn--active .m-btn__content {
+    color: #fff;
+}
+.dynamic-keyvalue .m-btn > .m-btn__content .m-icon {
+    color: #485585;
+}
+::-webkit-scrollbar-thumb {
+    margin: 5px 0;
+    border-radius: 15px;
+    background-image: inherit;
+    background-color: #A3AED0;
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #A3AED0 inherit;
+}
+.buttongroup-radius10 {
+    border-radius: 10px;
+    padding: 0;
+}
+.buttongroup-radius10 .m-btn {
+    margin: 2px;    
+}
+.buttongroup-radius10 .m-btn--active .m-btn__content  {
+    font-weight: 700;
+}
+.buttongroup-radius10 .rounded-pill {
+    border-radius: 8px !important;
+}
+.masa-radiogroup .m-input--selection-controls__input:has(.mdi-radiobox-marked) + .m-label {
+    color: #05CD99;
+}
+.masa-radiogroup .m-input--selection-controls__input:hover .m-icon {
+    color: #05CD99 !important;
+}
+.masa-tasktable tr {
+    height: 72px;
+}
