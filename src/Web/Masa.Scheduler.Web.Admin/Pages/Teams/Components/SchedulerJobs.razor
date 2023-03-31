@@ -108,7 +108,7 @@
                                 <div class="d-flex px-1 mt-2" style="height: 8px">
                                     <MDivider Vertical />
                                 </div>
-                                <div class="body2 regular3--text">@job.ModificationTime.Humanize(culture:LanguageProvider.Culture) </div>
+                                <div class="body2 regular3--text">@job.ModificationTime.Humanize(culture:I18n.Culture) </div>
                                 <MSpacer></MSpacer>
                                 @if (_jobCreateType == JobCreateTypes.Api)
                                 {

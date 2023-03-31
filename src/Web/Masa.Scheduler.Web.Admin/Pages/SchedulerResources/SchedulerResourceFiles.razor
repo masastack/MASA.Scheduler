@@ -4,8 +4,8 @@
 <MTabs Value="_selectedProjectIdentity" ValueChanged="HandleProjectIdentityChanged">
     @foreach (var project in _projects)
     {
-        <MTab Value="project.Identity" Class="px-12 py-3 text-capitalize">
-            <span class="@(_selectedProjectIdentity==project.Identity?"primary--text h8":"regular2--text btn")">@project.Identity</span>
+        <MTab Value="project.Identity" Class="py-3 text-capitalize">
+            <span class="px-12 h8 @(_selectedProjectIdentity==project.Identity?"primary--text":"regular2--text")">@project.Identity</span>
         </MTab>
     }
 </MTabs>
