@@ -272,6 +272,10 @@
     "High": "高",
     "Secondary": "中",
     "Low": "低",
-    "Report": "报告"
+    "Report": "报告",
+    "Creator": "创建人",
+    "CreationTime": "创建时间",
+    "Modifier": "修改人",
+    "ModificationTime": "修改时间"
   }
 }
