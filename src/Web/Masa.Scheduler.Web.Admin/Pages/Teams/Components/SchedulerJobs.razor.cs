@@ -293,6 +293,7 @@ public partial class SchedulerJobs : ProCompontentBase
         {
             _jobs = new();
             _total = 0;
+            _showProgressbar = false;
             return;
         }
 

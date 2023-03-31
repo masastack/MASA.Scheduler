@@ -207,6 +207,7 @@ public partial class SchedulerTasks
     {
         if (_job is null)
         {
+            _showProgressbar = false;
             return;
         }
 
