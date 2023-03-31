@@ -96,7 +96,10 @@ public partial class SchedulerJobs : ProCompontentBase
     private SchedulerJobDto modalModel = new();
 
     private List<KeyValuePair<string, TaskRunStatus>> _queryStatusList = new();
-    List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
+
+    private List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
+
+    private bool _showProgressbar = true;
 
     private bool _showConfirmDialog;
 
@@ -293,6 +296,8 @@ public partial class SchedulerJobs : ProCompontentBase
             return;
         }
 
+        _showProgressbar = true;
+
         var request = new SchedulerJobListRequest()
         {
             FilterStatus = QueryStatus,
@@ -321,6 +326,7 @@ public partial class SchedulerJobs : ProCompontentBase
             _page = 1;
         }
 
+        _showProgressbar = false;
         StateHasChanged();
     }
 

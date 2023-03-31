@@ -60,8 +60,9 @@ public partial class SchedulerTasks
     private ConfirmDialogTypes _confirmDialogType;
     private Guid _confirmTaskId;
     private List<string> _orginList = new();
-    List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
+    private List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
     private bool IsApiCreate => _job != null && !string.IsNullOrWhiteSpace(_job.Origin);
+    private bool _showProgressbar = true;
 
     private Task QueryStatusChanged(TaskRunStatus status)
     {
@@ -209,6 +210,7 @@ public partial class SchedulerTasks
             return;
         }
 
+        _showProgressbar = true;
         var request = new SchedulerTaskListRequest()
         {
             JobId = _job.Id,
@@ -234,6 +236,7 @@ public partial class SchedulerTasks
             Page = 1;
         }
 
+        _showProgressbar = false;
         StateHasChanged();
     }
 

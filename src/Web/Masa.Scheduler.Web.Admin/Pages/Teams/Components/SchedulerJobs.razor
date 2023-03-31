@@ -19,185 +19,199 @@
                 </MCol>
                 <MCol Md="1" Class="ml-6" Style="min-width: 114px">
                     <SSelect Small @bind-Value="QueryTimeType"
-                             Items="_jobQueryTimeTypeList"
-                             Label="@T("JobQueryTimeType")"
-                             ItemText="e => T(e==default?string.Empty:e.ToString())"
-                             ItemValue="e=> e"
-                             BackgroundColor="white"
-                             Class="rounded-2 body2">
+                        Items="_jobQueryTimeTypeList"
+                        Label="@T("JobQueryTimeType")"
+                        ItemText="e => T(e==default?string.Empty:e.ToString())"
+                        ItemValue="e=> e"
+                        BackgroundColor="white"
+                        Class="rounded-2 body2">
                     </SSelect>
                 </MCol>
-                <MCol Md="4" Class="ml-6" Style="max-width:420px">
+                <MCol Md="3" Class="ml-6" Style="max-width:420px">
                     <DateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
                 </MCol>
                 <MCol Md="1" Class="ml-6" Style="min-width:139px">
                     <SSelect Small @bind-Value="QueryJobType"
-                             Items="Enum.GetValues<JobTypes>().ToList()"
-                             Label="@T("JobType")"
-                             ItemText="e => T(e==default?string.Empty:e.ToString())"
-                             ItemValue="e=> e"
-                             BackgroundColor="white"
-                             Clearable
-                             Class="rounded-2 body2">
+                        Items="Enum.GetValues<JobTypes>().ToList()"
+                        Label="@T("JobType")"
+                        ItemText="e => T(e==default?string.Empty:e.ToString())"
+                        ItemValue="e=> e"
+                        BackgroundColor="white"
+                        Clearable
+                        Class="rounded-2 body2">
                     </SSelect>
                 </MCol>
                 @if (_jobCreateType == JobCreateTypes.Api)
                 {
                     <MCol Md="1" Class="ml-6">
                         <SSelect Small @bind-Value="QueryOrigin"
-                             Items="_originList"
-                             Label="@T("Origin")"
-                             ItemText="e => e"
-                             ItemValue="e=> e"
-                             BackgroundColor="white"
-                             Class="rounded-2 body2">
+                            Items="_originList"
+                            Label="@T("Origin")"
+                            ItemText="e => e"
+                            ItemValue="e=> e"
+                            BackgroundColor="white"
+                            Class="rounded-2 body2">
                         </SSelect>
                     </MCol>
                 }
             </MRow>
             <div class="d-flex search-panel-right">
-                <OutlinedSearchTextField Style="max-width:140px" @bind-Value="QueryJobName" BackgroundColor="white" PrependInnerIcon="@IconConstants.Search" />
+                <OutlinedSearchTextField Style="width:300px" @bind-Value="QueryJobName" BackgroundColor="white" PrependInnerIcon="@IconConstants.Search" />
                 @if (_jobCreateType == JobCreateTypes.Manual)
                 {
                     <SButton Small Color="primary" BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="AddJob">@T("Add")</SButton>
                 }
             </div>
         </div>
-        <MRadioGroup @bind-Value="QueryStatus" Row OnClick="RadioGroupClickHandler">
-            <MRadio TValue="TaskRunStatus" Value="default" Color="green--text">
+        <MRadioGroup @bind-Value="QueryStatus" Row OnClick="RadioGroupClickHandler" Class="masa-radiogroup">
+            <MRadio TValue="TaskRunStatus" Value="default" Color="green">
                 <LabelContent>
-                    <span class="green--text">@T("All")</span>
+                    <span>@T("All")</span>
                 </LabelContent>
             </MRadio>
             @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
             {
-                <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="@ComputedStatusColor(pair.Value)">
+                <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="green">
                     <LabelContent>
-                        <span style="color: @ComputedStatusColor(pair.Value)"> @T(pair.Key) </span>
+                        <span>@T(pair.Key)</span>
                     </LabelContent>
                 </MRadio>
             }
         </MRadioGroup>
     </HeaderContent>
     <AutoHeightContent>
-        <MRow Class="mt-6" Style="height:0px">
-            @foreach (var job in _jobs)
+        <MRow Class="mt-6" Style="position:relative;">
+            @if (_jobs.Any())
             {
-                <MCol Md="6">
-                    <MCard Height="115" Class="pt-2" OnClick="()=> HandleJobSelect(job)" Style="@($"border-radius:10px !important; {(job.Enabled?"":"opacity: 0.6")}")">
-                        <MCardTitle>
-                            <MChip Class="job-text btn"
-                               TextColor="emphasis2"
-                               Style="height:25px; background-color:#F0F3FA"
-                                  Label>
-                            @T(job.JobType.ToString())
-                        </MChip>
-                        <div class="job-text job-name text-truncate emphasis2--text h7 ml-2">
-                            @job.Name
-                        </div>
-                    </MCardTitle>
-                    <MCardText Class="d-flex height-inherit">
-                        <MButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
-                            <MIcon>mdi-checkbox-blank-circle</MIcon>
-                            </MButton>
-                            <div class="job-text run-text pl-2 body2" style="color:@(GetJobColor(job))">
-                                @GetJobRunText(job)
-                            </div>
-                            <div class="d-flex px-1 mt-2" style="height: 8px">
-                                <MDivider Vertical />
-                            </div>
-                            <div class="body2 regular3--text">@job.ModificationTime.Humanize(culture:LanguageProvider.Culture) </div>
-                            <MSpacer></MSpacer>
-                            @if (_jobCreateType == JobCreateTypes.Api)
-                            {
-                                <MChip Class="job-text emphasis2--text btn"
-                               Style="height:25px; background-color:#F0F3FA">
-                                    @job.Origin
+                foreach (var job in _jobs)
+                {
+                    <MCol Md="6">
+                        <MCard Height="115" Class="pt-2" OnClick="()=> HandleJobSelect(job)" Style="@($"border-radius:10px !important; {(job.Enabled?"":"opacity: 0.6")}")">
+                            <MCardTitle>
+                                <MChip Class="job-text btn"
+                                   TextColor="emphasis2"
+                                   Style="height:25px; background-color:#F0F3FA"
+                                      Label>
+                                    @T(job.JobType.ToString())
                                 </MChip>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(job.UserName))
-                            {
-                                <MTooltip Top>
+                                <div class="job-text job-name text-truncate emphasis2--text h7 ml-2">
+                                    @job.Name
+                                </div>
+                            </MCardTitle>
+                            <MCardText Class="d-flex height-inherit">
+                                <MButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
+                                    <MIcon>mdi-checkbox-blank-circle</MIcon>
+                                </MButton>
+                                <div class="job-text run-text pl-2 body2" style="color:@(GetJobColor(job))">
+                                    @GetJobRunText(job)
+                                </div>
+                                <div class="d-flex px-1 mt-2" style="height: 8px">
+                                    <MDivider Vertical />
+                                </div>
+                                <div class="body2 regular3--text">@job.ModificationTime.Humanize(culture:LanguageProvider.Culture) </div>
+                                <MSpacer></MSpacer>
+                                @if (_jobCreateType == JobCreateTypes.Api)
+                                {
+                                    <MChip Class="job-text emphasis2--text btn"
+                                        Style="height:25px; background-color:#F0F3FA">
+                                        @job.Origin
+                                    </MChip>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(job.UserName))
+                                {
+                                    <MTooltip Top>
+                                        <ActivatorContent>
+                                            <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
+                                                <MImage Src="@job.Avator"></MImage>
+                                            </MAvatar>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span>@T("Owner"): @job.UserName</span>
+                                        </ChildContent>
+                                    </MTooltip>
+                                }
+                                else
+                                {
+                                    <MTooltip>
+                                        <ActivatorContent>
+                                            <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
+                                                <MImage Src=""></MImage>
+                                            </MAvatar>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span></span>
+                                        </ChildContent>
+                                    </MTooltip>
+                                }
+                                <MMenu Bottom Left>
                                     <ActivatorContent>
-                                        <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
-                                            <MImage Src="@job.Avator"></MImage>
-                                        </MAvatar>
+                                        <MButton Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation Class="ml-4">
+                                            <MIcon>mdi-dots-vertical</MIcon>
+                                        </MButton>
                                     </ActivatorContent>
                                     <ChildContent>
-                                        <span>@T("Owner"): @job.UserName</span>
+                                        <MList>
+                                            @if (job.Enabled)
+                                            {
+                                                <MListItem Link OnClick="()=> RunJob(job)">
+                                                    <MListItemContent Class="pl-6 pr-16">
+                                                        <MListItemTitle>
+                                                            <MIcon Color="#323D6F" Class="align-self-center mr-3">fas fa-spinner</MIcon>
+                                                            @T("Run")
+                                                        </MListItemTitle>
+                                                    </MListItemContent>
+                                                </MListItem>
+                                            }
+                                            <MListItem Link OnClick="()=> EditJob(job)">
+                                                <MListItemContent Class="pl-6 pr-16">
+                                                    <MListItemTitle>
+                                                        <MIcon Color="#323D6F" Class="align-self-center mr-3">mdi-pencil</MIcon>
+                                                        @T("Edit")
+                                                    </MListItemTitle>
+                                                </MListItemContent>
+                                            </MListItem>
+                                            @if (job.Enabled)
+                                            {
+                                                <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.DisabledJob, job.Id)">
+                                                    <MListItemContent Class="pl-6 pr-16">
+                                                        <MListItemTitle>
+                                                            <MIcon Color="red" Class="align-self-center mr-3">mdi-minus-circle</MIcon>
+                                                            @T("Disabled")
+                                                        </MListItemTitle>
+                                                    </MListItemContent>
+                                                </MListItem>
+                                            }
+                                            else
+                                            {
+                                                <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.EnabledJob, job.Id)">
+                                                    <MListItemContent Class="pl-6 pr-16">
+                                                        <MListItemTitle>
+                                                            <MIcon Color="green" Class="align-self-center mr-3">mdi-check-circle</MIcon>
+                                                            @T("Enabled")
+                                                        </MListItemTitle>
+                                                    </MListItemContent>
+                                                </MListItem>
+                                            }
+                                        </MList>
                                     </ChildContent>
-                                </MTooltip>
-                            }
-                            else
-                            {
-                                <MTooltip>
-                                    <ActivatorContent>
-                                        <MAvatar Size="24" @attributes="@context.Attrs" Class="ml-4">
-                                            <MImage Src=""></MImage>
-                                        </MAvatar>
-                                    </ActivatorContent>
-                                    <ChildContent>
-                                        <span></span>
-                                    </ChildContent>
-                                </MTooltip>
-                            }
-                            <MMenu Bottom Left>
-                            <ActivatorContent>
-                                <MButton Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation Class="ml-4">
-                                    <MIcon>mdi-dots-vertical</MIcon>
-                                    </MButton>
-                                </ActivatorContent>
-                                <ChildContent>
-                                    <MList>
-                                    @if (job.Enabled)
-                                        {
-                                            <MListItem Link OnClick="()=> RunJob(job)">
-                                            <MListItemContent>
-                                            <MListItemTitle>
-                                                @T("Run")
-                                            </MListItemTitle>
-                                            </MListItemContent>
-                                            </MListItem>
-                                        }
-                                        <MListItem Link OnClick="()=> EditJob(job)">
-                                        <MListItemContent>
-                                            <MListItemTitle>
-                                                @T("Edit")
-                                            </MListItemTitle>
-                                        </MListItemContent>
-                                        </MListItem>
-                                        @if (job.Enabled)
-                                        {
-                                            <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.DisabledJob, job.Id)">
-                                            <MListItemContent>
-                                            <MListItemTitle>
-                                                @T("Disabled")
-                                            </MListItemTitle>
-                                            </MListItemContent>
-                                            </MListItem>
-                                        }
-                                        else
-                                        {
-                                            <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.EnabledJob, job.Id)">
-                                            <MListItemContent>
-                                            <MListItemTitle>
-                                                @T("Enabled")
-                                            </MListItemTitle>
-                                            </MListItemContent>
-                                            </MListItem>
-                                        }
-
-                                    </MList>
-                                </ChildContent>
-                            </MMenu>
-                        </MCardText>
-                    </MCard>
-                </MCol>
+                                </MMenu>
+                            </MCardText>
+                        </MCard>
+                    </MCol>
+                }
             }
+            else if(!_showProgressbar)
+            {
+                <SEmptyPlaceholder Height="calc(100vh - 340px);" />
+            }
+            <Loading ShowProgressbar="_showProgressbar" Style="height: calc(100vh - 370px)" />
         </MRow>
     </AutoHeightContent>
     <FooterContent>
-        <SPagination Class="mr-6 pb-2" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
+        @if (_jobs.Any())
+        {
+            <SPagination Class="mr-6 pb-2" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
+        }        
     </FooterContent>
 </AutoHeight>
 
