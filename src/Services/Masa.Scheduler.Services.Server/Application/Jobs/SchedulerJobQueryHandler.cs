@@ -9,13 +9,15 @@ public class SchedulerJobQueryHandler
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IEventBus _eventBus;
+    private readonly IAuthClient _authClient;
 
-    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus)
+    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus, IAuthClient authClient)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _dbContext = dbContext;
         _mapper = mapper;
         _eventBus = eventBus;
+        _authClient = authClient;
     }
 
     [EventHandler]
@@ -82,21 +84,24 @@ public class SchedulerJobQueryHandler
 
         if (jobDtos.Any())
         {
-            var userIds = jobDtos.Select(p => p.OwnerId).Distinct().ToList();
-
-            var userQuery = new UserQuery() { UserIds = userIds };
-
-            await _eventBus.PublishAsync(userQuery);
+            var ownerIds = jobDtos.Select(p => p.OwnerId).Distinct().ToList();
+            var modifierIds = jobDtos.Where(x => x.Modifier != default).Select(x => x.Modifier).Distinct().ToList();
+            var creatorIds = jobDtos.Where(x => x.Creator != default).Select(x => x.Modifier).Distinct().ToList();
+            var userIds = ownerIds.Union(modifierIds).Union(creatorIds).ToArray();
+            var userInfos = await _authClient.UserService.GetListByIdsAsync(userIds);
 
             foreach (var item in jobDtos)
             {
-                var user = userQuery.Result.FirstOrDefault(u => u.Id == item.OwnerId);
+                var user = userInfos.FirstOrDefault(u => u.Id == item.OwnerId);
 
                 if (user != null)
                 {
-                    item.UserName = user.DisplayName ?? user.Name;
+                    item.UserName = user.StaffDislpayName ?? user.DisplayName;
                     item.Avator = user.Avatar;
                 }
+
+                item.CreatorName = userInfos.FirstOrDefault(x => x.Id == item.Creator)?.StaffDislpayName ?? string.Empty;
+                item.ModifierName = userInfos.FirstOrDefault(x => x.Id == item.Modifier)?.StaffDislpayName ?? string.Empty;
             }
         }
 
@@ -105,7 +110,7 @@ public class SchedulerJobQueryHandler
         query.Result = new(total, totalPages, jobDtos, originList);
     }
 
-    [EventHandler] 
+    [EventHandler]
     public async Task SchedulerJobQueryByIdentityHandleAsync(SchedulerJobQueryByIdentity query)
     {
         if (string.IsNullOrEmpty(query.Request.JobIdentity) || string.IsNullOrWhiteSpace(query.Request.ProjectIdentity))
