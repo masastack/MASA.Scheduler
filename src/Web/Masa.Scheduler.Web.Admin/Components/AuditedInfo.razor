@@ -1,0 +1,23 @@
+﻿@if (Audited.CreationTime != default)
+{
+    <div class="body2 mt-9 d-flex justify-space-between">
+        <span class="regular--text">@I18n.T("Creator"): @Audited.CreatorName</span>
+        <span class="regular3--text">@I18n.T("CreationTime"): @Audited.CreationTime.ToString(I18n.T("$DateTimeFormat"))</span>
+    </div>
+}
+
+@if (Audited.ModificationTime != default)
+{
+    <div class="body2 mt-9 d-flex justify-space-between">
+        <span class="regular--text">@I18n.T("Modifier"): @Audited.ModifierName</span>
+        <span class="regular3--text">@I18n.T("ModificationTime"): @Audited.ModificationTime.ToString(I18n.T("$DateTimeFormat"))</span>
+    </div>
+}
+
+@code {
+    [Inject]
+    public I18n I18n { get; set; } = default!;
+
+    [Parameter]
+    public AuditedEntityDto Audited { get; set; } = new();
+}
