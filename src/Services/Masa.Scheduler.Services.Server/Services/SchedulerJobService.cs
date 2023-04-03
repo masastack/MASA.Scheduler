@@ -1,5 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+using static Google.Rpc.Context.AttributeContext.Types;
+
 namespace Masa.Scheduler.Services.Server.Server.Services;
 
 public class SchedulerJobService : ServiceBase
@@ -76,7 +78,7 @@ public class SchedulerJobService : ServiceBase
     }
 
     [RoutePattern("/getSchedulerJobQueryByIdentity", StartWithBaseUri = true, HttpMethod = "Get")]
-    public async Task<IResult> GetSchedulerJobQueryByIdentityAsync(IEventBus eventBus,[FromQuery] string jobIdentity,[FromQuery] string projectIdentity)
+    public async Task<IResult> GetSchedulerJobQueryByIdentityAsync(IEventBus eventBus, [FromQuery] string jobIdentity, [FromQuery] string projectIdentity)
     {
         var query = new SchedulerJobQueryByIdentity(new GetSchedulerJobByIdentityRequest()
         {
@@ -85,5 +87,13 @@ public class SchedulerJobService : ServiceBase
         });
         await eventBus.PublishAsync(query);
         return Results.Ok(query.Result);
+    }
+
+    [RoutePattern("{id}/upsert-alarm", StartWithBaseUri = true, HttpMethod = "Post")]
+    public async Task<IResult> UpsertAlarmRuleAsync(IEventBus eventBus, Guid id, Guid alarmRuleId)
+    {
+        var command = new UpsertAlarmRuleCommand(id, alarmRuleId);
+        await eventBus.PublishAsync(command);
+        return Results.Ok();
     }
 }

@@ -237,4 +237,9 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
         DaprServiceInvocationConfig ??= new();
         DaprServiceInvocationConfig.SetConfig(dto.MethodName, dto.Namespace, dto.HttpMethod, dto.Data, dto.DaprServiceIdentity);
     }
+
+    public void SetAlarmRuleId(Guid alarmRuleId)
+    {
+        AlarmRuleId = alarmRuleId;
+    }
 }

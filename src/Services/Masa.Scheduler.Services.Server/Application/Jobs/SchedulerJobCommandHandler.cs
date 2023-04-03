@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Ddd.Domain.Entities;
+
 namespace Masa.Scheduler.Services.Server.Application.Jobs;
 
 public class SchedulerJobCommandHandler
@@ -213,5 +215,16 @@ public class SchedulerJobCommandHandler
         await _eventBus.PublishAsync(addCommand);
 
         command.Result = addCommand.Result;
+    }
+
+    [EventHandler]
+    public async Task UpsertAlarmRuleHandleAsync(UpsertAlarmRuleCommand command)
+    {
+        var job = await _schedulerJobRepository.FindAsync(job => job.Id == command.JobId);
+        MasaArgumentException.ThrowIfNull(job);
+
+        job.SetAlarmRuleId(command.AlarmRuleId);
+
+        await _schedulerJobRepository.UpdateAsync(job);
     }
 }

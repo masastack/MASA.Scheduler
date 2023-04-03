@@ -42,4 +42,9 @@ public class SchedulerJobService : ServiceBase
     {
         await PutAsync(nameof(StartJobAsync), request);
     }
+
+    public async Task UpsertAlarmRuleAsync(Guid id, Guid alarmRuleId)
+    {
+        await PostAsync($"{id}/upsert-alarm?alarmRuleId={alarmRuleId}", new { });
+    }
 }

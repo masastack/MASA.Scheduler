@@ -112,8 +112,6 @@ public partial class JobModal
 
     protected override async Task OnInitializedAsync()
     {
-        _isAdd = Model.Id == Guid.Empty;
-
         await GetWorkerList();
 
         await GetProjects();
@@ -124,11 +122,8 @@ public partial class JobModal
     public async Task OpenModalAsync(SchedulerJobDto model)
     {
         Model = model;
-
-        if (Model.Id == Guid.Empty)
-        {
-            _jobId = Guid.NewGuid();
-        }
+        _isAdd = Model.Id == Guid.Empty;
+        _jobId = Model.Id == Guid.Empty ? Guid.NewGuid() : Model.Id;
 
         await InvokeAsync(() =>
         {
@@ -348,6 +343,11 @@ public partial class JobModal
                 OpenSuccessMessage(T("UpdateJobSuccess"));
             }
 
+            if (_logUpsertModal != null)
+            {
+                await _logUpsertModal.Submit();
+            }
+
             if (OnAfterDataChange.HasDelegate)
             {
                 await OnAfterDataChange.InvokeAsync();
@@ -557,7 +557,7 @@ public partial class JobModal
         }
         else
         {
-            return Model.Id == Guid.Empty ? T("Job.Add") : T("Job.Update");
+            return _isAdd ? T("Job.Add") : T("Job.Update");
         }
     }
 
@@ -572,9 +572,11 @@ public partial class JobModal
         ResetForm();
     }
 
-    private void HandleAlarmRuleUpsert(Guid alarmRuleId)
+    private async Task HandleAlarmRuleUpsert(Guid alarmRuleId)
     {
         Model.AlarmRuleId = alarmRuleId;
+
+        await SchedulerServerCaller.SchedulerJobService.UpsertAlarmRuleAsync(_jobId, alarmRuleId);
     }
 
     private async Task HandleAlertException()
@@ -592,7 +594,7 @@ public partial class JobModal
                 CheckFrequency = new CheckFrequencyModel
                 {
                     Type = AlarmCheckFrequencyType.Cron,
-                    CronExpression = "* 0/10 * * * ? ",
+                    CronExpression = "0 0/10 * * * ? ",
                     FixedInterval = new TimeIntervalModel
                     {
                         IntervalTimeType = TimeType.Minute

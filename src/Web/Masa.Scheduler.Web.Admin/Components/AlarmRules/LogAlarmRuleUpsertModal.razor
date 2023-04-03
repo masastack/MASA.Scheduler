@@ -57,7 +57,7 @@
                                         </MCol>
                                     }
                                 </MRow>
-                                @if (!string.IsNullOrEmpty(_model.CheckFrequency.CronExpression))
+                                @if (_model.CheckFrequency.Type == AlarmCheckFrequencyType.Cron && !string.IsNullOrEmpty(_model.CheckFrequency.CronExpression))
                                 {
                                     <div class="mt-4 caption regular3--text rounded-lg bgray">
                                         <p class="emphasis px-5 rounded-t-lg white--text py-2 text-body-2">
@@ -70,36 +70,36 @@
                                 {
                                     <MRow NoGutters Class="mt-6">
                                         <MCol Md="6">
-                                            <SAutoComplete Items="_fields" @bind-Value="item.Field"
+                                        <SAutoComplete Items="_fields" @bind-Value="item.Field" Class="align-center"
                                                        Label="@T(nameof(item.Field))"
                                                        ItemText="v => v.Name"
                                                        ItemValue="v=> v.Name"
                                                        Dense
                                                        Outlined>
                                                 <AppendOuterContent>
-                                                    <span class="regular2--text body2 my-auto">@T("Count")</span>
+                                                <span class="regular2--text body2 my-auto flex-shrink-0">@T("Count")</span>
                                                 </AppendOuterContent>
                                             </SAutoComplete>
                                         </MCol>
                                         <MCol Md="6">
-                                            <STextField Class="ml-2" @bind-Value="item.Alias" Label="@T(nameof(item.Alias))">
+                                        <STextField Class="ml-2 align-center" @bind-Value="item.Alias" Label="@T(nameof(item.Alias))">
                                                 <PrependContent>
                                                     <span class="regular2--text body2 my-auto">@T("as")</span>
                                                 </PrependContent>
                                             </STextField>
                                         </MCol>
                                         <MCol Md="6" Class="d-flex mt-3">
-                                            <MSwitch @bind-Value="item.IsOffset" Inset Class="label my-auto ml-1">
+                                        <MSwitch @bind-Value="item.IsOffset" Inset Class="label my-auto ml-1 align-center">
                                                 <LabelContent>
-                                                    <span class="regular2--text body2 my-auto ml-1" style="width:50px">@T("Offset")</span>
+                                                <span class="regular2--text body2 my-auto ml-1 flex-shrink-0">@T("Offset")</span>
                                                     <DefaultTooltip Class="ml-1 mt-n1" Tooltip="@T("OffsetTip")"/>
                                                 </LabelContent>
                                             </MSwitch>
                                             @if (item.IsOffset)
                                             {
-                                                <STextField @bind-Value="item.OffsetPeriod" Label="@T(nameof(item.OffsetPeriod))" Class="ml-2">
+                                                <STextField @bind-Value="item.OffsetPeriod" Label="@T(nameof(item.OffsetPeriod))" Class="ml-2 align-center">
                                                     <AppendOuterContent>
-                                                        <span class="regular2--text body2 my-auto">@T("Period")</span>
+                                                        <span class="regular2--text body2 my-auto flex-shrink-0">@T("Period")</span>
                                                     </AppendOuterContent>
                                                 </STextField>
                                             }
@@ -147,29 +147,15 @@
         }
         @if (_model.Step == 2)
         {
-            @*<SIcon Tooltip="@T("ChartPreview")" Size="24" Color="primary" Class="align-self-center" OnClick="()=>_previewChart?.OpenModalAsync()!">mdi-chart-line</SIcon>*@
-
             @if (_entityId != default)
             {
-                <span class="d-flex px-6" style="height: 12px">
-                    <MDivider Vertical />
-                </span>
                 <MIcon Size="24" Color="error" Class="align-self-center" OnClick="delete.Click">mdi-delete</MIcon>
             }
         }
         @if (_model.Step == 3)
         {
-            @*<EnableSwitch Class="d-inline-flex" @bind-Value="_model.IsEnabled" />*@
-            <span class="d-flex px-6" style="height: 12px">
-                <MDivider Vertical />
-            </span>
-            @*<SIcon Tooltip="@T("ChartPreview")" Size="24" Color="primary" Class="align-self-center" OnClick="()=>_previewChart?.OpenModalAsync()!">mdi-chart-line</SIcon>*@
-
             @if (_entityId != default)
             {
-                <span class="d-flex px-6" style="height: 12px">
-                    <MDivider Vertical />
-                </span>
                 <MIcon Size="24" Color="error" Class="align-self-center" OnClick="delete.Click">mdi-delete</MIcon>
             }
         }

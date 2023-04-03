@@ -55,6 +55,7 @@ public partial class LogAlarmRuleUpsertModal : ProCompontentBase
         }
 
         FillData();
+        GetNextRunTime();
 
         await InvokeAsync(() =>
         {
@@ -70,7 +71,6 @@ public partial class LogAlarmRuleUpsertModal : ProCompontentBase
         var dto = await AlertClient.AlarmRuleService.GetAsync(_entityId) ?? new();
         _model = dto.Adapt<AlarmRuleUpsertViewModel>();
         await HandleProjectChange();
-        GetNextRunTime();
     }
 
     private void FillData()
@@ -187,8 +187,11 @@ public partial class LogAlarmRuleUpsertModal : ProCompontentBase
             return;
         }
 
-        //Loading = true;
+        _visible = false;
+    }
 
+    public async Task Submit()
+    {
         var inputDto = _model.Adapt<AlarmRuleUpsertModel>();
 
         if (_entityId == default)
@@ -200,12 +203,7 @@ public partial class LogAlarmRuleUpsertModal : ProCompontentBase
             await AlertClient.AlarmRuleService.UpdateAsync(_entityId, inputDto);
         }
 
-        //Loading = false;
-        _visible = false;
-
         ResetForm();
-
-        OpenSuccessMessage(T("OperationSuccessfulMessage"));
 
         if (OnOk.HasDelegate)
         {
