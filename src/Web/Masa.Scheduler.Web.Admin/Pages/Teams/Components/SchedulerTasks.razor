@@ -18,10 +18,13 @@
             <MCol Cols="3" Class="ml-6" Style="min-width: 350px;">
                 <DateTimeRangePicker @bind-StartTime="_queryStartTime" @bind-EndTime="_queryEndTime" OnChange="()=>OnQueryDataChanged()" />
             </MCol>
-            <MCol Cols="2" Class="ml-6">
-                <SSelect Small Value="_queryOrigin" TItem="string" TItemValue="string" TValue="string" ValueChanged="QueryOriginChanged" Label="@T("Origin")" BackgroundColor="white" Class="rounded-2 body2" Clearable Items="_orginList" ItemText="origin => origin" ItemValue="origin=>origin">
-                </SSelect>
-            </MCol>
+            @if(IsApiCreate)
+            {
+                <MCol Cols="2" Class="ml-6">
+                    <SSelect Small Value="_queryOrigin" TItem="string" TItemValue="string" TValue="string" ValueChanged="QueryOriginChanged" Label="@T("Origin")" BackgroundColor="white" Class="rounded-2 body2" Clearable Items="_orginList" ItemText="origin => origin" ItemValue="origin=>origin">
+                    </SSelect>
+                </MCol>
+            }
         </MRow>
         <MRadioGroup Value="_queryStatus" TValue="TaskRunStatus" ValueChanged="QueryStatusChanged" OnClick="RadioGroupClickHandler" Row Class="mt-0 pt-2 masa-radiogroup">
             <MRadio TValue="TaskRunStatus" Value="default" Color="green">
