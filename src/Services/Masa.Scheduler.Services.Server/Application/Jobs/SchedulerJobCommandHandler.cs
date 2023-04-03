@@ -205,6 +205,8 @@ public class SchedulerJobCommandHandler
 
         schedulerJobDto.DaprServiceInvocationConfig ??= new();
 
+        schedulerJobDto.NotifyUrl = request.NotifyUrl;
+
         var addCommand = new AddSchedulerJobCommand(new AddSchedulerJobRequest()
         {
             Data = schedulerJobDto,
