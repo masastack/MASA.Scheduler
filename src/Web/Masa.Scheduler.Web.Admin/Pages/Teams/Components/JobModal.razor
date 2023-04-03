@@ -1,9 +1,9 @@
 ﻿@inherits ProCompontentBase
 
 <div @ref="Ref">
-    <SSimpleModal Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(GetTitle())" Class="full-height" HeaderClass="mr-4" OnCancel="CloseModal">
+    <SSimpleModal Value="_visible" ValueChanged="HandleVisibleChanged" Title="@(GetTitle())" Class="full-height masa-modal" HeaderClass="mr-4" OnCancel="CloseModal">
         <ChildContent>
-            <MStepper Value="_step" Class="d-flex flex-column full-height">
+            <MStepper Value="_step" Class="d-flex flex-column full-height masa-stepper">
                 <MStepperItems Class="full-height">
                     <MStepperContent Step="1" Class="full-height pa-0">
                         @foreach (var (key, value) in GetEnumMap<JobTypes>())
@@ -22,7 +22,13 @@
                                         <MCol Md="6">
                                             <STextField @bind-Value="@Model.Name" Label="@T("JobName")" HideDetails="@("auto")" />
                                         </MCol>
-                                        @if (!_isAdd)
+                                        @if (_isAdd)
+                                        {
+                                            <MCol Md="6">
+                                                <SUserAutoComplete Class="ml-6" Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Outlined Label="@T("Owner")" Solo="false" Flat="false" Style="width:auto;"></SUserAutoComplete>
+                                            </MCol>
+                                        }
+                                        else
                                         {
                                             <MCol Md="6">
                                                 <SSelect Class="ml-6" @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Readonly Disabled Dense Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
@@ -30,14 +36,17 @@
                                             </MCol>
                                         }
                                     </MRow>
+                                    @if(!_isAdd)
+                                    {
+                                        <MRow NoGutters Class="mt-9">
+                                            <MCol Md="6">
+                                                <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Outlined Label="@T("Owner")" Solo="false" Flat="false"></SUserAutoComplete>
+                                            </MCol>
+                                        </MRow>                                        
+                                    }
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
-                                            <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Outlined Label="@T("Owner")" Solo="false" Flat="false"></SUserAutoComplete>
-                                        </MCol>
-                                    </MRow>
-                                    <MRow NoGutters Class="mt-9">
-                                        <MCol Md="6">
-                                            <MSwitch @bind-Value="Model.IsAlertException" Label="@T("IsAlertException")" Class="ml-3 pt-0 mt-0" TValue="bool" OnChange="HandleAlertException"></MSwitch>
+                                            <MSwitch @bind-Value="Model.IsAlertException" Label="@T("IsAlertException")" Class="ml-3 pt-0 mt-0" TValue="bool" OnChange="HandleAlertException" Inset></MSwitch>
                                         </MCol>
                                     </MRow>
 
@@ -57,12 +66,12 @@
                                     @if (Model.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(Model.CronExpression))
                                     {
                                         <div class="mt-4">
-                                            <p>
+                                            <p class="emphasis2--text">
                                                 @T("ExpectedNextRunTime"):
                                             </p>
-                                            <pre class="masa body2">
+                                            <pre class="masa body2 regular--text">
                                                 @_nextRunTimeStr
-                                                        </pre>
+                                            </pre>
                                         </div>
                                     }
                                     <MRow NoGutters Class="mt-9">
@@ -106,10 +115,10 @@
                                     <DefaultTitle>@T("FailedStrategy")</DefaultTitle>
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="4">
-                                            <MButtonGroup Value="Model.FailedStrategy.ToString()" Class="rounded-lg elevation-tab" Group Tile Dense Mandatory Borderless>
+                                            <MButtonGroup Value="Model.FailedStrategy.ToString()" Class="elevation-tab buttongroup-radius10" Group Tile Dense Mandatory Borderless>
                                                 @foreach (var (key, value) in GetEnumMap<FailedStrategyTypes>())
                                                 {
-                                                    <SButton OnClick="async() => await SwitchFailedStrategyType(value)" Value="@value.ToString()" Ripple=false Class="rounded-lg" MinWidth=100>
+                                                    <SButton OnClick="async() => await SwitchFailedStrategyType(value)" Value="@value.ToString()" Ripple=false MinWidth=100>
                                                         @T(key)
                                                     </SButton>
                                                 }
@@ -161,10 +170,10 @@
                                         <DefaultTitle>@T("RequestParameters")</DefaultTitle>
                                         <MRow NoGutters Class="mt-6">
                                             <MCol Md="6">
-                                                <MButtonGroup Value="_httpParameterTypes.ToString()" Class="rounded-lg" Color="primary" Group Tile Dense Mandatory Borderless>
+                                                <MButtonGroup Value="_httpParameterTypes.ToString()" Class="masa-buttongroup" Color="primary" Group Tile Dense Mandatory Borderless>
                                                     @foreach (var (key, value) in GetEnumMap<HttpParameterTypes>())
                                                     {
-                                                        <MButton OnClick="async() => await SwitchHttpParameterType(value)" Value="@value.ToString()" Ripple=false Class="rounded-lg" MinWidth=100>
+                                                        <MButton OnClick="async() => await SwitchHttpParameterType(value)" Value="@value.ToString()" Ripple=false> 
                                                             @T(key)
                                                         </MButton>
                                                     }
@@ -202,9 +211,10 @@
                                                 </STextarea>
                                             </MCol>
                                         </MRow>
+                                                <AuditedInfo Audited="(AuditedEntityDto)Model" />
                                     </AutoHeightContent>
                                     <FooterContent>
-                                                <div class="d-flex mt-9 align-center">
+                                        <div class="d-flex mt-9 align-center">
                                             <MIcon Size="24" Color="emphasis2" OnClick="PreviousStep">mdi-keyboard-backspace</MIcon>
                                             @if (Model.Id != Guid.Empty)
                                             {
@@ -269,6 +279,7 @@
                                                 </MCol>
                                             }
                                         </MRow>
+                                        <AuditedInfo Audited="(AuditedEntityDto)Model" />
                                     </AutoHeightContent>
                                     <FooterContent>
                                         <div class="d-flex mt-9 align-center">
@@ -322,6 +333,7 @@
                                                 </STextarea>
                                             </MCol>
                                         </MRow>
+                                        <AuditedInfo Audited="(AuditedEntityDto)Model" />
                                     </AutoHeightContent>
                                     <FooterContent>
                                         <div class="d-flex mt-9" style="align-items: center;">

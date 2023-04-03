@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Contracts.Server.Dtos;
 
-public class SchedulerJobDto
+public class SchedulerJobDto : AuditedEntityDto
 {
     public Guid Id { get; set; }
 
@@ -74,10 +74,6 @@ public class SchedulerJobDto
     public SchedulerJobHttpConfigDto HttpConfig { get; set; } = new();
 
     public SchedulerJobDaprServiceInvocationConfigDto DaprServiceInvocationConfig { get; set; } = new();
-
-    public DateTime CreationTime { get; set; }
-
-    public DateTime ModificationTime { get; set; }
 
     public string NotifyUrl { get; set; } = string.Empty;
 

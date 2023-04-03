@@ -5,23 +5,12 @@ namespace Masa.Scheduler.Web.Admin;
 
 public abstract class ProCompontentBase : BDomComponentBase
 {
-    private I18n? _languageProvider;
     private SchedulerServerCaller? _schedulerServerCaller;
     private GlobalConfig? _globalConfig;
     private NavigationManager? _navigationManager;
 
     [Inject]
-    public I18n LanguageProvider
-    {
-        get
-        {
-            return _languageProvider ?? throw new Exception("please Inject I18n!");
-        }
-        set
-        {
-            _languageProvider = value;
-        }
-    }
+    public I18n I18n { get; set; } = default!;
 
     [Inject]
     public SchedulerServerCaller SchedulerServerCaller
@@ -78,6 +67,9 @@ public abstract class ProCompontentBase : BDomComponentBase
     [Inject]
     public JsInitVariables JsInitVariables { get; set; } = default!;
 
+    [CascadingParameter(Name = "Culture")]
+    private string Culture { get; set; } = null!;
+
     public List<KeyValuePair<string, TEnum>> GetEnumMap<TEnum>() where TEnum : struct, Enum
     {
         return Enum.GetValues<TEnum>().Select(e => new KeyValuePair<string, TEnum>(e.ToString(), e)).ToList();
@@ -88,28 +80,13 @@ public abstract class ProCompontentBase : BDomComponentBase
     public string T(string key)
     {
         if (string.IsNullOrEmpty(key)) return key;
-        if (PageName is not null) return LanguageProvider?.T(PageName, key, false) ?? LanguageProvider?.T(key, false) ?? key;
-        else return LanguageProvider?.T(key, true) ?? key;
+        if (PageName is not null) return I18n?.T(PageName, key, false) ?? I18n?.T(key, false) ?? key;
+        else return I18n?.T(key, true) ?? key;
     }
 
     public string T(string formatkey, params string[] args)
     {
         return string.Format(T(formatkey), args);
-    }
-
-    public async Task<bool> OpenConfirmDialog(string content)
-    {
-        return await PopupService.ConfirmAsync(T("Operation confirmation"), content, AlertTypes.Error);
-    }
-
-    public async Task<bool> OpenConfirmDialog(string title, string content)
-    {
-        return await PopupService.ConfirmAsync(title, content);
-    }
-
-    public async Task<bool> OpenConfirmDialog(string title, string content, AlertTypes type)
-    {
-        return await PopupService.ConfirmAsync(title, content, type);
     }
 
     public void OpenInformationMessage(string message)
@@ -134,12 +111,12 @@ public abstract class ProCompontentBase : BDomComponentBase
 
     public async Task ConfirmAsync(string messgae, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
     {
-        if (await PopupService.ConfirmAsync(T("OperationConfirmation"), messgae, type)) await callback.Invoke();
+        if (await PopupService.SimpleConfirmAsync(T("OperationConfirmation"), messgae, type)) await callback.Invoke();
     }
 
     public async Task ConfirmAsync(string title, string messgae, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
     {
-        if (await PopupService.ConfirmAsync(title, messgae, type)) await callback.Invoke();
+        if (await PopupService.SimpleConfirmAsync(title, messgae, type)) await callback.Invoke();
     }
 
 

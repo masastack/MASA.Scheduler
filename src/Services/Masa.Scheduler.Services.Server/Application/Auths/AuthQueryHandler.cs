@@ -8,14 +8,12 @@ public class AuthQueryHandler
     private IUserContext _userContext;
     private IAuthClient _authClient;
     private IMapper _mapper;
-    private IMemoryCache _cache;
 
-    public AuthQueryHandler(IUserContext userContext, IAuthClient authClient, IMapper mapper, IMemoryCache cache)
+    public AuthQueryHandler(IUserContext userContext, IAuthClient authClient, IMapper mapper)
     {
         _userContext = userContext;
         _authClient = authClient;
         _mapper = mapper;
-        _cache = cache;
     }
 
     [EventHandler]
@@ -40,20 +38,9 @@ public class AuthQueryHandler
 
         var cacheKey = CacheKeys.USER_QUERY + "-" + md5Key;
 
-        var response = _cache.Get<List<UserDto>>(cacheKey);
+        var userInfos = await _authClient.UserService.GetListByIdsAsync(query.UserIds.ToArray()) ?? new();
 
-        if(response == null)
-        {
-            var userInfos = await _authClient.UserService.GetListByIdsAsync(query.UserIds.ToArray());
-
-            if (userInfos.Any())
-            {
-                response = _mapper.Map<List<UserDto>>(userInfos);
-            }
-
-            _cache.Set(cacheKey, response ?? new(), DateTimeOffset.Now.AddMinutes(1));
-        }
-
+        var response = _mapper.Map<List<UserDto>>(userInfos);
         query.Result = response ?? new();
     }
 }

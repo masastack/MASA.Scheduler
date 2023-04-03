@@ -5,14 +5,13 @@
     var length = i + 1;
     var total = GetValueCount();
     <MRow NoGutters Class="mt-9">
-        <MCol Md="4">
+        <MCol Md="5">
             <STextField Value="kv.Key" Label="Key" HideDetails="@("auto")" Dense Outlined ValueChanged="(string key)=> OnModifyKey(index, key)" />
         </MCol>
-        <MCol Md="4">
+        <MCol Md="5" Class="my-auto dynamic-keyvalue">
             <STextField Class="ml-6" Value="kv.Value" Label="Value" HideDetails="@("auto")" Dense Outlined ValueChanged="(string value) => OnModifyValue(index, value)"/>
         </MCol>
-        <MSpacer></MSpacer>
-        <MCol Md="2" Class="my-auto">
+        <MCol Md="2" Class="my-auto pl-4 dynamic-keyvalue">
             @if(total > 1)
             {
                 <MButton Icon OnClick="()=> OnRemoveKeyValue(index)">

@@ -29,6 +29,8 @@ public partial class SchedulerResourceFiles
 
     private AddSchedulerResourceFiles? _addResourceModal;
 
+    private bool _showProgressbar = true;
+
     protected async override Task OnInitializedAsync()
     {
         await GetProjects();
@@ -61,8 +63,12 @@ public partial class SchedulerResourceFiles
 
     private async Task GetResourceData()
     {
+        _showProgressbar = true;
         var project = _projects.FirstOrDefault(x => x.Identity == _selectedProjectIdentity);
-        if (project == null) { return; }
+        if (project == null) {
+            _showProgressbar = false;
+            return; 
+        }
         var jobs = project.ProjectApps.Where(p => p.Type == ProjectAppTypes.Job).ToList();
         var resources = new List<AppResourceViewModel>();
         foreach (var job in jobs)
@@ -79,6 +85,7 @@ public partial class SchedulerResourceFiles
             });
         }
         _resourceData = resources;
+        _showProgressbar = false;
     }
 
     private async Task ShowDialog(ConfirmDialogTypes confirmType, Guid resourceId, string appIdentity)

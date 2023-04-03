@@ -12,7 +12,9 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker")
+        ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
+        Layer = masaStackConfig.Namespace,
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
     };
 }, () =>
 {
@@ -58,14 +60,14 @@ var redisOptions = new RedisConfigurationOptions
     DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
     Password = masaStackConfig.RedisModel.RedisPassword
 };
-builder.Services.AddStackExchangeRedisCache(redisOptions)
-    .AddMultilevelCache();
+builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
+
 builder.Services.AddMapster();
 builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddSchedulerLogger();
 
-var app = builder.Services
+builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
@@ -106,15 +108,15 @@ var app = builder.Services
          {
              eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
          })
-         .UseIsolationUoW<SchedulerDbContext>(
-            isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
-            dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
+         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
-    })
-    .AddServices(builder, options =>
-    {
-        options.MapHttpMethodsForUnmatched = new[] { "Post" };
-    });
+    }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment("env"));
+
+
+var app = builder.AddServices(options =>
+{
+    options.MapHttpMethodsForUnmatched = new[] { "Post" };
+});
 
 app.UseMasaExceptionHandler(opt =>
 {

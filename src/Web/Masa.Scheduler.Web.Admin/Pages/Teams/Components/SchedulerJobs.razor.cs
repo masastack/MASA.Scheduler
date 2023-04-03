@@ -96,7 +96,10 @@ public partial class SchedulerJobs : ProCompontentBase
     private SchedulerJobDto modalModel = new();
 
     private List<KeyValuePair<string, TaskRunStatus>> _queryStatusList = new();
-    List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
+
+    private List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
+
+    private bool _showProgressbar = true;
 
     private bool _showConfirmDialog;
 
@@ -290,8 +293,11 @@ public partial class SchedulerJobs : ProCompontentBase
         {
             _jobs = new();
             _total = 0;
+            _showProgressbar = false;
             return;
         }
+
+        _showProgressbar = true;
 
         var request = new SchedulerJobListRequest()
         {
@@ -321,6 +327,7 @@ public partial class SchedulerJobs : ProCompontentBase
             _page = 1;
         }
 
+        _showProgressbar = false;
         StateHasChanged();
     }
 
@@ -389,7 +396,7 @@ public partial class SchedulerJobs : ProCompontentBase
             case TaskRunStatus.Failure:
             case TaskRunStatus.Timeout:
             case TaskRunStatus.TimeoutSuccess: 
-                return TimeSpan.FromMilliseconds((DateTime.UtcNow - job.LastRunEndTime).TotalMilliseconds).Humanize(culture: LanguageProvider.Culture, minUnit: TimeUnit.Second, maxUnit: TimeUnit.Year) + T("Ago") + T(job.LastRunStatus.ToString());
+                return TimeSpan.FromMilliseconds((DateTime.UtcNow - job.LastRunEndTime).TotalMilliseconds).Humanize(culture: I18n.Culture, minUnit: TimeUnit.Second, maxUnit: TimeUnit.Year) + T("Ago") + T(job.LastRunStatus.ToString());
         }
 
         return "";

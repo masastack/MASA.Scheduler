@@ -107,5 +107,9 @@
   "ExpectedNextRunTime": "Expected next 5 run times",
   "UploadFileFailed": "Upload files failed, please reupload",
   "UploadComplete": "Upload complete",
-  "Ago": " ago"
+  "Ago": " ago",
+  "Creator": "Creator",
+  "CreationTime": "CreationTime",
+  "Modifier": "Modifier",
+  "ModificationTime": "ModificationTime"
 }

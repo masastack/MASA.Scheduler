@@ -108,7 +108,7 @@ public partial class JobModal
 
     private LogAlarmRuleUpsertModal? _logUpsertModal;
 
-    private Guid _jobId = Guid.NewGuid();
+    private Guid _jobId = Guid.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,6 +124,11 @@ public partial class JobModal
     public async Task OpenModalAsync(SchedulerJobDto model)
     {
         Model = model;
+
+        if (Model.Id == Guid.Empty)
+        {
+            _jobId = Guid.NewGuid();
+        }
 
         await InvokeAsync(() =>
         {
@@ -317,11 +322,15 @@ public partial class JobModal
 
             if (_isAdd)
             {
-                Model.Id = _jobId;
                 var request = new AddSchedulerJobRequest()
                 {
                     Data = Model
                 };
+
+                if (Model.Id == Guid.Empty)
+                {
+                    request.Data.Id = _jobId;
+                }
 
                 await SchedulerServerCaller.SchedulerJobService.AddAsync(request);
 
