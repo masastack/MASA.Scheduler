@@ -38,5 +38,7 @@ public class AddSchedulerJobBySdkRequest
     public SchedulerJobHttpConfigDto? HttpConfig { get; set; }
 
     public SchedulerJobDaprServiceInvocationConfigDto? DaprServiceInvocationConfig { get; set; }
+
+    public string NotifyUrl { get; set; } = string.Empty;
 }
 
