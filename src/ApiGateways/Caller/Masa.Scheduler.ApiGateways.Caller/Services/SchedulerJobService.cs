@@ -45,6 +45,6 @@ public class SchedulerJobService : ServiceBase
 
     public async Task UpsertAlarmRuleAsync(Guid id, Guid alarmRuleId)
     {
-        await PostAsync($"{id}/upsert-alarm?alarmRuleId={alarmRuleId}", new { });
+        await PostAsync($"{id}/upsertAlarm?alarmRuleId={alarmRuleId}", new { });
     }
 }
