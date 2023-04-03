@@ -100,7 +100,7 @@
                             case "Action":
                                 <MTooltip Bottom>
                                     <ActivatorContent Context="tooltips">
-                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Link Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/log/{context.Item.Id}")">
+                                    <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Link Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/log/{context.Item.Id}")" Target="_blank">
                                             <MIcon>plagiarism</MIcon>
                                         </MButton>
                                     </ActivatorContent>

@@ -214,4 +214,15 @@ public class SchedulerJobCommandHandler
 
         command.Result = addCommand.Result;
     }
+
+    [EventHandler]
+    public async Task UpsertAlarmRuleHandleAsync(UpsertAlarmRuleCommand command)
+    {
+        var job = await _schedulerJobRepository.FindAsync(job => job.Id == command.JobId);
+        MasaArgumentException.ThrowIfNull(job);
+
+        job.SetAlarmRuleId(command.AlarmRuleId);
+
+        await _schedulerJobRepository.UpdateAsync(job);
+    }
 }
