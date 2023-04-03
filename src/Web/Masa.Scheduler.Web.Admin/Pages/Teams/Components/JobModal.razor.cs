@@ -162,13 +162,7 @@ public partial class JobModal
 
             var nextExcuteTime2 = cronExpression.GetNextValidTimeAfter(nextExcuteTime.Value);
 
-            if (!nextExcuteTime2.HasValue)
-            {
-                OpenWarningMessage(T("CronExpressionNotHasNextRunTime"));
-                return Task.CompletedTask;
-            }
-
-            if ((nextExcuteTime2.Value - nextExcuteTime.Value).TotalSeconds < 30)
+            if (nextExcuteTime2.HasValue && (nextExcuteTime2.Value - nextExcuteTime.Value).TotalSeconds < 30)
             {
                 OpenWarningMessage(T("RunningIntervalTips"));
                 return Task.CompletedTask;
