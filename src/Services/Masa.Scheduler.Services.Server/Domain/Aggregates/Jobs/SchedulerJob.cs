@@ -183,6 +183,8 @@ public class SchedulerJob : FullAggregateRoot<Guid, Guid>
                 break;
             case TaskRunStatus.Success:
             case TaskRunStatus.TimeoutSuccess:
+                LastRunEndTime = DateTimeOffset.Now;
+                break;
             case TaskRunStatus.Timeout:
                 NotifyJobStatus(JobNotifyStatus.Timeout);
                 break;
