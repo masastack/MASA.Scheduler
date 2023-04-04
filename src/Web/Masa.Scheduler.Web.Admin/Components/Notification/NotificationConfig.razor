@@ -20,7 +20,7 @@
     <MRow Class="mt-0">
         <MCol>
             <SSelect @bind-Value="@Value.ChannelType"
-                     Items="Enum.GetValues<ChannelTypes>().ToList()"
+                     Items="Enum.GetValues<ChannelTypes>().Where(x=>x!=ChannelTypes.App).ToList()"
                      Label="@T("ChannelType")"
                      ItemText="item => T(item.ToString())"
                      ItemValue="item => (int)item"

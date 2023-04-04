@@ -205,6 +205,12 @@
   "ChannelType": "渠道类型",
   "Channel": "渠道",
   "Template": "模板",
+  "Sms": "短信",
+  "Email": "邮箱",
+  "WebsiteMessage": "站内信",
+  "Minute": "分钟",
+  "Hour": "小时",
+  "Day": "天",
   "AlarmRuleBlock": {
     "Log": "日志监控",
     "Metric": "指标监控",
@@ -272,6 +278,8 @@
     "High": "高",
     "Secondary": "中",
     "Low": "低",
-    "Report": "报告"
+    "Report": "报告",
+    "CheckFrequency": "检查频率",
+    "FixedInterval": "固定间隔"
   }
 }
