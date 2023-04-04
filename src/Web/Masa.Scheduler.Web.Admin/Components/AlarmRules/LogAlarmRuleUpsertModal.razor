@@ -1,5 +1,5 @@
 ﻿@inherits ProCompontentBase
-<SSimpleModal Value="_visible" ValueChanged="HandleVisibleChanged" OnDelete="HandleDel" OnCancel="HandleCancel" OnSave="HandleOk"
+<SSimpleModal Value="_visible" ValueChanged="HandleVisibleChanged" OnCancel="HandleCancel" OnSave="HandleOk"
               Title="@T(_entityId == default?"AddAlarmRule":"EditAlarmRule")" Class="full-height" HeaderClass="mr-4">
     <ChildContent>
         <MForm Model="_model" EnableValidation @ref="_form" OnValidSubmit="HandleOk" Class="full-height mt-n2 pt-3" >
@@ -29,7 +29,7 @@
                         </AutoHeight>
                     </MStepperContent>
                     <MStepperContent Class="full-height pa-0" Step="2">
-                        <AutoHeight Overflow Class="mt-9">
+                        <AutoHeight Overflow Class="my-9">
                             <AutoHeightContent>
                                 <DefaultTitle Class="mb-6">
                                     <span>@T("ChartSetting")</span>
@@ -121,8 +121,7 @@
                                     </MRow>
                                 }
                                 <DefaultTitle>@T("LogFilter")</DefaultTitle>
-                                <STextarea @bind-Value="_model.WhereExpression" Label="@T(nameof(_model.WhereExpression))" Outlined HideDetails="@("auto")"></STextarea>
-                                @*<LogQueryExpression AlarmRule="_model"></LogQueryExpression>*@
+                                <STextarea Class="mb-9" @bind-Value="_model.WhereExpression" Label="@T(nameof(_model.WhereExpression))" Outlined HideDetails="@("auto")"></STextarea>
                             </AutoHeightContent>
                         </AutoHeight>
                     </MStepperContent>
@@ -137,29 +136,6 @@
             </MStepper>
         </MForm>
     </ChildContent>
-    <DeleteContent Context="delete">
-        @if (_model.Step == 1)
-        {
-            @if (_entityId != default)
-            {
-                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="delete.Click">mdi-delete</MIcon>
-            }
-        }
-        @if (_model.Step == 2)
-        {
-            @if (_entityId != default)
-            {
-                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="delete.Click">mdi-delete</MIcon>
-            }
-        }
-        @if (_model.Step == 3)
-        {
-            @if (_entityId != default)
-            {
-                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="delete.Click">mdi-delete</MIcon>
-            }
-        }
-    </DeleteContent>
     <SaveContent Context="save">
         @if (_model.Step == 1)
         {
@@ -182,5 +158,3 @@
     <PCron @bind-Value="@(_tempCron)">
     </PCron>
 </SSimpleModal>
-
-@*<AlarmPreviewChartModal @ref="_previewChart" AlarmRule="_model" />*@

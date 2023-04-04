@@ -365,6 +365,8 @@ public partial class JobModal
 
         OpenSuccessMessage(T("DeleteSuccess"));
 
+        ResetForm();
+
         if (OnAfterDataChange.HasDelegate)
         {
             await OnAfterDataChange.InvokeAsync();
@@ -614,7 +616,8 @@ public partial class JobModal
                     Type = SilenceCycleType.Time,
                     TimeInterval = new TimeIntervalModel
                     {
-                        IntervalTimeType = TimeType.Minute
+                        IntervalTimeType = TimeType.Minute,
+                        IntervalTime = 15
                     }
                 }
             };

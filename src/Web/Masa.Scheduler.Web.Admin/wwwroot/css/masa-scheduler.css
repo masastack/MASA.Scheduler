@@ -90,3 +90,25 @@
 .masa-tasktable tr {
     height: 72px;
 }
+
+.button-divider {
+    padding-right: 0 !important;
+}
+
+    .button-divider .m-divider__content {
+        margin-right: 0;
+        padding-right: 0;
+    }
+
+.m-chip:not(.m-chip--active) {
+    background: #f6f8fd !important;
+}
+
+.m-chip.theme--light.m-chip--select {
+    background: #f6f8fd !important;
+}
+
+.m-input__append-outer, .m-input__prepend-outer {
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+}

@@ -70,7 +70,7 @@
 </MRow>
 <MRow NoGutters Class="mt-9">
     <MCol Md="4">
-        <SSelect @bind-Value="Model.SilenceCycle.Type" Items="Enum.GetValues<SilenceCycleType>().ToList()" ItemText="e => T(e==default?string.Empty:e.ToString())" ItemValue="e=> e" Label="@T(nameof(Model.SilenceCycle))">
+        <SSelect @bind-Value="Model.SilenceCycle.Type" Items="Enum.GetValues<SilenceCycleType>().ToList()" ItemText="e => T(e==default?string.Empty:e.ToString())" ItemValue="e=> e" Label="@T(nameof(Model.SilenceCycle))" Clearable>
             <AppendOuterContent>
                 <DefaultTooltip Class="ml-2 mt-n1" Tooltip="@T("SilenceCycleTip")" />
             </AppendOuterContent>
@@ -88,9 +88,9 @@
     @if (Model.SilenceCycle.Type == SilenceCycleType.Cycle)
     {
         <MCol Md="4">
-            <STextField @bind-Value="Model.SilenceCycle.SilenceCycleValue" Label="@T(nameof(Model.SilenceCycle.SilenceCycleValue))" Class="ml-2">
+            <STextField @bind-Value="Model.SilenceCycle.SilenceCycleValue" Label="@T(nameof(Model.SilenceCycle.SilenceCycleValue))" Class="ml-2 align-center">
                 <AppendOuterContent>
-                    <span class="regular2--text body2 my-auto">@T("Period")</span>
+                    <span class="regular2--text body2 my-auto flex-shrink-0">@T("Period")</span>
                 </AppendOuterContent>
             </STextField>
         </MCol>
