@@ -1,7 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Scheduler.Web.Admin.Components.AlarmRules;
+namespace Masa.Scheduler.Web.Admin.Components.AlarmRules.ViewModel;
 
 public class AlarmRuleUpsertViewModel
 {
@@ -17,7 +17,7 @@ public class AlarmRuleUpsertViewModel
 
     public string ChartYAxisUnit { get; set; } = string.Empty;
 
-    public CheckFrequencyModel CheckFrequency { get; set; } = new();
+    public CheckFrequencyViewModel CheckFrequency { get; set; } = new();
 
     public string WhereExpression { get; set; } = string.Empty;
 
@@ -25,7 +25,7 @@ public class AlarmRuleUpsertViewModel
 
     public int ContinuousTriggerThreshold { get; set; }
 
-    public SilenceCycleModel SilenceCycle { get; set; } = new();
+    public SilenceCycleViewModel SilenceCycle { get; set; } = new();
 
     public bool IsEnabled { get; set; }
 

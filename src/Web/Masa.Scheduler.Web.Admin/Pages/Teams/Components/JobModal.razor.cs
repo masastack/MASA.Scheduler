@@ -587,11 +587,11 @@ public partial class JobModal
                 DisplayName = Model.Name,
                 ProjectIdentity = "scheduler",
                 AppIdentity = MasaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
-                CheckFrequency = new CheckFrequencyModel
+                CheckFrequency = new CheckFrequencyViewModel
                 {
                     Type = AlarmCheckFrequencyType.Cron,
                     CronExpression = "0 0/10 * * * ? ",
-                    FixedInterval = new TimeIntervalModel
+                    FixedInterval = new TimeIntervalViewModel
                     {
                         IntervalTimeType = TimeType.Minute
                     }
@@ -609,15 +609,6 @@ public partial class JobModal
                     new AlarmRuleItemModel {
                         Expression=ruleExpression,
                         AlertSeverity = AlertSeverity.High
-                    }
-                },
-                SilenceCycle = new SilenceCycleModel
-                {
-                    Type = SilenceCycleType.Time,
-                    TimeInterval = new TimeIntervalModel
-                    {
-                        IntervalTimeType = TimeType.Minute,
-                        IntervalTime = 15
                     }
                 }
             };

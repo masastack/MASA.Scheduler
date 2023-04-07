@@ -5,4 +5,5 @@ namespace Masa.Scheduler.Services.Server.Domain.Repositories;
 
 public interface ISchedulerTaskRepository : IRepository<SchedulerTask, Guid>
 {
+    Task<bool> AnyAsync(Expression<Func<SchedulerTask, bool>> predicate);
 }
