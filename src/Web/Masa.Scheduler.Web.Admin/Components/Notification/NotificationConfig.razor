@@ -1,14 +1,16 @@
 ﻿@inherits ProCompontentBase
 <MRow NoGutters Class="@Class">
-    <MCol @onclick="HandleTemplateClick">
-        <STextField @bind-Value="Value.TemplateName" Label="@T("MessageTemplate")" Readonly Dense Outlined BackgroundColor="@ItemBackgroundColor">
-            <PrependContent>
-                @if (!string.IsNullOrEmpty(PrependText))
-                {
-                    <span class="default--text subtitle2 my-auto">@PrependText</span>
-                }
-            </PrependContent>
-        </STextField>
+    <MCol>
+        <div @onclick="HandleTemplateClick">
+            <STextField @bind-Value="Value.TemplateName" Label="@T("MessageTemplate")" Readonly Dense Outlined BackgroundColor="@ItemBackgroundColor">
+                <PrependContent>
+                    @if (!string.IsNullOrEmpty(PrependText))
+                    {
+                        <span class="default--text subtitle2 my-auto">@PrependText</span>
+                    }
+                </PrependContent>
+            </STextField>
+        </div>
     </MCol>
     <MCol>
         <UserAutoComplete @bind-Value="Value.Receivers" Class="ml-6" Label="@T("Receiver")"></UserAutoComplete>

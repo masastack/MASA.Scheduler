@@ -48,3 +48,4 @@ global using Microsoft.JSInterop;
 global using Quartz;
 global using System.Reflection;
 global using System.Text;
+global using Masa.Scheduler.Web.Admin.Components.AlarmRules.ViewModel;
