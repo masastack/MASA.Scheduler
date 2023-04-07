@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Web.Admin.Components.Subjects;
 
-public partial class UserAutoComplete : ProCompontentBase
+public partial class UserAutoComplete : ProComponentBase
 {
     [Inject]
     public IAutoCompleteClient AutoCompleteClient { get; set; } = default!;

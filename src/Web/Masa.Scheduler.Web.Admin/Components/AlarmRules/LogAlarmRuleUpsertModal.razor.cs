@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Web.Admin.Components.AlarmRules;
 
-public partial class LogAlarmRuleUpsertModal : ProCompontentBase
+public partial class LogAlarmRuleUpsertModal : ProComponentBase
 {
     [Parameter]
     public EventCallback<Guid> OnOk { get; set; }

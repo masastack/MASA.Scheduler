@@ -1,10 +1,16 @@
 ﻿@using Masa.BuildingBlocks.StackSdks.Config;
 @using Masa.Contrib.StackSdks.Config;
-@inherits ProCompontentBase
+@inherits ProComponentBase
 @inject IMasaStackConfig MasaStackConfig
 <AutoHeight Overflow>
     <HeaderContent>
-        <MRow Class="flex-none fold d-inline-flex my-6" NoGutters>
+        <MRow Class="flex-none d-inline-flex my-6 pr-4" NoGutters>
+            <MCol>
+                <span class="emphasis--text h5">
+                    @SelectedJob?.Name
+                </span>
+            </MCol>
+            <MSpacer />
             <MCol Cols="2">
                 <SSelect Small @bind-Value="_queryTimeType"
                          Items="_jobQueryTimeTypeList"

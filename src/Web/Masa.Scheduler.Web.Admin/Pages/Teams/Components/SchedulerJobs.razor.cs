@@ -3,23 +3,21 @@
 
 namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
-public partial class SchedulerJobs : ProCompontentBase
+public partial class SchedulerJobs : ProComponentBase
 {
     [Parameter]
     public Guid? TeamId { get; set; }
 
     public ProjectDto? Project
     {
-        get
-        {
-            return _project;
-        }
+        get => _project;
         set
         {
             if (_project?.Id != value?.Id)
             {
                 _project = value;
                 _projectChange = true;
+                ResetQueryOptions();
                 OnQueryDataChanged();
             }
             else
@@ -35,16 +33,12 @@ public partial class SchedulerJobs : ProCompontentBase
     [Parameter]
     public bool Visible
     {
-        get
-        {
-            return _visible;
-        }
+        get => _visible;
         set
         {
             if (_visible != value)
             {
                 _visible = value;
-
                 if (_visible && !_projectChange)
                 {
                     OnQueryDataChanged();
@@ -67,14 +61,6 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private JobQueryTimeTypes _queryTimeType = JobQueryTimeTypes.CreationTime;
 
-    private DateTime? _queryStartTime;
-
-    private DateTime? _queryEndTime;
-
-    private bool _showFilter;
-
-    private string _filterIcon = "mdi-filter";
-
     private JobCreateTypes _jobCreateType = JobCreateTypes.Manual;
 
     private int _page = 1;
@@ -83,17 +69,13 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private long _total;
 
-    private string _contentHeight = "300px";
-
     private JobTypes _queryJobType;
 
     private string _queryOrigin = string.Empty;
 
     private List<SchedulerJobDto> _jobs = new();
 
-    private bool _modalVisible;
-
-    private SchedulerJobDto modalModel = new();
+    private SchedulerJobDto _modalModel = new();
 
     private List<KeyValuePair<string, TaskRunStatus>> _queryStatusList = new();
 
@@ -158,15 +140,6 @@ public partial class SchedulerJobs : ProCompontentBase
 
     public DateTime? QueryEndTime { get; set; }
 
-    private int TotalPage
-    {
-        get
-        {
-            var totalPage = (int)((_total + PageSize - 1) / PageSize);
-            return totalPage == 0 ? 1 : totalPage;
-        }
-    }
-
     public int Page
     {
         get => _page;
@@ -219,7 +192,7 @@ public partial class SchedulerJobs : ProCompontentBase
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         await MasaSignalRClient.HubConnectionBuilder();
 
@@ -236,34 +209,6 @@ public partial class SchedulerJobs : ProCompontentBase
         await base.OnInitializedAsync();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private string ComputedStatusColor(TaskRunStatus status)
-    {
-        switch (status)
-        {
-            case TaskRunStatus.Success:
-                return "#05CD99";
-            case TaskRunStatus.Failure:
-                return "#FF5252";
-            case TaskRunStatus.Timeout:
-                return "#FF7D00";
-            case TaskRunStatus.TimeoutSuccess:
-                return "#CC9139";
-            default:
-                return "#323D6F";
-        }
-    }
-
-    private Task OnVisibleChanged(bool visible)
-    {
-        _modalVisible = visible;
-        return Task.CompletedTask;
-    }
-
     private async Task SwitchJobCreateType(JobCreateTypes jobCreateTypes)
     {
         if (_jobCreateType != jobCreateTypes)
@@ -272,14 +217,6 @@ public partial class SchedulerJobs : ProCompontentBase
             ResetQueryOptions();
             await GetProjectJobs();
         }
-    }
-
-    public Task ShowFilter()
-    {
-        _showFilter = !_showFilter;
-        _filterIcon = _showFilter ? "mdi-filter-off" : "mdi-filter";
-        _contentHeight = _showFilter ? "356px" : "300px";
-        return Task.CompletedTask;
     }
 
     public Task OnQueryDataChanged(bool resetPage = true)
@@ -310,7 +247,7 @@ public partial class SchedulerJobs : ProCompontentBase
             PageSize = PageSize,
             QueryEndTime = QueryEndTime?.Add(JsInitVariables.TimezoneOffset),
             QueryStartTime = QueryStartTime?.Add(JsInitVariables.TimezoneOffset),
-            QueryTimeType = _queryTimeType,
+            QueryTimeType = QueryTimeType,
             BelongProjectIdentity = Project.Identity,
         };
 
@@ -322,6 +259,11 @@ public partial class SchedulerJobs : ProCompontentBase
 
         _originList = jobListResponse.OriginList;
 
+        if (!string.IsNullOrEmpty(_queryOrigin) && !_originList.Exists(x => x == _queryOrigin))
+        {
+            _queryOrigin = string.Empty; ;
+        }
+
         if (resetPage)
         {
             _page = 1;
@@ -329,37 +271,6 @@ public partial class SchedulerJobs : ProCompontentBase
 
         _showProgressbar = false;
         StateHasChanged();
-    }
-
-    private string GetJobClass(SchedulerJobDto job)
-    {
-        List<string> classList = new();
-
-        if (!job.Enabled)
-        {
-            classList.Add("job-disabled");
-        }
-
-        switch (job.LastRunStatus)
-        {
-            case TaskRunStatus.Success:
-                classList.Add("job-success");
-                break;
-            case TaskRunStatus.Failure:
-                classList.Add("job-error");
-                break;
-            case TaskRunStatus.Timeout:
-                classList.Add("job-timeout");
-                break;
-            case TaskRunStatus.TimeoutSuccess:
-                classList.Add("job-warning");
-                break;
-            default:
-                classList.Add("job-normal");
-                break;
-        }
-
-        return string.Join(" ", classList);
     }
 
     private string GetJobColor(SchedulerJobDto job)
@@ -395,7 +306,7 @@ public partial class SchedulerJobs : ProCompontentBase
             case TaskRunStatus.Success:
             case TaskRunStatus.Failure:
             case TaskRunStatus.Timeout:
-            case TaskRunStatus.TimeoutSuccess: 
+            case TaskRunStatus.TimeoutSuccess:
                 return TimeSpan.FromMilliseconds((DateTime.UtcNow - job.LastRunEndTime).TotalMilliseconds).Humanize(culture: I18n.Culture, minUnit: TimeUnit.Second, maxUnit: TimeUnit.Year) + T("Ago") + T(job.LastRunStatus.ToString());
         }
 
@@ -425,20 +336,19 @@ public partial class SchedulerJobs : ProCompontentBase
             return;
         }
 
-        modalModel = new();
-        modalModel.BelongProjectIdentity = Project.Identity;
-        modalModel.BelongTeamId = Project.TeamId;
-        modalModel.Enabled = true;
+        _modalModel = new();
+        _modalModel.BelongProjectIdentity = Project.Identity;
+        _modalModel.BelongTeamId = Project.TeamId;
+        _modalModel.Enabled = true;
 
-        await _jobModal?.OpenModalAsync(modalModel)!;
+        await _jobModal?.OpenModalAsync(_modalModel)!;
     }
 
     private async Task EditJob(SchedulerJobDto dto)
     {
-        _modalVisible = true;
-        modalModel = Mapper.Map<SchedulerJobDto>(dto);
+        _modalModel = Mapper.Map<SchedulerJobDto>(dto);
 
-        await _jobModal?.OpenModalAsync(modalModel)!;
+        await _jobModal?.OpenModalAsync(_modalModel)!;
     }
 
     private async Task DisabledJob(Guid jobId)
@@ -496,30 +406,6 @@ public partial class SchedulerJobs : ProCompontentBase
         return Task.CompletedTask;
     }
 
-    private Task OnPrevHandler()
-    {
-        if (Page > 1)
-        {
-            Page--;
-        }
-        return Task.CompletedTask;
-    }
-
-    private Task OnNextHandler()
-    {
-        if (Page < TotalPage)
-        {
-            Page++;
-        }
-        return Task.CompletedTask;
-    }
-
-    private Task OnPageSizeChanged(int pageSize)
-    {
-        PageSize = pageSize;
-        return Task.CompletedTask;
-    }
-
     private Task ShowDialog(ConfirmDialogTypes confirmDialogType, Guid jobId)
     {
         _confirmJobId = jobId;
@@ -530,7 +416,7 @@ public partial class SchedulerJobs : ProCompontentBase
             _showConfirmDialog = false;
             _confirmJobId = Guid.Empty;
             _confirmDialogType = 0;
-            PopupService.EnqueueSnackbarAsync("JobId error",AlertTypes.Error);
+            PopupService.EnqueueSnackbarAsync("JobId error", AlertTypes.Error);
             return Task.CompletedTask;
         }
 
@@ -581,8 +467,8 @@ public partial class SchedulerJobs : ProCompontentBase
 
     private void ResetQueryOptions()
     {
-        _queryEndTime = null;
-        _queryStartTime = null;
+        QueryEndTime = null;
+        QueryStartTime = null;
         _queryJobName = string.Empty;
         _queryOrigin = string.Empty;
         _queryTimeType = JobQueryTimeTypes.CreationTime;
@@ -592,7 +478,7 @@ public partial class SchedulerJobs : ProCompontentBase
         _pageSize = 10;
     }
 
-    private bool CheckNotifiyData(SchedulerJobDto job)
+    private bool CheckNotifyData(SchedulerJobDto job)
     {
         if (job == null)
         {
@@ -608,7 +494,8 @@ public partial class SchedulerJobs : ProCompontentBase
         {
             return false;
         }
-        else if (_jobCreateType == JobCreateTypes.Manual && !string.IsNullOrWhiteSpace(job.Origin))
+
+        if (_jobCreateType == JobCreateTypes.Manual && !string.IsNullOrWhiteSpace(job.Origin))
         {
             return false;
         }
@@ -645,7 +532,7 @@ public partial class SchedulerJobs : ProCompontentBase
     {
         var notifyJob = taskDto.Job;
 
-        if (CheckNotifiyData(notifyJob))
+        if (CheckNotifyData(notifyJob))
         {
             var jobIndex = _jobs.FindIndex(j => j.Id == notifyJob.Id);
 
