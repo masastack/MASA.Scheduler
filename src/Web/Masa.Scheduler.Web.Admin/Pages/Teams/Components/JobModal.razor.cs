@@ -610,16 +610,7 @@ public partial class JobModal
                         Expression=ruleExpression,
                         AlertSeverity = AlertSeverity.High
                     }
-                },
-                //SilenceCycle = new SilenceCycleModel
-                //{
-                //    Type = SilenceCycleType.Time,
-                //    TimeInterval = new TimeIntervalModel
-                //    {
-                //        IntervalTimeType = TimeType.Minute,
-                //        IntervalTime = 15
-                //    }
-                //}
+                }
             };
             await _logUpsertModal.OpenModalAsync(Model.AlarmRuleId, alarmRule);
         }
