@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Web.Admin;
 
-public abstract class ProCompontentBase : BDomComponentBase
+public abstract class ProComponentBase : BDomComponentBase
 {
     private SchedulerServerCaller? _schedulerServerCaller;
     private GlobalConfig? _globalConfig;
@@ -15,41 +15,22 @@ public abstract class ProCompontentBase : BDomComponentBase
     [Inject]
     public SchedulerServerCaller SchedulerServerCaller
     {
-        get
-        {
-            return _schedulerServerCaller ?? throw new Exception("please Inject SchedulerCaller!");
-        }
-        set
-        {
-            _schedulerServerCaller = value;
-        }
+        get => _schedulerServerCaller ?? throw new Exception("please Inject SchedulerCaller!");
+        set => _schedulerServerCaller = value;
     }
 
     [Inject]
     public GlobalConfig GlobalConfig
     {
-        get
-        {
-            return _globalConfig ?? throw new Exception("please Inject GlobalConfig!");
-        }
-        set
-        {
-            _globalConfig = value;
-        }
+        get => _globalConfig ?? throw new Exception("please Inject GlobalConfig!");
+        set => _globalConfig = value;
     }
 
     [Inject]
     public NavigationManager NavigationManager
     {
-        get
-        {
-            return _navigationManager ?? throw new Exception("please Inject NavigationManager!");
-        }
-        set
-        {
-            _navigationManager = value;
-        }
-
+        get => _navigationManager ?? throw new Exception("please Inject NavigationManager!");
+        set => _navigationManager = value;
     }
 
     [Inject]
@@ -79,14 +60,22 @@ public abstract class ProCompontentBase : BDomComponentBase
 
     public string T(string key)
     {
-        if (string.IsNullOrEmpty(key)) return key;
-        if (PageName is not null) return I18n?.T(PageName, key, false) ?? I18n?.T(key, false) ?? key;
-        else return I18n?.T(key, true) ?? key;
+        if (string.IsNullOrEmpty(key))
+        {
+            return key;
+        }
+
+        if (PageName is not null)
+        {
+            return I18n?.T(PageName, key, false) ?? I18n?.T(key, false) ?? key;
+        }
+
+        return I18n?.T(key, true) ?? key;
     }
 
-    public string T(string formatkey, params string[] args)
+    public string T(string formatKey, params object[] args)
     {
-        return string.Format(T(formatkey), args);
+        return string.Format(T(formatKey), args);
     }
 
     public void OpenInformationMessage(string message)
@@ -109,16 +98,21 @@ public abstract class ProCompontentBase : BDomComponentBase
         PopupService.EnqueueSnackbarAsync(message, AlertTypes.Error);
     }
 
-    public async Task ConfirmAsync(string messgae, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
+    public async Task ConfirmAsync(string message, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
     {
-        if (await PopupService.SimpleConfirmAsync(T("OperationConfirmation"), messgae, type)) await callback.Invoke();
+        if (await PopupService.SimpleConfirmAsync(T("OperationConfirmation"), message, type))
+        {
+            await callback.Invoke();
+        }
     }
 
-    public async Task ConfirmAsync(string title, string messgae, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
+    public async Task ConfirmAsync(string title, string message, Func<Task> callback, AlertTypes type = AlertTypes.Warning)
     {
-        if (await PopupService.SimpleConfirmAsync(title, messgae, type)) await callback.Invoke();
+        if (await PopupService.SimpleConfirmAsync(title, message, type))
+        {
+            await callback.Invoke();
+        }
     }
-
 
     protected string GetRunTimeDescription(double runTime)
     {
@@ -135,9 +129,6 @@ public abstract class ProCompontentBase : BDomComponentBase
         {
             return $"{min}m {second:0.##}s";
         }
-        else
-        {
-            return $"{second:0.##}s";
-        }
+        return $"{second:0.##}s";
     }
 }
