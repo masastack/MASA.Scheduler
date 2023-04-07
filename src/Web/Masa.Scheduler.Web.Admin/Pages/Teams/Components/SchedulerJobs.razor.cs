@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
-public partial class SchedulerJobs : ProCompontentBase
+public partial class SchedulerJobs : ProComponentBase
 {
     [Parameter]
     public Guid? TeamId { get; set; }
