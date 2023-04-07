@@ -9,29 +9,28 @@ public partial class Team
     public string TeamId { get; set; } = string.Empty;
 
     [Inject]
-    public MasaUser MasaUser { get; set; } = default!;
+    public Stack.Components.Configs.GlobalConfig StackGlobalConfig { get; set; } = default!;
 
     private Guid _teamId = default;
 
     private bool JobVisible => _curTab == 0;
     private bool TaskVisible => _curTab == 1;
-    private ProjectDto _project = default!;
     private SchedulerJobDto? _selectedJob;
     private StringNumber _curTab = 0;
     private string _jobTabName = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         _jobTabName = T("Job");
 
         await base.OnInitializedAsync();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (string.IsNullOrEmpty(TeamId))
         {
-            _teamId = MasaUser.CurrentTeamId;
+            _teamId = StackGlobalConfig.CurrentTeamId;
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -39,14 +38,7 @@ public partial class Team
 
     protected override void OnParametersSet()
     {
-        _teamId = string.IsNullOrEmpty(TeamId) ? MasaUser.CurrentTeamId : Guid.Parse(TeamId);
-    }
-
-    public Task OnProjectChangedAsync(ProjectDto project)
-    {
-        _project = project;
-        _curTab = 0;
-        return Task.CompletedTask;
+        _teamId = string.IsNullOrEmpty(TeamId) ? StackGlobalConfig.CurrentTeamId : Guid.Parse(TeamId);
     }
 
     public Task HandleJobSelect(SchedulerJobDto job)
