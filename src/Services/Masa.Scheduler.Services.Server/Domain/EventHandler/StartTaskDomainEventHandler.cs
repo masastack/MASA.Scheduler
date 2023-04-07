@@ -45,7 +45,7 @@ public class StartTaskDomainEventHandler
     {
         SchedulerTask? task;
 
-        if(@event.Task != null)
+        if (@event.Task != null)
         {
             task = @event.Task;
         }
@@ -95,8 +95,6 @@ public class StartTaskDomainEventHandler
 
         var filterStatus = new List<TaskRunStatus>() { TaskRunStatus.Running, TaskRunStatus.WaitToRetry, TaskRunStatus.Idle, TaskRunStatus.WaitToRun };
 
-        var otherRunningTaskList = await _schedulerTaskRepository.GetListAsync(t => filterStatus.Contains(t.TaskStatus) && t.JobId == task.JobId && t.Id != task.Id);
-
         var allowEnqueue = true;
 
         if (task.SchedulerTime == DateTimeOffset.MinValue)
@@ -104,54 +102,49 @@ public class StartTaskDomainEventHandler
             task.UpdateTaskSchedulerTime(@event.Request.ExcuteTime);
         }
 
-        if (otherRunningTaskList.Any())
+        switch (task.Job.ScheduleBlockStrategy)
         {
-            switch (task.Job.ScheduleBlockStrategy)
-            {
-                case ScheduleBlockStrategyTypes.Serial:
-                    if(otherRunningTaskList.Any(p=> p.TaskStatus == TaskRunStatus.Running || p.TaskStatus == TaskRunStatus.WaitToRetry))
-                    {
-                        task.Wait();
-                        allowEnqueue = false;
-                        _logger.LogInformation("Other task is running, trigger serial block strategy, waiting now", WriterTypes.Server, task.Id, task.JobId);
-                    }
-                    break;
-                case ScheduleBlockStrategyTypes.Discard:
-                    task.Discard();
+            case ScheduleBlockStrategyTypes.Serial:
+                if (await _schedulerTaskRepository.AnyAsync(p => p.TaskStatus == TaskRunStatus.Running || p.TaskStatus == TaskRunStatus.WaitToRetry))
+                {
+                    task.Wait();
                     allowEnqueue = false;
-                    _logger.LogInformation("Trigger discard block strategy, task failed", WriterTypes.Server, task.Id, task.JobId);
-                    break;
-                case ScheduleBlockStrategyTypes.Cover:
-                    foreach (var otherRunningTask in otherRunningTaskList)
+                    _logger.LogInformation("Other task is running, trigger serial block strategy, waiting now", WriterTypes.Server, task.Id, task.JobId);
+                }
+                break;
+            case ScheduleBlockStrategyTypes.Discard:
+                task.Discard();
+                allowEnqueue = false;
+                _logger.LogInformation("Trigger discard block strategy, task failed", WriterTypes.Server, task.Id, task.JobId);
+                break;
+            case ScheduleBlockStrategyTypes.Cover:
+                var otherRunningTaskList = await _schedulerTaskRepository.GetPaginatedListAsync(t => filterStatus.Contains(t.TaskStatus) && t.JobId == task.JobId && t.Id != task.Id, 0, 10);
+
+                foreach (var otherRunningTask in otherRunningTaskList)
+                {
+                    if (otherRunningTask.TaskStatus == TaskRunStatus.Running)
                     {
-                        if (otherRunningTask.TaskStatus == TaskRunStatus.Running)
-                        {
-                            await _serverManager.StopTask(otherRunningTask.Id, otherRunningTask.WorkerHost);
-                        }
-                        else
-                        {
-                            await _quartzUtils.RemoveDelayTask(otherRunningTask.Id, task.Job.Id);
-                        }
-
-                        otherRunningTask.TaskEnd(TaskRunStatus.Failure, "Stop by SchedulerBlockStrategy");
-                        await _schedulerTaskRepository.UpdateAsync(otherRunningTask);
-
-                        await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, _mapper.Map<SchedulerTaskDto>(otherRunningTask));
-                        _logger.LogInformation($"Trigger cover block strategy by TaskId: {task.Id}, task failed", WriterTypes.Server, otherRunningTask.Id, otherRunningTask.JobId);
+                        await _serverManager.StopTask(otherRunningTask.Id, otherRunningTask.WorkerHost);
                     }
-                    task.TaskSchedule(@event.Request.OperatorId);
-                    break;
-                default:
-                    task.TaskSchedule(@event.Request.OperatorId);
-                    break;
-            }
-        }
-        else
-        {
-            task.TaskSchedule(@event.Request.OperatorId);
+                    else
+                    {
+                        await _quartzUtils.RemoveDelayTask(otherRunningTask.Id, task.Job.Id);
+                    }
+
+                    otherRunningTask.TaskEnd(TaskRunStatus.Failure, "Stop by SchedulerBlockStrategy");
+                    await _schedulerTaskRepository.UpdateAsync(otherRunningTask);
+
+                    await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, _mapper.Map<SchedulerTaskDto>(otherRunningTask));
+                    _logger.LogInformation($"Trigger cover block strategy by TaskId: {task.Id}, task failed", WriterTypes.Server, otherRunningTask.Id, otherRunningTask.JobId);
+                }
+                task.TaskSchedule(@event.Request.OperatorId);
+                break;
+            default:
+                task.TaskSchedule(@event.Request.OperatorId);
+                break;
         }
 
-        if(task.TaskStatus != TaskRunStatus.WaitToRun)
+        if (task.TaskStatus != TaskRunStatus.WaitToRun)
         {
             task.Job.UpdateLastScheduleTime(task.SchedulerTime);
             task.Job.UpdateLastRunDetail(task.TaskStatus);
