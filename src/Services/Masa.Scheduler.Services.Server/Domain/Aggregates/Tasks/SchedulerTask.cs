@@ -12,6 +12,11 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
     /// </summary>
     public long RunTime { get; private set; }
 
+    /// <summary>
+    /// TSC's Trace Id
+    /// </summary>
+    public string TraceId { get; private set; } = string.Empty;
+
     public TaskRunStatus TaskStatus { get; private set; }
 
     public DateTimeOffset SchedulerTime { get; private set; }
@@ -79,7 +84,7 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
     public void TaskEnd(TaskRunStatus taskStatus, string message)
     {
         TaskStatus = taskStatus;
-        if(taskStatus != TaskRunStatus.Timeout)
+        if (taskStatus != TaskRunStatus.Timeout)
         {
             TaskRunEndTime = DateTimeOffset.Now;
         }
@@ -96,5 +101,10 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
         TaskStatus = TaskRunStatus.Failure;
         RunTime = 0;
         Message = message;
+    }
+
+    public void SetTraceId(string? traceId)
+    {
+        TraceId = traceId ?? string.Empty;
     }
 }
