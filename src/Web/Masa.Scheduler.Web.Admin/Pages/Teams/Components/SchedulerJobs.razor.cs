@@ -259,11 +259,6 @@ public partial class SchedulerJobs : ProComponentBase
 
         _originList = jobListResponse.OriginList;
 
-        if (!string.IsNullOrEmpty(_queryOrigin) && !_originList.Exists(x => x == _queryOrigin))
-        {
-            _queryOrigin = string.Empty; ;
-        }
-
         if (resetPage)
         {
             _page = 1;

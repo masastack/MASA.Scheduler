@@ -44,7 +44,7 @@
                 @if (_jobCreateType == JobCreateTypes.Api)
                 {
                     <MCol Md="1" Class="ml-6">
-                        <SSelect Small @bind-Value="QueryOrigin"
+                        <SSelect Small Clearable @bind-Value="QueryOrigin"
                             Items="_originList"
                             Label="@T("Origin")"
                             ItemText="e => e"

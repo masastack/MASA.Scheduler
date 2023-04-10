@@ -2,7 +2,7 @@
 {
     <div class="body2 mt-9 d-flex justify-space-between">
         <span class="regular--text">@I18n.T("Creator"): @Audited.CreatorName</span>
-        <span class="regular3--text">@I18n.T("CreationTime"): @Audited.CreationTime.ToString(I18n.T("$DateTimeFormat"))</span>
+        <span class="regular3--text">@I18n.T("CreationTime"): @Audited.CreationTime.Add(JsInitVariables.TimezoneOffset).ToString(I18n.T("$DateTimeFormat"))</span>
     </div>
 }
 
@@ -10,7 +10,7 @@
 {
     <div class="body2 mt-9 d-flex justify-space-between">
         <span class="regular--text">@I18n.T("Modifier"): @Audited.ModifierName</span>
-        <span class="regular3--text">@I18n.T("ModificationTime"): @Audited.ModificationTime.ToString(I18n.T("$DateTimeFormat"))</span>
+        <span class="regular3--text">@I18n.T("ModificationTime"): @Audited.ModificationTime.Add(JsInitVariables.TimezoneOffset).ToString(I18n.T("$DateTimeFormat"))</span>
     </div>
 }
 
@@ -20,4 +20,7 @@
 
     [Parameter]
     public AuditedEntityDto Audited { get; set; } = new();
+
+    [Inject]
+    public JsInitVariables JsInitVariables { get; set; } = default!;
 }

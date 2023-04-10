@@ -4,8 +4,8 @@
 <MTabs Value="_selectedProjectIdentity" ValueChanged="HandleProjectIdentityChanged">
     @foreach (var project in _projects)
     {
-        <MTab Value="project.Identity" Class="py-3 text-capitalize">
-            <span class="px-12 h8 @(_selectedProjectIdentity==project.Identity?"primary--text":"regular2--text")">@project.Identity</span>
+        <MTab Value="project.Identity" Class="py-3 text-none">
+            <span class="px-12 h8 @(_selectedProjectIdentity==project.Identity?"primary--text":"regular2--text")">@project.Name</span>
         </MTab>
     }
 </MTabs>
@@ -17,7 +17,7 @@
             <MCard Flat Class="rounded-4 mb-6">
                 <MCardTitle Class="px-6">
                     <div>
-                        <span class="emphasis--text h6">@app.Identity</span>
+                        <span class="emphasis--text h6">@app.Name</span>
                         <MIcon Size="20" Color="emphasis2">keyboard_arrow_right</MIcon>
                     </div>
                     <MSpacer></MSpacer>
