@@ -9,6 +9,9 @@ public partial class Team
     public string TeamId { get; set; } = string.Empty;
 
     [Inject]
+    public MasaUser CurrentUser { get; set; } = default!;
+
+    [Inject]
     public Stack.Components.Configs.GlobalConfig StackGlobalConfig { get; set; } = default!;
 
     private Guid _teamId = default;
@@ -28,17 +31,33 @@ public partial class Team
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        if (string.IsNullOrEmpty(TeamId))
+        if (firstRender)
         {
-            _teamId = StackGlobalConfig.CurrentTeamId;
+            SetCurrentTeamId(TeamId);
         }
-
         await base.OnAfterRenderAsync(firstRender);
     }
 
     protected override void OnParametersSet()
     {
-        _teamId = string.IsNullOrEmpty(TeamId) ? StackGlobalConfig.CurrentTeamId : Guid.Parse(TeamId);
+        SetCurrentTeamId(TeamId);
+    }
+
+    private void SetCurrentTeamId(string? teamId)
+    {
+        if (string.IsNullOrEmpty(teamId))
+        {
+            _teamId = StackGlobalConfig.CurrentTeamId;
+            if (_teamId == Guid.Empty)
+            {
+                //StackGlobalConfig.CurrentTeamId will only init after component `User` render
+                _teamId = CurrentUser.CurrentTeamId;
+            }
+        }
+        else
+        {
+            _teamId = Guid.Parse(teamId);
+        }
     }
 
     public Task HandleJobSelect(SchedulerJobDto job)

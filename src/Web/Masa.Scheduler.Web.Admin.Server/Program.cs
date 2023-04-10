@@ -4,20 +4,14 @@
 var builder = WebApplication.CreateBuilder(args);
 await builder.Services.AddMasaStackConfigAsync();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
-builder.Services.AddObservable(builder.Logging, () =>
+builder.Services.AddObservable(builder.Logging, () => new MasaObservableOptions
 {
-    return new MasaObservableOptions
-    {
-        ServiceNameSpace = builder.Environment.EnvironmentName,
-        ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER),
-        Layer = masaStackConfig.Namespace,
-        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
-    };
-}, () =>
-{
-    return masaStackConfig.OtlpUrl;
-}, true);
+    ServiceNameSpace = builder.Environment.EnvironmentName,
+    ServiceVersion = masaStackConfig.Version,
+    ServiceName = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER),
+    Layer = masaStackConfig.Namespace,
+    ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
+}, () => masaStackConfig.OtlpUrl, true);
 
 if (!builder.Environment.IsDevelopment())
 {
@@ -39,7 +33,6 @@ builder.Services.AddServerSideBlazor();
 var authBaseAddress = masaStackConfig.GetAuthServiceDomain();
 var mcBaseAddress = masaStackConfig.GetMcServiceDomain();
 var schedulerBaseAddress = masaStackConfig.GetSchedulerServiceDomain();
-
 #if DEBUG
 schedulerBaseAddress = "https://localhost:19611";
 #endif
@@ -58,7 +51,7 @@ builder.Services.AddScoped<TokenProvider>();
 
 builder.Services.AddMasaSignalRClient(options => options.SignalRServiceUrl = signalRBaseAddress);
 
-MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
+MasaOpenIdConnectOptions masaOpenIdConnectOptions = new()
 {
     Authority = masaStackConfig.GetSsoDomain(),
     ClientId = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER),
@@ -80,10 +73,7 @@ builder.Services.AddSchedulerApiGateways(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-}
-else
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
