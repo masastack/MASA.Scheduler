@@ -38,6 +38,8 @@ public class SchedulerTaskDto
 
     public DateTime CreationTime { get; set; }
 
+    public Guid Creator { get; set; }
+
     /// <summary>
     /// TSC's Trace Id
     /// </summary>

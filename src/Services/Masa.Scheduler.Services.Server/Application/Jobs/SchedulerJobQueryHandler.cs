@@ -9,15 +9,13 @@ public class SchedulerJobQueryHandler
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IEventBus _eventBus;
-    private readonly IAuthClient _authClient;
 
-    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus, IAuthClient authClient)
+    public SchedulerJobQueryHandler(ISchedulerJobRepository schedulerJobRepository, SchedulerDbContext dbContext, IMapper mapper, IEventBus eventBus)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _dbContext = dbContext;
         _mapper = mapper;
         _eventBus = eventBus;
-        _authClient = authClient;
     }
 
     [EventHandler]
@@ -87,12 +85,15 @@ public class SchedulerJobQueryHandler
             var ownerIds = jobDtos.Select(p => p.OwnerId).Distinct().ToList();
             var modifierIds = jobDtos.Where(x => x.Modifier != default).Select(x => x.Modifier).Distinct().ToList();
             var creatorIds = jobDtos.Where(x => x.Creator != default).Select(x => x.Modifier).Distinct().ToList();
-            var userIds = ownerIds.Union(modifierIds).Union(creatorIds).ToArray();
-            var userInfos = await _authClient.UserService.GetListByIdsAsync(userIds);
+            var userIds = ownerIds.Union(modifierIds).Union(creatorIds).ToList();
+
+            var userQuery = new UserQuery() { UserIds = userIds };
+
+            await _eventBus.PublishAsync(userQuery);
 
             foreach (var item in jobDtos)
             {
-                var user = userInfos.FirstOrDefault(u => u.Id == item.OwnerId);
+                var user = userQuery.Result.FirstOrDefault(u => u.Id == item.OwnerId);
 
                 if (user != null)
                 {
@@ -100,8 +101,8 @@ public class SchedulerJobQueryHandler
                     item.Avator = user.Avatar;
                 }
 
-                item.CreatorName = userInfos.FirstOrDefault(x => x.Id == item.Creator)?.StaffDislpayName ?? string.Empty;
-                item.ModifierName = userInfos.FirstOrDefault(x => x.Id == item.Modifier)?.StaffDislpayName ?? string.Empty;
+                item.CreatorName = userQuery.Result.FirstOrDefault(x => x.Id == item.Creator)?.StaffDislpayName ?? string.Empty;
+                item.ModifierName = userQuery.Result.FirstOrDefault(x => x.Id == item.Modifier)?.StaffDislpayName ?? string.Empty;
             }
         }
 
