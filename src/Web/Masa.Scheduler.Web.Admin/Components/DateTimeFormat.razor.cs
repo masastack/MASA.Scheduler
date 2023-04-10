@@ -16,7 +16,7 @@ public partial class DateTimeFormat
                 _value = value;
                 if (_afterRender)
                 {
-                    FormartValueString();
+                    FormatValueString();
                 }
             }
         }
@@ -35,14 +35,14 @@ public partial class DateTimeFormat
     {
         if (firstRender)
         {
-            FormartValueString();
+            FormatValueString();
 
             _afterRender = true;
         }
         return base.OnAfterRenderAsync(firstRender);
     }
 
-    private Task FormartValueString()
+    private Task FormatValueString()
     {
         if (Value != DateTimeOffset.MinValue)
         {
