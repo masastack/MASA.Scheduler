@@ -69,9 +69,14 @@ public class SchedulerTaskQueryHandler
             {
                 var user = userQuery.Result.FirstOrDefault(u => u.Id == item.OperatorId);
 
+                if (user == null)
+                {
+                    user = userQuery.Result.FirstOrDefault(u => u.Id == item.Creator);
+                }
+
                 if (user != null)
                 {
-                    item.OperatorName = user.Name;
+                    item.OperatorName = user.StaffDislpayName ?? user.DisplayName;
                 }
             }
         }
