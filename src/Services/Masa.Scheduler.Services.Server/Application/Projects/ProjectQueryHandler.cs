@@ -38,6 +38,7 @@ public class ProjectQueryHandler
             Name = p.Name,
             Id = p.Id,
             Identity = p.Identity,
+            TeamId = p.TeamId,
             ProjectApps = p.Apps.DistinctBy(p => p.Identity).Select(app => new ProjectAppDto() { Id = app.Id, Identity = app.Identity, Name = app.Name, ProjectId = app.ProjectId, Type = Enum.Parse<ProjectAppTypes>(app.Type.ToString())}).ToList(),
         }).ToList();
     }

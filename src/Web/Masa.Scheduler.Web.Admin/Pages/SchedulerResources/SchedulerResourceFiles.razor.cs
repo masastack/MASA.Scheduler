@@ -31,6 +31,12 @@ public partial class SchedulerResourceFiles
 
     private bool _showProgressbar = true;
 
+    [Parameter]
+    public string TeamId { get; set; } = string.Empty;
+
+    [Inject]
+    public Stack.Components.Configs.GlobalConfig StackGlobalConfig { get; set; } = default!;
+
     protected async override Task OnInitializedAsync()
     {
         await GetProjects();
@@ -42,7 +48,8 @@ public partial class SchedulerResourceFiles
     {
         try
         {
-            var response = await SchedulerServerCaller.PmService.GetProjectListAsync(null);
+            var teamId = string.IsNullOrEmpty(TeamId) ? StackGlobalConfig.CurrentTeamId : Guid.Parse(TeamId);
+            var response = await SchedulerServerCaller.PmService.GetProjectListAsync(teamId);
             _projects = response.Data.Where(x => x.ProjectApps.Any(pa => pa.Type == ProjectAppTypes.Job)).ToList();
 
             var defaultProject = _projects.FirstOrDefault();

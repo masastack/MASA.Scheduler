@@ -49,7 +49,7 @@ public class SchedulerTaskQueryHandler
 
         var dbQuery = _dbContext.Tasks.Where(condition);
 
-        var originList = await dbQuery.Where(p => !string.IsNullOrWhiteSpace(p.Origin)).Select(p => p.Origin).Distinct().ToListAsync();
+        var originList = await _dbContext.Tasks.Where(p => !string.IsNullOrWhiteSpace(p.Origin)).Select(p => p.Origin).Distinct().ToListAsync();
 
         var total = await dbQuery.CountAsync();
 
