@@ -48,6 +48,7 @@ public partial class Team
     private void CurrentTeamChanged(Guid teamId)
     {
         _teamId = teamId;
+        StateHasChanged();
     }
 
     private void SetCurrentTeamId(string? teamId)

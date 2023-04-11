@@ -50,8 +50,7 @@ public partial class SchedulerResourceFiles
     private void CurrentTeamChanged(Guid teamId)
     {
         _teamId = teamId;
-
-        GetProjects().GetAwaiter().GetResult();
+        GetProjects().ContinueWith(_ => InvokeAsync(StateHasChanged));
     }
 
     private async Task GetProjects()
