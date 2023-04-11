@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.AspNetCore.Components.Forms;
+
 namespace Masa.Scheduler.Web.Admin.Components.AlarmRules;
 
 public partial class LogAlarmRuleUpsertModal : ProComponentBase
@@ -215,6 +217,11 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
         {
             await OnOk.InvokeAsync(_entityId);
         }
+    }
+
+    public async Task SetIsEnabled(Guid alarmRuleId, bool isEnabled)
+    {
+        await AlertClient.AlarmRuleService.SetIsEnabledAsync(alarmRuleId, isEnabled);
     }
 
     private void HandleNextStep()
