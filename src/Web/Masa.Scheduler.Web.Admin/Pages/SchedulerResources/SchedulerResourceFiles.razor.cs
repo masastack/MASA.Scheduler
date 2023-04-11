@@ -31,25 +31,33 @@ public partial class SchedulerResourceFiles
 
     private bool _showProgressbar = true;
 
-    [Parameter]
-    public string TeamId { get; set; } = string.Empty;
+    private Guid _teamId = default;
 
     [Inject]
     public Stack.Components.Configs.GlobalConfig StackGlobalConfig { get; set; } = default!;
 
     protected async override Task OnInitializedAsync()
     {
+        _teamId = StackGlobalConfig.CurrentTeamId;
+
         await GetProjects();
 
+        StackGlobalConfig.OnCurrentTeamChanged += CurrentTeamChanged;
+
         await base.OnInitializedAsync();
+    }
+
+    private void CurrentTeamChanged(Guid teamId)
+    {
+        _teamId = teamId;
+        GetProjects().ContinueWith(_ => InvokeAsync(StateHasChanged));
     }
 
     private async Task GetProjects()
     {
         try
         {
-            var teamId = string.IsNullOrEmpty(TeamId) ? StackGlobalConfig.CurrentTeamId : Guid.Parse(TeamId);
-            var response = await SchedulerServerCaller.PmService.GetProjectListAsync(teamId);
+            var response = await SchedulerServerCaller.PmService.GetProjectListAsync(_teamId);
             _projects = response.Data.Where(x => x.ProjectApps.Any(pa => pa.Type == ProjectAppTypes.Job)).ToList();
 
             var defaultProject = _projects.FirstOrDefault();
