@@ -339,7 +339,15 @@ public partial class JobModal
 
             if (_logUpsertModal != null)
             {
-                await _logUpsertModal.Submit();
+                if (Model.IsAlertException)
+                {
+                    await _logUpsertModal.Submit();
+                }
+
+                if (Model.AlarmRuleId != default)
+                {
+                    await _logUpsertModal.SetIsEnabled(Model.AlarmRuleId, Model.IsAlertException);
+                }
             }
 
             if (OnAfterDataChange.HasDelegate)

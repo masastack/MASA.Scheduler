@@ -217,6 +217,11 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
         }
     }
 
+    public async Task SetIsEnabled(Guid alarmRuleId, bool isEnabled)
+    {
+        await AlertClient.AlarmRuleService.SetIsEnabledAsync(alarmRuleId, isEnabled);
+    }
+
     private void HandleNextStep()
     {
         MasaArgumentException.ThrowIfNull(_form, "form");
