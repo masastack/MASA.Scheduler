@@ -18,10 +18,10 @@ public class SchedulerDbContext : MasaDbContext<SchedulerDbContext>
         base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnConfiguring(MasaDbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder
-            .LogTo(Console.WriteLine, LogLevel.Information)
+        optionsBuilder.DbContextOptionsBuilder
+            .LogTo(Console.WriteLine, LogLevel.Warning)
             .EnableSensitiveDataLogging()
             .EnableDetailedErrors();
     }
