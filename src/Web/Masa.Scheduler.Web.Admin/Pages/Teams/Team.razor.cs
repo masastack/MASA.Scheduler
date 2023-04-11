@@ -26,6 +26,8 @@ public partial class Team
     {
         _jobTabName = T("Job");
 
+        StackGlobalConfig.OnCurrentTeamChanged += CurrentTeamChanged;
+
         await base.OnInitializedAsync();
     }
 
@@ -41,6 +43,11 @@ public partial class Team
     protected override void OnParametersSet()
     {
         SetCurrentTeamId(TeamId);
+    }
+
+    private void CurrentTeamChanged(Guid teamId)
+    {
+        _teamId = teamId;
     }
 
     private void SetCurrentTeamId(string? teamId)

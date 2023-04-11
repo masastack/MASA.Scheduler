@@ -41,29 +41,4 @@
         Navigation.NavigateTo("/Logout", true);
         return true;
     }
-
-    protected override void OnInitialized()
-    {
-        StackGlobalConfig.OnCurrentTeamChanged += CurrentTeamChanged;
-    }
-
-
-    void CurrentTeamChanged(Guid teamId)
-    {
-        SetTeamId(teamId);
-    }
-
-    public void Dispose()
-    {
-        StackGlobalConfig.OnCurrentTeamChanged -= CurrentTeamChanged;
-    }
-
-    public void SetTeamId(Guid teamId)
-    {
-        if (_teamId != teamId)
-        {
-            _teamId = teamId;
-            Navigation.NavigateTo($"/pages/team/{_teamId}");
-        }
-    }
 }
