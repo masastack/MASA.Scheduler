@@ -52,17 +52,16 @@
 		<PackageReference Include="Masa.Contrib.StackSdks.Config" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.StackSdks.Middleware" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.7" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.7" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
-		<PackageReference Include="Quartz" Version="3.4.0" />
-		<PackageReference Include="Quartz.AspNetCore" Version="3.4.0" />
-		<PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.4.0" />
-		<PackageReference Include="Quartz.Serialization.Json" Version="3.4.0" />
+		<PackageReference Include="Quartz.AspNetCore" Version="3.6.2" />
+		<PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.6.2" />
+		<PackageReference Include="Quartz.Serialization.Json" Version="3.6.2" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 	</ItemGroup>
 	
