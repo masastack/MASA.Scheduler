@@ -9,7 +9,9 @@ public class UserDto
 
     public string Name { get; set; } = string.Empty;
 
-    public string? DisplayName { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+
+    public string? StaffDislpayName { get; set; }
 
     public string Account { get; set; } = string.Empty;
 

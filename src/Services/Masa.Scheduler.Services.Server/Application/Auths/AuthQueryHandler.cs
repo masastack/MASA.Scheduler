@@ -34,10 +34,6 @@ public class AuthQueryHandler
     [EventHandler]
     public async Task GetUserAsync(UserQuery query)
     {
-        var md5Key = MD5Utils.Encrypt(EncryptType.Md5, JsonSerializer.Serialize(query.UserIds));
-
-        var cacheKey = CacheKeys.USER_QUERY + "-" + md5Key;
-
         var userInfos = await _authClient.UserService.GetListByIdsAsync(query.UserIds.ToArray()) ?? new();
 
         var response = _mapper.Map<List<UserDto>>(userInfos);
