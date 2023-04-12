@@ -117,7 +117,7 @@
                                         <span>@T("TaskLog")</span>
                                     </ChildContent>
                                 </MTooltip>
-                                @if (context.Item.Job?.JobType == JobTypes.Http)
+                                @if (context.Item.TraceId is not null)
                                 {
                                     <MTooltip Bottom>
                                         <ActivatorContent Context="tooltips">
