@@ -27,7 +27,8 @@ public static class SignalRServiceCollectionExtensions
                 SyncTimeout = options.SyncTimeout
             };
 
-            config.Configuration.ChannelPrefix = "masa-scheduler";
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            config.Configuration.ChannelPrefix = $"masa-scheduler-{env}";
 
             foreach (var server in options.Servers)
             {
