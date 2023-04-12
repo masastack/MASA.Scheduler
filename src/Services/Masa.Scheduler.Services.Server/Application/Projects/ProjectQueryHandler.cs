@@ -23,7 +23,7 @@ public class ProjectQueryHandler
     {
         if (string.IsNullOrWhiteSpace(query.Environment))
         {
-            query.Environment = _userContext.Environment ?? _environment.EnvironmentName;
+            query.Environment = _environment.EnvironmentName;
         }
 
         var projectList = await _pmClient.ProjectService.GetProjectAppsAsync(query.Environment);
