@@ -1,12 +1,9 @@
-﻿@using Masa.BuildingBlocks.StackSdks.Config;
-@using Masa.Contrib.StackSdks.Config;
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @inject GlobalConfig GlobalConfig
-@inject Masa.Stack.Components.Configs.GlobalConfig StackGlobalConfig
 @inject NavigationManager Navigation
 @inject IMasaStackConfig MasaStackConfig
 
-<SLayout AppId="@MasaStackConfig.GetWebId(MasaStackConstant.SCHEDULER)" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="WhiteUris"
+<SLayout AppId="@MasaStackConfig.GetWebId(MasaStackConstant.SCHEDULER)" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="_whiteUris"
          Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
          MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg" Exact="false">
     @Body
@@ -19,15 +16,7 @@
     [Inject]
     public SchedulerServerCaller SchedulerServerCaller { get; set; } = default!;
 
-    [Inject]
-    private IJSRuntime Js { get; set; } = default!;
-
-    [Inject]
-    private I18n i18n { get; set; } = default!;
-
-    private List<string> WhiteUris = new List<string> { "pages/team/" };
-
-    private Guid _teamId = default;
+    private readonly List<string> _whiteUris = new() { "pages/team/" };
 
     private Task OnError(Exception exception)
     {

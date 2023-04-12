@@ -57,8 +57,6 @@ public class SchedulerJobDto : AuditedEntityDto
 
     public int SortPriority { get; set; }
 
-    public Guid Creator { get; set; }
-
     public DateTimeOffset UpdateExpiredStrategyTime { get; set; }
 
     public DateTimeOffset LastScheduleTime { get; set; } = DateTimeOffset.MinValue;
