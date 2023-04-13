@@ -83,7 +83,7 @@
                             case (nameof(SchedulerTaskDto.TaskStatus)):
                                 <span class="text-body4 neutral-lighten-2--text d-flex">
                                     <MButton Icon XSmall Style="cursor:default">
-                                        <MIcon Color="@ComputedStatusColor(context.Item.TaskStatus)">mdi-checkbox-blank-circle</MIcon>
+                                        <SIcon Color="@ComputedStatusColor(context.Item.TaskStatus)">mdi-checkbox-blank-circle</SIcon>
                                     </MButton>
                                     <div style="padding-left:4px; color: @ComputedStatusColor(context.Item.TaskStatus)" class="body2">
                                         @(context.Item.TaskStatus == 0 ? @T("NotRunning") : @T(context.Item.TaskStatus.ToString()))
@@ -110,7 +110,7 @@
                                 <MTooltip Bottom>
                                     <ActivatorContent Context="tooltips">
                                         <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Link Target="blank" Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/log/{context.Item.Id}")">
-                                            <MIcon>plagiarism</MIcon>
+                                            <SIcon>plagiarism</SIcon>
                                         </MButton>
                                     </ActivatorContent>
                                     <ChildContent>
@@ -122,7 +122,7 @@
                                     <MTooltip Bottom>
                                         <ActivatorContent Context="tooltips">
                                         <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Class="ml-6" Link Target="blank" Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/trace/{context.Item.TraceId}")">
-                                            <MIcon>mdi-chart-timeline-variant</MIcon>
+                                            <SIcon>mdi-chart-timeline-variant</SIcon>
                                         </MButton>
                                         </ActivatorContent>
                                         <ChildContent>
@@ -141,14 +141,14 @@
                                     <MMenu Bottom Left Class="ml-2">
                                         <ActivatorContent Context="menuContext">
                                             <MButton Icon @attributes="@menuContext.Attrs" Width="20" Height="20" StopPropagation Class="ml-6">
-                                                <MIcon>mdi-dots-vertical</MIcon>
+                                                <SIcon>mdi-dots-vertical</SIcon>
                                             </MButton>
                                         </ActivatorContent>
                                         <ChildContent>
                                             <MList>
                                                 <MListItem Link OnClick="()=> OnShowConfirmDialog(ConfirmDialogTypes.RestartTask,context.Item.Id)">
                                                     <MListItemIcon>
-                                                        <MIcon>mdi-repeat</MIcon>
+                                                        <SIcon>mdi-repeat</SIcon>
                                                     </MListItemIcon>
                                                     <MListItemContent>
                                                         <MListItemTitle>
@@ -160,7 +160,7 @@
                                                 {
                                                     <MListItem Link OnClick="()=> OnShowConfirmDialog(ConfirmDialogTypes.StopTask,context.Item.Id)">
                                                         <MListItemIcon>
-                                                            <MIcon>mdi-delete-outline</MIcon>
+                                                            <SIcon>mdi-delete-outline</SIcon>
                                                         </MListItemIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>

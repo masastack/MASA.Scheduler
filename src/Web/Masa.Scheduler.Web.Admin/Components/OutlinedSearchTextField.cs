@@ -18,7 +18,7 @@ public class OutlinedSearchTextField : MTextField<string>
         Placeholder = I18n!.T("Search");
         PrependInnerContent = builder =>
         {
-            builder.OpenComponent<MIcon>(0);
+            builder.OpenComponent<SIcon>(0);
             builder.AddAttribute(1, "Size", (StringNumber)16);
             builder.AddAttribute(2, "Class", "mr-2 emphasis2--text");
             builder.AddAttribute(3, "ChildContent", (RenderFragment)delegate (RenderTreeBuilder builder2) {
