@@ -30,8 +30,8 @@ builder.Services.AddObservable(builder.Logging, () =>
 {
     return masaStackConfig.OtlpUrl;
 });
-var connectString = "Server=.;Database=scheduler_dev;User Id=sa;Password=Tcsnwzh425;";
-var quartzConnectString = connectString;
+
+var quartzConnectString = masaStackConfig.GetConnectionString(AppSettings.Get("DBName"));
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 
@@ -134,7 +134,7 @@ builder.Services
         {
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
-        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(connectString).UseFilter())
+        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
         .UseRepository<SchedulerDbContext>();
     }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT));
 
