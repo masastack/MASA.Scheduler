@@ -117,7 +117,7 @@
                                         <span>@T("TaskLog")</span>
                                     </ChildContent>
                                 </MTooltip>
-                                @if (context.Item.TraceId is not null)
+                                @if (string.IsNullOrEmpty(context.Item.TraceId) == false)
                                 {
                                     <MTooltip Bottom>
                                         <ActivatorContent Context="tooltips">
