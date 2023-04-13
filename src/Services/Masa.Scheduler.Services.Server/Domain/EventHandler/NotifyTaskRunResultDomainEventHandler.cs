@@ -83,6 +83,7 @@ public class NotifyTaskRunResultDomainEventHandler
                 TaskRunStatus.Timeout => "Task run timeout",
                 TaskRunStatus.Failure => "Task run failure",
                 TaskRunStatus.WaitToRetry => "Wait for auto retry",
+                TaskRunStatus.Ignore => "Ignore Task",
                 _ => ""
             };
         }

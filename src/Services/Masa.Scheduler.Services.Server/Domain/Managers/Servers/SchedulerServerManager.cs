@@ -327,16 +327,11 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                     continue;
                 }
 
-                if (!data.ServiceList.Any())
-                {
-                    await Task.Delay(100);
-                    continue;
-                }
-
                 SchedulerTaskDto? taskDto = null;
 
                 try
                 {
+
                     if (data.TaskQueue.TryDequeue(out taskDto))
                     {
                         _schedulerLogger.LogInformation($"Task Dequeue", WriterTypes.Server, taskDto.Id, taskDto.JobId);
@@ -345,6 +340,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                         {
                             _schedulerLogger.LogInformation($"Task Stop", WriterTypes.Server, taskDto.Id, taskDto.JobId);
                             data.StopTask.Remove(taskDto.Id);
+                            await Task.Delay(100);
                             continue;
                         }
 
@@ -366,7 +362,23 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                         if (task == null)
                         {
                             _schedulerLogger.LogInformation($"Task is not found", WriterTypes.Server, taskDto.Id, taskDto.JobId);
+                            await Task.Delay(100);
                             continue;
+                        }
+
+                        if (workerModel == null || !data.ServiceList.Any(x => x.Status == ServiceStatus.Normal))
+                        {
+                            if (taskDto.Job.ScheduleExpiredStrategy == ScheduleExpiredStrategyTypes.Ignore)
+                            {
+                                await _domainEventBus.PublishAsync(new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
+                                {
+                                    TaskId = taskDto.Id,
+                                    Status = TaskRunStatus.Ignore,
+                                    Message = "Worker not available, ignoring task"
+                                }));
+                                await Task.Delay(100);
+                                continue;
+                            }
                         }
 
                         if (workerModel == null)
@@ -381,6 +393,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                             await _domainEventBus.PublishAsync(notifyEvent);
 
                             _schedulerLogger.LogInformation($"Cannot find worker model", WriterTypes.Server, taskDto.Id, taskDto.JobId);
+                            await Task.Delay(100);
                             continue;
                         }
 
@@ -420,6 +433,8 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                         _logger.LogError(ex, "StartAssignAsync Error");
                     }
                 }
+
+                await Task.Delay(100);
             }
         });
 
