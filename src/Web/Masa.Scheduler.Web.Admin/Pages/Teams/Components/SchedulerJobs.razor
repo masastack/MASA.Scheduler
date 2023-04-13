@@ -100,7 +100,7 @@
                             </MCardTitle>
                             <MCardText Class="d-flex height-inherit">
                                 <MButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
-                                    <MIcon>mdi-checkbox-blank-circle</MIcon>
+                                    <SIcon>mdi-checkbox-blank-circle</SIcon>
                                 </MButton>
                                 <div class="job-text run-text pl-2 body2" style="color:@(GetJobColor(job))">
                                     @GetJobRunText(job)
@@ -146,7 +146,7 @@
                                 <MMenu Bottom Left>
                                     <ActivatorContent>
                                         <MButton Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation Class="ml-4">
-                                            <MIcon>mdi-dots-vertical</MIcon>
+                                            <SIcon>mdi-dots-vertical</SIcon>
                                         </MButton>
                                     </ActivatorContent>
                                     <ChildContent>
@@ -156,7 +156,7 @@
                                                 <MListItem Link OnClick="()=> RunJob(job)">
                                                     <MListItemContent Class="pl-6 pr-16">
                                                         <MListItemTitle>
-                                                            <MIcon Color="#323D6F" Class="align-self-center mr-3">fas fa-spinner</MIcon>
+                                                            <SIcon Color="#323D6F" Class="align-self-center mr-3">fas fa-spinner</SIcon>
                                                             @T("Run")
                                                         </MListItemTitle>
                                                     </MListItemContent>
@@ -165,7 +165,7 @@
                                             <MListItem Link OnClick="()=> EditJob(job)">
                                                 <MListItemContent Class="pl-6 pr-16">
                                                     <MListItemTitle>
-                                                        <MIcon Color="#323D6F" Class="align-self-center mr-3">mdi-pencil</MIcon>
+                                                        <SIcon Color="#323D6F" Class="align-self-center mr-3">mdi-pencil</SIcon>
                                                         @T("Edit")
                                                     </MListItemTitle>
                                                 </MListItemContent>
@@ -175,7 +175,7 @@
                                                 <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.DisabledJob, job.Id)">
                                                     <MListItemContent Class="pl-6 pr-16">
                                                         <MListItemTitle>
-                                                            <MIcon Color="red" Class="align-self-center mr-3">mdi-minus-circle</MIcon>
+                                                            <SIcon Color="red" Class="align-self-center mr-3">mdi-minus-circle</SIcon>
                                                             @T("Disabled")
                                                         </MListItemTitle>
                                                     </MListItemContent>
@@ -186,7 +186,7 @@
                                                 <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.EnabledJob, job.Id)">
                                                     <MListItemContent Class="pl-6 pr-16">
                                                         <MListItemTitle>
-                                                            <MIcon Color="green" Class="align-self-center mr-3">mdi-check-circle</MIcon>
+                                                            <SIcon Color="green" Class="align-self-center mr-3">mdi-check-circle</SIcon>
                                                             @T("Enabled")
                                                         </MListItemTitle>
                                                     </MListItemContent>

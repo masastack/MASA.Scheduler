@@ -18,15 +18,20 @@
                 <MCardTitle Class="px-6">
                     <div>
                         <span class="emphasis--text h6">@app.Name</span>
-                        <MIcon Size="20" Color="emphasis2">keyboard_arrow_right</MIcon>
+                        <SIcon Size="20" Color="emphasis2">keyboard_arrow_right</SIcon>
                     </div>
                     <MSpacer></MSpacer>
                     @if (app.Resources.Any())
                     {
-                        <MIcon Size="24" Color="error" Class="align-self-center mr-6" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty,app.Identity)">mdi-delete</MIcon>
+                        <MButton Fab OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty,app.Identity)" Small Dark Color="error">
+                            <SIcon>mdi-delete</SIcon>
+                        </MButton>
+                        <span class="d-flex px-1" style="height: 24px;">
+                            <MDivider Vertical />
+                        </span>
                     }
                     <MButton Fab OnClick="()=>AddResourceFile(app.Identity)" Small Dark Color="primary">
-                        <MIcon>mdi-plus</MIcon>
+                        <SIcon>mdi-plus</SIcon>
                     </MButton>
                 </MCardTitle>
                 <MCardText Class="pb-6">
@@ -43,11 +48,15 @@
                                         <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
                                             @if (context.Hover)
                                             {
-                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">mdi-delete</MIcon>
+                                                <MButton Icon Class="align-self-center mr-4"  OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">
+                                                    <SIcon Size="24" Color="error">mdi-delete</SIcon>
+                                                </MButton>
                                                 <span class="d-flex px-15" style="height: 24px;">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MIcon Size="24" Color="emphasis2" Class="align-self-center" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">mdi-eye</MIcon>
+                                                <MButton Icon Class="align-self-center mr-4" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">
+                                                    <SIcon Size="24" Color="emphasis2">mdi-eye</SIcon>
+                                                </MButton>   
                                             }
                                             else
                                             {
@@ -61,7 +70,7 @@
                         @if (isShowExpandIcon)
                         {
                         <div class="ml-1">
-                            <MButton Icon OnClick="() => app.IsExpand = !app.IsExpand" Style="transform: translate(-12%, 120%);" Class="m-size--small float-right"> <MIcon>@(app.IsExpand ? "mdi-chevron-up" : "mdi-chevron-down")</MIcon></MButton>
+                            <MButton Icon OnClick="() => app.IsExpand = !app.IsExpand" Style="transform: translate(-12%, 120%);" Class="m-size--small float-right"> <SIcon>@(app.IsExpand ? "mdi-chevron-up" : "mdi-chevron-down")</SIcon></MButton>
                         </div>                            
                         }
                     }

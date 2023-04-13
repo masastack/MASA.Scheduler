@@ -142,7 +142,9 @@
                                 </AutoHeightContent>
                                 <FooterContent>
                                     <div class="d-flex mt-9">
-                                        <MIcon Size="24" Color="emphasis2" OnClick="PreviousStep">mdi-keyboard-backspace</MIcon>
+                                        <MButton Class="mr-4" Icon OnClick="PreviousStep">
+                                            <SIcon Size="24" Color="emphasis2" >mdi-keyboard-backspace</SIcon>
+                                        </MButton>
                                         <MSpacer></MSpacer>
                                         <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> NextStep(context)">@T("NextStep")</MButton>
                                     </div>
@@ -158,7 +160,7 @@
                                     <AutoHeightContent>
                                         <MRow NoGutters Class="mt-1">
                                             <MCol Md="6">
-                                            <SSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                                <SSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                                 </SSelect>
                                             </MCol>
                                         </MRow>
@@ -215,13 +217,17 @@
                                     </AutoHeightContent>
                                     <FooterContent>
                                         <div class="d-flex mt-9 align-center">
-                                            <MIcon Size="24" Color="emphasis2" OnClick="PreviousStep">mdi-keyboard-backspace</MIcon>
+                                            <MButton Class="mr-4" Icon OnClick="PreviousStep">
+                                                <SIcon Size="24" Color="emphasis2" >mdi-keyboard-backspace</SIcon>
+                                            </MButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
                                                 <span class="d-flex px-6" style="height: 12px">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="HandleDel">mdi-delete</MIcon>
+                                                <MButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
+                                                    <SIcon Size="24" Color="error">mdi-delete</SIcon>
+                                                </MButton>
                                             }
                                             <MSpacer></MSpacer>
                                             <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
@@ -283,13 +289,17 @@
                                     </AutoHeightContent>
                                     <FooterContent>
                                         <div class="d-flex mt-9 align-center">
-                                            <MIcon Size="24" Color="emphasis2" OnClick="PreviousStep">mdi-keyboard-backspace</MIcon>
+                                            <MButton Class="mr-4" Icon OnClick="PreviousStep">
+                                                <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
+                                            </MButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
                                                 <span class="d-flex px-6" style="height: 12px">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="HandleDel">mdi-delete</MIcon>
+                                                <MButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
+                                                    <SIcon Size="24" Color="error">mdi-delete</SIcon>
+                                                </MButton>
                                             }
                                             <MSpacer></MSpacer>
                                             <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
@@ -337,13 +347,17 @@
                                     </AutoHeightContent>
                                     <FooterContent>
                                         <div class="d-flex mt-9" style="align-items: center;">
-                                            <MIcon Size="24" Color="emphasis2" OnClick="PreviousStep">mdi-keyboard-backspace</MIcon>
+                                            <MButton Class="mr-4" Icon OnClick="PreviousStep">
+                                                <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
+                                            </MButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
                                                 <span class="d-flex px-6 align-center">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MIcon Size="24" Color="error" Class="align-self-center" OnClick="HandleDel">mdi-delete</MIcon>
+                                                <MButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
+                                                    <SIcon Size="24" Color="error">mdi-delete</SIcon>
+                                                </MButton>
                                             }
                                             <MSpacer></MSpacer>
                                             <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
