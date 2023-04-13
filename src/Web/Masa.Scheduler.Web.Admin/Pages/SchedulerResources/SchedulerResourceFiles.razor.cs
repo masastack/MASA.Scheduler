@@ -36,9 +36,12 @@ public partial class SchedulerResourceFiles
     [Inject]
     public Stack.Components.Configs.GlobalConfig StackGlobalConfig { get; set; } = default!;
 
+    [Inject]
+    public MasaUser MasaUser { get; set; } = default!;
+
     protected async override Task OnInitializedAsync()
     {
-        _teamId = StackGlobalConfig.CurrentTeamId;
+        _teamId = StackGlobalConfig.CurrentTeamId == default ? MasaUser.CurrentTeamId : StackGlobalConfig.CurrentTeamId;
 
         await GetProjects();
 
@@ -80,9 +83,10 @@ public partial class SchedulerResourceFiles
     {
         _showProgressbar = true;
         var project = _projects.FirstOrDefault(x => x.Identity == _selectedProjectIdentity);
-        if (project == null) {
+        if (project == null)
+        {
             _showProgressbar = false;
-            return; 
+            return;
         }
         var jobs = project.ProjectApps.Where(p => p.Type == ProjectAppTypes.Job).ToList();
         var resources = new List<AppResourceViewModel>();
