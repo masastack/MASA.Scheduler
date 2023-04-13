@@ -40,9 +40,7 @@ public class StartJobDomainEventHandler
         var task = new SchedulerTask(job.Id, job.Origin, operatorId);
 
         await _schedulerTaskRepository.AddAsync(task);
-
         await _unitOfWork.SaveChangesAsync();
-
         _logger.LogInformation("Scheduler Task Create", WriterTypes.Server, task.Id, task.JobId);
 
         var startTaskRequest = new StartSchedulerTaskRequest()

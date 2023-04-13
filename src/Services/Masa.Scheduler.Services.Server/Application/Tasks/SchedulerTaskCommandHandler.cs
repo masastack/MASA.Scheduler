@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using System.Threading.Tasks;
+
 namespace Masa.Scheduler.Services.Server.Application.Tasks;
 
 public class SchedulerTaskCommandHandler
@@ -8,12 +10,14 @@ public class SchedulerTaskCommandHandler
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly IMapper _mapper;
     private readonly SchedulerTaskDomainService _schedulerTaskDomainService;
+    private readonly SchedulerServerManager _serverManager;
 
-    public SchedulerTaskCommandHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper, SchedulerTaskDomainService schedulerTaskDomainService)
+    public SchedulerTaskCommandHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper, SchedulerTaskDomainService schedulerTaskDomainService, SchedulerServerManager serverManager)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _mapper = mapper;
         _schedulerTaskDomainService = schedulerTaskDomainService;
+        _serverManager = serverManager;
     }
 
     [EventHandler]

@@ -15,6 +15,7 @@ public class StartTaskDomainEventHandler
     private readonly IDistributedCacheClient _distributedCacheClient;
     private readonly SchedulerLogger _logger;
     private readonly SignalRUtils _signalRUtils;
+    private readonly IUnitOfWork _unitOfWork;
 
     public StartTaskDomainEventHandler(
         ISchedulerTaskRepository schedulerTaskRepository,
@@ -26,7 +27,8 @@ public class StartTaskDomainEventHandler
         IDistributedCacheClient distributedCacheClient,
         SchedulerLogger logger,
         ISchedulerJobRepository schedulerJobRepository,
-        SignalRUtils signalRUtils)
+        SignalRUtils signalRUtils,
+        IUnitOfWork unitOfWork)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
@@ -38,6 +40,7 @@ public class StartTaskDomainEventHandler
         _logger = logger;
         _schedulerJobRepository = schedulerJobRepository;
         _signalRUtils = signalRUtils;
+        _unitOfWork = unitOfWork;
     }
 
     [EventHandler(1)]
@@ -159,6 +162,8 @@ public class StartTaskDomainEventHandler
         }
 
         await _schedulerTaskRepository.UpdateAsync(task);
+        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.CommitAsync();
 
         if (allowEnqueue)
         {

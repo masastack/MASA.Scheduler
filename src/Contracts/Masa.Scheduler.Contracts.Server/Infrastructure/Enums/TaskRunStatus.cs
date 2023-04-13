@@ -13,4 +13,5 @@ public enum TaskRunStatus
     TimeoutSuccess,
     WaitToRetry,
     WaitToRun,
+    Ignore
 }

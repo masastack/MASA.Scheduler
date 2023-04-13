@@ -15,7 +15,7 @@ if (builder.Environment.IsDevelopment())
         opt.AppPort = 19602;
     }, false);
 }
-
+var connectString = "Server=.;Database=scheduler_dev;User Id=sa;Password=Tcsnwzh425;";
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 builder.Services.AddDaprClient();
@@ -93,7 +93,7 @@ builder.Services
          {
              eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
          })
-         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
+         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(connectString).UseFilter())
         .UseRepository<SchedulerDbContext>();
     }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment("env"));
 
