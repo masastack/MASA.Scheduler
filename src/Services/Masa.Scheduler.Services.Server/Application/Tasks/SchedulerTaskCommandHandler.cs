@@ -8,14 +8,12 @@ public class SchedulerTaskCommandHandler
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly IMapper _mapper;
     private readonly SchedulerTaskDomainService _schedulerTaskDomainService;
-    private readonly SchedulerServerManager _serverManager;
 
-    public SchedulerTaskCommandHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper, SchedulerTaskDomainService schedulerTaskDomainService, SchedulerServerManager serverManager)
+    public SchedulerTaskCommandHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper, SchedulerTaskDomainService schedulerTaskDomainService)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _mapper = mapper;
         _schedulerTaskDomainService = schedulerTaskDomainService;
-        _serverManager = serverManager;
     }
 
     [EventHandler]
