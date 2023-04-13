@@ -1,7 +1,7 @@
 ﻿@inherits ProComponentBase
 
 <div class="d-flex fill rounded-lg datetimerangepicker @Class" style="@Style">
-    <SIcon Size=20 Color="emphasis2--text" Class="@($"pl-2 {IconClass}")">mdi-calendar-month</SIcon>
+    <MIcon Size=20 Color="emphasis2--text" Class="@($"pl-2 {IconClass}")">mdi-calendar-month</MIcon>
     <MMenu @bind-Value="StartTimeVisible" CloseOnContentClick="false" OffsetY Transition="scale-transition">
         <ActivatorContent>
             <div class="text-btn ml-1 my-auto hover-pointer text-center" style="height:20px;width:calc(50% - 23px)" @attributes="@context.Attrs">
