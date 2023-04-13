@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Components\DateTimeFormat.razor" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="2.14.1" />
+    <PackageReference Include="Humanizer.Core.zh-CN" Version="2.14.1" />
+    <PackageReference Include="Masa.BuildingBlocks.Authentication.Identity" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.Data.Mapping.Mapster" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Stack.Components" Version="0.0.320" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.15" />
+    <PackageReference Include="Quartz.AspNetCore" Version="3.6.2" />
+	<PackageReference Include="Masa.Contrib.StackSdks.Alert" Version="$(MasaFrameworkPackageVersion)" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\..\ApiGateways\Caller\Masa.Scheduler.ApiGateways.Caller\Masa.Scheduler.ApiGateways.Caller.csproj" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Content Update="wwwroot\i18n\en-US.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\i18n\zh-CN.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
