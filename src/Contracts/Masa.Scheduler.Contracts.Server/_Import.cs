@@ -38,3 +38,4 @@ global using System.Net;
 global using Masa.BuildingBlocks.Caching;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 global using System.Text.Json.Serialization;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Utils;

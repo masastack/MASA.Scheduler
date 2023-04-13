@@ -85,6 +85,7 @@ public partial class SchedulerResourceFiles
         var project = _projects.FirstOrDefault(x => x.Identity == _selectedProjectIdentity);
         if (project == null)
         {
+            _resourceData = new();
             _showProgressbar = false;
             return;
         }

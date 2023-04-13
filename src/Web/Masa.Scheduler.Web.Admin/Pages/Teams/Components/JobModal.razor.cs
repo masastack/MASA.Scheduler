@@ -421,6 +421,7 @@ public partial class JobModal
     private void ResetForm()
     {
         Model = new();
+        _logUpsertModal?.ResetForm();
     }
 
     private Task OnModelChange()
@@ -570,7 +571,7 @@ public partial class JobModal
         await ConfirmAsync(T("DeletionConfirmationMessage"), RemoveJobAsync, AlertTypes.Warning);
     }
 
-    private async Task CloseModal()
+    private void CloseModal()
     {
         _visible = false;
         ResetForm();
@@ -587,40 +588,7 @@ public partial class JobModal
     {
         if (_logUpsertModal != null && Model.IsAlertException)
         {
-            var whereExpression = $@"{{""bool"":{{""must"":[{{""term"":{{""Attributes.JobId.keyword"":""{_jobId}""}}}},{{""term"":{{""SeverityText.keyword"":""Error""}}}}]}}}}";
-            var ruleExpression = @"{""Rules"":[{""RuleName"":""CheckWorkerErrorJob"",""ErrorMessage"":""Log with error level."",""ErrorType"":""Error"",""RuleExpressionType"":""LambdaExpression"",""Expression"":""JobId > 0""}]}";
-            var alarmRule = new AlarmRuleUpsertViewModel
-            {
-                Type = AlarmRuleType.Log,
-                DisplayName = Model.Name,
-                ProjectIdentity = "scheduler",
-                AppIdentity = MasaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
-                CheckFrequency = new CheckFrequencyViewModel
-                {
-                    Type = AlarmCheckFrequencyType.Cron,
-                    CronExpression = "0 0/10 * * * ? ",
-                    FixedInterval = new TimeIntervalViewModel
-                    {
-                        IntervalTimeType = TimeType.Minute
-                    }
-                },
-                IsEnabled = true,
-                LogMonitorItems = new List<LogMonitorItemModel> {
-                    new LogMonitorItemModel {
-                        Field = "Attributes.JobId",
-                        AggregationType = LogAggregationType.Count,
-                        Alias = "JobId"
-                    }
-                },
-                WhereExpression = whereExpression,
-                Items = new List<AlarmRuleItemModel> {
-                    new AlarmRuleItemModel {
-                        Expression=ruleExpression,
-                        AlertSeverity = AlertSeverity.High
-                    }
-                }
-            };
-            await _logUpsertModal.OpenModalAsync(Model.AlarmRuleId, alarmRule);
+            await _logUpsertModal.OpenModalAsync(Model.AlarmRuleId, _jobId, Model.Name);
         }
     }
 }
