@@ -17,6 +17,9 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     [Inject]
     public IAlertClient AlertClient { get; set; } = default!;
 
+    [Inject]
+    public IMasaStackConfig MasaStackConfig { get; set; } = default!;
+
     private MForm? _form;
     private AlarmRuleUpsertViewModel _model = new();
     private bool _visible;
@@ -29,6 +32,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     private List<AppDetailModel> _appItems = new();
     private List<MappingResponseDto> _fields = new();
     private bool _isChange = false;
+    private bool _isInit = false;
 
     protected override string? PageName { get; set; } = "AlarmRuleBlock";
 
@@ -40,11 +44,61 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
         _fields = (await TscClient.LogService.GetMappingAsync()).ToList();
     }
 
-    public async Task OpenModalAsync(Guid entityId, AlarmRuleUpsertViewModel? model = null)
+    public async Task OpenModalAsync(Guid entityId, Guid jobId, string displayName)
     {
         _entityId = entityId;
-        _model = model ?? new();
         _model.Type = AlarmRuleType.Log;
+
+        if (!_isInit)
+        {
+            _isInit = true;
+            await InitData(jobId, displayName);
+        }
+
+        await InvokeAsync(() =>
+        {
+            _visible = true;
+            StateHasChanged();
+        });
+    }
+
+    private async Task InitData(Guid jobId, string displayName)
+    {
+        var whereExpression = $@"{{""bool"":{{""must"":[{{""term"":{{""Attributes.JobId.keyword"":""{jobId}""}}}},{{""term"":{{""SeverityText.keyword"":""Error""}}}}]}}}}";
+        var ruleExpression = @"{""Rules"":[{""RuleName"":""CheckWorkerErrorJob"",""ErrorMessage"":""Log with error level."",""ErrorType"":""Error"",""RuleExpressionType"":""LambdaExpression"",""Expression"":""JobId > 0""}]}";
+        var alarmRule = new AlarmRuleUpsertViewModel
+        {
+            Type = AlarmRuleType.Log,
+            DisplayName = displayName,
+            ProjectIdentity = "scheduler",
+            AppIdentity = MasaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
+            CheckFrequency = new CheckFrequencyViewModel
+            {
+                Type = AlarmCheckFrequencyType.Cron,
+                CronExpression = "0 0/10 * * * ? ",
+                FixedInterval = new TimeIntervalViewModel
+                {
+                    IntervalTimeType = TimeType.Minute
+                }
+            },
+            IsEnabled = true,
+            LogMonitorItems = new List<LogMonitorItemModel> {
+                    new LogMonitorItemModel {
+                        Field = "Attributes.JobId",
+                        AggregationType = LogAggregationType.Count,
+                        Alias = "JobId"
+                    }
+                },
+            WhereExpression = whereExpression,
+            Items = new List<AlarmRuleItemModel> {
+                    new AlarmRuleItemModel {
+                        Expression=ruleExpression,
+                        AlertSeverity = AlertSeverity.High
+                    }
+                }
+        };
+
+        _model = alarmRule;
 
         if (_entityId != default)
         {
@@ -57,12 +111,6 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
 
         FillData();
         GetNextRunTime();
-
-        await InvokeAsync(() =>
-        {
-            _visible = true;
-            StateHasChanged();
-        });
 
         _form?.ResetValidation();
     }
@@ -93,13 +141,14 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     private void HandleCancel()
     {
         _visible = false;
-        ResetForm();
+        _model.Step = 1;
     }
 
-    private void ResetForm()
+    public void ResetForm()
     {
         _model = new();
         _isChange = false;
+        _isInit = false;
     }
 
     private void HandleVisibleChanged(bool val)
@@ -180,7 +229,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
         _model.LogMonitorItems.Remove(item);
     }
 
-    private async Task HandleOk()
+    private void HandleOk()
     {
         MasaArgumentException.ThrowIfNull(_form, "form");
 
@@ -192,6 +241,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
         _isChange = true;
 
         _visible = false;
+        _model.Step = 1;
     }
 
     public async Task Submit()
