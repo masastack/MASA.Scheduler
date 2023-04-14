@@ -45,8 +45,14 @@
                                         </MRow>                                        
                                     }
                                     <MRow NoGutters Class="mt-9">
-                                        <MCol Md="6" Class="d-flex">
+                                        <MCol Md="6" Class="d-flex align-center justify-space-between">
                                             <MSwitch @bind-Value="Model.IsAlertException" Label="@T("IsAlertException")" Class="ml-3 pt-0 mt-0" TValue="bool" OnClick="HandleAlertException" Inset></MSwitch>
+                                            <MButton Disabled="!Model.IsAlertException" Outlined Large Class="emphasis2--text" Style="border: 1px solid #E4E8F3 !important;" OnClick="HandleAlertException">
+                                            @T("ViewingAlrmRule")
+                                                <MIcon Right>
+                                                    mdi-chevron-right
+                                                </MIcon>
+                                            </MButton>
                                         </MCol>
                                     </MRow>
 

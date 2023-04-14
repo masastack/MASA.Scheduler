@@ -55,6 +55,11 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
             await InitData(jobId, displayName);
         }
 
+        if (_model.DisplayName.IsNullOrEmpty())
+        {
+            _model.DisplayName = displayName;
+        }
+
         await InvokeAsync(() =>
         {
             _visible = true;
