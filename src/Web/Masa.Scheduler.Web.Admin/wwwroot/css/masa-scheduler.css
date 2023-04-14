@@ -14,17 +14,7 @@
 .full-height.d-flex.flex-column .m-data-table__wrapper {
     flex-grow: 1 !important;
 }
-.datetimerangepicker {
-    min-width: 350px;
-    height: 40px;
-}
-.datetimerangepicker .regular--text {
-    white-space: nowrap;
-}
-.datetimerangepicker .m-divider__wrapper {
-    margin: 8px 4px;
-    display: block !important;
-}
+
 .masa-modal .m-input {
     font-size: 14px;
 }
@@ -111,4 +101,10 @@
 .m-input__append-outer, .m-input__prepend-outer {
     margin-top: auto !important;
     margin-bottom: auto !important;
+}
+.masa .h6 {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    line-height: 1.875rem !important;
+    letter-spacing: 0.01em !important;
 }

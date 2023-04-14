@@ -28,7 +28,7 @@
                     </SSelect>
                 </MCol>
                 <MCol Md="3" Class="ml-6" Style="max-width:420px">
-                    <DateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
+                    <SDateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
                 </MCol>
                 <MCol Md="1" Class="ml-6" Style="min-width:139px">
                     <SSelect Small @bind-Value="QueryJobType"
@@ -56,10 +56,10 @@
                 }
             </MRow>
             <div class="d-flex search-panel-right">
-                <OutlinedSearchTextField Style="width:300px" @bind-Value="QueryJobName" BackgroundColor="white" PrependInnerIcon="@IconConstants.Search" />
+                <SSearch @bind-Value="QueryJobName" BackgroundColor="white" Style="width:300px" />
                 @if (_jobCreateType == JobCreateTypes.Manual)
                 {
-                    <SButton Small Color="primary" BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="AddJob">@T("Add")</SButton>
+                    <SButton Small BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="AddJob">@T("Add")</SButton>
                 }
             </div>
         </div>
@@ -99,9 +99,9 @@
                                 </div>
                             </MCardTitle>
                             <MCardText Class="d-flex height-inherit">
-                                <MButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
+                                <SButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
                                     <SIcon>mdi-checkbox-blank-circle</SIcon>
-                                </MButton>
+                                </SButton>
                                 <div class="job-text run-text pl-2 body2" style="color:@(GetJobColor(job))">
                                     @GetJobRunText(job)
                                 </div>
@@ -145,9 +145,9 @@
                                 }
                                 <MMenu Bottom Left>
                                     <ActivatorContent>
-                                        <MButton Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation Class="ml-4">
+                                        <SButton Color="" Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation Class="ml-4">
                                             <SIcon>mdi-dots-vertical</SIcon>
-                                        </MButton>
+                                        </SButton>
                                     </ActivatorContent>
                                     <ChildContent>
                                         <MList>
