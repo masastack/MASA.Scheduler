@@ -18,6 +18,7 @@ public class AlarmRuleUpsertViewModelValidator : AbstractValidator<AlarmRuleUpse
             .ForEach(x => x.SetValidator(new LogMonitorItemViewModelValidator(i18n)))
             .When(x => x.Type == AlarmRuleType.Log && x.Step == 2);
         RuleFor(x => x.DisplayName).Required()
+            .Matches(RegularHelper.CHINESE_LETTER_NUMBER_SYMBOL).WithMessage(i18n.T("AlarmRuleBlock.AlarmRuleNameFormat.Verification"))
             .Length(2, 50)
             .When(x => x.Type == AlarmRuleType.Log && x.Step == 3 || x.Type == AlarmRuleType.Metric && x.Step == 2);
         RuleFor(x => x.Items).Required()

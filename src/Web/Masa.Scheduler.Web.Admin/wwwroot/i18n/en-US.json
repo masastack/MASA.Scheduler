@@ -111,5 +111,8 @@
   "Creator": "Creator",
   "CreationTime": "CreationTime",
   "Modifier": "Modifier",
-  "ModificationTime": "ModificationTime"
+  "ModificationTime": "ModificationTime",
+  "AlarmRuleBlock": {
+    "AlarmRuleNameFormat.Verification": "Incorrect format of alarm rule name"
+  }
 }
