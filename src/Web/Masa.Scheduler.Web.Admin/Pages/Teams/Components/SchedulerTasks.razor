@@ -109,9 +109,9 @@
                             case "Action":
                                 <MTooltip Bottom>
                                     <ActivatorContent Context="tooltips">
-                                        <SButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Link Target="blank" Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/log/{context.Item.Id}")">
+                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Link Target="blank" Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/log/{context.Item.Id}")">
                                             <SIcon>plagiarism</SIcon>
-                                        </SButton>
+                                        </MButton>
                                     </ActivatorContent>
                                     <ChildContent>
                                         <span>@T("TaskLog")</span>
@@ -121,9 +121,9 @@
                                 {
                                     <MTooltip Bottom>
                                         <ActivatorContent Context="tooltips">
-                                        <SButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Class="ml-6" Link Target="blank" Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/trace/{context.Item.TraceId}")">
+                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Class="ml-6" Link Target="blank" Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/dashbord/trace/{context.Item.TraceId}")">
                                             <SIcon>mdi-chart-timeline-variant</SIcon>
-                                        </SButton>
+                                        </MButton>
                                         </ActivatorContent>
                                         <ChildContent>
                                             <span>@T("TaskTrace")</span>

@@ -56,7 +56,7 @@
                 }
             </MRow>
             <div class="d-flex search-panel-right">
-                <SSearch @bind-Value="QueryJobName" BackgroundColor="white" Style="width:300px" />
+                <SSearch @bind-Value="QueryJobName" BackgroundColor="white" />
                 @if (_jobCreateType == JobCreateTypes.Manual)
                 {
                     <SButton Small BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="AddJob">@T("Add")</SButton>
@@ -64,11 +64,6 @@
             </div>
         </div>
         <MRadioGroup @bind-Value="QueryStatus" Row OnClick="RadioGroupClickHandler" Class="masa-radiogroup">
-            <MRadio TValue="TaskRunStatus" Value="default" Color="green">
-                <LabelContent>
-                    <span>@T("All")</span>
-                </LabelContent>
-            </MRadio>
             @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
             {
                 <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="green">
