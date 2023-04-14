@@ -280,6 +280,7 @@
     "Low": "低",
     "Report": "报告",
     "CheckFrequency": "检查频率",
-    "FixedInterval": "固定间隔"
+    "FixedInterval": "固定间隔",
+    "AlarmRuleNameFormat.Verification": "告警规则名称格式错误"
   }
 }
