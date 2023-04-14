@@ -211,6 +211,7 @@
   "Minute": "分钟",
   "Hour": "小时",
   "Day": "天",
+  "ViewingAlrmRule": "查看告警规则",
   "AlarmRuleBlock": {
     "Log": "日志监控",
     "Metric": "指标监控",
