@@ -202,7 +202,7 @@ public partial class SchedulerJobs : ProComponentBase
         });
 
         _queryStatusList = GetEnumMap<TaskRunStatus>();
-        _queryStatusList.RemoveAll(p => p.Value == TaskRunStatus.WaitToRun);
+        _queryStatusList.Insert(0, new KeyValuePair<string, TaskRunStatus>(T("All"), default));
 
         _jobQueryTimeTypeList = Enum.GetValues<JobQueryTimeTypes>().Where(t => t == JobQueryTimeTypes.CreationTime || t == JobQueryTimeTypes.ModificationTime).ToList();
 

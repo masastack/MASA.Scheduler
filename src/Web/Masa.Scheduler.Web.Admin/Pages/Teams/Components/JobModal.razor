@@ -9,8 +9,8 @@
                         @foreach (var (key, value) in GetEnumMap<JobTypes>())
                         {
                             <MCard Outlined Class="d-flex justify-center align-center rounded-6 mb-6" Style="@GetStyle(value)" OnClick="()=> SelectJobType(value)" Height="210">
-                                <SButton Class="h6 regular--text" ActiveClass="h6 fill--text" IsActive="value == Model.JobType" Plain OnClick="()=> SelectJobType(value)" Color="@GetColor(value)">@T(key)</SButton>
-                            </MCard>
+                            <SButton Class="h6 regular--text" ActiveClass="h6 fill--text" IsActive="value == Model.JobType" Plain OnClick="()=> SelectJobType(value)" Color="@GetColor(value)">@T(key)</SButton>
+                                </MCard>
                         }
                     </MStepperContent>
                     <MStepperContent Step="2" Class="full-height pa-0">
@@ -26,23 +26,23 @@
                                         {
                                             <MCol Md="6">
                                                 <SUserAutoComplete Class="ml-6" Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Dense Outlined Label="@T("Owner")"></SUserAutoComplete>
-                                            </MCol>
+                                                </MCol>
                                         }
                                         else
                                         {
                                             <MCol Md="6">
                                                 <SSelect Class="ml-6" @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Readonly Disabled Dense Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                                 </SSelect>
-                                            </MCol>
+                                                </MCol>
                                         }
                                     </MRow>
-                                    @if(!_isAdd)
+                                    @if (!_isAdd)
                                     {
                                         <MRow NoGutters Class="mt-9">
-                                            <MCol Md="6">
-                                                <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Dense Outlined Label="@T("Owner")"></SUserAutoComplete>
-                                            </MCol>
-                                        </MRow>                                        
+                                        <MCol Md="6">
+                                            <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Dense Outlined Label="@T("Owner")"></SUserAutoComplete>
+                                                </MCol>
+                                                </MRow>
                                     }
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6" Class="d-flex align-center justify-space-between">
@@ -60,13 +60,13 @@
                                         <MCol Md="6">
                                             <SSelect Value="Model.ScheduleType" ValueExpression="()=>Model.ScheduleType" TValue="ScheduleTypes" TItemValue="ScheduleTypes" TItem="KeyValuePair<string,ScheduleTypes>" ValueChanged="OnScheduleTypeChanged" Label="@T("ScheduleType")" HideDetails="@("auto")" SingleLine Attach="true" Dense Outlined Clearable Items="GetEnumMap<ScheduleTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
-                                        </MCol>
-                                        @if (Model.ScheduleType == ScheduleTypes.Cron)
+                                            </MCol>
+                                            @if (Model.ScheduleType == ScheduleTypes.Cron)
                                         {
                                             <MCol Md="6">
                                                 <STextField Class="ml-6" Value="Model.CronExpression" TValue="string" ValueChanged="OnCronValueChange" HideDetails="@("auto")" Label="@T("CronExpression")" Outlined Dense AppendIcon="mdi-clock" OnAppendClick="OpenCronModal">
                                                 </STextField>
-                                            </MCol>
+                                                </MCol>
                                         }
                                     </MRow>
                                     @if (Model.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(Model.CronExpression))
@@ -77,11 +77,11 @@
                                             </p>
                                             <pre class="masa body2 regular--text">
                                                 @_nextRunTimeStr
-                                            </pre>
+                                                    </pre>
                                         </div>
                                     }
                                     <MRow NoGutters Class="mt-9">
-                                         <MCol>
+                                        <MCol>
                                             <STextField @bind-Value="Model.NotifyUrl" Label="@T("JobNotifyUrl")" HideDetails="@("auto")" Dense Outlined />
                                         </MCol>
                                     </MRow>
@@ -90,31 +90,31 @@
                                         <MCol Md="6">
                                             <SSelect Value="Model.RoutingStrategy" ValueExpression="()=>Model.RoutingStrategy" ValueChanged="OnRoutingStrategyChanged" TValue="RoutingStrategyTypes" TItem="KeyValuePair<string, RoutingStrategyTypes>" TItemValue="RoutingStrategyTypes" Label="@T("RoutingStrategy")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<RoutingStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
-                                        </MCol>
-                                        @if (Model.RoutingStrategy == RoutingStrategyTypes.Specified)
+                                            </MCol>
+                                            @if (Model.RoutingStrategy == RoutingStrategyTypes.Specified)
                                         {
                                             <MCol Md="6">
                                                 <SSelect Class="ml-6" @bind-Value="Model.SpecifiedWorkerHost" Label="Worker" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="_workerList" ItemText="worker => worker.GetServiceUrl()" ItemValue="worker=> worker.GetServiceUrl()">
                                                 </SSelect>
-                                            </MCol>
+                                                </MCol>
                                         }
                                     </MRow>
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
                                             <SSelect @bind-Value="Model.ScheduleExpiredStrategy" Label="@T("ScheduleExpiredStrategy")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<ScheduleExpiredStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
-                                        </MCol>
-                                        <MCol Md="6">
+                                            </MCol>
+                                            <MCol Md="6">
                                             <SSelect Class="ml-6" @bind-Value="Model.ScheduleBlockStrategy" Label="@T("ScheduleBlockStrategy")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<ScheduleBlockStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
-                                        </MCol>
-                                    </MRow>
-                                    <MRow NoGutters Class="mt-9">
+                                            </MCol>
+                                            </MRow>
+                                            <MRow NoGutters Class="mt-9">
                                         <MCol Md="6">
                                             <SSelect @bind-Value="Model.RunTimeoutStrategy" Label="@T("RunTimeoutStrategy")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<RunTimeoutStrategyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                             </SSelect>
-                                        </MCol>
-                                        <MCol Md="6">
+                                            </MCol>
+                                            <MCol Md="6">
                                             <STextField Class="ml-6" @bind-Value="Model.RunTimeoutSecond" Type="number" NumberProps="(p)=>{ p.HideControl = true; p.Min=0; }" Label="@T("RunTimeoutSecond")" HideDetails="@("auto")" Dense Outlined />
                                         </MCol>
                                     </MRow>
@@ -148,9 +148,12 @@
                                 </AutoHeightContent>
                                 <FooterContent>
                                     <div class="d-flex mt-9">
-                                        <SButton Class="mr-4" Icon OnClick="PreviousStep">
-                                            <SIcon Size="24" Color="emphasis2" >mdi-keyboard-backspace</SIcon>
-                                        </SButton>
+                                        @if (_isAdd)
+                                        {
+                                            <SButton Class="mr-4" Icon OnClick="PreviousStep">
+                                                <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
+                                            </SButton>
+                                        }
                                         <MSpacer></MSpacer>
                                         <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> NextStep(context)">@T("NextStep")</SButton>
                                     </div>
@@ -163,25 +166,25 @@
                         {
                             <MForm Model=Model.HttpConfig EnableValidation @ref="httpForm" Class="full-height">
                                 <AutoHeight Overflow>
-                                    <AutoHeightContent>
-                                        <MRow NoGutters Class="mt-1">
-                                            <MCol Md="6">
-                                                <SSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                <AutoHeightContent>
+                                    <MRow NoGutters Class="mt-1">
+                                        <MCol Md="6">
+                                            <SSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                                 </SSelect>
-                                            </MCol>
-                                        </MRow>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="6">
-                                                <STextField @bind-Value="Model.HttpConfig.RequestUrl" Label="@T("RequestUrl")" HideDetails="@("auto")" Dense Outlined />
+                                                </MCol>
+                                                </MRow>
+                                                <MRow NoGutters Class="mt-9">
+                                        <MCol Md="6">
+                                            <STextField @bind-Value="Model.HttpConfig.RequestUrl" Label="@T("RequestUrl")" HideDetails="@("auto")" Dense Outlined />
                                             </MCol>
                                         </MRow>
                                         <DefaultTitle>@T("RequestParameters")</DefaultTitle>
                                         <MRow NoGutters Class="mt-6">
-                                            <MCol Md="6">
-                                                <MButtonGroup Value="_httpParameterTypes.ToString()" Class="masa-buttongroup" Color="primary" Group Tile Dense Mandatory Borderless>
-                                                    @foreach (var (key, value) in GetEnumMap<HttpParameterTypes>())
+                                        <MCol Md="6">
+                                            <MButtonGroup Value="_httpParameterTypes.ToString()" Class="masa-buttongroup" Color="primary" Group Tile Dense Mandatory Borderless>
+                                                @foreach (var (key, value) in GetEnumMap<HttpParameterTypes>())
                                                     {
-                                                        <MButton OnClick="async() => await SwitchHttpParameterType(value)" Value="@value.ToString()" Ripple=false> 
+                                                        <MButton OnClick="async() => await SwitchHttpParameterType(value)" Value="@value.ToString()" Ripple=false>
                                                             @T(key)
                                                         </MButton>
                                                     }
@@ -201,30 +204,30 @@
                                         else
                                         {
                                             <MRow NoGutters Class="mt-9">
-                                                <MCol Md="12">
-                                                    <STextarea @bind-Value="Model.HttpConfig.HttpBody" Label="@T("HttpBody")" HideDetails="@("auto")" Dense Outlined Rows="5">
+                                            <MCol Md="12">
+                                            <STextarea @bind-Value="Model.HttpConfig.HttpBody" Label="@T("HttpBody")" HideDetails="@("auto")" Dense Outlined Rows="5">
                                                     </STextarea>
-                                                </MCol>
-                                            </MRow>
+                                                    </MCol>
+                                                    </MRow>
                                         }
                                         <MRow NoGutters Class="mt-9">
-                                            <MCol Md="6">
+                                        <MCol Md="6">
                                             <SSelect @bind-Value="Model.HttpConfig.HttpVerifyType" Label="@T("HttpVerifyType")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpVerifyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=> kv.Value">
                                                 </SSelect>
-                                            </MCol>
-                                        </MRow>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="12">
-                                                <STextarea @bind-Value="Model.HttpConfig.VerifyContent" Label="@T("VerifyContent")" HideDetails="@("auto")" Dense Outlined Rows="5">
+                                                </MCol>
+                                                </MRow>
+                                                <MRow NoGutters Class="mt-9">
+                                        <MCol Md="12">
+                                            <STextarea @bind-Value="Model.HttpConfig.VerifyContent" Label="@T("VerifyContent")" HideDetails="@("auto")" Dense Outlined Rows="5">
                                                 </STextarea>
-                                            </MCol>
-                                        </MRow>
+                                                </MCol>
+                                                </MRow>
                                                 <AuditedInfo Audited="(AuditedEntityDto)Model" />
-                                    </AutoHeightContent>
-                                    <FooterContent>
-                                        <div class="d-flex mt-9 align-center">
-                                            <SButton Class="mr-4" Icon OnClick="PreviousStep">
-                                                <SIcon Size="24" Color="emphasis2" >mdi-keyboard-backspace</SIcon>
+                                            </AutoHeightContent>
+                                            <FooterContent>
+                                                <div class="d-flex mt-9 align-center">
+                                                    <SButton Class="mr-4" Icon OnClick="PreviousStep">
+                                            <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
                                             </SButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
@@ -232,7 +235,7 @@
                                                     <MDivider Vertical />
                                                 </span>
                                                 <SButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
-                                                    <SIcon Size="24" Color="error">mdi-delete</SIcon>
+                                                <SIcon Size="24" Color="error">mdi-delete</SIcon>
                                                 </SButton>
                                             }
                                             <MSpacer></MSpacer>
@@ -246,36 +249,36 @@
                         {
                             <MForm Model=Model.JobAppConfig EnableValidation @ref="jobAppForm" Class="full-height">
                                 <AutoHeight Overflow>
-                                    <AutoHeightContent>
-                                        <MRow NoGutters Class="mt-1">
-                                            <MCol Md="6">
+                                <AutoHeightContent>
+                                    <MRow NoGutters Class="mt-1">
+                                        <MCol Md="6">
                                             <SSelect Value="Model.JobAppConfig.JobAppIdentity" ValueExpression="()=> Model.JobAppConfig.JobAppIdentity" TValue="string" TItem="ProjectAppDto" TItemValue="string" ValueChanged="OnJobAppChanged" Label="@T("JobAppId")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="_jobApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                                 </SSelect>
-                                            </MCol>
-                                        </MRow>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="6">
-                                                <STextField @bind-Value="Model.JobAppConfig.JobEntryAssembly" Placeholder="*.dll" Label="@T("JobEntryAssembly")" HideDetails="@("auto")" Dense Outlined>
-                                                </STextField>
-                                            </MCol>
-                                        </MRow>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="6">
-                                                <STextField @bind-Value="Model.JobAppConfig.JobEntryClassName" Placeholder="Namespace.Class" Label="@T("JobEntryClass")" HideDetails="@("auto")" Outlined>
-                                                </STextField>
-                                            </MCol>
-                                        </MRow>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="12">
-                                                <STextarea @bind-Value="Model.JobAppConfig.JobParams" Label="@T("OptionParams")" HideDetails="@("auto")" Dense Outlined>
-                                                </STextarea>
-                                            </MCol>
-                                        </MRow>
-                                        <DefaultTitle>@T("ResourceVersion")</DefaultTitle>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="6">
-                                                <MButtonGroup Value="_resourceVersionType.ToString()" Class="rounded-lg elevation-tab" Group Tile Dense Mandatory Borderless>
-                                                    @foreach (var (key, value) in GetEnumMap<ResourceVersionTypes>())
+                                                </MCol>
+                                                </MRow>
+                                                <MRow NoGutters Class="mt-9">
+                                        <MCol Md="6">
+                                            <STextField @bind-Value="Model.JobAppConfig.JobEntryAssembly" Placeholder="*.dll" Label="@T("JobEntryAssembly")" HideDetails="@("auto")" Dense Outlined>
+                                            </STextField>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow NoGutters Class="mt-9">
+                                        <MCol Md="6">
+                                            <STextField @bind-Value="Model.JobAppConfig.JobEntryClassName" Placeholder="Namespace.Class" Label="@T("JobEntryClass")" HideDetails="@("auto")" Outlined>
+                                            </STextField>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow NoGutters Class="mt-9">
+                                        <MCol Md="12">
+                                            <STextarea @bind-Value="Model.JobAppConfig.JobParams" Label="@T("OptionParams")" HideDetails="@("auto")" Dense Outlined>
+                                            </STextarea>
+                                        </MCol>
+                                    </MRow>
+                                    <DefaultTitle>@T("ResourceVersion")</DefaultTitle>
+                                    <MRow NoGutters Class="mt-9">
+                                        <MCol Md="6">
+                                            <MButtonGroup Value="_resourceVersionType.ToString()" Class="rounded-lg elevation-tab" Group Tile Dense Mandatory Borderless>
+                                                @foreach (var (key, value) in GetEnumMap<ResourceVersionTypes>())
                                                     {
                                                         <SButton OnClick="async() => await SwitchResourceVersionType(value)" Value="@value.ToString()" Ripple=false Class="rounded-lg" MinWidth=100>
                                                             @T(key)
@@ -288,7 +291,7 @@
                                                 <MCol Md="6">
                                                     <SSelect @bind-Value="Model.JobAppConfig.Version" Label="@T("ResourceVersion")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="_versionList" ItemText="version => version" ItemValue="version=> version">
                                                     </SSelect>
-                                                </MCol>
+                                                    </MCol>
                                             }
                                         </MRow>
                                         <AuditedInfo Audited="(AuditedEntityDto)Model" />
@@ -296,7 +299,7 @@
                                     <FooterContent>
                                         <div class="d-flex mt-9 align-center">
                                             <SButton Class="mr-4" Icon OnClick="PreviousStep">
-                                                <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
+                                            <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
                                             </SButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
@@ -304,7 +307,7 @@
                                                     <MDivider Vertical />
                                                 </span>
                                                 <SButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
-                                                    <SIcon Size="24" Color="error">mdi-delete</SIcon>
+                                                <SIcon Size="24" Color="error">mdi-delete</SIcon>
                                                 </SButton>
                                             }
                                             <MSpacer></MSpacer>
@@ -318,43 +321,43 @@
                         {
                             <MForm Model=Model.DaprServiceInvocationConfig EnableValidation @ref="daprForm" Class="full-height">
                                 <AutoHeight Overflow>
-                                    <AutoHeightContent>
-                                        <MRow NoGutters Class="mt-1">
-                                            <MCol Md="6">
-                                                <SSelect Value="Model.DaprServiceInvocationConfig.DaprServiceIdentity" TValue="string" TItemValue="string" TItem="ProjectAppDto" ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="_serviceApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
+                                <AutoHeightContent>
+                                    <MRow NoGutters Class="mt-1">
+                                        <MCol Md="6">
+                                            <SSelect Value="Model.DaprServiceInvocationConfig.DaprServiceIdentity" TValue="string" TItemValue="string" TItem="ProjectAppDto" ValueChanged="DaprServiceAppChange" Label="@T("DaprServiceAppId")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="_serviceApp" ItemText="app => app.Name" ItemValue="app=>app.Identity">
                                                 </SSelect>
-                                            </MCol>
-                                        </MRow>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="6">
-                                                <STextField @bind-Value="Model.DaprServiceInvocationConfig.Namespace" Label="@T("Namespace")" HideDetails="@("auto")" Dense Outlined>
-                                                </STextField>
-                                            </MCol>
-                                        </MRow>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="6">
-                                                <STextField @bind-Value="Model.DaprServiceInvocationConfig.MethodName" Label="@T("MethodName")" HideDetails="@("auto")" Dense Outlined>
-                                                </STextField>
-                                            </MCol>
-                                        </MRow>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="6">
-                                                <SSelect @bind-Value="Model.DaprServiceInvocationConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                                </MCol>
+                                                </MRow>
+                                                <MRow NoGutters Class="mt-9">
+                                        <MCol Md="6">
+                                            <STextField @bind-Value="Model.DaprServiceInvocationConfig.Namespace" Label="@T("Namespace")" HideDetails="@("auto")" Dense Outlined>
+                                            </STextField>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow NoGutters Class="mt-9">
+                                        <MCol Md="6">
+                                            <STextField @bind-Value="Model.DaprServiceInvocationConfig.MethodName" Label="@T("MethodName")" HideDetails="@("auto")" Dense Outlined>
+                                            </STextField>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow NoGutters Class="mt-9">
+                                        <MCol Md="6">
+                                            <SSelect @bind-Value="Model.DaprServiceInvocationConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                                 </SSelect>
-                                            </MCol>
-                                        </MRow>
-                                        <MRow NoGutters Class="mt-9">
-                                            <MCol Md="12">
-                                                <STextarea @bind-Value="Model.DaprServiceInvocationConfig.Data" Label="@T("Data")" HideDetails="@("auto")" Dense Outlined Rows="10">
+                                                </MCol>
+                                                </MRow>
+                                                <MRow NoGutters Class="mt-9">
+                                        <MCol Md="12">
+                                            <STextarea @bind-Value="Model.DaprServiceInvocationConfig.Data" Label="@T("Data")" HideDetails="@("auto")" Dense Outlined Rows="10">
                                                 </STextarea>
-                                            </MCol>
-                                        </MRow>
-                                        <AuditedInfo Audited="(AuditedEntityDto)Model" />
-                                    </AutoHeightContent>
-                                    <FooterContent>
-                                        <div class="d-flex mt-9" style="align-items: center;">
-                                            <SButton Class="mr-4" Icon OnClick="PreviousStep">
-                                                <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
+                                                </MCol>
+                                                </MRow>
+                                                <AuditedInfo Audited="(AuditedEntityDto)Model" />
+                                            </AutoHeightContent>
+                                            <FooterContent>
+                                                <div class="d-flex mt-9" style="align-items: center;">
+                                                    <SButton Class="mr-4" Icon OnClick="PreviousStep">
+                                            <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
                                             </SButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
@@ -362,7 +365,7 @@
                                                     <MDivider Vertical />
                                                 </span>
                                                 <SButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
-                                                    <SIcon Size="24" Color="error">mdi-delete</SIcon>
+                                                <SIcon Size="24" Color="error">mdi-delete</SIcon>
                                                 </SButton>
                                             }
                                             <MSpacer></MSpacer>
