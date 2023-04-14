@@ -139,17 +139,17 @@
     <SaveContent Context="save">
         @if (_model.Step == 1)
         {
-            <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> HandleNextStep()">@T("NextStep")</MButton>
+            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> HandleNextStep()">@T("NextStep")</SButton>
         }
         @if (_model.Step == 2 )
         {
-            <MButton Color="fill" Class="btn-form line-primary rounded-3 btn primary--text" OnClick="()=>_model.Step=1">@T("PreviousStep")</MButton>
-            <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> HandleNextStep()">@T("NextStep")</MButton>
+            <SButton Color="fill" BorderRadiusClass="btn-form" Class="line-primary primary--text" OnClick="()=>_model.Step=1">@T("PreviousStep")</SButton>
+            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> HandleNextStep()">@T("NextStep")</SButton>
         }
         @if (_model.Step == 3)
         {
-            <MButton Color="fill" Class="btn-form line-primary rounded-3 btn primary--text" OnClick="()=>_model.Step=2">@T("PreviousStep")</MButton>
-            <MButton Color="primary" Class="btn-form ml-6" OnClick="HandleOk">@T(_entityId == default?"Submit":"Save")</MButton>
+            <SButton Color="fill" BorderRadiusClass="btn-form" Class="line-primary primary--text" OnClick="()=>_model.Step=2">@T("PreviousStep")</SButton>
+            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="HandleOk">@T(_entityId == default?"Submit":"Save")</SButton>
         }
     </SaveContent>
 </SSimpleModal>

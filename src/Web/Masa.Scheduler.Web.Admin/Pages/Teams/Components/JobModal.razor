@@ -9,7 +9,7 @@
                         @foreach (var (key, value) in GetEnumMap<JobTypes>())
                         {
                             <MCard Outlined Class="d-flex justify-center align-center rounded-6 mb-6" Style="@GetStyle(value)" OnClick="()=> SelectJobType(value)" Height="210">
-                                <MButton Class="h6 regular--text" ActiveClass="h6 fill--text" IsActive="value == Model.JobType" Ripple=false Plain OnClick="()=> SelectJobType(value)" Color="@GetColor(value)">@T(key)</MButton>
+                                <SButton Class="h6 regular--text" ActiveClass="h6 fill--text" IsActive="value == Model.JobType" Plain OnClick="()=> SelectJobType(value)" Color="@GetColor(value)">@T(key)</SButton>
                             </MCard>
                         }
                     </MStepperContent>
@@ -142,11 +142,11 @@
                                 </AutoHeightContent>
                                 <FooterContent>
                                     <div class="d-flex mt-9">
-                                        <MButton Class="mr-4" Icon OnClick="PreviousStep">
+                                        <SButton Class="mr-4" Icon OnClick="PreviousStep">
                                             <SIcon Size="24" Color="emphasis2" >mdi-keyboard-backspace</SIcon>
-                                        </MButton>
+                                        </SButton>
                                         <MSpacer></MSpacer>
-                                        <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> NextStep(context)">@T("NextStep")</MButton>
+                                        <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> NextStep(context)">@T("NextStep")</SButton>
                                     </div>
                                 </FooterContent>
                             </AutoHeight>
@@ -217,20 +217,20 @@
                                     </AutoHeightContent>
                                     <FooterContent>
                                         <div class="d-flex mt-9 align-center">
-                                            <MButton Class="mr-4" Icon OnClick="PreviousStep">
+                                            <SButton Class="mr-4" Icon OnClick="PreviousStep">
                                                 <SIcon Size="24" Color="emphasis2" >mdi-keyboard-backspace</SIcon>
-                                            </MButton>
+                                            </SButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
                                                 <span class="d-flex px-6" style="height: 12px">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
+                                                <SButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
                                                     <SIcon Size="24" Color="error">mdi-delete</SIcon>
-                                                </MButton>
+                                                </SButton>
                                             }
                                             <MSpacer></MSpacer>
-                                            <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
+                                            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> Submit(context)">@T("Save")</SButton>
                                         </div>
                                     </FooterContent>
                                 </AutoHeight>
@@ -289,20 +289,20 @@
                                     </AutoHeightContent>
                                     <FooterContent>
                                         <div class="d-flex mt-9 align-center">
-                                            <MButton Class="mr-4" Icon OnClick="PreviousStep">
+                                            <SButton Class="mr-4" Icon OnClick="PreviousStep">
                                                 <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
-                                            </MButton>
+                                            </SButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
                                                 <span class="d-flex px-6" style="height: 12px">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
+                                                <SButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
                                                     <SIcon Size="24" Color="error">mdi-delete</SIcon>
-                                                </MButton>
+                                                </SButton>
                                             }
                                             <MSpacer></MSpacer>
-                                            <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
+                                            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> Submit(context)">@T("Save")</SButton>
                                         </div>
                                     </FooterContent>
                                 </AutoHeight>
@@ -347,20 +347,20 @@
                                     </AutoHeightContent>
                                     <FooterContent>
                                         <div class="d-flex mt-9" style="align-items: center;">
-                                            <MButton Class="mr-4" Icon OnClick="PreviousStep">
+                                            <SButton Class="mr-4" Icon OnClick="PreviousStep">
                                                 <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
-                                            </MButton>
+                                            </SButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
                                                 <span class="d-flex px-6 align-center">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
+                                                <SButton Icon Class="mr-4 align-self-center" OnClick="HandleDel">
                                                     <SIcon Size="24" Color="error">mdi-delete</SIcon>
-                                                </MButton>
+                                                </SButton>
                                             }
                                             <MSpacer></MSpacer>
-                                            <MButton Color="primary" Class="btn-form ml-6" OnClick="()=> Submit(context)">@T("Save")</MButton>
+                                            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> Submit(context)">@T("Save")</SButton>
                                         </div>
                                     </FooterContent>
                                 </AutoHeight>

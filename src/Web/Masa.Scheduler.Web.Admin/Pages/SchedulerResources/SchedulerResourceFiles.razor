@@ -23,16 +23,16 @@
                     <MSpacer></MSpacer>
                     @if (app.Resources.Any())
                     {
-                        <MButton Fab OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty,app.Identity)" Small Dark Color="error">
-                            <SIcon>mdi-delete</SIcon>
-                        </MButton>
+                        <SButton Icon Fab OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty,app.Identity)" Small Dark>
+                            <SIcon Color="error">mdi-delete</SIcon>
+                        </SButton>
                         <span class="d-flex px-1" style="height: 24px;">
                             <MDivider Vertical />
                         </span>
                     }
-                    <MButton Fab OnClick="()=>AddResourceFile(app.Identity)" Small Dark Color="primary">
+                    <SButton Icon Fab OnClick="()=>AddResourceFile(app.Identity)" Small Dark Class="primary" Color="">
                         <SIcon>mdi-plus</SIcon>
-                    </MButton>
+                    </SButton>
                 </MCardTitle>
                 <MCardText Class="pb-6">
                     <MRow>
@@ -48,15 +48,15 @@
                                         <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
                                             @if (context.Hover)
                                             {
-                                                <MButton Icon Class="align-self-center mr-4"  OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">
+                                                <SButton Icon Class="align-self-center mr-4"  OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">
                                                     <SIcon Size="24" Color="error">mdi-delete</SIcon>
-                                                </MButton>
+                                                </SButton>
                                                 <span class="d-flex px-15" style="height: 24px;">
                                                     <MDivider Vertical />
                                                 </span>
-                                                <MButton Icon Class="align-self-center mr-4" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">
+                                                <SButton Icon Class="align-self-center mr-4" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">
                                                     <SIcon Size="24" Color="emphasis2">mdi-eye</SIcon>
-                                                </MButton>   
+                                                </SButton>
                                             }
                                             else
                                             {
@@ -70,7 +70,9 @@
                         @if (isShowExpandIcon)
                         {
                         <div class="ml-1">
-                            <MButton Icon OnClick="() => app.IsExpand = !app.IsExpand" Style="transform: translate(-12%, 120%);" Class="m-size--small float-right"> <SIcon>@(app.IsExpand ? "mdi-chevron-up" : "mdi-chevron-down")</SIcon></MButton>
+                            <SButton Icon OnClick="() => app.IsExpand = !app.IsExpand" Style="transform: translate(-12%, 120%);" Class="m-size--small float-right" Color="">
+                                <SIcon>@(app.IsExpand ? "mdi-chevron-up" : "mdi-chevron-down")</SIcon>
+                            </SButton>
                         </div>                            
                         }
                     }
