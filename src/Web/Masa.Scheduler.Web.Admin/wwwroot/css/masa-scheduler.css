@@ -108,3 +108,12 @@
     line-height: 1.875rem !important;
     letter-spacing: 0.01em !important;
 }
+
+.button {
+    min-width: 40px;
+    min-height: 40px;
+    border: 1px solid #F0F3FA;
+    box-sizing: border-box;
+    border-radius: 10px;
+    cursor: pointer;
+}
