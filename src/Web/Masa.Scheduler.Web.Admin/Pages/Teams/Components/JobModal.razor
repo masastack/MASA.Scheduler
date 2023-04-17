@@ -9,8 +9,8 @@
                         @foreach (var (key, value) in GetEnumMap<JobTypes>())
                         {
                             <MCard Outlined Class="d-flex justify-center align-center rounded-6 mb-6" Style="@GetStyle(value)" OnClick="()=> SelectJobType(value)" Height="210">
-                            <SButton Class="h6 regular--text" ActiveClass="h6 fill--text" IsActive="value == Model.JobType" Plain OnClick="()=> SelectJobType(value)" Color="@GetColor(value)">@T(key)</SButton>
-                                </MCard>
+                                <SButton Class="h6 regular--text" ActiveClass="h6 fill--text" IsActive="value == Model.JobType" Plain OnClick="()=> SelectJobType(value)" Color="@GetColor(value)">@T(key)</SButton>
+                            </MCard>
                         }
                     </MStepperContent>
                     <MStepperContent Step="2" Class="full-height pa-0">
@@ -26,29 +26,29 @@
                                         {
                                             <MCol Md="6">
                                                 <SUserAutoComplete Class="ml-6" Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Dense Outlined Label="@T("Owner")"></SUserAutoComplete>
-                                                </MCol>
+                                            </MCol>
                                         }
                                         else
                                         {
                                             <MCol Md="6">
-                                                <SSelect Class="ml-6" @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Readonly Disabled Dense Outlined Clearable Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
+                                                <SSelect Class="ml-6" @bind-Value="Model.JobType" Label="@T("JobType")" HideDetails="@("auto")" Readonly Disabled Dense Outlined Items="GetEnumMap<JobTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                                 </SSelect>
-                                                </MCol>
+                                            </MCol>
                                         }
                                     </MRow>
                                     @if (!_isAdd)
                                     {
                                         <MRow NoGutters Class="mt-9">
-                                        <MCol Md="6">
-                                            <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Dense Outlined Label="@T("Owner")"></SUserAutoComplete>
-                                                </MCol>
-                                                </MRow>
+                                            <MCol Md="6">
+                                                <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Dense Outlined Label="@T("Owner")"></SUserAutoComplete>
+                                            </MCol>
+                                        </MRow>
                                     }
                                     <MRow NoGutters Class="mt-9">
                                         <MCol Md="6" Class="d-flex align-center justify-space-between">
                                             <MSwitch @bind-Value="Model.IsAlertException" Label="@T("IsAlertException")" Class="ml-3 pt-0 mt-0" TValue="bool" OnClick="HandleAlertException" Inset></MSwitch>
                                             <MButton Disabled="!Model.IsAlertException" Outlined Large Class="emphasis2--text" Style="border: 1px solid #E4E8F3 !important;" OnClick="HandleAlertException">
-                                            @T("ViewingAlrmRule")
+                                                @T("ViewingAlrmRule")
                                                 <MIcon Right>
                                                     mdi-chevron-right
                                                 </MIcon>
@@ -77,7 +77,7 @@
                                             </p>
                                             <pre class="masa body2 regular--text">
                                                 @_nextRunTimeStr
-                                                    </pre>
+                                                                        </pre>
                                         </div>
                                     }
                                     <MRow NoGutters Class="mt-9">
@@ -151,7 +151,7 @@
                                         @if (_isAdd)
                                         {
                                             <SButton Class="mr-4" Icon OnClick="PreviousStep">
-                                                <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
+                                            <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
                                             </SButton>
                                         }
                                         <MSpacer></MSpacer>
@@ -239,7 +239,7 @@
                                                 </SButton>
                                             }
                                             <MSpacer></MSpacer>
-                                            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> Submit(context)">@T("Save")</SButton>
+                                            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> Submit(context)">@T(_isAdd?"Submit":"Save")</SButton>
                                         </div>
                                     </FooterContent>
                                 </AutoHeight>
@@ -311,7 +311,7 @@
                                                 </SButton>
                                             }
                                             <MSpacer></MSpacer>
-                                            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> Submit(context)">@T("Save")</SButton>
+                                            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> Submit(context)">@T(_isAdd?"Submit":"Save")</SButton>
                                         </div>
                                     </FooterContent>
                                 </AutoHeight>
@@ -369,7 +369,7 @@
                                                 </SButton>
                                             }
                                             <MSpacer></MSpacer>
-                                            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> Submit(context)">@T("Save")</SButton>
+                                            <SButton BorderRadiusClass="btn-form" Class="ml-6" OnClick="()=> Submit(context)">@T(_isAdd?"Submit":"Save")</SButton>
                                         </div>
                                     </FooterContent>
                                 </AutoHeight>
