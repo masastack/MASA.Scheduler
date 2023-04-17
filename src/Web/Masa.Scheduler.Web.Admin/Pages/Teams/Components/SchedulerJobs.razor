@@ -20,7 +20,7 @@
                 <SSearch @bind-Value="QueryJobName" BackgroundColor="white" />
                 <div @onclick="ToggleAdvanced" class="ml-6 d-flex button fill">
                     <SIcon Class="ma-auto" Color="emphasis2" Size=20>
-                        @(!advanced ? "mdi-filter" : "mdi-filter-off")
+                        @(!_advanced ? "mdi-filter" : "mdi-filter-off")
                     </SIcon>
                 </div>
                 @if (_jobCreateType == JobCreateTypes.Manual)
@@ -29,21 +29,21 @@
                 }
             </div>
         </MRow>
-        @if (advanced)
+        @if (_advanced)
         {
             <MRow Class="@($"mt-6 flex-none")" NoGutters>
-            <MCol Md="1">
-                <SSelect Small @bind-Value="QueryTimeType"
-                         Items="_jobQueryTimeTypeList"
-                         Label="@T("JobQueryTimeType")"
-                         ItemText="e => T(e==default?string.Empty:e.ToString())"
-                         ItemValue="e=> e"
-                         BackgroundColor="white"
-                         Class="rounded-2 body2">
+                <MCol Md="2">
+                    <SSelect Small @bind-Value="QueryTimeType"
+                             Items="_jobQueryTimeTypeList"
+                             Label="@T("JobQueryTimeType")"
+                             ItemText="e => T(e == default ? string.Empty : e.ToString())"
+                             ItemValue="e => e"
+                             BackgroundColor="white"
+                             Class="rounded-2 body2">
                     </SSelect>
                 </MCol>
                 <MCol Md="3" Class="ml-6">
-                    <SDateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
+                    <SDateTimeRangeToolbar ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
                 </MCol>
                 <MCol Md="1" Class="ml-6">
                     <SSelect Small @bind-Value="QueryJobType"

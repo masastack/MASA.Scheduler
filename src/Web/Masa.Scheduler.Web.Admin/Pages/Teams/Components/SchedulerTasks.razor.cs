@@ -8,10 +8,7 @@ public partial class SchedulerTasks
     [Parameter]
     public SchedulerJobDto? SelectedJob
     {
-        get
-        {
-            return _job;
-        }
+        get => _job;
         set
         {
             ResetQueryOptions();
@@ -32,13 +29,10 @@ public partial class SchedulerTasks
     [Parameter]
     public bool Visible
     {
-        get
-        {
-            return _visible;
-        }
+        get => _visible;
         set
         {
-            if(_visible != value)
+            if (_visible != value)
             {
                 _visible = value;
 
@@ -66,7 +60,7 @@ public partial class SchedulerTasks
 
     private Task QueryStatusChanged(TaskRunStatus status)
     {
-        if(_queryStatus != status)
+        if (_queryStatus != status)
         {
             _queryStatus = status;
             return OnQueryDataChanged();
@@ -77,35 +71,20 @@ public partial class SchedulerTasks
 
     private JobQueryTimeTypes _queryTimeType = JobQueryTimeTypes.ScheduleTime;
 
-    private DateTime? _queryStartTime;
+    private DateTimeOffset? _queryStartTime;
 
-    private Task QueryStartTimeChanged(DateTime? queryStartTime)
+    private Task QueryTimeChanged((DateTimeOffset? queryStartTime, DateTimeOffset? queryEndTime) arg)
     {
-        if(_queryStartTime != queryStartTime)
-        {
-            _queryStartTime = queryStartTime;
-            return OnQueryDataChanged();
-        }
-
-        return Task.CompletedTask;
+        _queryStartTime = arg.queryStartTime;
+        _queryEndTime = arg.queryEndTime;
+        return OnQueryDataChanged();
     }
 
-    private DateTime? _queryEndTime;
-
-    private Task QueryEndTimeChanged(DateTime? queryEndTime)
-    {
-        if(_queryEndTime != queryEndTime)
-        {
-            _queryEndTime = queryEndTime;
-            return OnQueryDataChanged();
-        }
-
-        return Task.CompletedTask;
-    }
+    private DateTimeOffset? _queryEndTime;
 
     public int Page
     {
-        get => _page; 
+        get => _page;
         set
         {
             if (_page != value)
@@ -151,7 +130,7 @@ public partial class SchedulerTasks
 
     private List<KeyValuePair<string, TaskRunStatus>> _queryStatusList = new();
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         await MasaSignalRClient.HubConnectionBuilder();
 
@@ -219,8 +198,8 @@ public partial class SchedulerTasks
             Origin = _queryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = _queryEndTime?.Add(JsInitVariables.TimezoneOffset),
-            QueryStartTime = _queryStartTime?.Add(JsInitVariables.TimezoneOffset),
+            QueryEndTime = _queryEndTime?.UtcDateTime,
+            QueryStartTime = _queryStartTime?.UtcDateTime,
             QueryTimeType = _queryTimeType
         };
 
@@ -380,19 +359,19 @@ public partial class SchedulerTasks
         _queryOrigin = string.Empty;
     }
 
-    private bool CheckNotifiyData(SchedulerTaskDto task)
+    private bool CheckNotifyData(SchedulerTaskDto? task)
     {
-        if(task == null)
+        if (task == null)
         {
             return false;
         }
 
-        if(_job == null)
+        if (_job == null)
         {
             return false;
         }
 
-        if(task.JobId != _job.Id)
+        if (task.JobId != _job.Id)
         {
             return false;
         }
@@ -449,7 +428,7 @@ public partial class SchedulerTasks
 
     private async Task SignalRNotifyDataHandler(SchedulerTaskDto taskDto)
     {
-        if (CheckNotifiyData(taskDto))
+        if (CheckNotifyData(taskDto))
         {
             var index = _tasks.FindIndex(j => j.Id == taskDto.Id);
 
