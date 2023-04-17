@@ -97,6 +97,8 @@ public partial class SchedulerJobs : ProComponentBase
 
     private JobModal? _jobModal;
 
+    private bool advanced = false;
+
     public TaskRunStatus QueryStatus
     {
         get => _queryStatus;
@@ -567,5 +569,10 @@ public partial class SchedulerJobs : ProComponentBase
     {
         Project = project;
         return Task.CompletedTask;
+    }
+
+    private void ToggleAdvanced()
+    {
+        advanced = !advanced;
     }
 }

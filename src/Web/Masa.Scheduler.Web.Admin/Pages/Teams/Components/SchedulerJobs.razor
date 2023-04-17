@@ -1,68 +1,76 @@
 ﻿@inherits ProComponentBase
 <AutoHeight Overflow>
     <HeaderContent>
-        <div class="search-panel my-6">
-            <MRow Class="flex-none d-inline-flex" NoGutters Style="@(_jobCreateType == JobCreateTypes.Manual?"width: calc(100% - 378px)":"width: calc(100% - 236px)")">
-                <MCol Md="1" Style="min-width: 154px">
-                    <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
-                    </Projects>
-                </MCol>
-                <MCol Md="3" Class="ml-6" Style="min-width: 144px; max-width: 230px">
-                    <SLabeledRadioGroup Value="_jobCreateType" ActiveClass="fill-background" Class="white" Dense TValue="JobCreateTypes" ValueChanged="SwitchJobCreateType">
-                        @foreach (var item in Enum.GetValues<JobCreateTypes>())
-                        {
-                            <SLabeledRadio Value="item" Class="px-6">
-                                <span class="@(_jobCreateType == item ? "subtitle2 emphasis2--text" : "btn regular2--text")">@T(nameof(JobCreateTypes)+"."+item)</span>
-                            </SLabeledRadio>
-                        }
-                    </SLabeledRadioGroup>
-                </MCol>
-                <MCol Md="1" Class="ml-6" Style="min-width: 114px">
-                    <SSelect Small @bind-Value="QueryTimeType"
-                        Items="_jobQueryTimeTypeList"
-                        Label="@T("JobQueryTimeType")"
-                        ItemText="e => T(e==default?string.Empty:e.ToString())"
-                        ItemValue="e=> e"
-                        BackgroundColor="white"
-                        Class="rounded-2 body2">
-                    </SSelect>
-                </MCol>
-                <MCol Md="3" Class="ml-6" Style="max-width:420px">
-                    <SDateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
-                </MCol>
-                <MCol Md="1" Class="ml-6" Style="min-width:139px">
-                    <SSelect Small @bind-Value="QueryJobType"
-                        Items="Enum.GetValues<JobTypes>().ToList()"
-                        Label="@T("JobType")"
-                        ItemText="e => T(e==default?string.Empty:e.ToString())"
-                        ItemValue="e=> e"
-                        BackgroundColor="white"
-                        Clearable
-                        Class="rounded-2 body2">
-                    </SSelect>
-                </MCol>
-                @if (_jobCreateType == JobCreateTypes.Api)
+        <MRow NoGutters Class="flex-none mt-3">
+            <MCol Md="1">
+                <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
+                </Projects>
+            </MCol>
+            
+            <SLabeledRadioGroup Value="_jobCreateType" ActiveClass="fill-background" Class="white ml-6" Dense TValue="JobCreateTypes" ValueChanged="SwitchJobCreateType">
+                @foreach (var item in Enum.GetValues<JobCreateTypes>())
                 {
-                    <MCol Md="1" Class="ml-6">
-                        <SSelect Small Clearable @bind-Value="QueryOrigin"
-                            Items="_originList"
-                            Label="@T("Origin")"
-                            ItemText="e => e"
-                            ItemValue="e=> e"
-                            BackgroundColor="white"
-                            Class="rounded-2 body2">
-                        </SSelect>
-                    </MCol>
+                    <SLabeledRadio Value="item" Class="px-6">
+                        <span class="@(_jobCreateType == item ? "subtitle2 emphasis2--text" : "btn regular2--text")">@T(nameof(JobCreateTypes)+"."+item)</span>
+                    </SLabeledRadio>
                 }
-            </MRow>
-            <div class="d-flex search-panel-right">
+            </SLabeledRadioGroup>
+            <MSpacer></MSpacer>
+            <div class="d-flex">
                 <SSearch @bind-Value="QueryJobName" BackgroundColor="white" />
+                <div @onclick="ToggleAdvanced" class="ml-6 d-flex button fill">
+                    <SIcon Class="ma-auto" Color="emphasis2" Size=20>
+                        @(!advanced ? "mdi-filter" : "mdi-filter-off")
+                    </SIcon>
+                </div>
                 @if (_jobCreateType == JobCreateTypes.Manual)
                 {
                     <SButton Small BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="AddJob">@T("Add")</SButton>
                 }
             </div>
-        </div>
+        </MRow>
+        @if (advanced)
+        {
+            <MRow Class="@($"mt-6 flex-none")" NoGutters>
+            <MCol Md="1">
+                <SSelect Small @bind-Value="QueryTimeType"
+                         Items="_jobQueryTimeTypeList"
+                         Label="@T("JobQueryTimeType")"
+                         ItemText="e => T(e==default?string.Empty:e.ToString())"
+                         ItemValue="e=> e"
+                         BackgroundColor="white"
+                         Class="rounded-2 body2">
+                    </SSelect>
+                </MCol>
+                <MCol Md="3" Class="ml-6">
+                    <SDateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
+                </MCol>
+                <MCol Md="1" Class="ml-6">
+                    <SSelect Small @bind-Value="QueryJobType"
+                         Items="Enum.GetValues<JobTypes>().ToList()"
+                         Label="@T("JobType")"
+                         ItemText="e => T(e==default?string.Empty:e.ToString())"
+                         ItemValue="e=> e"
+                         BackgroundColor="white"
+                              Clearable
+                         Class="rounded-2 body2">
+                    </SSelect>
+                    </MCol>
+                    @if (_jobCreateType == JobCreateTypes.Api)
+                {
+                    <MCol Md="1" Class="ml-6">
+                        <SSelect Small Clearable @bind-Value="QueryOrigin"
+                         Items="_originList"
+                         Label="@T("Origin")"
+                         ItemText="e => e"
+                         ItemValue="e=> e"
+                         BackgroundColor="white"
+                         Class="rounded-2 body2">
+                        </SSelect>
+                    </MCol>
+                }
+            </MRow>
+        }
         <MRadioGroup @bind-Value="QueryStatus" Row OnClick="RadioGroupClickHandler" Class="masa-radiogroup">
             @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
             {
@@ -75,7 +83,7 @@
         </MRadioGroup>
     </HeaderContent>
     <AutoHeightContent>
-        <MRow Class="mt-6" Style="position:relative;">
+        <MRow Class="mt-3" Style="position:relative;">
             @if (_jobs.Any())
             {
                 foreach (var job in _jobs)
