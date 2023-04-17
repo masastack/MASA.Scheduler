@@ -43,14 +43,14 @@
                 </MCol>
                 @if (_jobCreateType == JobCreateTypes.Api)
                 {
-                    <MCol Md="1" Class="ml-6">
+                    <MCol Md="1" Class="ml-6" Style="max-width: 10%">
                         <SSelect Small Clearable @bind-Value="QueryOrigin"
                             Items="_originList"
                             Label="@T("Origin")"
                             ItemText="e => e"
                             ItemValue="e=> e"
                             BackgroundColor="white"
-                            Class="rounded-2 body2">
+                            Class="rounded-2 body2" >
                         </SSelect>
                     </MCol>
                 }
