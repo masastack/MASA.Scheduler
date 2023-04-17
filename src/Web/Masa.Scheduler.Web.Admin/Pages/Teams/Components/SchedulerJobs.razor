@@ -1,5 +1,5 @@
 ﻿@inherits ProComponentBase
-<AutoHeight Overflow AutoClass="relative">
+<AutoHeight Overflow AutoClass="relative mt-3">
     <HeaderContent>
         <MRow NoGutters Class="flex-none mt-3">
             <MCol Md="1">
@@ -85,7 +85,7 @@
     <AutoHeightContent>
         @if (_jobs.Any())
         {
-            <MRow Class="mt-3">
+            <MRow>
                 @foreach (var job in _jobs)
                 {
                     <MCol Md="6">
