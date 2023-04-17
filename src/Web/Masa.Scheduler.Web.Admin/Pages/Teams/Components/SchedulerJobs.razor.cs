@@ -97,7 +97,11 @@ public partial class SchedulerJobs : ProComponentBase
 
     private JobModal? _jobModal;
 
-    private bool advanced = false;
+    private bool _advanced = false;
+
+    private DateTimeOffset? _queryStartTime;
+
+    private DateTimeOffset? _queryEndTime;
 
     public TaskRunStatus QueryStatus
     {
@@ -137,10 +141,6 @@ public partial class SchedulerJobs : ProComponentBase
             }
         }
     }
-
-    public DateTime? QueryStartTime { get; set; }
-
-    public DateTime? QueryEndTime { get; set; }
 
     public int Page
     {
@@ -226,6 +226,13 @@ public partial class SchedulerJobs : ProComponentBase
         return GetProjectJobs(resetPage);
     }
 
+    private Task QueryTimeChanged((DateTimeOffset? queryStartTime, DateTimeOffset? queryEndTime) arg)
+    {
+        _queryStartTime = arg.queryStartTime;
+        _queryEndTime= arg.queryEndTime;
+        return OnQueryDataChanged();
+    }
+
     private async Task GetProjectJobs(bool resetPage = true)
     {
         if (Project == null)
@@ -247,8 +254,8 @@ public partial class SchedulerJobs : ProComponentBase
             Origin = QueryOrigin,
             Page = Page,
             PageSize = PageSize,
-            QueryEndTime = QueryEndTime?.Add(JsInitVariables.TimezoneOffset),
-            QueryStartTime = QueryStartTime?.Add(JsInitVariables.TimezoneOffset),
+            QueryEndTime = _queryEndTime?.UtcDateTime,
+            QueryStartTime = _queryStartTime?.UtcDateTime,
             QueryTimeType = QueryTimeType,
             BelongProjectIdentity = Project.Identity,
         };
@@ -464,8 +471,8 @@ public partial class SchedulerJobs : ProComponentBase
 
     private void ResetQueryOptions()
     {
-        QueryEndTime = null;
-        QueryStartTime = null;
+        _queryEndTime = null;
+        _queryStartTime = null;
         _queryJobName = string.Empty;
         _queryOrigin = string.Empty;
         _queryTimeType = JobQueryTimeTypes.CreationTime;
@@ -573,6 +580,6 @@ public partial class SchedulerJobs : ProComponentBase
 
     private void ToggleAdvanced()
     {
-        advanced = !advanced;
+        _advanced = !_advanced;
     }
 }

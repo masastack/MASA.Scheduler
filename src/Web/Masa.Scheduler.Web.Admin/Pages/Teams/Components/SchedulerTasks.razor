@@ -11,7 +11,7 @@
                 </span>
             </MCol>
             <MSpacer />
-            <MCol Cols="2">
+            <MCol Cols="1">
                 <SSelect Small @bind-Value="_queryTimeType"
                          Items="_jobQueryTimeTypeList"
                          Label="@T("QueryTimeType")"
@@ -22,7 +22,7 @@
                 </SSelect>
             </MCol>
             <MCol Cols="3" Class="ml-6" Style="min-width: 350px;">
-                <SDateTimeRangePicker @bind-StartTime="_queryStartTime" @bind-EndTime="_queryEndTime" OnChange="()=>OnQueryDataChanged()" />
+                <SDateTimeRangeToolbar ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
             </MCol>
             @if(IsApiCreate)
             {
