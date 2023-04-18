@@ -115,5 +115,6 @@
   "AlarmRuleBlock": {
     "AlarmRuleNameFormat.Verification": "Incorrect format of alarm rule name"
   },
-  "ViewingAlrmRule": "查看告警规则"
+  "ViewingAlrmRule": "查看告警规则",
+  "CancelFilter": "Cancel Filter"
 }
