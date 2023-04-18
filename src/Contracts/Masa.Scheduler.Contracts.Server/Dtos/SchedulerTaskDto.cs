@@ -43,5 +43,5 @@ public class SchedulerTaskDto
     /// <summary>
     /// TSC's Trace Id
     /// </summary>
-    public string TraceId { get; private set; } = string.Empty;
+    public string TraceId { get; set; } = string.Empty;
 }

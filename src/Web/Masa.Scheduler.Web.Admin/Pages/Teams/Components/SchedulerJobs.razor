@@ -1,5 +1,5 @@
 ﻿@inherits ProComponentBase
-<AutoHeight Overflow>
+<AutoHeight Overflow AutoClass="relative mt-3">
     <HeaderContent>
         <MRow NoGutters Class="flex-none mt-3">
             <MCol Md="1">
@@ -29,21 +29,21 @@
                 }
             </div>
         </MRow>
-        @if (advanced)
+        @if (_advanced)
         {
             <MRow Class="@($"mt-6 flex-none")" NoGutters>
-            <MCol Md="1">
-                <SSelect Small @bind-Value="QueryTimeType"
-                         Items="_jobQueryTimeTypeList"
-                         Label="@T("JobQueryTimeType")"
-                         ItemText="e => T(e==default?string.Empty:e.ToString())"
-                         ItemValue="e=> e"
-                         BackgroundColor="white"
-                         Class="rounded-2 body2">
+                <MCol Md="1">
+                    <SSelect Small @bind-Value="QueryTimeType"
+                             Items="_jobQueryTimeTypeList"
+                             Label="@T("JobQueryTimeType")"
+                             ItemText="e => T(e == default ? string.Empty : e.ToString())"
+                             ItemValue="e => e"
+                             BackgroundColor="white"
+                             Class="rounded-2 body2">
                     </SSelect>
                 </MCol>
                 <MCol Md="3" Class="ml-6">
-                    <SDateTimeRangePicker @bind-StartTime="QueryStartTime" @bind-EndTime="QueryEndTime" OnChange="()=>OnQueryDataChanged()" />
+                    <SDateTimeRangeToolbar ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
                 </MCol>
                 <MCol Md="1" Class="ml-6">
                     <SSelect Small @bind-Value="QueryJobType"
@@ -83,18 +83,18 @@
         </MRadioGroup>
     </HeaderContent>
     <AutoHeightContent>
-        <MRow Class="mt-3" Style="position:relative;">
-            @if (_jobs.Any())
-            {
-                foreach (var job in _jobs)
+        @if (_jobs.Any())
+        {
+            <MRow>
+                @foreach (var job in _jobs)
                 {
                     <MCol Md="6">
                         <MCard Height="115" Class="pt-2" OnClick="()=> HandleJobSelect(job)" Style="@($"border-radius:10px !important; {(job.Enabled?"":"opacity: 0.6")}")">
                             <MCardTitle>
                                 <MChip Class="job-text btn"
-                                   TextColor="emphasis2"
-                                   Style="height:25px; background-color:#F0F3FA"
-                                      Label>
+                                    TextColor="emphasis2"
+                                    Style="height:25px; background-color:#F0F3FA"
+                                        Label>
                                     @T(job.JobType.ToString())
                                 </MChip>
                                 <div class="job-text job-name text-truncate emphasis2--text h7 ml-2">
@@ -202,13 +202,13 @@
                         </MCard>
                     </MCol>
                 }
-            }
-            else if(!_showProgressbar)
-            {
-                <SEmptyPlaceholder Height="calc(100vh - 340px);" />
-            }
-            <Loading ShowProgressbar="_showProgressbar" Style="height: calc(100vh - 370px)" />
-        </MRow>
+            </MRow>
+        }
+        else if(!_showProgressbar)
+        {
+            <SEmptyPlaceholder />
+        }
+        <Loading ShowProgressbar="_showProgressbar" />
     </AutoHeightContent>
     <FooterContent>
         @if (_jobs.Any())

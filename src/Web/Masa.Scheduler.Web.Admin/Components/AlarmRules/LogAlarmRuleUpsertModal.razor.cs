@@ -31,7 +31,6 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     private List<ProjectModel> _projectItems = new();
     private List<AppDetailModel> _appItems = new();
     private List<MappingResponseDto> _fields = new();
-    private bool _isChange = false;
     private bool _isInit = false;
 
     protected override string? PageName { get; set; } = "AlarmRuleBlock";
@@ -152,7 +151,6 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     public void ResetForm()
     {
         _model = new();
-        _isChange = false;
         _isInit = false;
     }
 
@@ -243,16 +241,12 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
             return;
         }
 
-        _isChange = true;
-
         _visible = false;
         _model.Step = 1;
     }
 
     public async Task Submit()
     {
-        if (!_isChange) return;
-
         var inputDto = _model.Adapt<AlarmRuleUpsertModel>();
 
         if (_entityId == default)
