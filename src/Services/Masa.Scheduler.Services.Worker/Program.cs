@@ -93,7 +93,7 @@ builder.Services
          {
              eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
          })
-         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName"))).UseFilter())
+         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(MasaStackConstant.SCHEDULER)).UseFilter())
         .UseRepository<SchedulerDbContext>();
     }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment("env"));
 

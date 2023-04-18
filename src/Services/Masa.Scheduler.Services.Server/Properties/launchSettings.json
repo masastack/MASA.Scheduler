@@ -29,7 +29,8 @@
         "MASA_SERVER": "{\"pm\":{\"server\":\"pm-service-develop\"},\"dcc\":{\"server\":\"dcc-service-develop\"},\"auth\":{\"server\":\"auth-service-develop\"},\"mc\":{\"server\":\"mc-service-develop\"},\"scheduler\":{\"server\":\"scheduler-service-server-develop\",\"worker\":\"scheduler-service-worker-develop\"},\"tsc\":{\"server\":\"tsc-service-develop\"},\"alert\":{\"server\":\"alert-service-develop\"}}",
         "MASA_UI": "{\"pm\":{\"ui\":\"pm-develop\"},\"dcc\":{\"ui\":\"dcc-develop\"},\"auth\":{\"ui\":\"auth-develop\",\"sso\":\"sso-develop\"},\"mc\":{\"ui\":\"mc-develop\"},\"scheduler\":{\"ui\":\"scheduler-develop\"},\"tsc\":{\"ui\":\"tsc-develop\"},\"alert\":{\"ui\":\"alert-develop\"}}",
         "ADMIN_PWD": "admin_pwd",
-        "DCC_SECRET": "masastack.com"
+        "DCC_SECRET": "masastack.com",
+        "SUFFIX_IDENTITY": "dev"
       },
       "applicationUrl": "https://localhost:19611;http://localhost:19601",
       "dotnetRunMessages": true
