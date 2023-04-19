@@ -42,9 +42,7 @@
                              Class="rounded-2 body2">
                     </SSelect>
                 </MCol>
-                <MCol Md="3" Class="ml-6">
-                    <SDateTimeRangeToolbar ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
-                </MCol>
+                <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
                 <MCol Md="1" Class="ml-6">
                     <SSelect Small @bind-Value="QueryJobType"
                          Items="Enum.GetValues<JobTypes>().ToList()"
