@@ -21,9 +21,7 @@
                          Class="rounded-2 body2">
                 </SSelect>
             </MCol>
-            <MCol Cols="3" Class="ml-6" Style="min-width: 350px;">
-                <SDateTimeRangeToolbar ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
-            </MCol>
+            <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
             @if(IsApiCreate)
             {
                 <MCol Cols="2" Class="ml-6">
