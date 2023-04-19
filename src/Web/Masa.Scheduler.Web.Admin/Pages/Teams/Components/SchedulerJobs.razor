@@ -19,8 +19,8 @@
             <div class="d-flex">
                 <SSearch @bind-Value="QueryJobName" BackgroundColor="white" />
                 <div @onclick="ToggleAdvanced" class="ml-6 block-center justify-center button fill">
-                    <SIcon Class="ma-auto" Color="emphasis2" Size=20 Tooltip="@(!advanced ? T("Filter") : T("CancelFilter"))">
-                        @(!advanced ? "mdi-filter" : "mdi-filter-off")
+                    <SIcon Class="ma-auto" Color="emphasis2" Size=20 Tooltip="@(!_advanced ? T("Filter") : T("CancelFilter"))">
+                        @(!_advanced ? "mdi-filter" : "mdi-filter-off")
                     </SIcon>
                 </div>
                 @if (_jobCreateType == JobCreateTypes.Manual)
@@ -43,7 +43,7 @@
                     </SSelect>
                 </MCol>
                 <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
-                <MCol Md="1" Class="ml-6">
+                <MCol Md="2" Class="ml-6">
                     <SSelect Small @bind-Value="QueryJobType"
                          Items="Enum.GetValues<JobTypes>().ToList()"
                          Label="@T("JobType")"
