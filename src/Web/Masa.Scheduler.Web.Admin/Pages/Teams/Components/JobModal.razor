@@ -151,7 +151,7 @@
                                         @if (_isAdd)
                                         {
                                             <SButton Class="mr-4" Icon OnClick="PreviousStep">
-                                            <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
+                                                <SIcon Size="24" Color="emphasis2" Tooltip="@T("PreviousStep")">mdi-keyboard-backspace</SIcon>
                                             </SButton>
                                         }
                                         <MSpacer></MSpacer>
@@ -227,8 +227,8 @@
                                             <FooterContent>
                                                 <div class="d-flex mt-9 align-center">
                                                     <SButton Class="mr-4" Icon OnClick="PreviousStep">
-                                            <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
-                                            </SButton>
+                                            <SIcon Size="24" Color="emphasis2" Tooltip="@T("PreviousStep")">mdi-keyboard-backspace</SIcon>
+                                                    </SButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
                                                 <span class="d-flex px-6" style="height: 12px">
@@ -299,7 +299,7 @@
                                     <FooterContent>
                                         <div class="d-flex mt-9 align-center">
                                             <SButton Class="mr-4" Icon OnClick="PreviousStep">
-                                            <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
+                                                <SIcon Size="24" Color="emphasis2" Tooltip="@T("PreviousStep")">mdi-keyboard-backspace</SIcon>
                                             </SButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
@@ -357,8 +357,8 @@
                                             <FooterContent>
                                                 <div class="d-flex mt-9" style="align-items: center;">
                                                     <SButton Class="mr-4" Icon OnClick="PreviousStep">
-                                            <SIcon Size="24" Color="emphasis2">mdi-keyboard-backspace</SIcon>
-                                            </SButton>
+                                                        <SIcon Size="24" Color="emphasis2" Tooltip="@T("PreviousStep")">mdi-keyboard-backspace</SIcon>
+                                                    </SButton>
                                             @if (Model.Id != Guid.Empty)
                                             {
                                                 <span class="d-flex px-6 align-center">
