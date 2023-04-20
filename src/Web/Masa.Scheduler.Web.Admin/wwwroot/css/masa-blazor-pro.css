@@ -734,10 +734,6 @@ input::-webkit-input-placeholder {
     margin-right: 5px !important;
 }
 
-.m-list-group .m-list-item{
-    padding-left: 0px !important;
-}
-
 .scheduler-list .m-list-group__items .m-list-item {
     padding-left: 29px !important;
 }
