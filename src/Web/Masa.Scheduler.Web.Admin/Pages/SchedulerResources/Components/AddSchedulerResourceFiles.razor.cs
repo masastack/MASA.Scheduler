@@ -27,6 +27,8 @@ public partial class AddSchedulerResourceFiles
 
     private bool? _isUploadSuccess;
 
+    private IJSObjectReference UploadJs = default!;
+
     protected override Task OnInitializedAsync()
     {
         _rules = new List<Func<IBrowserFile, StringBoolean>>()
@@ -36,6 +38,15 @@ public partial class AddSchedulerResourceFiles
         };
         return base.OnInitializedAsync();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            UploadJs = await Js!.InvokeAsync<IJSObjectReference>("import", "./_content/Masa.Stack.Components/js/upload/upload.js");
+        }
+    }
+
     private async Task Submit()
     {
         MasaArgumentException.ThrowIfNull(_form, "form");
@@ -79,7 +90,7 @@ public partial class AddSchedulerResourceFiles
         }
     }
 
-    private async void HandleFileChange(IBrowserFile file)
+    private async Task HandleFileChange(IBrowserFile file)
     {
         _progress = 0;
         if (file == null)
@@ -123,16 +134,16 @@ public partial class AddSchedulerResourceFiles
 
         var fileName = Guid.NewGuid() + "-" + file.Name;
 
-        var uploadUrl = await JsInvokeAsync<string>("ossUpload", _ref.Ref, securityToken, fileName);
+        var uploadUrls = await UploadJs!.InvokeAsync<List<string>>("InputFileUpload", _ref.InputFile.Element, "UploadImage", securityToken);
 
-        if(uploadUrl == null)
+        if(uploadUrls == null || !uploadUrls.Any())
         {
             await PopupService.EnqueueSnackbarAsync(T("UploadFileFailed"), AlertTypes.Error);
             _isUploadSuccess = false;
             return;
         }
 
-        Model.FilePath = uploadUrl;
+        Model.FilePath = uploadUrls[0];
 
         Model.UploadTime = DateTimeOffset.Now;
 
