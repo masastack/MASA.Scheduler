@@ -247,6 +247,9 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
 
     public async Task Submit()
     {
+        if (!_isInit)
+            return;
+
         var inputDto = _model.Adapt<AlarmRuleUpsertModel>();
 
         if (_entityId == default)
