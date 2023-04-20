@@ -25,6 +25,11 @@ public class HttpTaskHandler : ITaskHandler
 
         var client = _httpClientFactory.CreateClient();
 
+        if (jobDto.RunTimeoutSecond > 0)
+        {
+            client.Timeout = TimeSpan.FromSeconds(jobDto.RunTimeoutSecond);
+        }
+
         HttpUtils.AddHttpHeader(client, jobDto.HttpConfig.HttpHeaders);
 
         jobDto.HttpConfig.HttpParameters.Add(new("taskId", taskId.ToString()));
