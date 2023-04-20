@@ -18,7 +18,7 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
         _schedulerLogger = schedulerLogger;
     }
 
-    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, CancellationToken token)
+    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, string? traceId, string? spanId, CancellationToken token)
     {
         if (jobDto.DaprServiceInvocationConfig is null)
         {

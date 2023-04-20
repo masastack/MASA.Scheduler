@@ -12,4 +12,8 @@ public class TaskRunModel
     public SchedulerJobDto Job { get; set; } = default!;
 
     public string ServiceId { get; set; } = string.Empty;
+
+    public string? TraceId { get; set; }
+
+    public string? SpanId { get; set; }
 }

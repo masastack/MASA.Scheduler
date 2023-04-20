@@ -6,7 +6,9 @@ namespace Masa.Scheduler.Services.Worker.Extensions.TracingAop;
 public abstract class HttpClientTracingInterceptorBase : IHttpClientTracingInterceptor
 {
     private IServiceScope _serviceScope = MasaApp.RootServiceProvider.CreateScope();
+
     public IServiceProvider? ServiceProvider { get => _serviceScope.ServiceProvider; }
+
     public abstract void OnException(Activity activity, Exception exception);
 
     public abstract void OnHttpRequestMessage(Activity activity, HttpRequestMessage requestMessage);
