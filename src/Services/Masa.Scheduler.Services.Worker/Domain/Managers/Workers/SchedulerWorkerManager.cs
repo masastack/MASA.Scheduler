@@ -60,7 +60,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
 
         _schedulerLogger.LogInformation($"Task Enqueue", WriterTypes.Worker, @event.TaskId, @event.Job.Id);
-        data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime });
+        data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime, TraceId = Activity.Current?.TraceId.ToString(), SpanId = Activity.Current?.SpanId.ToString() });
     }
 
     public override async Task OnManagerStartAsync()
@@ -122,7 +122,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                         }
 
                         _schedulerLogger.LogInformation($"Worker ready to Start Task", WriterTypes.Worker, task.TaskId, task.Job.Id);
-                        await StartTaskAsync(data, task.TaskId, task.Job, task.ExcuteTime);
+                        await StartTaskAsync(data, task.TaskId, task.Job, task.ExcuteTime, task.TraceId, task.SpanId);
                     }
                 }
                 catch (Exception ex)
@@ -135,7 +135,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         return Task.CompletedTask;
     }
 
-    public Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime)
+    public Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime, string? traceId = null, string? spanId = null)
     {
         var cts = new CancellationTokenSource();
         var internalCts = new CancellationTokenSource();
@@ -188,7 +188,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             try
             {
                 _schedulerLogger.LogInformation($"Task run", WriterTypes.Worker, taskId, job.Id);
-                var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, internalCts.Token);
+                var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, traceId, spanId, internalCts.Token);
                 await NotifyTaskRunResult(runStatus, taskId, job.Id);
             }
             catch (Exception ex)
@@ -203,6 +203,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
                 managerData.TaskCancellationTokenSources.Remove(taskId, out _);
                 managerData.InternalCancellationTokenSources.Remove(taskId, out _);
+
+                await EventBus.PublishAsync(new SetHttpTaskTracingIntegrationEvent { TaskId = taskId, TraceId = traceId });
             }
         }, cts.Token);
 

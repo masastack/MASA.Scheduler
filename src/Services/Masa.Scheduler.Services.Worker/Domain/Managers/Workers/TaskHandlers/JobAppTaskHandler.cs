@@ -35,17 +35,17 @@ public class JobAppTaskHandler : ITaskHandler
 
     TaskRunStatus _runStatus = TaskRunStatus.Failure;
 
-    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime ,CancellationToken token)
+    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, string? traceId, string? spanId, CancellationToken token)
     {
         _taskId = taskId;
         _jobId = jobDto.Id;
 
         if (jobDto.JobAppConfig is null)
-        {   
+        {
             throw new UserFriendlyException("JobAppConfig is required in JobApp Task");
         }
 
-        if(jobDto.JobAppConfig.SchedulerResourceDto is null)
+        if (jobDto.JobAppConfig.SchedulerResourceDto is null)
         {
             throw new UserFriendlyException("Scheduler Resource cannot be null");
         }
@@ -93,7 +93,7 @@ public class JobAppTaskHandler : ITaskHandler
             throw;
         }
 
-        if(_runStatus == TaskRunStatus.Failure && !string.IsNullOrEmpty(_message))
+        if (_runStatus == TaskRunStatus.Failure && !string.IsNullOrEmpty(_message))
         {
             throw new UserFriendlyException(_message);
         }
@@ -232,7 +232,7 @@ public class JobAppTaskHandler : ITaskHandler
             _schedulerLogger.LogError($"Decompress files success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
 
             if (!Directory.Exists(jobExtractPath))
-            {  
+            {
                 throw new UserFriendlyException("Cannot found decompress folder, version: {resource.Version}");
             }
         }
@@ -254,7 +254,7 @@ public class JobAppTaskHandler : ITaskHandler
                 {
                     Directory.CreateDirectory(destName);
                 }
-               
+
                 CopyFolder(f.FullName, destName);
             }
         }
@@ -322,7 +322,7 @@ public class JobAppTaskHandler : ITaskHandler
         {
             ZipFile.ExtractToDirectory(zipFilePath, jobExtractPath, true);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _schedulerLogger.LogError(ex, "Extract resource error", WriterTypes.Worker, _taskId, _jobId);
             throw;

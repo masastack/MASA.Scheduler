@@ -16,7 +16,7 @@ public class HttpTaskHandler : ITaskHandler
         _schedulerLogger = schedulerLogger;
     }
 
-    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, CancellationToken token)
+    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, string? traceId, string? spanId, CancellationToken token)
     {
         if (jobDto.HttpConfig is null)
         {
@@ -34,13 +34,20 @@ public class HttpTaskHandler : ITaskHandler
 
         jobDto.HttpConfig.HttpParameters.Add(new("taskId", taskId.ToString()));
         jobDto.HttpConfig.HttpParameters.Add(new("excuteTime", System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)));
-        
+        jobDto.HttpConfig.HttpParameters.Add(new("traceId", traceId ?? ""));
+        jobDto.HttpConfig.HttpParameters.Add(new("spanId", spanId ?? ""));
+
         var requestMessage = new HttpRequestMessage()
         {
             Method = HttpUtils.ConvertHttpMethod(jobDto.HttpConfig.HttpMethod),
             RequestUri = HttpUtils.GetRequestUrl(jobDto.HttpConfig.RequestUrl, jobDto.HttpConfig.HttpParameters),
             Content = HttpUtils.ConvertHttpContent(jobDto.HttpConfig.HttpBody)
         };
+        //if (traceId.IsNullOrEmpty() == false)
+        //{
+        //    //client.DefaultRequestHeaders.Add("traceparent", traceId);
+        //    //Activity.Current = new ActivitySource("HttpJob").StartActivity();
+        //}
 
         TaskRunStatus runSucess = TaskRunStatus.Failure;
 

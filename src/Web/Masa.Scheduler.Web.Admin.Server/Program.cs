@@ -56,7 +56,7 @@ MasaOpenIdConnectOptions masaOpenIdConnectOptions = new()
     Authority = masaStackConfig.GetSsoDomain(),
     ClientId = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER),
     Scopes = new List<string> { "offline_access" }
-}; ;
+};
 
 IdentityModelEventSource.ShowPII = true;
 builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);

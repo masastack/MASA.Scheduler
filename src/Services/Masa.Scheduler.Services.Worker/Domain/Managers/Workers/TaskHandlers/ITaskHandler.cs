@@ -5,5 +5,5 @@ namespace Masa.Scheduler.Services.Worker.Domain.Managers.Workers.TaskHandlers;
 
 public interface ITaskHandler
 {
-    Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto schedulerJobDto, DateTimeOffset excuteTime, CancellationToken token);
+    Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto schedulerJobDto, DateTimeOffset excuteTime, string? traceId, string? spanId, CancellationToken token);
 }

@@ -18,7 +18,7 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
         _schedulerLogger = schedulerLogger;
     }
 
-    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, CancellationToken token)
+    public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, string? traceId, string? spanId, CancellationToken token)
     {
         if (jobDto.DaprServiceInvocationConfig is null)
         {
@@ -49,7 +49,7 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
             methodName = jobDto.DaprServiceInvocationConfig.MethodName + "?";
         }
 
-        methodName += $"taskId={taskId}&excuteTime={System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)}";
+        methodName += $"taskId={taskId}&excuteTime={System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)}&traceId={traceId}&spanId={spanId}";
 
         var appId = jobDto.DaprServiceInvocationConfig.DaprServiceIdentity;
 
