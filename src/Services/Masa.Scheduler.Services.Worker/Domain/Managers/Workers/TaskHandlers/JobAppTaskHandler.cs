@@ -115,7 +115,8 @@ public class JobAppTaskHandler : ITaskHandler
             taskId.ToString(),
             Path.Combine(jobExtractPath, dto.JobAppConfig.JobEntryAssembly),
             dto.JobAppConfig.JobEntryClassName,
-            dto.JobAppConfig.JobParams,
+            //Todo The processing of RunParameter will be modified in the future
+            !string.IsNullOrWhiteSpace(dto.JobAppConfig.JobParams)?dto.JobAppConfig.JobParams:"params",
             excuteTime.Ticks.ToString(),
             excuteTime.Offset.Ticks.ToString(),
             dto.Id.ToString(),
