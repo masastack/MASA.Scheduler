@@ -29,7 +29,10 @@ public class TaskHttpClientTracingInterceptor : HttpClientTracingInterceptorBase
             var traceId = traceIdQuery!.Split('=')[1];
             var spanId = spanIdQuery!.Split('=')[1];
 
-            activity.SetParentId(ActivityTraceId.CreateFromString(traceId), ActivitySpanId.CreateFromString(spanId));
+            if (traceId.IsNullOrEmpty() == false && spanId.IsNullOrEmpty() == false)
+            {
+                activity.SetParentId(ActivityTraceId.CreateFromString(traceId), ActivitySpanId.CreateFromString(spanId));
+            }
         }
 
     }

@@ -204,11 +204,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
                 managerData.TaskCancellationTokenSources.Remove(taskId, out _);
                 managerData.InternalCancellationTokenSources.Remove(taskId, out _);
 
-                //TODO:其它job是否也需要记录下TraceId，也支持查看Trace信息
-                if (job.JobType == JobTypes.Http)
-                {
-                    await EventBus.PublishAsync(new SetHttpTaskTracingIntegrationEvent { TaskId = taskId, TraceId = traceId });
-                }
+                await EventBus.PublishAsync(new SetHttpTaskTracingIntegrationEvent { TaskId = taskId, TraceId = traceId });
             }
         }, cts.Token);
 
