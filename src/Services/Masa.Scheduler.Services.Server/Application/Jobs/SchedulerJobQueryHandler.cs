@@ -70,9 +70,9 @@ public class SchedulerJobQueryHandler
 
         var skip = (request.Page - 1) * request.PageSize;
 
-        var dbQuery = _dbContext.Jobs.Where(condition);
+        var dbQuery = _dbContext.Jobs.AsNoTracking().Where(condition);
 
-        var originList = await _dbContext.Jobs.Where(p => !string.IsNullOrWhiteSpace(p.Origin)).Select(p => p.Origin).Distinct().ToListAsync();
+        var originList = await _dbContext.Jobs.AsNoTracking().Where(p => !string.IsNullOrWhiteSpace(p.Origin)).Select(p => p.Origin).Distinct().ToListAsync();
 
         var total = await dbQuery.CountAsync();
 

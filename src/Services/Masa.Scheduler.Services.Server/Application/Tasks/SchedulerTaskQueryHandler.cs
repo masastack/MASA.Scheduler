@@ -47,9 +47,9 @@ public class SchedulerTaskQueryHandler
 
         var skip = (request.Page - 1) * request.PageSize;
 
-        var dbQuery = _dbContext.Tasks.Where(condition);
+        var dbQuery = _dbContext.Tasks.AsNoTracking().Where(condition);
 
-        var originList = await _dbContext.Tasks.Where(p => !string.IsNullOrWhiteSpace(p.Origin)).Select(p => p.Origin).Distinct().ToListAsync();
+        var originList = await _dbContext.Tasks.AsNoTracking().Where(p => !string.IsNullOrWhiteSpace(p.Origin)).Select(p => p.Origin).Distinct().ToListAsync();
 
         var total = await dbQuery.CountAsync();
 
