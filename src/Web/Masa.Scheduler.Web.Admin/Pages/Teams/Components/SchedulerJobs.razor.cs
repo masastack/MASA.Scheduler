@@ -545,6 +545,8 @@ public partial class SchedulerJobs : ProComponentBase
                 var job = _jobs.ElementAt(jobIndex);
                 notifyJob.UserName = job.UserName;
                 notifyJob.Avator = job.Avator;
+                notifyJob.CreatorName = job.CreatorName;
+                notifyJob.ModifierName = job.ModifierName;
                 _jobs[jobIndex] = notifyJob;
             }
             else if (Page == 1)

@@ -39,7 +39,7 @@ public partial class SchedulerResourceFilesInformation
 
             if (userInfo != null)
             {
-                creatorName = userInfo.Name;
+                creatorName = userInfo.StaffDislpayName ?? userInfo.DisplayName;
             }
         }
 
