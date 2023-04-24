@@ -49,3 +49,6 @@ global using System.IO.Compression;
 global using System.Net;
 global using System.Reflection;
 global using System.Text.Json;
+global using Masa.Scheduler.Services.Worker.Extensions;
+global using System.Text.Json.Nodes;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;

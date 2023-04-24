@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
+
 namespace Masa.Scheduler.Web.Admin.Components.AlarmRules;
 
 public partial class LogAlarmRuleUpsertModal : ProComponentBase
@@ -75,7 +77,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
             Type = AlarmRuleType.Log,
             DisplayName = displayName,
             ProjectIdentity = "scheduler",
-            AppIdentity = MasaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
+            AppIdentity = MasaStackConfig.GetWorkerId(MasaStackConstant.SCHEDULER),
             CheckFrequency = new CheckFrequencyViewModel
             {
                 Type = AlarmCheckFrequencyType.Cron,
