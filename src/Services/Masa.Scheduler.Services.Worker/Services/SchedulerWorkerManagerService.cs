@@ -34,6 +34,11 @@ public class SchedulerWorkerManagerService : ServiceBase
         return Results.Ok("success");
     }
 
+    public IResult GetTaskQueueAsync([FromServices] SchedulerWorkerManagerData data)
+    {
+        return Results.Ok(data.TaskQueue);
+    }
+
     [IgnoreRoute]
     public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, [FromServices] IIntegrationEventBus eventBus, StartTaskIntegrationEvent @event)
     {

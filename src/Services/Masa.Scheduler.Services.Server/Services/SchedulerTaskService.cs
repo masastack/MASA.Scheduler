@@ -69,4 +69,9 @@ public class SchedulerTaskService : ServiceBase
         await eventBus.PublishAsync(comman);
         return Results.Ok();
     }
+
+    public IResult GetTaskQueueAsync([FromServices] SchedulerServerManagerData data)
+    {
+        return Results.Ok(data.TaskQueue);
+    }
 }
