@@ -50,3 +50,4 @@ global using Quartz;
 global using System.Reflection;
 global using System.Text;
 global using Masa.Scheduler.Web.Admin.Components.AlarmRules.ViewModel;
+global using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
