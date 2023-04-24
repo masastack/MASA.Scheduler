@@ -12,4 +12,6 @@ public class NotifySchedulerTaskRunResultRequest : BaseRequest
     public string? Message { get; set; }
 
     public bool StopManaul { get; set; }
+
+    public string? TraceId { get; set; }
 }
