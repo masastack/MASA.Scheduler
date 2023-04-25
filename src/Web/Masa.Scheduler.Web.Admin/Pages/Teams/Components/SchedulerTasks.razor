@@ -81,7 +81,7 @@
                             case (nameof(SchedulerTaskDto.TaskStatus)):
                                 <span class="text-body4 neutral-lighten-2--text d-flex">
                                     <SButton Icon XSmall Style="cursor:default">
-                                        <SIcon Color="@ComputedStatusColor(context.Item.TaskStatus)">mdi-checkbox-blank-circle</SIcon>
+                                        <SIcon Color="@ComputedStatusColor(context.Item.TaskStatus)" IsDefaultToolTip="false">mdi-checkbox-blank-circle</SIcon>
                                     </SButton>
                                     <div style="padding-left:4px; color: @ComputedStatusColor(context.Item.TaskStatus)" class="body2">
                                         @(context.Item.TaskStatus == 0 ? @T("NotRunning") : @T(context.Item.TaskStatus.ToString()))
