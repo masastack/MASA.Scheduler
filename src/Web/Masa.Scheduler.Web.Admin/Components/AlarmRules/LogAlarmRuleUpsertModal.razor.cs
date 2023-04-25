@@ -75,7 +75,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
             Type = AlarmRuleType.Log,
             DisplayName = displayName,
             ProjectIdentity = "scheduler",
-            AppIdentity = MasaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker"),
+            AppIdentity = MasaStackConfig.GetWorkerId(MasaStackConstant.SCHEDULER),
             CheckFrequency = new CheckFrequencyViewModel
             {
                 Type = AlarmCheckFrequencyType.Cron,
