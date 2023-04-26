@@ -111,6 +111,6 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
 
     public void SetTraceId(string? traceId)
     {
-        TraceId = traceId ?? string.Empty;
+        TraceId = string.IsNullOrEmpty(traceId) ? TraceId : traceId;
     }
 }

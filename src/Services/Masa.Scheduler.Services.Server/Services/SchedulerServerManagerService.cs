@@ -32,7 +32,7 @@ public class SchedulerServerManagerService : ServiceBase
     {
         return Results.Ok("success");
     }
-    
+
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(NotifyTaskRunResultIntegrationEvent))]
     public async Task NotifyTaskRunResultAsync([FromServices] IEventBus eventBus, NotifyTaskRunResultIntegrationEvent @event)
     {
@@ -40,7 +40,8 @@ public class SchedulerServerManagerService : ServiceBase
         {
             Status = @event.Status,
             TaskId = @event.TaskId,
-            Message = @event.Message
+            Message = @event.Message,
+            TraceId = @event.TraceId,
         });
         await eventBus.PublishAsync(command);
     }

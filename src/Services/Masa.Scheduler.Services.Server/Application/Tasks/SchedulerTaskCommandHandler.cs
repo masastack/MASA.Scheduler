@@ -1,6 +1,5 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
-
 namespace Masa.Scheduler.Services.Server.Application.Tasks;
 
 public class SchedulerTaskCommandHandler
@@ -8,12 +7,16 @@ public class SchedulerTaskCommandHandler
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly IMapper _mapper;
     private readonly SchedulerTaskDomainService _schedulerTaskDomainService;
+    private readonly SchedulerLogger _schedulerLogger;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public SchedulerTaskCommandHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper, SchedulerTaskDomainService schedulerTaskDomainService)
+    public SchedulerTaskCommandHandler(ISchedulerTaskRepository schedulerTaskRepository, IMapper mapper, SchedulerTaskDomainService schedulerTaskDomainService, SchedulerLogger schedulerLogger, IUnitOfWork unitOfWork)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _mapper = mapper;
         _schedulerTaskDomainService = schedulerTaskDomainService;
+        _schedulerLogger = schedulerLogger;
+        _unitOfWork = unitOfWork;
     }
 
     [EventHandler]
@@ -51,7 +54,7 @@ public class SchedulerTaskCommandHandler
     [EventHandler]
     public async Task NotifyTaskStartHandleAsync(NotifyTaskStartCommand command)
     {
-        var task = await _schedulerTaskRepository.FindAsync(t=> t.Id == command.Request.TaskId);
+        var task = await _schedulerTaskRepository.FindAsync(t => t.Id == command.Request.TaskId);
 
         if (task == null)
         {
@@ -59,21 +62,6 @@ public class SchedulerTaskCommandHandler
         }
 
         task.TaskStart();
-
-        await _schedulerTaskRepository.UpdateAsync(task);
-    }
-
-    [EventHandler]
-    public async Task SetTraceIdAsync(SetSchedulerTaskCommand command)
-    {
-        var task = await _schedulerTaskRepository.FindAsync(t=> t.Id == command.TaskId);
-
-        if (task == null)
-        {
-            throw new UserFriendlyException($"SchedulerTask not found, TaskId: {command.TaskId}");
-        }
-
-        task.SetTraceId(command.TraceId);
 
         await _schedulerTaskRepository.UpdateAsync(task);
     }
