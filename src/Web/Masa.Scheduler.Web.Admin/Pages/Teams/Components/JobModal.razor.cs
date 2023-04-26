@@ -100,8 +100,6 @@ public partial class JobModal
 
     private List<ProjectAppDto> _jobApp = new();
 
-    private SUserAutoComplete _userAutoComplete = default!;
-
     private string _nextRunTimeStr = string.Empty;
 
     private string _tempCron = string.Empty;
@@ -447,20 +445,6 @@ public partial class JobModal
         if (daprServiceAppIdentity != Model.DaprServiceInvocationConfig.DaprServiceIdentity)
         {
             Model.DaprServiceInvocationConfig.DaprServiceIdentity = daprServiceAppIdentity;
-        }
-
-        return Task.CompletedTask;
-    }
-
-    private Task OnOwnerIdChange(Guid ownerId)
-    {
-        Model.OwnerId = ownerId;
-
-        var owner = _userAutoComplete.UserSelect.FirstOrDefault();
-
-        if (owner != null && !string.IsNullOrWhiteSpace(owner.Name))
-        {
-            Model.Owner = owner.Name;
         }
 
         return Task.CompletedTask;
