@@ -245,6 +245,11 @@ public partial class SchedulerJobs : ProComponentBase
 
         _showProgressbar = true;
 
+        if (resetPage)
+        {
+            _page = 1;
+        }
+
         var request = new SchedulerJobListRequest()
         {
             FilterStatus = QueryStatus,
@@ -268,12 +273,8 @@ public partial class SchedulerJobs : ProComponentBase
 
         _originList = jobListResponse.OriginList;
 
-        if (resetPage)
-        {
-            _page = 1;
-        }
-
         _showProgressbar = false;
+
         StateHasChanged();
     }
 
