@@ -3,10 +3,10 @@
 <SSimpleModal Value="_visible" ValueChanged="HandleVisibleChanged" OnSave="Submit" SaveText="@T("Submit")"
               Title="@T("AddResourceFiles")" HeaderClass="mr-4">
     <MForm Model=Model EnableValidation @ref="_form" Class="full-height">
-         <div class="rounded-6 d-flex flex-column align-center" style="border: 4px dashed #E2E7F4;padding-top:80px;padding-bottom:80px">
+         <div class="rounded-6 d-flex flex-column align-center py-10" style="border: 4px dashed #E2E7F4;">
             <MHover OpenDelay="200" Context="hover">
                 <div @attributes="hover.Attrs">
-                    <MProgressCircular Value="_progress" Size="258" Width="18" Color="gradient">
+                    <MProgressCircular Value="_progress" Size="200" Width="18" Color="gradient">
                         <div class="upload-btn">
                             <MImage Width=80 Height=80 Class="d-flex justify-center align-center" ContentClass="text-center"
                                     Src="@(_isUploadSuccess.HasValue?(_isUploadSuccess==false?"_content/Masa.Scheduler.Web.Admin/img/upload/upload-error.png":"_content/Masa.Scheduler.Web.Admin/img/upload/upload-complete.png"):hover.Hover?"_content/Masa.Scheduler.Web.Admin/img/upload/upload-active.png":"_content/Masa.Scheduler.Web.Admin/img/upload/upload.png")">

@@ -11,7 +11,7 @@
                 </span>
             </MCol>
             <MSpacer />
-            <MCol Cols="1">
+            <MCol Md="2">
                 <SSelect Small @bind-Value="_queryTimeType"
                          Items="_jobQueryTimeTypeList"
                          Label="@T("QueryTimeType")"
@@ -24,7 +24,7 @@
             <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
             @if(IsApiCreate)
             {
-                <MCol Cols="2" Class="ml-6">
+                <MCol Md="2" Class="ml-6">
                     <SSelect Small Value="_queryOrigin" TItem="string" TItemValue="string" TValue="string" ValueChanged="QueryOriginChanged" Label="@T("Origin")" BackgroundColor="white" Class="rounded-2 body2" Clearable Items="_orginList" ItemText="origin => origin" ItemValue="origin=>origin">
                     </SSelect>
                 </MCol>
