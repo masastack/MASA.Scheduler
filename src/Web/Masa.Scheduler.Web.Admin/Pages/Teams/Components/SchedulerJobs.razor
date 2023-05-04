@@ -157,7 +157,7 @@
                                                 <MListItem Link OnClick="()=> RunJob(job)">
                                                     <MListItemContent Class="pl-6 pr-16">
                                                         <MListItemTitle>
-                                                            <SIcon Color="#323D6F" Class="align-self-center mr-3">fas fa-spinner</SIcon>
+                                                            <SIcon Color="#323D6F" Class="align-self-center mr-3" IsDefaultToolTip="false">fas fa-spinner</SIcon>
                                                             @T("Run")
                                                         </MListItemTitle>
                                                     </MListItemContent>
@@ -166,7 +166,7 @@
                                             <MListItem Link OnClick="()=> EditJob(job)">
                                                 <MListItemContent Class="pl-6 pr-16">
                                                     <MListItemTitle>
-                                                        <SIcon Color="#323D6F" Class="align-self-center mr-3">mdi-pencil</SIcon>
+                                                        <SIcon Color="#323D6F" Class="align-self-center mr-3" IsDefaultToolTip="false">mdi-pencil</SIcon>
                                                         @T("Edit")
                                                     </MListItemTitle>
                                                 </MListItemContent>
@@ -176,7 +176,7 @@
                                                 <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.DisabledJob, job.Id)">
                                                     <MListItemContent Class="pl-6 pr-16">
                                                         <MListItemTitle>
-                                                            <SIcon Color="red" Class="align-self-center mr-3">mdi-minus-circle</SIcon>
+                                                            <SIcon Color="red" Class="align-self-center mr-3" IsDefaultToolTip="false">mdi-minus-circle</SIcon>
                                                             @T("Disabled")
                                                         </MListItemTitle>
                                                     </MListItemContent>
