@@ -120,3 +120,18 @@
 .relative {
     position: relative;
 }
+
+.grid-card {
+    display: grid;
+    gap: 36px;
+    height: 100%;
+}
+
+    .grid-card .item {
+        position: relative;
+    }
+
+        .grid-card .item .m-card {
+            width: 100%;
+            height: 100%;
+        }
