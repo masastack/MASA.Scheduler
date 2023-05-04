@@ -332,7 +332,7 @@ public partial class JobModal
 
                 await SchedulerServerCaller.SchedulerJobService.UpdateAsync(request);
 
-                OpenSuccessMessage(T("UpdateJobSuccess"));
+                OpenSuccessMessage(T("EditJobSuccess"));
             }
 
             if (_logUpsertModal != null)
@@ -546,7 +546,7 @@ public partial class JobModal
         }
         else
         {
-            return _isAdd ? T("Job.Add") : T("Job.Update");
+            return _isAdd ? T("Job.Add") : T("Job.Edit");
         }
     }
 
