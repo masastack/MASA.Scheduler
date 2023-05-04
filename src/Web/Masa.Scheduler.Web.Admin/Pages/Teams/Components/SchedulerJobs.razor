@@ -2,7 +2,7 @@
 <AutoHeight Overflow="_jobs.Any()" AutoClass="relative mt-3">
     <HeaderContent>
         <MRow NoGutters Class="flex-none mt-3">
-            <MCol Md="1">
+            <MCol Md="2">
                 <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
                 </Projects>
             </MCol>
@@ -32,7 +32,7 @@
         @if (_advanced)
         {
             <MRow Class="@($"mt-6 flex-none")" NoGutters>
-                <MCol Md="1">
+                <MCol Md="2">
                     <SSelect Small @bind-Value="QueryTimeType"
                              Items="_jobQueryTimeTypeList"
                              Label="@T("JobQueryTimeType")"
@@ -56,7 +56,7 @@
                     </MCol>
                     @if (_jobCreateType == JobCreateTypes.Api)
                 {
-                    <MCol Md="1" Class="ml-6">
+                    <MCol Md="2" Class="ml-6">
                         <SSelect Small Clearable @bind-Value="QueryOrigin"
                          Items="_originList"
                          Label="@T("Origin")"
