@@ -90,7 +90,7 @@ Port= masaStackConfig.RedisModel.RedisPort
     DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
     Password = masaStackConfig.RedisModel.RedisPassword
 };
-
+builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
 
 builder.Services
@@ -167,7 +167,7 @@ app.UseMasaExceptionHandler(opt =>
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseI18n();
 app.UseRouting();
 
 app.UseAuthentication();
