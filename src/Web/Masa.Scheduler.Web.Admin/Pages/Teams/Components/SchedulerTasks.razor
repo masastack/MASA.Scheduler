@@ -1,4 +1,4 @@
-﻿@using Masa.BuildingBlocks.StackSdks.Config;
+@using Masa.BuildingBlocks.StackSdks.Config;
 @using Masa.Contrib.StackSdks.Config;
 @inherits ProComponentBase
 @inject IMasaStackConfig MasaStackConfig
@@ -11,7 +11,7 @@
                 </span>
             </MCol>
             <MSpacer />
-            <MCol Md="2">
+            <MCol Cols="1">
                 <SSelect Small @bind-Value="_queryTimeType"
                          Items="_jobQueryTimeTypeList"
                          Label="@T("QueryTimeType")"
@@ -24,7 +24,7 @@
             <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
             @if(IsApiCreate)
             {
-                <MCol Md="2" Class="ml-6">
+                <MCol Cols="2" Class="ml-6">
                     <SSelect Small Value="_queryOrigin" TItem="string" TItemValue="string" TValue="string" ValueChanged="QueryOriginChanged" Label="@T("Origin")" BackgroundColor="white" Class="rounded-2 body2" Clearable Items="_orginList" ItemText="origin => origin" ItemValue="origin=>origin">
                     </SSelect>
                 </MCol>
@@ -81,7 +81,7 @@
                             case (nameof(SchedulerTaskDto.TaskStatus)):
                                 <span class="text-body4 neutral-lighten-2--text d-flex">
                                     <SButton Icon XSmall Style="cursor:default">
-                                        <SIcon Color="@ComputedStatusColor(context.Item.TaskStatus)" IsDefaultToolTip="false">mdi-checkbox-blank-circle</SIcon>
+                                        <SIcon Color="@ComputedStatusColor(context.Item.TaskStatus)">mdi-checkbox-blank-circle</SIcon>
                                     </SButton>
                                     <div style="padding-left:4px; color: @ComputedStatusColor(context.Item.TaskStatus)" class="body2">
                                         @(context.Item.TaskStatus == 0 ? @T("NotRunning") : @T(context.Item.TaskStatus.ToString()))
@@ -107,7 +107,7 @@
                             case "Action":
                                 <MTooltip Bottom>
                                     <ActivatorContent Context="tooltips">
-                                    <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Link Target="blank" Href="@($"{MasaStackConfig.GetDomain(MasaStackConstant.TSC, MasaStackConstant.WEB)}/dashbord/log/{context.Item.Id}")">
+                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Link Target="blank" Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/log/{context.Item.Id}")">
                                             <SIcon>plagiarism</SIcon>
                                         </MButton>
                                     </ActivatorContent>
@@ -119,7 +119,7 @@
                                 {
                                     <MTooltip Bottom>
                                         <ActivatorContent Context="tooltips">
-                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Class="ml-6" Link Target="blank" Href="@($"{MasaStackConfig.GetDomain(MasaStackConstant.TSC, MasaStackConstant.WEB)}/dashbord/trace/{context.Item.TraceId}")">
+                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" StopPropagation Class="ml-6" Link Target="blank" Href="@($"{MasaStackConfig.GetUIDomain("https", "tsc", "ui")}/trace/{context.Item.TraceId}")">
                                             <SIcon>mdi-chart-timeline-variant</SIcon>
                                         </MButton>
                                         </ActivatorContent>
