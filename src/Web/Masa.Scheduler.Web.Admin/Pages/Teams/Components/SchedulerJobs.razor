@@ -1,8 +1,8 @@
 ﻿@inherits ProComponentBase
-<AutoHeight Overflow AutoClass="relative mt-3">
+<AutoHeight Overflow="_jobs.Any()" AutoClass="relative mt-3">
     <HeaderContent>
         <MRow NoGutters Class="flex-none mt-3">
-            <MCol Md="1">
+            <MCol Md="2">
                 <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
                 </Projects>
             </MCol>
@@ -32,7 +32,7 @@
         @if (_advanced)
         {
             <MRow Class="@($"mt-6 flex-none")" NoGutters>
-                <MCol Md="1">
+                <MCol Md="2">
                     <SSelect Small @bind-Value="QueryTimeType"
                              Items="_jobQueryTimeTypeList"
                              Label="@T("JobQueryTimeType")"
@@ -56,7 +56,7 @@
                     </MCol>
                     @if (_jobCreateType == JobCreateTypes.Api)
                 {
-                    <MCol Md="1" Class="ml-6">
+                    <MCol Md="2" Class="ml-6">
                         <SSelect Small Clearable @bind-Value="QueryOrigin"
                          Items="_originList"
                          Label="@T("Origin")"
@@ -101,7 +101,7 @@
                             </MCardTitle>
                             <MCardText Class="d-flex height-inherit">
                                 <SButton Icon XSmall Color="@GetJobColor(job)" Class="run-icon" Style="cursor:default">
-                                    <SIcon>mdi-checkbox-blank-circle</SIcon>
+                                    <SIcon IsDefaultToolTip=false>mdi-checkbox-blank-circle</SIcon>
                                 </SButton>
                                 <div class="job-text run-text pl-2 body2" style="color:@(GetJobColor(job))">
                                     @GetJobRunText(job)
@@ -157,7 +157,7 @@
                                                 <MListItem Link OnClick="()=> RunJob(job)">
                                                     <MListItemContent Class="pl-6 pr-16">
                                                         <MListItemTitle>
-                                                            <SIcon Color="#323D6F" Class="align-self-center mr-3">fas fa-spinner</SIcon>
+                                                            <SIcon Color="#323D6F" Class="align-self-center mr-3" IsDefaultToolTip="false">fas fa-spinner</SIcon>
                                                             @T("Run")
                                                         </MListItemTitle>
                                                     </MListItemContent>
@@ -166,7 +166,7 @@
                                             <MListItem Link OnClick="()=> EditJob(job)">
                                                 <MListItemContent Class="pl-6 pr-16">
                                                     <MListItemTitle>
-                                                        <SIcon Color="#323D6F" Class="align-self-center mr-3">mdi-pencil</SIcon>
+                                                        <SIcon Color="#323D6F" Class="align-self-center mr-3" IsDefaultToolTip="false">mdi-pencil</SIcon>
                                                         @T("Edit")
                                                     </MListItemTitle>
                                                 </MListItemContent>
@@ -176,7 +176,7 @@
                                                 <MListItem Link OnClick="()=> ShowDialog(ConfirmDialogTypes.DisabledJob, job.Id)">
                                                     <MListItemContent Class="pl-6 pr-16">
                                                         <MListItemTitle>
-                                                            <SIcon Color="red" Class="align-self-center mr-3">mdi-minus-circle</SIcon>
+                                                            <SIcon Color="red" Class="align-self-center mr-3" IsDefaultToolTip="false">mdi-minus-circle</SIcon>
                                                             @T("Disabled")
                                                         </MListItemTitle>
                                                     </MListItemContent>

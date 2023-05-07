@@ -12,4 +12,6 @@ public record NotifyTaskRunResultIntegrationEvent : IntegrationEvent
     public string Message { get; set; } = string.Empty;
 
     public TaskRunStatus Status { get; set; }
+
+    public string? TraceId { get; set; }
 }

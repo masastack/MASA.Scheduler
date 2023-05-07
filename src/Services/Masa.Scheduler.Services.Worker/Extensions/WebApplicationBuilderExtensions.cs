@@ -14,7 +14,7 @@ public static class WebApplicationBuilderExtensions
         {
             ServiceNameSpace = builder.Environment.EnvironmentName,
             ServiceVersion = masaStackConfig.Version,
-            ServiceName = masaStackConfig.GetServerId(MasaStackConstant.SCHEDULER, "worker")
+            ServiceName = masaStackConfig.GetWorkerId(MasaStackConstant.SCHEDULER)
         };
         var resources = ResourceBuilder.CreateDefault().AddMasaService(option);
 

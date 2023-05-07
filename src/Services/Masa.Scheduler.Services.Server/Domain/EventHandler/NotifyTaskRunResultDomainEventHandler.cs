@@ -56,7 +56,7 @@ public class NotifyTaskRunResultDomainEventHandler
             return;
         }
 
-        _schedulerLogger.LogInformation($"Receive notify task result, status: {@event.Request.Status}", WriterTypes.Server, task.Id, task.JobId);
+        _schedulerLogger.LogInformation($"Receive notify task result, status: {@event.Request.Status}，TraceId:{task.TraceId}", WriterTypes.Server, task.Id, task.JobId);
 
         TaskRunStatus status = @event.Request.Status;
 
@@ -98,6 +98,8 @@ public class NotifyTaskRunResultDomainEventHandler
         task.TaskEnd(status, message);
 
         task.Job.UpdateLastRunDetail(status);
+
+        task.SetTraceId(@event.Request.TraceId);
 
         await _schedulerJobRepository.UpdateAsync(task.Job);
 

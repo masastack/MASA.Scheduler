@@ -40,13 +40,6 @@ public class SchedulerTaskService : ServiceBase
         await eventBus.PublishAsync(comman);
     }
 
-    [Topic(ConstStrings.PUB_SUB_NAME, nameof(SetHttpTaskTracingIntegrationEvent))]
-    public async Task SetTraceId([FromServices] IEventBus eventBus, SetHttpTaskTracingIntegrationEvent @event)
-    {
-        var command = new SetSchedulerTaskCommand(@event.TaskId, @event.TraceId);
-        await eventBus.PublishAsync(command);
-    }
-
     [RoutePattern(HttpMethod = "Put")]
     public async Task<IResult> StartAsync(IEventBus eventBus, [FromBody] StartSchedulerTaskRequest request)
     {

@@ -100,8 +100,6 @@ public partial class JobModal
 
     private List<ProjectAppDto> _jobApp = new();
 
-    private SUserAutoComplete _userAutoComplete = default!;
-
     private string _nextRunTimeStr = string.Empty;
 
     private string _tempCron = string.Empty;
@@ -334,7 +332,7 @@ public partial class JobModal
 
                 await SchedulerServerCaller.SchedulerJobService.UpdateAsync(request);
 
-                OpenSuccessMessage(T("UpdateJobSuccess"));
+                OpenSuccessMessage(T("EditJobSuccess"));
             }
 
             if (_logUpsertModal != null)
@@ -452,20 +450,6 @@ public partial class JobModal
         return Task.CompletedTask;
     }
 
-    private Task OnOwnerIdChange(Guid ownerId)
-    {
-        Model.OwnerId = ownerId;
-
-        var owner = _userAutoComplete.UserSelect.FirstOrDefault();
-
-        if (owner != null && !string.IsNullOrWhiteSpace(owner.Name))
-        {
-            Model.Owner = owner.Name;
-        }
-
-        return Task.CompletedTask;
-    }
-
     private Task OnScheduleTypeChanged(ScheduleTypes scheduleType)
     {
         if (Model.ScheduleType != scheduleType)
@@ -562,7 +546,7 @@ public partial class JobModal
         }
         else
         {
-            return _isAdd ? T("Job.Add") : T("Job.Update");
+            return _isAdd ? T("Job.Add") : T("Job.Edit");
         }
     }
 

@@ -6,12 +6,18 @@
             <MStepper Value="_step" Class="d-flex flex-column full-height masa-stepper">
                 <MStepperItems Class="full-height">
                     <MStepperContent Step="1" Class="full-height pa-0">
-                        @foreach (var (key, value) in GetEnumMap<JobTypes>())
-                        {
-                            <MCard Outlined Class="d-flex justify-center align-center rounded-6 mb-6" Style="@GetStyle(value)" OnClick="()=> SelectJobType(value)" Height="210">
-                                <SButton Class="h6 regular--text" ActiveClass="h6 fill--text" IsActive="value == Model.JobType" Plain OnClick="()=> SelectJobType(value)" Color="@GetColor(value)">@T(key)</SButton>
-                            </MCard>
-                        }
+                        <div class="grid-card">
+                            @foreach (var (key, value) in GetEnumMap<JobTypes>())
+                            {
+                                <div class="item">
+                                    <MHover>
+                                        <MCard @attributes="context.Attrs" Outlined Class="@($"d-flex justify-center align-center rounded-6 mb-6 {(context.Hover ? "primary" : "")}")" Style="border: 4px dashed #E2E7F4" OnClick="()=> SelectJobType(value)">
+                                        <SButton Class="h6" Plain OnClick="()=> SelectJobType(value)" Color="@(context.Hover ? "fill" : "regular")">@T(key)</SButton>
+                                        </MCard>
+                                    </MHover>
+                                </div>
+                            }
+                        </div>
                     </MStepperContent>
                     <MStepperContent Step="2" Class="full-height pa-0">
                         <MForm Model=Model EnableValidation @ref="basicForm" Class="full-height">
@@ -25,7 +31,7 @@
                                         @if (_isAdd)
                                         {
                                             <MCol Md="6">
-                                                <SUserAutoComplete Class="ml-6" Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Dense Outlined Label="@T("Owner")" Placeholder="@Model.Owner" PersistentPlaceholder></SUserAutoComplete>
+                                                <SUserAutoComplete Class="ml-6" @bind-Value="Model.OwnerId" FillBackground="false" Dense Outlined Label="@T("Owner")" ></SUserAutoComplete>
                                             </MCol>
                                         }
                                         else
@@ -40,7 +46,7 @@
                                     {
                                         <MRow NoGutters Class="mt-9">
                                             <MCol Md="6">
-                                            <SUserAutoComplete Value="Model.OwnerId" ValueChanged="OnOwnerIdChange" @ref="_userAutoComplete" FillBackground="false" Dense Outlined Label="@T("Owner")" Placeholder="@Model.Owner" PersistentPlaceholder></SUserAutoComplete>
+                                            <SUserAutoComplete @bind-Value="Model.OwnerId" FillBackground="false" Dense Outlined Label="@T("Owner")"></SUserAutoComplete>
                                             </MCol>
                                         </MRow>
                                     }

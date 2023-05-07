@@ -39,3 +39,6 @@ global using Masa.BuildingBlocks.Caching;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 global using System.Text.Json.Serialization;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Utils;
+global using Masa.BuildingBlocks.StackSdks.Config;
+global using Masa.Contrib.StackSdks.Config;
+global using System.Text.Json.Nodes;

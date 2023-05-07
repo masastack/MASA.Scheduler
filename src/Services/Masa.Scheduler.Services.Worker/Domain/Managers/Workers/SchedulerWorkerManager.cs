@@ -60,6 +60,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
 
         _schedulerLogger.LogInformation($"Task Enqueue", WriterTypes.Worker, @event.TaskId, @event.Job.Id);
+
         data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime, TraceId = Activity.Current?.TraceId.ToString(), SpanId = Activity.Current?.SpanId.ToString() });
     }
 
@@ -160,7 +161,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
                 if (!_data.StopTask.Contains(taskId) && job.RunTimeoutSecond > 0 && (DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
                 {
-                    await NotifyTaskRunResult(TaskRunStatus.Timeout, taskId, job.Id);
+                    await NotifyTaskRunResult(TaskRunStatus.Timeout, taskId, job.Id, traceId);
                 }
                 else
                 {
@@ -189,11 +190,11 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             {
                 _schedulerLogger.LogInformation($"Task run", WriterTypes.Worker, taskId, job.Id);
                 var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, traceId, spanId, internalCts.Token);
-                await NotifyTaskRunResult(runStatus, taskId, job.Id);
+                await NotifyTaskRunResult(runStatus, taskId, job.Id, traceId);
             }
             catch (Exception ex)
             {
-                await NotifyTaskRunResult(TaskRunStatus.Failure, taskId, job.Id, ex.Message);
+                await NotifyTaskRunResult(TaskRunStatus.Failure, taskId, job.Id, traceId, ex.Message);
                 _schedulerLogger.LogError(ex, $"TaskHandler RunTask Error, Exception message: {ex.Message}", WriterTypes.Worker, taskId, job.Id);
             }
             finally
@@ -203,8 +204,6 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
                 managerData.TaskCancellationTokenSources.Remove(taskId, out _);
                 managerData.InternalCancellationTokenSources.Remove(taskId, out _);
-
-                await EventBus.PublishAsync(new SetHttpTaskTracingIntegrationEvent { TaskId = taskId, TraceId = traceId });
             }
         }, cts.Token);
 
@@ -233,13 +232,14 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         }
     }
 
-    private async Task NotifyTaskRunResult(TaskRunStatus runStatus, Guid taskId, Guid jobId, string message = "")
+    private async Task NotifyTaskRunResult(TaskRunStatus runStatus, Guid taskId, Guid jobId, string? traceId, string message = "")
     {
         var @event = new NotifyTaskRunResultIntegrationEvent()
         {
             TaskId = taskId,
             Status = runStatus,
-            Message = message
+            Message = message,
+            TraceId = traceId
         };
 
         _schedulerLogger.LogInformation($"Task notify run result, Status: {runStatus.ToString()}", WriterTypes.Worker, taskId, jobId);

@@ -34,50 +34,53 @@
                         <SIcon>mdi-plus</SIcon>
                     </SButton>
                 </MCardTitle>
-                <MCardText Class="pb-6">
-                    <MRow>
-                    @{
-                        var resourcesIndex = 0;
-                        var isShowExpandIcon = app.Resources.Count > 4;
-                        <div style="width:calc(100% - 44px);" class="d-flex flex-wrap">
-                            @foreach (var item in app.Resources)
-                            {
-                                var colIndex = resourcesIndex++;
-                                <MCol Style="@(colIndex >= 4 && !app.IsExpand ? "display:none" : "")" Cols="12" Md="3">
-                                    <MHover>
-                                        <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
-                                            @if (context.Hover)
-                                            {
-                                                <SButton Icon Class="align-self-center mr-4"  OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">
-                                                    <SIcon Size="24" Color="error">mdi-delete</SIcon>
-                                                </SButton>
-                                                <span class="d-flex px-15" style="height: 24px;">
-                                                    <MDivider Vertical />
-                                                </span>
-                                                <SButton Icon Class="align-self-center mr-4" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">
-                                                    <SIcon Size="24" Color="emphasis2" Tooltip="@T("View")">mdi-eye</SIcon>
-                                                </SButton>
-                                            }
-                                            else
-                                            {
-                                                <span>@item.Version</span>
-                                            }
+                @if (app.Resources.Any())
+                {
+                    <MCardText Class="pb-6">
+                        <MRow>
+                            @{
+                                var resourcesIndex = 0;
+                                var isShowExpandIcon = app.Resources.Count > 4;
+                                <div style="width:calc(100% - 44px);" class="d-flex flex-wrap">
+                                    @foreach (var item in app.Resources)
+                                    {
+                                        var colIndex = resourcesIndex++;
+                                        <MCol Style="@(colIndex >= 4 && !app.IsExpand ? "display:none" : "")" Cols="12" Md="3">
+                                            <MHover>
+                                                <div @attributes="context.Attrs" class="@($"full-width fill-hover rounded-2 d-flex justify-center align-center regular--text h5")" style="height:119px">
+                                                    @if (context.Hover)
+                                                    {
+                                                        <SButton Icon Class="align-self-center mr-4" OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResourceVersion, item.Id, string.Empty)">
+                                                        <SIcon Size="24" Color="error">mdi-delete</SIcon>
+                                                        </SButton>
+                                                        <span class="d-flex px-15" style="height: 24px;">
+                                                            <MDivider Vertical />
+                                                        </span>
+                                                        <SButton Icon Class="align-self-center mr-4" OnClick="()=>_resourceInfoModal?.OpenModalAsync(item)!">
+                                                        <SIcon Size="24" Color="emphasis2" Tooltip="@T("View")">mdi-eye</SIcon>
+                                                        </SButton>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>@item.Version</span>
+                                                    }
+                                                </div>
+                                            </MHover>
+                                        </MCol>
+                                    }
+                                </div>
+                                @if (isShowExpandIcon)
+                                {
+                                    <div class="ml-1">
+                                        <SButton Icon OnClick="() => app.IsExpand = !app.IsExpand" Style="transform: translate(-12%, 120%);" Class="m-size--small float-right" Color="">
+                                        <SIcon>@(app.IsExpand ? "mdi-chevron-up" : "mdi-chevron-down")</SIcon>
+                                            </SButton>
                                         </div>
-                                    </MHover>
-                                </MCol>
+                                }
                             }
-                        </div>
-                        @if (isShowExpandIcon)
-                        {
-                        <div class="ml-1">
-                            <SButton Icon OnClick="() => app.IsExpand = !app.IsExpand" Style="transform: translate(-12%, 120%);" Class="m-size--small float-right" Color="">
-                                <SIcon>@(app.IsExpand ? "mdi-chevron-up" : "mdi-chevron-down")</SIcon>
-                            </SButton>
-                        </div>                            
-                        }
-                    }
-                    </MRow>
-                </MCardText>
+                        </MRow>
+                    </MCardText>
+                }
             </MCard>
         }
     }

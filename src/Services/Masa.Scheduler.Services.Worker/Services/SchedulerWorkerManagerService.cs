@@ -21,7 +21,7 @@ public class SchedulerWorkerManagerService : ServiceBase
     public async Task<IResult> OnlineAsync([FromServices] SchedulerWorkerManager workerManager)
     {
         await workerManager.Online();
-        return Results.Ok(); 
+        return Results.Ok();
     }
 
     public IResult GetServerListAsync([FromServices] SchedulerWorkerManagerData data)
@@ -42,13 +42,14 @@ public class SchedulerWorkerManagerService : ServiceBase
     [IgnoreRoute]
     public async Task StartTask([FromServices] SchedulerWorkerManager workerManager, [FromServices] IIntegrationEventBus eventBus, StartTaskIntegrationEvent @event)
     {
-        if(@event.TaskId == Guid.Empty || @event.Job == null)
+        if (@event.TaskId == Guid.Empty || @event.Job == null)
         {
             var notifyEvent = new NotifyTaskRunResultIntegrationEvent()
             {
                 TaskId = @event.TaskId,
                 Status = TaskRunStatus.Failure,
-                Message = "StartTask Error, Job is null"
+                Message = "StartTask Error, Job is null",
+                TraceId = Activity.Current?.TraceId.ToString(),
             };
 
             await eventBus.PublishAsync(notifyEvent);

@@ -7,6 +7,7 @@ public class TaskHttpClientTracingInterceptor : HttpClientTracingInterceptorBase
 {
     public override void OnHttpResponseMessage(Activity activity, HttpResponseMessage responseMessage)
     {
+
     }
 
     public override void OnHttpRequestMessage(Activity activity, HttpRequestMessage requestMessage)
