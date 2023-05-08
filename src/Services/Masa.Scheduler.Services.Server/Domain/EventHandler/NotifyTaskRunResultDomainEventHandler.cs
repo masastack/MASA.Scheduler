@@ -107,7 +107,7 @@ public class NotifyTaskRunResultDomainEventHandler
 
         if (task.TaskStatus != TaskRunStatus.WaitToRetry)
         {
-            var waitForRunTask = await _dbContext.Tasks.OrderBy(t => t.SchedulerTime).ThenBy(t => t.CreationTime).Include(t => t.Job).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
+            var waitForRunTask = await _dbContext.Tasks.AsNoTracking().OrderBy(t => t.SchedulerTime).ThenBy(t => t.CreationTime).Include(t => t.Job).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
 
             if (waitForRunTask != null)
             {

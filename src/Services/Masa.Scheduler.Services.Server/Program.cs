@@ -143,7 +143,7 @@ builder.Services
         {
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
-        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(MasaStackConstant.SCHEDULER)).UseFilter())
+        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(MasaStackConstant.SCHEDULER)).AddInterceptors(new QueryWithNoLockDbCommandInterceptor()).UseFilter())
         .UseRepository<SchedulerDbContext>();
     }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT));
 
