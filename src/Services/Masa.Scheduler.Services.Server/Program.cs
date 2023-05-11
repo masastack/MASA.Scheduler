@@ -153,6 +153,9 @@ var app = builder.AddServices(options =>
 {
     options.MapHttpMethodsForUnmatched = new[] { "Post" };
 });
+
+app.UseI18n();
+
 app.UseMasaExceptionHandler(opt =>
 {
     opt.ExceptionHandler = context =>
@@ -167,7 +170,6 @@ app.UseMasaExceptionHandler(opt =>
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
-app.UseI18n();
 app.UseRouting();
 
 app.UseAuthentication();
