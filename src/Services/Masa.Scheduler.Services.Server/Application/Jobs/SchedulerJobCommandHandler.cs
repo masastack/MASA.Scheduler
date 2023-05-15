@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using static Google.Rpc.Context.AttributeContext.Types;
+
 namespace Masa.Scheduler.Services.Server.Application.Jobs;
 
 public class SchedulerJobCommandHandler
@@ -215,6 +217,37 @@ public class SchedulerJobCommandHandler
         await _eventBus.PublishAsync(addCommand);
 
         command.Result = addCommand.Result;
+    }
+
+    [EventHandler]
+    public async Task UpdateSchedulerJobBySdkAsync(UpdateSchedulerJobBySdkCommand command)
+    {
+        var schedulerJobDto = _mapper.Map<SchedulerJobDto>(command.Request);
+
+        schedulerJobDto.Id = command.SchedulerJobId;
+
+        schedulerJobDto.ScheduleType = string.IsNullOrWhiteSpace(schedulerJobDto.CronExpression) ? ScheduleTypes.ManualRun : ScheduleTypes.Cron;
+
+        schedulerJobDto.FailedStrategy = schedulerJobDto.FailedRetryCount == 0 ? FailedStrategyTypes.Manual : FailedStrategyTypes.Auto;
+
+        schedulerJobDto.RoutingStrategy = RoutingStrategyTypes.RoundRobin;
+
+        schedulerJobDto.Enabled = true;
+
+        schedulerJobDto.HttpConfig ??= new();
+
+        schedulerJobDto.JobAppConfig ??= new();
+
+        schedulerJobDto.DaprServiceInvocationConfig ??= new();
+
+        schedulerJobDto.NotifyUrl = command.Request.NotifyUrl;
+
+        var updateCommand = new UpdateSchedulerJobCommand(new UpdateSchedulerJobRequest()
+        {
+            Data = schedulerJobDto,
+        });
+
+        await _eventBus.PublishAsync(updateCommand);
     }
 
     [EventHandler]
