@@ -218,6 +218,96 @@ public class SchedulerJobCommandHandler
     }
 
     [EventHandler]
+    public async Task UpdateSchedulerJobBySdkAsync(UpdateSchedulerJobBySdkCommand command)
+    {
+        var request = command.Request;
+
+        switch (request.JobType)
+        {
+            case JobTypes.JobApp:
+                if (request.JobAppConfig == null)
+                {
+                    throw new UserFriendlyException($"JobAppconfig cannot null");
+                }
+                break;
+            case JobTypes.Http:
+                if (request.HttpConfig == null)
+                {
+                    throw new UserFriendlyException($"HttpConfig cannot null");
+                }
+                break;
+            case JobTypes.DaprServiceInvocation:
+                if (request.DaprServiceInvocationConfig == null)
+                {
+                    throw new UserFriendlyException($"DaprServiceInvocationConfig cannot null");
+                }
+                break;
+        }
+
+        var projectDetailsQuery = new ProjectDetailsQuery()
+        {
+            ProjectIdentity = request.ProjectIdentity
+        };
+
+        await _eventBus.PublishAsync(projectDetailsQuery);
+
+        if (projectDetailsQuery.Result == null)
+        {
+            throw new UserFriendlyException($"ProjectDetails not found, ProjectIdentity: {request.ProjectIdentity}");
+        }
+
+        var schedulerJobDto = _mapper.Map<SchedulerJobDto>(command.Request);
+
+        schedulerJobDto.Id = command.SchedulerJobId;
+
+        schedulerJobDto.BelongProjectIdentity = request.ProjectIdentity;
+
+        schedulerJobDto.BelongTeamId = projectDetailsQuery.Result.TeamId;
+
+        schedulerJobDto.Origin = projectDetailsQuery.Result.Name;
+
+        if (request.OperatorId != Guid.Empty)
+        {
+            var query = new UserQuery();
+            query.UserIds.Add(request.OperatorId);
+
+            await _eventBus.PublishAsync(query);
+
+            var owner = query.Result.FirstOrDefault();
+
+            if (owner != null)
+            {
+                schedulerJobDto.Owner = owner.Name;
+            }
+        }
+
+        schedulerJobDto.OwnerId = request.OperatorId;
+
+        schedulerJobDto.ScheduleType = string.IsNullOrWhiteSpace(schedulerJobDto.CronExpression) ? ScheduleTypes.ManualRun : ScheduleTypes.Cron;
+
+        schedulerJobDto.FailedStrategy = schedulerJobDto.FailedRetryCount == 0 ? FailedStrategyTypes.Manual : FailedStrategyTypes.Auto;
+
+        schedulerJobDto.RoutingStrategy = RoutingStrategyTypes.RoundRobin;
+
+        schedulerJobDto.Enabled = true;
+
+        schedulerJobDto.HttpConfig ??= new();
+
+        schedulerJobDto.JobAppConfig ??= new();
+
+        schedulerJobDto.DaprServiceInvocationConfig ??= new();
+
+        schedulerJobDto.NotifyUrl = command.Request.NotifyUrl;
+
+        var updateCommand = new UpdateSchedulerJobCommand(new UpdateSchedulerJobRequest()
+        {
+            Data = schedulerJobDto,
+        });
+
+        await _eventBus.PublishAsync(updateCommand);
+    }
+
+    [EventHandler]
     public async Task UpsertAlarmRuleHandleAsync(UpsertAlarmRuleCommand command)
     {
         var job = await _schedulerJobRepository.FindAsync(job => job.Id == command.JobId);

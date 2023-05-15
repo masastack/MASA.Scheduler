@@ -76,6 +76,14 @@ public class SchedulerJobService : ServiceBase
         return Results.Ok(command.Result.Id);
     }
 
+    [RoutePattern("/{id}/updateSchedulerJobBySdk", StartWithBaseUri = true, HttpMethod = "Put")]
+    public async Task<IResult> UpdateSchedulerJobBySdkAsync(IEventBus eventBus, Guid id, [FromBody] UpdateSchedulerJobBySdkRequest request)
+    {
+        var command = new UpdateSchedulerJobBySdkCommand(id, request);
+        await eventBus.PublishAsync(command);
+        return Results.Ok();
+    }
+
     [RoutePattern("/getSchedulerJobQueryByIdentity", StartWithBaseUri = true, HttpMethod = "Get")]
     public async Task<IResult> GetSchedulerJobQueryByIdentityAsync(IEventBus eventBus, [FromQuery] string jobIdentity, [FromQuery] string projectIdentity)
     {
