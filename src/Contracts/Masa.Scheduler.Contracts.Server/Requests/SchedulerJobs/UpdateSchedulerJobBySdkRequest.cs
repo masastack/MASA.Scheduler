@@ -5,9 +5,15 @@ namespace Masa.Scheduler.Contracts.Server.Requests.SchedulerJobs;
 
 public class UpdateSchedulerJobBySdkRequest
 {
+    public string ProjectIdentity { get; set; } = string.Empty;
+
     public string Name { get; set; } = string.Empty;
 
+    public bool IsAlertException { get; set; }
+
     public JobTypes JobType { get; set; }
+
+    public Guid OperatorId { get; set; }
 
     public string CronExpression { get; set; } = string.Empty;
 
