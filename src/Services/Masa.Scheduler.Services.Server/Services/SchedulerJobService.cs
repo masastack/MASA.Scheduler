@@ -76,7 +76,7 @@ public class SchedulerJobService : ServiceBase
         return Results.Ok(command.Result.Id);
     }
 
-    [RoutePattern("/{id}/updateSchedulerJobBySdk", StartWithBaseUri = true, HttpMethod = "Post")]
+    [RoutePattern("/{id}/updateSchedulerJobBySdk", StartWithBaseUri = true, HttpMethod = "Put")]
     public async Task<IResult> UpdateSchedulerJobBySdkAsync(IEventBus eventBus, Guid id, [FromBody] UpdateSchedulerJobBySdkRequest request)
     {
         var command = new UpdateSchedulerJobBySdkCommand(id, request);
