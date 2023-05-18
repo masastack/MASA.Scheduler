@@ -211,7 +211,7 @@
   "Minute": "分钟",
   "Hour": "小时",
   "Day": "天",
-  "ViewingAlrmRule": "查看告警规则",
+  "ViewAlrmRule": "查看告警规则",
   "Filter": "筛选",
   "CancelFilter": "取消筛选",
   "AlarmRuleBlock": {
