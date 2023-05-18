@@ -108,7 +108,7 @@
   "Latest": "最新版本",
   "SpecifiedVersion": "指定版本",
   "DaprServiceAppId": "Service应用",
-  "MethodName": "方法名称",
+  "MethodName": "Method Name",
   "Save": "保存",
   "JobType": "Job类型",
   "IsRequired": "是必填的",
