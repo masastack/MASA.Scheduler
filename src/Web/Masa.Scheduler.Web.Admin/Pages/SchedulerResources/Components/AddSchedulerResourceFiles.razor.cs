@@ -134,7 +134,7 @@ public partial class AddSchedulerResourceFiles
 
         var fileName = Guid.NewGuid() + "-" + file.Name;
 
-        var uploadUrls = await UploadJs!.InvokeAsync<List<string>>("InputFileUpload", _ref.InputFile.Element, "UploadImage", securityToken);
+        var uploadUrls = await UploadJs!.InvokeAsync<List<string>>("InputFileUpload", _ref.InputFile?.Element, "UploadImage", securityToken);
 
         if(uploadUrls == null || !uploadUrls.Any())
         {
