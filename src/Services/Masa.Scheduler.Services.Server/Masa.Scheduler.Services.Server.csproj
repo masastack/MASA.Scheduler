@@ -31,8 +31,8 @@
 		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="FluentValidation" Version="11.2.0" />
 		<PackageReference Include="FluentValidation.AspNetCore" Version="11.2.0" />
-		<PackageReference Include="Dapr.Actors.AspNetCore" Version="1.7.0" />
-		<PackageReference Include="Dapr.AspNetCore" Version="1.7.0" />
+		<PackageReference Include="Dapr.Actors.AspNetCore" Version="1.10.0" />
+		<PackageReference Include="Dapr.AspNetCore" Version="1.10.0" />
 		<PackageReference Include="Masa.BuildingBlocks.Ddd.Domain" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.Ddd.Domain" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EFCore" Version="$(MasaFrameworkPackageVersion)" />
