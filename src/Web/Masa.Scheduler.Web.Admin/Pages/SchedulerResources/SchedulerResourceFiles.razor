@@ -23,12 +23,9 @@
                     <MSpacer></MSpacer>
                     @if (app.Resources.Any())
                     {
-                        <SButton Icon Fab OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty,app.Identity)" Small Dark>
+                        <SButton Class="mr-6" Icon Fab OnClick="()=> ShowDialog(ConfirmDialogTypes.DeleteResources, Guid.Empty,app.Identity)" Small Dark>
                             <SIcon Color="error">mdi-delete</SIcon>
                         </SButton>
-                        <span class="d-flex px-1" style="height: 24px;">
-                            <MDivider Vertical />
-                        </span>
                     }
                     <SButton Icon Fab OnClick="()=>AddResourceFile(app.Identity)" Small Dark Class="primary" Color="">
                         <SIcon>mdi-plus</SIcon>

@@ -108,7 +108,7 @@
   "Latest": "最新版本",
   "SpecifiedVersion": "指定版本",
   "DaprServiceAppId": "Service应用",
-  "MethodName": "Method Name",
+  "MethodName": "方法名称",
   "Save": "保存",
   "JobType": "Job类型",
   "IsRequired": "是必填的",
@@ -211,7 +211,7 @@
   "Minute": "分钟",
   "Hour": "小时",
   "Day": "天",
-  "ViewingAlrmRule": "查看告警规则",
+  "ViewAlrmRule": "查看告警规则",
   "Filter": "筛选",
   "CancelFilter": "取消筛选",
   "AlarmRuleBlock": {
