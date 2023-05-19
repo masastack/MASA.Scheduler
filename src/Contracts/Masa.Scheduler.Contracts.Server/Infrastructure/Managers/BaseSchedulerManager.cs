@@ -12,8 +12,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
     protected readonly IHttpClientFactory _httpClientFactory;
     private readonly BaseSchedulerManagerData<T> _data;
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
-    private static string envName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty;
-    private static string topicSuffix = !string.IsNullOrEmpty(envName) ? $"-{envName}" : string.Empty;
+    private readonly IMasaStackConfig _masaStackConfig;
 
     public BaseSchedulerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -22,7 +21,8 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         IIntegrationEventBus eventBus,
         IHttpClientFactory httpClientFactory,
         BaseSchedulerManagerData<T> data,
-        IHostApplicationLifetime hostApplicationLifetime)
+        IHostApplicationLifetime hostApplicationLifetime,
+        IMasaStackConfig masaStackConfig)
     {
         _cacheClientFactory = cacheClientFactory;
         _redisCacheClient = redisCacheClient;
@@ -31,6 +31,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
         _httpClientFactory = httpClientFactory;
         _data = data;
         _hostApplicationLifetime = hostApplicationLifetime;
+        _masaStackConfig = masaStackConfig;
     }
 
     protected IIntegrationEventBus EventBus => _eventBus;
@@ -136,7 +137,8 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     public virtual async Task OnManagerStartAsync()
     {
-        await _redisCacheClient.SubscribeAsync<TMonitorEvent>(MoniterTopic + topicSuffix, async handler =>
+        var channel = $"{MoniterTopic}-{_masaStackConfig.Environment}";
+        await _redisCacheClient.SubscribeAsync<TMonitorEvent>(channel, async handler =>
         {
             if (handler != null && handler.Value != null)
             {
@@ -159,7 +161,9 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             @event.IsPong = isResponse;
             @event.OnlineService = service;
 
-            await _redisCacheClient.PublishAsync(OnlineTopic + topicSuffix, handler =>
+            var channel = $"{OnlineTopic}-{_masaStackConfig.Environment}";
+
+            await _redisCacheClient.PublishAsync(channel, handler =>
             {
                 if(handler != null)
                 {

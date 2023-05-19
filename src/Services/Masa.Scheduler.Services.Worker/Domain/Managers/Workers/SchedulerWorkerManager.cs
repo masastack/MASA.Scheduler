@@ -20,7 +20,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         SchedulerWorkerManagerData data,
         IHostApplicationLifetime hostApplicationLifetime,
         TaskHanlderFactory taskHandlerFactory,
-        SchedulerLogger schedulerLogger)
+        SchedulerLogger schedulerLogger,
+        IMasaStackConfig masaStackConfig)
         : base(
             cacheClientFactory,
             redisCacheClient,
@@ -28,7 +29,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             eventBus,
             httpClientFactory,
             data,
-            hostApplicationLifetime)
+            hostApplicationLifetime,
+            masaStackConfig)
     {
         _logger = logger;
         _taskHandlerFactory = taskHandlerFactory;
