@@ -149,7 +149,7 @@
                                 }
                                 <MMenu Bottom Left>
                                     <ActivatorContent>
-                                        <SButton Color="" Icon @attributes="@context.Attrs" Width="24" Height="24" StopPropagation Class="ml-4">
+                                        <SButton Color="" Icon @attributes="@context.Attrs" Width="24" Height="24" OnClickStopPropagation Class="ml-4">
                                             <SIcon>mdi-dots-vertical</SIcon>
                                         </SButton>
                                     </ActivatorContent>
@@ -160,7 +160,7 @@
                                                 <MListItem Link OnClick="()=> RunJob(job)">
                                                     <MListItemContent Class="pl-6 pr-16">
                                                         <MListItemTitle>
-                                                            <SIcon Color="#323D6F" Class="align-self-center mr-3" IsDefaultToolTip="false">fas fa-spinner</SIcon>
+                                                <SIcon Color="#323D6F" Class="align-self-center mr-3" IsDefaultToolTip="false">fa:fas fa-spinner</SIcon>
                                                             @T("Run")
                                                         </MListItemTitle>
                                                     </MListItemContent>
