@@ -33,14 +33,16 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         SchedulerDbContext dbContext,
         IDomainEventBus domainEventBus,
         SchedulerLogger schedulerLogger,
-        SignalRUtils signalRUtils)
+        SignalRUtils signalRUtils,
+        IMasaStackConfig masaStackConfig)
         : base(cacheClientFactory,
                redisCacheClient,
                serviceProvider,
                eventBus,
                httpClientFactory,
                data,
-               hostApplicationLifetime)
+               hostApplicationLifetime,
+               masaStackConfig)
     {
         _logger = logger;
         _mapper = mapper;
