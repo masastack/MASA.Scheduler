@@ -176,6 +176,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseCloudEvents();
+app.UseMasaCloudEvents();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapSubscribeHandler();
