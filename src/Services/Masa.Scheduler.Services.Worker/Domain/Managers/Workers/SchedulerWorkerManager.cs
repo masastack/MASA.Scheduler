@@ -224,7 +224,6 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         {
             if (data.TaskCancellationTokenSources.TryGetValue(@event.TaskId, out var task))
             {
-                data.StopTask.Add(@event.TaskId);
                 task.Cancel();
             }
             else if (data.TaskQueue.Any(t => t.TaskId == @event.TaskId))
