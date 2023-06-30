@@ -89,6 +89,12 @@ public class HttpTaskHandler : ITaskHandler
                     runSucess = response.IsSuccessStatusCode ? TaskRunStatus.Success : TaskRunStatus.Failure;
                     break;
             }
+
+            if (runSucess != TaskRunStatus.Success)
+            {
+                _schedulerLogger.LogError(response.ReasonPhrase ?? string.Empty, WriterTypes.Worker, taskId, jobDto.Id);
+            }
+           
         }
         catch (TimeoutException ex)
         {
