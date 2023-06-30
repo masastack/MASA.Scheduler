@@ -89,7 +89,7 @@
                                             </STextField>
                                         </MCol>
                                         <MCol Md="6" Class="d-flex mt-3">
-                                        <MSwitch @bind-Value="item.IsOffset" Inset Class="label my-auto ml-3 align-center mr-4">
+                                        <MSwitch @bind-Value="item.IsOffset" TValue="bool" Inset Class="label my-auto ml-3 align-center mr-4">
                                                 <LabelContent>
                                                 <span class="regular2--text body2 my-auto ml-1 flex-shrink-0">@T("Offset")</span>
                                                     <DefaultTooltip Class="ml-1 mt-n1" Tooltip="@T("OffsetTip")"/>
@@ -128,7 +128,7 @@
                     <MStepperContent Class="full-height pa-0" Step="3">
                         <AutoHeight Overflow Class="mt-9 pb-9">
                             <AutoHeightContent>
-                                <AlarmRuleSetting @bind-Model="_model"></AlarmRuleSetting>
+                             
                             </AutoHeightContent>
                         </AutoHeight>
                     </MStepperContent>

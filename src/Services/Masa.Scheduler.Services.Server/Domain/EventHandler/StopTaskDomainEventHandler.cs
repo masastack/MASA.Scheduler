@@ -14,6 +14,7 @@ public class StopTaskDomainEventHandler
     private readonly IDistributedCacheClient _distributedCacheClient;
     private readonly IIntegrationEventBus _eventBus;
     private readonly QuartzUtils _quartzUtils;
+    private readonly IUnitOfWork _unitOfWork;
 
     public StopTaskDomainEventHandler(
         ISchedulerTaskRepository schedulerTaskRepository,
@@ -24,7 +25,8 @@ public class StopTaskDomainEventHandler
         IMapper mapper,
         SchedulerDbContext dbContext,
         IDistributedCacheClient distributedCacheClient,
-        QuartzUtils quartzUtils)
+        QuartzUtils quartzUtils,
+        IUnitOfWork unitOfWork)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
@@ -35,6 +37,7 @@ public class StopTaskDomainEventHandler
         _dbContext = dbContext;
         _distributedCacheClient = distributedCacheClient;
         _quartzUtils = quartzUtils;
+        _unitOfWork = unitOfWork;
     }
 
     [EventHandler(1)]
@@ -76,8 +79,8 @@ public class StopTaskDomainEventHandler
                 await _schedulerJobRepository.UpdateAsync(job);
             }
 
-            await _schedulerTaskRepository.UnitOfWork.SaveChangesAsync();
-            await _schedulerTaskRepository.UnitOfWork.CommitAsync();
+            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
 
             var dto = _mapper.Map<SchedulerTaskDto>(task);
 
