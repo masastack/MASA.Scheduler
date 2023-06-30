@@ -3,14 +3,14 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-await builder.Services.AddMasaStackConfigAsync();
+await builder.Services.AddMasaStackConfigAsync(MasaStackProject.Scheduler, MasaStackApp.Service);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter(opt =>
     {
-        opt.AppId = "masa-scheduler-service-server";
+        opt.AppId = masaStackConfig.GetServiceId(MasaStackProject.Scheduler);
         opt.AppIdSuffix = "";
         opt.AppPort = 19601;
     }, false);
@@ -22,7 +22,7 @@ builder.Services.AddObservable(builder.Logging, () =>
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServiceId(MasaStackConstant.SCHEDULER),
+        ServiceName = masaStackConfig.GetServiceId(MasaStackProject.Scheduler),
         Layer = masaStackConfig.Namespace,
         ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
     };
@@ -31,19 +31,11 @@ builder.Services.AddObservable(builder.Logging, () =>
     return masaStackConfig.OtlpUrl;
 });
 
-var quartzConnectString = masaStackConfig.GetConnectionString(MasaStackConstant.SCHEDULER);
+var quartzConnectString = masaStackConfig.GetConnectionString(MasaStackProject.Scheduler.Name);
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 
-var ossOptions = publicConfiguration.GetSection("$public.OSS").Get<OssOptions>();
-builder.Services.AddObjectStorage(option => option.UseAliyunStorage(new AliyunStorageOptions(ossOptions.AccessId, ossOptions.AccessSecret, ossOptions.Endpoint, ossOptions.RoleArn, ossOptions.RoleSessionName)
-{
-    Sts = new AliyunStsOptions()
-    {
-        RegionId = ossOptions.RegionId
-    }
-}));
-
+builder.Services.AddObjectStorage(option => option.UseAliyunStorage());
 builder.Services.AddMasaIdentity(options =>
 {
     options.Environment = "environment";
@@ -104,7 +96,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR(redisOptions);
 builder.Services.AddQuartzUtils(quartzConnectString);
 builder.Services.AddSchedulerLogger();
-builder.Services.AddStackMiddleware();
 
 builder.Services
     .AddEndpointsApiExplorer()
@@ -143,12 +134,12 @@ builder.Services
         {
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
-        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(MasaStackConstant.SCHEDULER)).AddInterceptors(new QueryWithNoLockDbCommandInterceptor()).UseFilter())
+        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer().AddInterceptors(new QueryWithNoLockDbCommandInterceptor()).UseFilter())
         .UseRepository<SchedulerDbContext>();
-    }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT));
-
+    });
+await builder.Services.AddStackIsolationAsync(MasaStackProject.Scheduler.Name);
 await builder.Services.MigrateAsync();
-
+builder.Services.AddStackMiddleware();
 var app = builder.AddServices(options =>
 {
     options.MapHttpMethodsForUnmatched = new[] { "Post" };
@@ -174,7 +165,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseStackIsolation();
 app.UseCloudEvents();
 app.UseMasaCloudEvents();
 app.UseEndpoints(endpoints =>

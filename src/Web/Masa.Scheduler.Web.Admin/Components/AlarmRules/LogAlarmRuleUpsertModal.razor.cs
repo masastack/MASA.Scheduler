@@ -28,7 +28,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     private string _tempCron = string.Empty;
     private string _nextRunTimeStr = string.Empty;
     private List<string> _items = new();
-    private List<ProjectModel> _projectItems = new();
+    private List<BuildingBlocks.StackSdks.Pm.Model.ProjectModel> _projectItems = new();
     private List<AppDetailModel> _appItems = new();
     private List<MappingResponseDto> _fields = new();
     private bool _isInit = false;
@@ -75,7 +75,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
             Type = AlarmRuleType.Log,
             DisplayName = displayName,
             ProjectIdentity = "scheduler",
-            AppIdentity = MasaStackConfig.GetWorkerId(MasaStackConstant.SCHEDULER),
+            AppIdentity = MasaStackConfig.GetId(MasaStackProject.Scheduler, MasaStackApp.Worker),
             CheckFrequency = new CheckFrequencyViewModel
             {
                 Type = AlarmCheckFrequencyType.Cron,
