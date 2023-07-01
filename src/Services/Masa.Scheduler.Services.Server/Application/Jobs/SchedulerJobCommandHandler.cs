@@ -9,15 +9,13 @@ public class SchedulerJobCommandHandler
     private readonly IMapper _mapper;
     private readonly SchedulerJobDomainService _schedulerJobDomainService;
     private readonly IEventBus _eventBus;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository, IMapper mapper, SchedulerJobDomainService schedulerJobDomainService, IEventBus eventBus, IUnitOfWork unitOfWork)
+    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository, IMapper mapper, SchedulerJobDomainService schedulerJobDomainService, IEventBus eventBus)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _mapper = mapper;
         _schedulerJobDomainService = schedulerJobDomainService;
         _eventBus = eventBus;
-        _unitOfWork = unitOfWork;
     }
 
     [EventHandler]
@@ -38,9 +36,9 @@ public class SchedulerJobCommandHandler
 
         var result = await _schedulerJobRepository.AddAsync(job);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _schedulerJobRepository.UnitOfWork.SaveChangesAsync();
 
-        await _unitOfWork.CommitAsync();
+        await _schedulerJobRepository.UnitOfWork.CommitAsync();
 
         var dto = _mapper.Map<SchedulerJobDto>(result);
 

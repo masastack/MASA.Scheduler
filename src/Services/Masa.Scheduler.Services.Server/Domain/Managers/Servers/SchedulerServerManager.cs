@@ -15,7 +15,6 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     private readonly IDomainEventBus _domainEventBus;
     private readonly SchedulerLogger _schedulerLogger;
     private readonly SignalRUtils _signalRUtils;
-    private readonly IUnitOfWork _unitOfWork;
 
     public SchedulerServerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -35,8 +34,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         IDomainEventBus domainEventBus,
         SchedulerLogger schedulerLogger,
         SignalRUtils signalRUtils,
-        IMasaStackConfig masaStackConfig,
-        IUnitOfWork unitOfWork)
+        IMasaStackConfig masaStackConfig)
         : base(cacheClientFactory,
                redisCacheClient,
                serviceProvider,
@@ -56,7 +54,6 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         _domainEventBus = domainEventBus;
         _schedulerLogger = schedulerLogger;
         _signalRUtils = signalRUtils;
-        _unitOfWork = unitOfWork;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_SERVER_MANAGER_API}/heartbeat";
@@ -416,8 +413,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                         task.SetWorkerHost(workerModel.GetServiceUrl());
 
                         await repository.UpdateAsync(task);
-
-                        await _unitOfWork.SaveChangesAsync();
+                        await repository.UnitOfWork.SaveChangesAsync();
 
                         _schedulerLogger.LogInformation($"Sending task to worker, workerHost: {workerModel.GetServiceUrl()}", WriterTypes.Server, taskDto.Id, taskDto.JobId);
 
