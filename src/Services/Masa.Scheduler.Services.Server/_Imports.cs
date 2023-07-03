@@ -116,3 +116,4 @@ global using Masa.BuildingBlocks.StackSdks.Alert;
 global using Microsoft.EntityFrameworkCore.Diagnostics;
 global using System.Data.Common;
 global using System.Data;
+global using Masa.Contrib.StackSdks.Isolation;

@@ -2,13 +2,13 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
-await builder.Services.AddMasaStackConfigAsync();
+await builder.Services.AddMasaStackConfigAsync(MasaStackProject.Scheduler, MasaStackApp.WEB);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 builder.Services.AddObservable(builder.Logging, () => new MasaObservableOptions
 {
     ServiceNameSpace = builder.Environment.EnvironmentName,
     ServiceVersion = masaStackConfig.Version,
-    ServiceName = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER),
+    ServiceName = masaStackConfig.GetWebId(MasaStackProject.Scheduler),
     Layer = masaStackConfig.Namespace,
     ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
 }, () => masaStackConfig.OtlpUrl, true);
@@ -39,7 +39,7 @@ schedulerBaseAddress = "https://localhost:19611";
 
 var signalRBaseAddress = schedulerBaseAddress + "/server-hub/notifications";
 
-builder.AddMasaStackComponentsForServer("wwwroot/i18n", authBaseAddress, mcBaseAddress);
+await builder.Services.AddMasaStackComponentsAsync(MasaStackProject.Scheduler, "wwwroot/i18n", authBaseAddress, mcBaseAddress);
 builder.Services.AddTscClient(masaStackConfig.GetTscServiceDomain()).AddAlertClient(masaStackConfig.GetAlertServiceDomain());
 builder.Services.AddHttpContextAccessor();
 
@@ -54,7 +54,7 @@ builder.Services.AddMasaSignalRClient(options => options.SignalRServiceUrl = sig
 MasaOpenIdConnectOptions masaOpenIdConnectOptions = new()
 {
     Authority = masaStackConfig.GetSsoDomain(),
-    ClientId = masaStackConfig.GetWebId(MasaStackConstant.SCHEDULER),
+    ClientId = masaStackConfig.GetWebId(MasaStackProject.Scheduler),
     Scopes = new List<string> { "offline_access" }
 };
 

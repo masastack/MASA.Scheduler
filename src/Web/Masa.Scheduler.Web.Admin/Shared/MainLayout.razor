@@ -3,9 +3,9 @@
 @inject NavigationManager Navigation
 @inject IMasaStackConfig MasaStackConfig
 
-<SLayout AppId="@MasaStackConfig.GetWebId(MasaStackConstant.SCHEDULER)" OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="_whiteUris"
+<SLayout OnSignOut="SignOut" OnErrorAsync="OnError" TeamRouteFormat="pages/team/{0}" WhiteUris="_whiteUris"
          Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
-         MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg" Exact="false">
+         MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg">
     @Body
 </SLayout>
 

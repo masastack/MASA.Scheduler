@@ -6,9 +6,6 @@ namespace Masa.Scheduler.Web.Admin.Components.Subjects;
 public partial class UserAutoComplete : ProComponentBase
 {
     [Inject]
-    public IAutoCompleteClient AutoCompleteClient { get; set; } = default!;
-
-    [Inject]
     public IAuthClient AuthClient { get; set; } = default!;
 
     [Parameter]
@@ -79,12 +76,8 @@ public partial class UserAutoComplete : ProComponentBase
         }
 
         _loading = true;
-        var response = await AutoCompleteClient.GetBySpecifyDocumentAsync<UserSelectModel>(search, new AutoCompleteOptions
-        {
-            Page = Page,
-            PageSize = PageSize,
-        });
-        var users = response.Data;
+        var response = await AuthClient.UserService.SearchAsync(search);
+        var users = response;
         var seletedItems = Users.Where(x => Value.Contains(x.Id)).ToList();
         Users = seletedItems.UnionBy(users, user => user.Id).ToList();
         _loading = false;

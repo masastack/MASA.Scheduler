@@ -107,7 +107,7 @@
                             case "Action":
                                 <MTooltip Bottom>
                                     <ActivatorContent Context="tooltips">
-                                    <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation Link Target="blank" Href="@($"{MasaStackConfig.GetDomain(MasaStackConstant.TSC, MasaStackConstant.WEB)}/log/{context.Item.Id}")">
+                                    <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation Link Target="blank" Href="@($"{MasaStackConfig.GetDomain(MasaStackProject.TSC, MasaStackApp.WEB)}/log/{context.Item.Id}")">
                                         <SIcon>md:plagiarism</SIcon>
                                         </MButton>
                                     </ActivatorContent>
@@ -119,7 +119,7 @@
                                 {
                                     <MTooltip Bottom>
                                         <ActivatorContent Context="tooltips">
-                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation Class="ml-6" Link Target="blank" Href="@($"{MasaStackConfig.GetDomain(MasaStackConstant.TSC, MasaStackConstant.WEB)}/trace/{context.Item.TraceId}")">
+                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation Class="ml-6" Link Target="blank" Href="@($"{MasaStackConfig.GetDomain(MasaStackProject.TSC, MasaStackApp.WEB)}/trace/{context.Item.TraceId}")">
                                             <SIcon>mdi-chart-timeline-variant</SIcon>
                                         </MButton>
                                         </ActivatorContent>

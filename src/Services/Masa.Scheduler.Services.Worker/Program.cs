@@ -3,14 +3,14 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-await builder.Services.AddMasaStackConfigAsync();
+await builder.Services.AddMasaStackConfigAsync(MasaStackProject.Scheduler, MasaStackApp.Worker);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDaprStarter(opt =>
     {
-        opt.AppId = "masa-scheduler-service-worker";
+        opt.AppId = masaStackConfig.GetId(MasaStackProject.Scheduler, MasaStackApp.Worker);
         opt.AppIdSuffix = "";
         opt.AppPort = 19602;
     }, false);
@@ -46,12 +46,11 @@ var redisOptions = new RedisConfigurationOptions
     Password = masaStackConfig.RedisModel.RedisPassword
 };
 builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
-
+builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
 builder.Services.AddMapster();
 builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddSchedulerLogger();
-
 builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
@@ -81,10 +80,7 @@ builder.Services
             }
        });
     })
-   .AddFluentValidation(options =>
-   {
-       options.RegisterValidatorsFromAssemblyContaining<Program>();
-   })
+    .AddFluentValidationAutoValidation()
     .AddDomainEventBus(options =>
     {
         options
@@ -93,10 +89,11 @@ builder.Services
          {
              eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
          })
-         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(MasaStackConstant.SCHEDULER)).UseFilter())
+         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
         .UseRepository<SchedulerDbContext>();
-    }).AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment("env"));
+    });
 
+await builder.Services.AddStackIsolationAsync(MasaStackProject.Scheduler.Name);
 builder.AddObservable(masaStackConfig);
 
 var app = builder.AddServices(options =>
@@ -123,7 +120,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseStackIsolation();
 app.UseCloudEvents();
 app.UseMasaCloudEvents();
 app.UseEndpoints(endpoints =>

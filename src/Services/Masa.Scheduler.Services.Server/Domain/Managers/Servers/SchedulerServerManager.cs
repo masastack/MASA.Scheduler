@@ -413,7 +413,6 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                         task.SetWorkerHost(workerModel.GetServiceUrl());
 
                         await repository.UpdateAsync(task);
-
                         await repository.UnitOfWork.SaveChangesAsync();
 
                         _schedulerLogger.LogInformation($"Sending task to worker, workerHost: {workerModel.GetServiceUrl()}", WriterTypes.Server, taskDto.Id, taskDto.JobId);

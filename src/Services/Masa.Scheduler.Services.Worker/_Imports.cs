@@ -52,3 +52,5 @@ global using System.Text.Json;
 global using Masa.Scheduler.Services.Worker.Extensions;
 global using System.Text.Json.Nodes;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Extensions;
+global using Masa.Contrib.StackSdks.Isolation;
+global using Masa.Contrib.StackSdks.Middleware;
