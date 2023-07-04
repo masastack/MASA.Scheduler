@@ -65,4 +65,17 @@ public class SchedulerTaskCommandHandler
 
         await _schedulerTaskRepository.UpdateAsync(task);
     }
+
+    [EventHandler]
+    public async Task NotifyTaskRunResultBySdkHandleAsync(NotifySchedulerTaskRunResultBySdkCommand command)
+    {
+        var request = new NotifySchedulerTaskRunResultRequest
+        {
+            TaskId = command.Request.TaskId,
+            Status = (TaskRunStatus)(int)command.Request.Status,
+            Message = command.Request.Message
+        };
+
+        await _schedulerTaskDomainService.NotifyTaskRunResultAsync(request);
+    }
 }

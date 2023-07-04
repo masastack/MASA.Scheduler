@@ -7,7 +7,7 @@ public class SchedulerWorkerManagerData : BaseSchedulerManagerData<ServerModel>
 {
     public ConcurrentQueue<TaskRunModel> TaskQueue { get; set; } = new ();
 
-    public Dictionary<Guid, CancellationTokenSource> TaskCancellationTokenSources = new();
+    public ConcurrentDictionary<Guid, CancellationTokenSource> TaskCancellationTokenSources = new();
 
-    public Dictionary<Guid, CancellationTokenSource> InternalCancellationTokenSources = new();
+    public ConcurrentDictionary<Guid, CancellationTokenSource> InternalCancellationTokenSources = new();
 }

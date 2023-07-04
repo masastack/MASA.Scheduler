@@ -18,5 +18,7 @@ public class SchedulerJobHttpConfigDto
     public HttpVerifyTypes HttpVerifyType { get; set; }
 
     public string VerifyContent { get; set; } = string.Empty;
+
+    public bool IsAsync { get; set; }
 }
 

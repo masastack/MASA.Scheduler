@@ -62,4 +62,11 @@ public class SchedulerTaskService : ServiceBase
         await eventBus.PublishAsync(comman);
         return Results.Ok();
     }
+
+    public async Task<IResult> NotifyRunResultBySdkAsync([FromServices] IEventBus eventBus, [FromBody] NotifySchedulerTaskRunResultBySdkRequest request)
+    {
+        var command = new NotifySchedulerTaskRunResultBySdkCommand(request);
+        await eventBus.PublishAsync(command);
+        return Results.Ok();
+    }
 }

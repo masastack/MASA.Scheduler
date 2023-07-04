@@ -76,4 +76,12 @@ public class SchedulerJobDto : AuditedEntityDto
     public string NotifyUrl { get; set; } = string.Empty;
 
     public Guid AlarmRuleId { get; set; }
+
+    public bool IsAsync
+    {
+        get
+        {
+            return JobType == JobTypes.Http && HttpConfig.IsAsync;
+        }
+    }
 }
