@@ -81,7 +81,7 @@ public class SchedulerJobDto : AuditedEntityDto
     {
         get
         {
-            return JobType == JobTypes.Http && !HttpConfig.IsAsync;
+            return JobType == JobTypes.Http && HttpConfig.IsAsync;
         }
     }
 }
