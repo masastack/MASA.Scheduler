@@ -214,6 +214,8 @@
   "ViewAlrmRule": "查看告警规则",
   "Filter": "筛选",
   "CancelFilter": "取消筛选",
+  "AsyncMode": "异步模式",
+  "AsyncModeTips": "开启后，http请求成功不会处理结果，需要业务方手动调用sdk通知scheduler任务完成",
   "AlarmRuleBlock": {
     "Log": "日志监控",
     "Metric": "指标监控",
