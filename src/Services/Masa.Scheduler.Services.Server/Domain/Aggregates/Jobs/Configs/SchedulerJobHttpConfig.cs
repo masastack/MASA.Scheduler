@@ -26,6 +26,9 @@ public class SchedulerJobHttpConfig : ValueObject
     [JsonInclude]
     public string VerifyContent { get; private set; } = string.Empty;
 
+    [JsonInclude]
+    public bool IsAsync { get; set; }
+
     public void SetConfig(HttpMethods httpMethod, string requestUrl, List<KeyValuePair<string, string>> httpParameters, List<KeyValuePair<string, string>> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
     {
         HttpMethod = httpMethod;

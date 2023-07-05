@@ -1,5 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Scheduler.Services.Server.Application.Tasks;
 
 public class SchedulerTaskCommandHandler
@@ -64,5 +65,18 @@ public class SchedulerTaskCommandHandler
         task.TaskStart();
 
         await _schedulerTaskRepository.UpdateAsync(task);
+    }
+
+    [EventHandler]
+    public async Task NotifyTaskRunResultBySdkHandleAsync(NotifySchedulerTaskRunResultBySdkCommand command)
+    {
+        var request = new NotifySchedulerTaskRunResultRequest
+        {
+            TaskId = command.Request.TaskId,
+            Status = (TaskRunStatus)(int)command.Request.Status,
+            Message = command.Request.Message
+        };
+
+        await _schedulerTaskDomainService.NotifyTaskRunResultAsync(request);
     }
 }

@@ -173,19 +173,27 @@
                             <MForm Model=Model.HttpConfig EnableValidation @ref="httpForm" Class="full-height">
                                 <AutoHeight Overflow>
                                 <AutoHeightContent>
-                                    <MRow NoGutters Class="mt-1">
+                                    <MRow>
                                         <MCol Md="6">
                                             <SSelect @bind-Value="Model.HttpConfig.HttpMethod" Label="@T("HttpMethod")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpMethods>()" ItemText="kv => T(kv.Key)" ItemValue="kv=>kv.Value">
                                                 </SSelect>
-                                                </MCol>
-                                                </MRow>
-                                                <MRow NoGutters Class="mt-9">
+                                        </MCol>
+                                        <MCol Md="6">
+                                                <MSwitch @bind-Value="Model.HttpConfig.IsAsync" TValue="bool" Inset Class="label my-auto flex-shrink-0 mt-1">
+                                                    <LabelContent>
+                                                        <span class="regular2--text body2">@T("AsyncMode")</span>
+                                                        <DefaultTooltip Class="ml-3 my-auto" Tooltip="@T("AsyncModeTips")" />
+                                                    </LabelContent>
+                                                </MSwitch>
+                                        </MCol>
+                                    </MRow>
+                                    <MRow>
                                         <MCol Md="6">
                                             <STextField @bind-Value="Model.HttpConfig.RequestUrl" Label="@T("RequestUrl")" HideDetails="@("auto")" Dense Outlined />
-                                            </MCol>
-                                        </MRow>
-                                        <DefaultTitle>@T("RequestParameters")</DefaultTitle>
-                                        <MRow NoGutters Class="mt-6">
+                                        </MCol>
+                                    </MRow>
+                                    <DefaultTitle>@T("RequestParameters")</DefaultTitle>
+                                    <MRow>
                                         <MCol Md="6">
                                             <MButtonGroup Value="_httpParameterTypes.ToString()" Class="masa-buttongroup" Color="primary" Group Tile Dense Mandatory Borderless>
                                                 @foreach (var (key, value) in GetEnumMap<HttpParameterTypes>())
@@ -194,9 +202,9 @@
                                                             @T(key)
                                                         </MButton>
                                                     }
-                                                </MButtonGroup>
-                                            </MCol>
-                                        </MRow>
+                                            </MButtonGroup>
+                                        </MCol>
+                                    </MRow>
                                         @if (_httpParameterTypes == HttpParameterTypes.Parameter)
                                         {
                                             <DynamicKeyValueComponent @bind-Value="Model.HttpConfig.HttpParameters">
@@ -209,20 +217,20 @@
                                         }
                                         else
                                         {
-                                            <MRow NoGutters Class="mt-9">
+                                            <MRow>
                                             <MCol Md="12">
                                             <STextarea @bind-Value="Model.HttpConfig.HttpBody" Label="@T("HttpBody")" HideDetails="@("auto")" Dense Outlined Rows="5">
                                                     </STextarea>
                                                     </MCol>
                                                     </MRow>
                                         }
-                                        <MRow NoGutters Class="mt-9">
+                                        <MRow>
                                         <MCol Md="6">
                                             <SSelect @bind-Value="Model.HttpConfig.HttpVerifyType" Label="@T("HttpVerifyType")" HideDetails="@("auto")" Attach="true" Dense Outlined Clearable Items="GetEnumMap<HttpVerifyTypes>()" ItemText="kv => T(kv.Key)" ItemValue="kv=> kv.Value">
                                                 </SSelect>
                                                 </MCol>
                                                 </MRow>
-                                                <MRow NoGutters Class="mt-9">
+                                                <MRow>
                                         <MCol Md="12">
                                             <STextarea @bind-Value="Model.HttpConfig.VerifyContent" Label="@T("VerifyContent")" HideDetails="@("auto")" Dense Outlined Rows="5">
                                                 </STextarea>

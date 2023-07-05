@@ -168,6 +168,7 @@
   "CreationTime": "Creation time",
   "Modifier": "Modifier",
   "ModificationTime": "Modification time",
+  "AsyncModeTips": "After enabling, if the HTTP request is successful, the result will not be processed. The business party needs to manually call the SDK to notify the scheduler that the task is completed",
   "AlarmRuleBlock": {
     "Log": "Log",
     "Metric": "Metric",
