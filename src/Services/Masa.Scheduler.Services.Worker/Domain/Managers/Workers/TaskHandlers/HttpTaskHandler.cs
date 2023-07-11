@@ -8,12 +8,14 @@ public class HttpTaskHandler : ITaskHandler
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<HttpTaskHandler> _logger;
     private readonly SchedulerLogger _schedulerLogger;
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
 
-    public HttpTaskHandler(IHttpClientFactory httpClientFactory, ILogger<HttpTaskHandler> logger, SchedulerLogger schedulerLogger)
+    public HttpTaskHandler(IHttpClientFactory httpClientFactory, ILogger<HttpTaskHandler> logger, SchedulerLogger schedulerLogger, IMultiEnvironmentContext multiEnvironmentContext)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _schedulerLogger = schedulerLogger;
+        _multiEnvironmentContext = multiEnvironmentContext;
     }
 
     public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, string? traceId, string? spanId, CancellationToken token)
@@ -36,6 +38,7 @@ public class HttpTaskHandler : ITaskHandler
         jobDto.HttpConfig.HttpParameters.Add(new("excuteTime", System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)));
         jobDto.HttpConfig.HttpParameters.Add(new("traceId", traceId ?? ""));
         jobDto.HttpConfig.HttpParameters.Add(new("spanId", spanId ?? ""));
+        jobDto.HttpConfig.HttpParameters.Add(new(IsolationConsts.ENVIRONMENT, _multiEnvironmentContext.CurrentEnvironment));
 
         var requestMessage = new HttpRequestMessage()
         {
