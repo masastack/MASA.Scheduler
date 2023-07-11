@@ -11,11 +11,14 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
 
     private readonly SchedulerLogger _schedulerLogger;
 
-    public DaprServiceInvocationTaskHanlder(DaprClient daprClient, ILogger<DaprServiceInvocationTaskHanlder> logger, SchedulerLogger schedulerLogger)
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
+
+    public DaprServiceInvocationTaskHanlder(DaprClient daprClient, ILogger<DaprServiceInvocationTaskHanlder> logger, SchedulerLogger schedulerLogger, IMultiEnvironmentContext multiEnvironmentContext)
     {
         _daprClient = daprClient;
         _logger = logger;
         _schedulerLogger = schedulerLogger;
+        _multiEnvironmentContext = multiEnvironmentContext;
     }
 
     public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, string? traceId, string? spanId, CancellationToken token)
@@ -49,7 +52,7 @@ public class DaprServiceInvocationTaskHanlder : ITaskHandler
             methodName = jobDto.DaprServiceInvocationConfig.MethodName + "?";
         }
 
-        methodName += $"taskId={taskId}&excuteTime={System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)}&traceId={traceId}&spanId={spanId}";
+        methodName += $"taskId={taskId}&excuteTime={System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)}&traceId={traceId}&spanId={spanId}&{IsolationConsts.ENVIRONMENT}={_multiEnvironmentContext.CurrentEnvironment}";
 
         var appId = jobDto.DaprServiceInvocationConfig.DaprServiceIdentity;
 
