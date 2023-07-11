@@ -5,21 +5,28 @@ namespace Masa.Scheduler.Services.Server.Domain.QuartzJob;
 
 public class StartSchedulerJobQuartzJob : IJob
 {
-    private readonly IDomainEventBus _eventBus;
+    private readonly IServiceProvider _serviceProvider;
 
-    public StartSchedulerJobQuartzJob(IDomainEventBus eventBus)
+    public StartSchedulerJobQuartzJob(IServiceProvider serviceProvider)
     {
-        _eventBus = eventBus;
+        _serviceProvider = serviceProvider;
     }
 
     public async Task Execute(IJobExecutionContext context)
     {
         var jobId = context.JobDetail.JobDataMap[ConstStrings.JOB_ID];
+        var environment = context.JobDetail.JobDataMap[IsolationConsts.ENVIRONMENT];
+        var env = environment?.ToString() ?? string.Empty;
 
-        if(jobId == null)
+        if (jobId == null)
         {
             return;
         }
+
+        await using var scope = _serviceProvider.CreateAsyncScope();
+        var multiEnvironmentSetter = scope.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>();
+        multiEnvironmentSetter.SetEnvironment(env);
+        var eventBus = scope.ServiceProvider.GetRequiredService<IDomainEventBus>();
 
         var @event = new StartJobDomainEvent(new StartSchedulerJobRequest()
         {
@@ -28,6 +35,6 @@ public class StartSchedulerJobQuartzJob : IJob
             ExcuteTime = DateTimeOffset.Now
         });
 
-        await _eventBus.PublishAsync(@event);
+        await eventBus.PublishAsync(@event);
     }
 }

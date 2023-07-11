@@ -9,13 +9,15 @@ public class SchedulerJobCommandHandler
     private readonly IMapper _mapper;
     private readonly SchedulerJobDomainService _schedulerJobDomainService;
     private readonly IEventBus _eventBus;
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
 
-    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository, IMapper mapper, SchedulerJobDomainService schedulerJobDomainService, IEventBus eventBus)
+    public SchedulerJobCommandHandler(ISchedulerJobRepository schedulerJobRepository, IMapper mapper, SchedulerJobDomainService schedulerJobDomainService, IEventBus eventBus, IMultiEnvironmentContext multiEnvironmentContext)
     {
         _schedulerJobRepository = schedulerJobRepository;
         _mapper = mapper;
         _schedulerJobDomainService = schedulerJobDomainService;
         _eventBus = eventBus;
+        _multiEnvironmentContext = multiEnvironmentContext;
     }
 
     [EventHandler]

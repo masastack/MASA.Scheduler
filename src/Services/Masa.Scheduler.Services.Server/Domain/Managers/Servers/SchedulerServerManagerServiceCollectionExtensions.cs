@@ -9,7 +9,7 @@ public static class SchedulerServerManagerServiceCollectionExtensions
     {
         services.AddScoped<SchedulerServerManager>();
         services.AddSingleton<SchedulerServerManagerData>();
-        
+        services.AddScoped<IScopedProcessingService, ServerScopedProcessingService>();
         services.AddHostedService<SchedulerServerManagerBackgroundService>();
 
         return services;

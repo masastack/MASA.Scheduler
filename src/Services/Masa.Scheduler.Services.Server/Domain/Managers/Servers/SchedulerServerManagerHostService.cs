@@ -16,5 +16,29 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
     {
         var schedulerWorkerManager = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<SchedulerServerManager>();
         await schedulerWorkerManager.StartManagerAsync(stoppingToken);
+
+        var environmentProvider = _serviceProvider.GetRequiredService<EnvironmentProvider>();
+        var data = _serviceProvider.GetRequiredService<SchedulerServerManagerData>();
+
+        foreach (var environment in environmentProvider.GetEnvionments())
+        {
+            data.TaskQueue.TryAdd(environment, new());
+
+            await DoWorkAsync(environment, stoppingToken);
+        }
+    }
+
+    private async Task DoWorkAsync(string environment, CancellationToken stoppingToken)
+    {
+        using (IServiceScope scope = _serviceProvider.CreateScope())
+        {
+            var multiEnvironmentSetter = scope.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>();
+            multiEnvironmentSetter.SetEnvironment(environment);
+
+            var scopedProcessingService =
+                scope.ServiceProvider.GetRequiredService<IScopedProcessingService>();
+
+            await scopedProcessingService.DoWorkAsync(stoppingToken);
+        }
     }
 }

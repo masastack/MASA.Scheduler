@@ -11,6 +11,10 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     private readonly SchedulerLogger _schedulerLogger;
 
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
+    private readonly IUnitOfWork _unitOfWork;
+
     public SchedulerWorkerManager(IDistributedCacheClientFactory cacheClientFactory,
         IDistributedCacheClient redisCacheClient,
         IServiceProvider serviceProvider,
@@ -21,7 +25,10 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         IHostApplicationLifetime hostApplicationLifetime,
         TaskHanlderFactory taskHandlerFactory,
         SchedulerLogger schedulerLogger,
-        IMasaStackConfig masaStackConfig)
+        IMasaStackConfig masaStackConfig,
+        IServiceScopeFactory scopeFactory,
+        IMultiEnvironmentContext multiEnvironmentContext,
+        IUnitOfWork unitOfWork)
         : base(
             cacheClientFactory,
             redisCacheClient,
@@ -35,6 +42,9 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         _logger = logger;
         _taskHandlerFactory = taskHandlerFactory;
         _schedulerLogger = schedulerLogger;
+        _scopeFactory = scopeFactory;
+        _multiEnvironmentContext = multiEnvironmentContext;
+        _unitOfWork = unitOfWork;
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_WORKER_MANAGER_API}/heartbeat";
@@ -55,6 +65,8 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             throw new UserFriendlyException("Job cannot be null");
         }
 
+        var multiEnvironmentContext = ServiceProvider.GetRequiredService<IMultiEnvironmentContext>();
+
         await using var scope = ServiceProvider.CreateAsyncScope();
 
         var provider = scope.ServiceProvider;
@@ -63,7 +75,12 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         _schedulerLogger.LogInformation($"Task Enqueue", WriterTypes.Worker, @event.TaskId, @event.Job.Id);
 
-        data.TaskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime, TraceId = Activity.Current?.TraceId.ToString(), SpanId = Activity.Current?.SpanId.ToString() });
+        var taskQueue = data.TaskQueue.GetValueOrDefault(multiEnvironmentContext.CurrentEnvironment);
+
+        if (taskQueue != null)
+        {
+            taskQueue.Enqueue(new TaskRunModel() { Job = @event.Job, TaskId = @event.TaskId, ServiceId = @event.ServiceId, ExcuteTime = @event.ExcuteTime, TraceId = Activity.Current?.TraceId.ToString(), SpanId = Activity.Current?.SpanId.ToString() });
+        }
     }
 
     public override async Task OnManagerStartAsync()
@@ -71,71 +88,60 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         try
         {
             await base.OnManagerStartAsync();
-
-            await ProcessTaskRun();
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "OnManagerStartAsync");
         }
     }
-
-    private Task ProcessTaskRun()
+    
+    public async Task ProcessTaskRun()
     {
-        Task.Run(async () =>
+        try
         {
-            while (true)
+            await using var scope = ServiceProvider.CreateAsyncScope();
+
+            var data = scope.ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
+
+            if (string.IsNullOrWhiteSpace(data.ServiceId))
             {
-                await using var scope = ServiceProvider.CreateAsyncScope();
-
-                var provider = scope.ServiceProvider;
-
-                var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
-
-                try
-                {
-                    if (string.IsNullOrWhiteSpace(data.ServiceId))
-                    {
-                        _logger.LogInformation($"SchedulerWorkerManager: ServiceId is null");
-                        await Task.Delay(1000);
-                        continue;
-                    }
-
-                    if (data.TaskQueue.Count == 0)
-                    {
-                        await Task.Delay(100);
-                        continue;
-                    }
-
-                    if (data.TaskQueue.TryDequeue(out var task))
-                    {
-                        _schedulerLogger.LogInformation($"Task Dequeue", WriterTypes.Worker, task.TaskId, task.Job.Id);
-
-                        if (task.ServiceId != data.ServiceId)
-                        {
-                            _schedulerLogger.LogInformation($"ServiceId not same, Task serviceId: {task.ServiceId}, CurrentWorkerServiceId: {data.ServiceId}", WriterTypes.Worker, task.TaskId, task.Job.Id);
-                            continue;
-                        }
-
-                        if (data.StopTask.Any(p => p == task.TaskId))
-                        {
-                            _schedulerLogger.LogInformation($"Task Stop", WriterTypes.Worker, task.TaskId, task.Job.Id);
-                            data.StopTask.Remove(task.TaskId);
-                            continue;
-                        }
-
-                        _schedulerLogger.LogInformation($"Worker ready to Start Task", WriterTypes.Worker, task.TaskId, task.Job.Id);
-                        await StartTaskAsync(data, task.TaskId, task.Job, task.ExcuteTime, task.TraceId, task.SpanId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "ProcessTaskRunError");
-                }
+                _logger.LogInformation($"SchedulerWorkerManager: ServiceId is null");
+                await Task.Delay(1000);
+                return;
             }
-        });
+            var taskQueue = data.TaskQueue.GetValueOrDefault(_multiEnvironmentContext.CurrentEnvironment);
 
-        return Task.CompletedTask;
+            if (taskQueue == null || taskQueue.Count == 0)
+            {
+                await Task.Delay(100);
+                return;
+            }
+
+            if (taskQueue.TryDequeue(out var task))
+            {
+                _schedulerLogger.LogInformation($"Task Dequeue", WriterTypes.Worker, task.TaskId, task.Job.Id);
+
+                if (task.ServiceId != data.ServiceId)
+                {
+                    _schedulerLogger.LogInformation($"ServiceId not same, Task serviceId: {task.ServiceId}, CurrentWorkerServiceId: {data.ServiceId}", WriterTypes.Worker, task.TaskId, task.Job.Id);
+                    return;
+                }
+
+                if (data.StopTask.Any(p => p == task.TaskId))
+                {
+                    _schedulerLogger.LogInformation($"Task Stop", WriterTypes.Worker, task.TaskId, task.Job.Id);
+                    data.StopTask.Remove(task.TaskId);
+                    return;
+                }
+
+                _schedulerLogger.LogInformation($"Worker ready to Start Task", WriterTypes.Worker, task.TaskId, task.Job.Id);
+                await StartTaskAsync(data, task.TaskId, task.Job, task.ExcuteTime, task.TraceId, task.SpanId);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "ProcessTaskRunError");
+        }
     }
 
     public Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime, string? traceId = null, string? spanId = null)
@@ -185,8 +191,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
         _ = Task.Run(async () =>
         {
             await using var scope = ServiceProvider.CreateAsyncScope();
-            var provider = scope.ServiceProvider;
-            var managerData = provider.GetRequiredService<SchedulerWorkerManagerData>();
+            var managerData = scope.ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
 
             try
             {
@@ -218,11 +223,18 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
     public async Task StopTaskAsync(StopTaskIntegrationEvent @event)
     {
+        var multiEnvironmentContext = ServiceProvider.GetRequiredService<IMultiEnvironmentContext>();
+
         await using var scope = ServiceProvider.CreateAsyncScope();
 
         var provider = scope.ServiceProvider;
 
         var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
+
+        var taskQueue = data.TaskQueue.GetValueOrDefault(multiEnvironmentContext.CurrentEnvironment);
+
+        if (taskQueue == null)
+            return;
 
         if (@event.ServiceId == data.ServiceId)
         {
@@ -230,7 +242,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             {
                 task.Cancel();
             }
-            else if (data.TaskQueue.Any(t => t.TaskId == @event.TaskId))
+            else if (taskQueue.Any(t => t.TaskId == @event.TaskId))
             {
                 data.StopTask.Add(@event.TaskId);
             }
@@ -249,10 +261,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         _schedulerLogger.LogInformation($"Task notify run result, Status: {runStatus.ToString()}", WriterTypes.Worker, taskId, jobId);
 
-        await using var scope = ServiceProvider.CreateAsyncScope();
-        var eventBus = scope.ServiceProvider.GetRequiredService<IIntegrationEventBus>();
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        unitOfWork.UseTransaction = false;
-        await eventBus.PublishAsync(@event);
+        _unitOfWork.UseTransaction = false;
+        await EventBus.PublishAsync(@event);
     }
 }
