@@ -27,7 +27,7 @@ public class QuartzUtils
 
         job.JobDataMap.Add(ConstStrings.TASK_ID, taskId);
         job.JobDataMap.Add(ConstStrings.JOB_ID, jobId);
-        job.JobDataMap.Add(ConstStrings.ENVIRONMENT, environment);
+        job.JobDataMap.Add(IsolationConsts.ENVIRONMENT, environment);
 
         var trigger = TriggerBuilder.Create()
             .WithIdentity(taskId.ToString(), jobId.ToString())
@@ -75,7 +75,7 @@ public class QuartzUtils
                    .Build();
 
             job.JobDataMap.Add(ConstStrings.JOB_ID, jobId);
-            job.JobDataMap.Add(ConstStrings.ENVIRONMENT, environment);
+            job.JobDataMap.Add(IsolationConsts.ENVIRONMENT, environment);
 
             var trigger = TriggerBuilder.Create()
                 .WithIdentity(jobId.ToString())

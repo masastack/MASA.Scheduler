@@ -15,7 +15,7 @@ public class StartSchedulerTaskQuartzJob : IJob
     public async Task Execute(IJobExecutionContext context)
     {
         var taskId = context.JobDetail.JobDataMap[ConstStrings.TASK_ID];
-        var environment = context.JobDetail.JobDataMap[ConstStrings.ENVIRONMENT];
+        var environment = context.JobDetail.JobDataMap[IsolationConsts.ENVIRONMENT];
         var env = environment?.ToString() ?? string.Empty;
 
         if (taskId == null)
