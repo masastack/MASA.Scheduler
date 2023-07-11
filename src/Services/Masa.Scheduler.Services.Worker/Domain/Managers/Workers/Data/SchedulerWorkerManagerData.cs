@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Services.Worker.Domain.Managers.Workers.Data;
 
 public class SchedulerWorkerManagerData : BaseSchedulerManagerData<ServerModel>
 {
-    public ConcurrentQueue<TaskRunModel> TaskQueue { get; set; } = new ();
+    public ConcurrentDictionary<string, ConcurrentQueue<TaskRunModel>> TaskQueue { get; set; } = new();
 
     public ConcurrentDictionary<Guid, CancellationTokenSource> TaskCancellationTokenSources = new();
 

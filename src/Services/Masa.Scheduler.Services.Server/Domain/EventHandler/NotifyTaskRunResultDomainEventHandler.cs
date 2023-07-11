@@ -15,6 +15,7 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly SchedulerServerManagerData _data;
     private readonly IMapper _mapper;
     private readonly SchedulerLogger _schedulerLogger;
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
 
     public NotifyTaskRunResultDomainEventHandler(
         IRepository<SchedulerTask> schedulerTaskRepository,
@@ -26,7 +27,8 @@ public class NotifyTaskRunResultDomainEventHandler
         IIntegrationEventBus eventBus,
         SchedulerServerManagerData data,
         IMapper mapper,
-        SchedulerLogger schedulerLogger)
+        SchedulerLogger schedulerLogger,
+        IMultiEnvironmentContext multiEnvironmentContext)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _dbContext = dbContext;
@@ -38,6 +40,7 @@ public class NotifyTaskRunResultDomainEventHandler
         _data = data;
         _mapper = mapper;
         _schedulerLogger = schedulerLogger;
+        _multiEnvironmentContext = multiEnvironmentContext;
     }
 
     [EventHandler]
@@ -68,7 +71,7 @@ public class NotifyTaskRunResultDomainEventHandler
             {
                 status = TaskRunStatus.WaitToRetry;
 
-                await _quartzUtils.AddDelayTask<StartSchedulerTaskQuartzJob>(task.Id, task.Job.Id, TimeSpan.FromSeconds(task.Job.FailedRetryInterval));
+                await _quartzUtils.AddDelayTask<StartSchedulerTaskQuartzJob>(_multiEnvironmentContext.CurrentEnvironment, task.Id, task.Job.Id, TimeSpan.FromSeconds(task.Job.FailedRetryInterval));
             }
         }
 

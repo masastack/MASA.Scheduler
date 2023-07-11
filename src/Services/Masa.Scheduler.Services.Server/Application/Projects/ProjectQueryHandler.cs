@@ -8,14 +8,14 @@ public class ProjectQueryHandler
     private readonly IPmClient _pmClient;
     private readonly IMapper _mapper;
     private readonly IMultiEnvironmentUserContext _userContext;
-    private readonly IWebHostEnvironment _environment;
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
 
-    public ProjectQueryHandler(IPmClient pmClient, IMapper mapper, IMultiEnvironmentUserContext userContext, IWebHostEnvironment environment)
+    public ProjectQueryHandler(IPmClient pmClient, IMapper mapper, IMultiEnvironmentUserContext userContext, IMultiEnvironmentContext multiEnvironmentContext)
     {
         _pmClient = pmClient;
         _mapper = mapper;
         _userContext = userContext;
-        _environment = environment;
+        _multiEnvironmentContext = multiEnvironmentContext;
     }
 
     [EventHandler]
@@ -23,15 +23,15 @@ public class ProjectQueryHandler
     {
         if (string.IsNullOrWhiteSpace(query.Environment))
         {
-            query.Environment = _environment.EnvironmentName;
+            query.Environment = _multiEnvironmentContext.CurrentEnvironment;
         }
 
         var projectList = await _pmClient.ProjectService.GetProjectAppsAsync(query.Environment);
 
-        if (query.TeamId.HasValue)
-        {
-            projectList = projectList.FindAll(p => p.TeamId == query.TeamId.Value);
-        }
+        //if (query.TeamId.HasValue)
+        //{
+        //    projectList = projectList.FindAll(p => p.TeamId == query.TeamId.Value);
+        //}
 
         query.Result = projectList.Select(p => new ProjectDto()
         {

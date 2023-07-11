@@ -8,12 +8,14 @@ public class UpdateCronJobDomainEventHandler
     private readonly QuartzUtils _quartzUtils;
     private readonly IRepository<SchedulerTask> _schedulerTaskRepository;
     private readonly IRepository<SchedulerJob> _schedulerJobRepository;
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
 
-    public UpdateCronJobDomainEventHandler(QuartzUtils quartzUtils, IRepository<SchedulerTask> schedulerTaskRepository, IRepository<SchedulerJob> schedulerJobRepository)
+    public UpdateCronJobDomainEventHandler(QuartzUtils quartzUtils, IRepository<SchedulerTask> schedulerTaskRepository, IRepository<SchedulerJob> schedulerJobRepository, IMultiEnvironmentContext multiEnvironmentContext)
     {
         _quartzUtils = quartzUtils;
         _schedulerTaskRepository = schedulerTaskRepository;
         _schedulerJobRepository = schedulerJobRepository;
+        _multiEnvironmentContext = multiEnvironmentContext;
     }
 
     [EventHandler]
@@ -21,7 +23,7 @@ public class UpdateCronJobDomainEventHandler
     {
         if(@event.Request.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(@event.Request.CronExpression) && @event.Request.Enabled)
         {
-            await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(@event.Request.JobId, @event.Request.CronExpression);
+            await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(_multiEnvironmentContext.CurrentEnvironment, @event.Request.JobId, @event.Request.CronExpression);
         }
         else
         {

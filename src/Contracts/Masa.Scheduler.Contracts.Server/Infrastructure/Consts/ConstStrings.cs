@@ -17,4 +17,5 @@ public class ConstStrings
     public const string OSS_API = "api/oss";
     public const string JOB_ID = "JobId";
     public const string TASK_ID = "TaskId";
+    public const string ENVIRONMENT = "Environment";
 }

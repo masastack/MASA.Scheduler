@@ -19,7 +19,7 @@ public class QuartzUtils
         await _scheduler.Start();
     }
 
-    public Task AddDelayTask<T>(Guid taskId, Guid jobId, TimeSpan timeSpan) where T : IJob
+    public Task AddDelayTask<T>(string environment, Guid taskId, Guid jobId, TimeSpan timeSpan) where T : IJob
     {
         var job = JobBuilder.Create<T>().
             WithIdentity(taskId.ToString(), jobId.ToString())
@@ -27,6 +27,7 @@ public class QuartzUtils
 
         job.JobDataMap.Add(ConstStrings.TASK_ID, taskId);
         job.JobDataMap.Add(ConstStrings.JOB_ID, jobId);
+        job.JobDataMap.Add(ConstStrings.ENVIRONMENT, environment);
 
         var trigger = TriggerBuilder.Create()
             .WithIdentity(taskId.ToString(), jobId.ToString())
@@ -36,7 +37,7 @@ public class QuartzUtils
         return _scheduler.ScheduleJob(job, trigger);
     }
 
-    public async Task RegisterCronJob<T>(Guid jobId, string cron) where T : IJob
+    public async Task RegisterCronJob<T>(string environment, Guid jobId, string cron) where T : IJob
     {
         if (jobId == Guid.Empty)
         {
@@ -48,14 +49,14 @@ public class QuartzUtils
             throw new UserFriendlyException("cron is empty");
         }
 
-        if(!CronExpression.IsValidExpression(cron))
+        if (!CronExpression.IsValidExpression(cron))
         {
             return;
         }
 
         var triggerKey = new TriggerKey(jobId.ToString());
 
-        if(await _scheduler.CheckExists(triggerKey))
+        if (await _scheduler.CheckExists(triggerKey))
         {
             var newTrigger = TriggerBuilder.Create()
                 .WithIdentity(jobId.ToString())
@@ -74,10 +75,11 @@ public class QuartzUtils
                    .Build();
 
             job.JobDataMap.Add(ConstStrings.JOB_ID, jobId);
+            job.JobDataMap.Add(ConstStrings.ENVIRONMENT, environment);
 
             var trigger = TriggerBuilder.Create()
                 .WithIdentity(jobId.ToString())
-                .WithCronSchedule(cron, builder=>
+                .WithCronSchedule(cron, builder =>
                 {
                     builder.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"));
                 })
@@ -123,7 +125,7 @@ public class QuartzUtils
             {
                 startTime = nextExcuteTime.Value;
 
-                if(nextExcuteTime < endTime)
+                if (nextExcuteTime < endTime)
                 {
                     excuteTimeList.Add(nextExcuteTime.Value);
                 }

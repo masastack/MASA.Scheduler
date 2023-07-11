@@ -14,7 +14,7 @@ public static class SchedulerWorkerManagerServiceCollectionExtensions
         services.AddTransient<DaprServiceInvocationTaskHanlder>();
         services.AddSingleton<SchedulerWorkerManagerData>();
         services.AddHostedService<SchedulerWorkerManagerHostService>();
-
+        services.AddScoped<IScopedProcessingService, WorkerScopedProcessingService>();
         return services;
     }
 }
