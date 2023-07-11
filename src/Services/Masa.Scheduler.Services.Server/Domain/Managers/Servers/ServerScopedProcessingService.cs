@@ -20,9 +20,6 @@ public class ServerScopedProcessingService : IScopedProcessingService
         IEventBus eventBus,
         QuartzUtils quartzUtils,
         IMultiEnvironmentContext multiEnvironmentContext,
-        SchedulerServerManager schedulerServerManager,
-        IRepository<SchedulerResource> resourceRepository,
-        IServiceProvider serviceProvider,
         IServiceScopeFactory scopeFactory)  
     {
         _logger = logger;
