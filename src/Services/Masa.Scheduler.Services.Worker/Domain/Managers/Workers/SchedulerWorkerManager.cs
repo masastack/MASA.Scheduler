@@ -197,7 +197,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             {
                 _schedulerLogger.LogInformation($"Task run", WriterTypes.Worker, taskId, job.Id);
                 var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, traceId, spanId, internalCts.Token);
-                var a = _multiEnvironmentContext.CurrentEnvironment;
+
                 if (!job.IsAsync || (job.IsAsync && runStatus != TaskRunStatus.Success))
                 {
                     await NotifyTaskRunResult(runStatus, taskId, job.Id, traceId);
