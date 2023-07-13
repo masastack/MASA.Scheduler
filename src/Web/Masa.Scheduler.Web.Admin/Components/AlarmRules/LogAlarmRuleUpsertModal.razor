@@ -22,9 +22,9 @@
                         <AutoHeight>
                             <AutoHeightContent>
                                 <DefaultTitle>@T("SelectItem")</DefaultTitle>
-                                <SSelect @bind-Value="_model.ProjectIdentity" Items="_projectItems" ItemText="v => v.Name" ItemValue="v=> v.Identity" TItem="ProjectModel" TItemValue="string" TValue="string" Label="@T(nameof(_model.ProjectIdentity))" OnChange="HandleProjectChange" />
+                                <SSelect @bind-Value="_model.ProjectIdentity" Items="_projectItems" ItemText="v => v.Name" ItemValue="v=> v.Identity" TItem="ProjectModel" TItemValue="string" TValue="string" Label="@T(nameof(_model.ProjectIdentity))" Disabled OnChange="HandleProjectChange" />
                                 <DefaultTitle>@T("SelectApp")</DefaultTitle>
-                                <SSelect @bind-Value="_model.AppIdentity" Items="_appItems" ItemText="v => v.Name" ItemValue="v=> v.Identity" Label="@T(nameof(_model.AppIdentity))" />
+                                <SSelect @bind-Value="_model.AppIdentity" Items="_appItems" ItemText="v => v.Name" ItemValue="v=> v.Identity" Label="@T(nameof(_model.AppIdentity))" Disabled />
                             </AutoHeightContent>
                         </AutoHeight>
                     </MStepperContent>
@@ -128,7 +128,7 @@
                     <MStepperContent Class="full-height pa-0" Step="3">
                         <AutoHeight Overflow Class="mt-9 pb-9">
                             <AutoHeightContent>
-                             
+                                <AlarmRuleSetting @bind-Model="_model"></AlarmRuleSetting>
                             </AutoHeightContent>
                         </AutoHeight>
                     </MStepperContent>
