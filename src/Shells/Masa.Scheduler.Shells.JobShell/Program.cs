@@ -10,7 +10,20 @@ if (args.Length >= 8 && args[7] != null)
     otlpEndpoint = args[7].ToString();
 }
 
-builder.AddObservability(otlpEndpoint);
+builder.Services.AddObservable(builder.Logging, () =>
+{
+    return new MasaObservableOptions
+    {
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = "1.0.0",
+        ServiceName = "masa-scheduler-job-shell",
+        Layer = "masastack",
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
+    };
+}, () =>
+{
+    return otlpEndpoint;
+});
 
 builder.Services.AddLogging();
 
