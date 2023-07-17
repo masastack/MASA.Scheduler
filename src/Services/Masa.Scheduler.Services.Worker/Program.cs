@@ -19,6 +19,22 @@ if (builder.Environment.IsDevelopment())
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 builder.Services.AddDaprClient();
+
+builder.Services.AddObservable(builder.Logging, () =>
+{
+    return new MasaObservableOptions
+    {
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = masaStackConfig.Version,
+        ServiceName = masaStackConfig.GetId(MasaStackProject.Scheduler, MasaStackApp.Worker),
+        Layer = masaStackConfig.Namespace,
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
+    };
+}, () =>
+{
+    return masaStackConfig.OtlpUrl;
+});
+
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
 {
@@ -94,7 +110,6 @@ builder.Services
     });
 
 await builder.Services.AddStackIsolationAsync(MasaStackProject.Scheduler.Name);
-builder.AddObservable(masaStackConfig);
 
 var app = builder.AddServices(options =>
 {
