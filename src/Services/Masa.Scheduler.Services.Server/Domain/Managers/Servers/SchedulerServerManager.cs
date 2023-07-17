@@ -133,9 +133,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
             }
         }
 
-        await using var scope = ServiceProvider.CreateAsyncScope();
-
-        var data = scope.ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
+        var data = ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
 
         _schedulerLogger.LogInformation($"Task Enqueue, ResourceId: {taskDto.Job?.JobAppConfig?.SchedulerResourceDto?.Id}", WriterTypes.Server, taskDto.Id, taskDto.JobId);
 
@@ -149,8 +147,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
     public async Task StopTask(Guid taskId, string workerHost)
     {
-        await using var scope = ServiceProvider.CreateAsyncScope();
-        var data = scope.ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
+        var data = ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
 
         if (data.TaskQueue.Any(p => p.Value.Any(x => x.Id == taskId)))
         {
@@ -179,9 +176,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
     public async Task StartAssignAsync()
     {
-        await using var scope = ServiceProvider.CreateAsyncScope();
-
-        var data = scope.ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
+        var data = ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
 
         var taskQueue = data.TaskQueue.GetValueOrDefault(_multiEnvironmentContext.CurrentEnvironment);
 
@@ -293,7 +288,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     }
 
     private async Task StartTask(SchedulerTaskDto taskDto, WorkerModel worker)
-    {
+     {
         var @event = new StartTaskIntegrationEvent()
         {
             TaskId = taskDto.Id,
