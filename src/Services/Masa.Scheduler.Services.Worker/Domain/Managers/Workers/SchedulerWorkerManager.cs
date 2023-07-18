@@ -67,11 +67,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         var multiEnvironmentContext = ServiceProvider.GetRequiredService<IMultiEnvironmentContext>();
 
-        await using var scope = ServiceProvider.CreateAsyncScope();
-
-        var provider = scope.ServiceProvider;
-
-        var data = provider.GetRequiredService<SchedulerWorkerManagerData>();
+        var data = ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
 
         _schedulerLogger.LogInformation($"Task Enqueue", WriterTypes.Worker, @event.TaskId, @event.Job.Id);
 
@@ -99,9 +95,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
     {
         try
         {
-            await using var scope = ServiceProvider.CreateAsyncScope();
-
-            var data = scope.ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
+            var data = ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
 
             if (string.IsNullOrWhiteSpace(data.ServiceId))
             {
@@ -163,9 +157,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             {
                 _schedulerLogger.LogInformation($"Task Cancel", WriterTypes.Worker, taskId, job.Id);
 
-                await using var scope = ServiceProvider.CreateAsyncScope();
-
-                var _data = scope.ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
+                var _data = ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
 
                 if (!_data.StopTask.Contains(taskId) && job.RunTimeoutSecond > 0 && (DateTime.Now - startTime).TotalSeconds >= job.RunTimeoutSecond && job.RunTimeoutStrategy == RunTimeoutStrategyTypes.IgnoreTimeout)
                 {
@@ -190,8 +182,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         _ = Task.Run(async () =>
         {
-            await using var scope = ServiceProvider.CreateAsyncScope();
-            var managerData = scope.ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
+            var managerData = ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
 
             try
             {
