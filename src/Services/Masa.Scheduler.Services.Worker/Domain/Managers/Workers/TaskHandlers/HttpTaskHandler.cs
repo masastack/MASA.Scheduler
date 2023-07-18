@@ -95,7 +95,7 @@ public class HttpTaskHandler : ITaskHandler
 
             if (runSucess != TaskRunStatus.Success && !string.IsNullOrEmpty(response.ReasonPhrase))
             {
-                _schedulerLogger.LogError(response.ReasonPhrase ?? string.Empty, WriterTypes.Worker, taskId, jobDto.Id);
+                _schedulerLogger.LogError(response.ReasonPhrase, WriterTypes.Worker, taskId, jobDto.Id);
             }
         }
         catch (TimeoutException ex)
