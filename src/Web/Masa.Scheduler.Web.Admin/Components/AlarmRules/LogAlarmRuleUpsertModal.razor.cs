@@ -130,7 +130,10 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     {
         if (!_model.LogMonitorItems.Any())
         {
-            _model.LogMonitorItems.Add(new LogMonitorItemModel());
+            _model.LogMonitorItems.Add(new LogMonitorItemModel()
+            {
+                AggregationType = LogAggregationType.Count
+            });
         }
         if (!_model.MetricMonitorItems.Any())
         {
@@ -224,7 +227,10 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     private void HandleLogMonitorItemsAdd(LogMonitorItemModel item)
     {
         var index = _model.LogMonitorItems.IndexOf(item) + 1;
-        _model.LogMonitorItems.Insert(index, new LogMonitorItemModel());
+        _model.LogMonitorItems.Insert(index, new LogMonitorItemModel()
+        {
+            AggregationType = LogAggregationType.Count
+        });
     }
 
     private void HandleLogMonitorItemsRemove(LogMonitorItemModel item)

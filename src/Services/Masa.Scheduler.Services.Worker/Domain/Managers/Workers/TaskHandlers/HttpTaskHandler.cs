@@ -87,13 +87,12 @@ public class HttpTaskHandler : ITaskHandler
                     break;
                 default:
                     runSucess = response.IsSuccessStatusCode ? TaskRunStatus.Success : TaskRunStatus.Failure;
-
-                    if (runSucess != TaskRunStatus.Success)
-                    {
-                        _schedulerLogger.LogError(response.ReasonPhrase ?? string.Empty, WriterTypes.Worker, taskId, jobDto.Id);
-                    }
-
                     break;
+            }
+
+            if (runSucess != TaskRunStatus.Success && !string.IsNullOrEmpty(response.ReasonPhrase))
+            {
+                _schedulerLogger.LogError(response.ReasonPhrase, WriterTypes.Worker, taskId, jobDto.Id);
             }
         }
         catch (TimeoutException ex)
