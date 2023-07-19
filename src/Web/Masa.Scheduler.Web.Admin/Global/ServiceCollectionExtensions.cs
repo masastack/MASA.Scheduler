@@ -8,6 +8,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddGlobalForServer(this IServiceCollection services)
     {
         services.AddScoped<GlobalConfig>();
+        services.AddScoped<SchedulerJobsState>();
         return services;
     }
 

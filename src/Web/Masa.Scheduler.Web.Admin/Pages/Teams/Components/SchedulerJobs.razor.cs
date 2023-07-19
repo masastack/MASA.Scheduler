@@ -6,7 +6,8 @@ namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 public partial class SchedulerJobs : ProComponentBase
 {
     [Parameter]
-    public Guid? TeamId { get; set; }
+    [SupplyParameterFromQuery(Name = "isState")]
+    public bool? IsState { get; set; }
 
     public ProjectDto? Project
     {
@@ -27,29 +28,18 @@ public partial class SchedulerJobs : ProComponentBase
         }
     }
 
-    [Parameter]
-    public EventCallback<SchedulerJobDto> OnJobSelect { get; set; }
+    [Inject]
+    public SchedulerJobsState SchedulerJobsState { get; set; } = default!;
 
-    [Parameter]
-    public bool Visible
-    {
-        get => _visible;
-        set
-        {
-            if (_visible != value)
-            {
-                _visible = value;
-                if (_visible && !_projectChange)
-                {
-                    OnQueryDataChanged();
-                }
-            }
-        }
-    }
+    [Inject]
+    public Stack.Components.Configs.GlobalConfig StackGlobalConfig { get; set; } = default!;
+
+    [Inject]
+    public MasaUser MasaUser { get; set; } = default!;
+
+    private Guid _teamId = default;
 
     private bool _projectChange;
-
-    private bool _visible;
 
     private ProjectDto? _project = default;
 
@@ -103,6 +93,8 @@ public partial class SchedulerJobs : ProComponentBase
 
     private DateTimeOffset? _queryEndTime;
 
+    private string _projectIdentity { get; set; } = string.Empty;
+
     public TaskRunStatus QueryStatus
     {
         get => _queryStatus;
@@ -111,6 +103,7 @@ public partial class SchedulerJobs : ProComponentBase
             if (_queryStatus != value)
             {
                 _queryStatus = value;
+                SchedulerJobsState.QueryStatus = value;
                 OnQueryDataChanged();
             }
         }
@@ -124,6 +117,7 @@ public partial class SchedulerJobs : ProComponentBase
             if (_queryJobName != value)
             {
                 _queryJobName = value;
+                SchedulerJobsState.QueryJobName = value;
                 OnQueryDataChanged();
             }
         }
@@ -176,6 +170,7 @@ public partial class SchedulerJobs : ProComponentBase
             if (_queryJobType != value)
             {
                 _queryJobType = value;
+                SchedulerJobsState.QueryJobType = value;
                 OnQueryDataChanged();
             }
         }
@@ -189,6 +184,7 @@ public partial class SchedulerJobs : ProComponentBase
             if (_queryOrigin != value)
             {
                 _queryOrigin = value;
+                SchedulerJobsState.QueryOrigin = value;
                 OnQueryDataChanged();
             }
         }
@@ -203,12 +199,36 @@ public partial class SchedulerJobs : ProComponentBase
             await SignalRNotifyDataHandler(schedulerTaskDto);
         });
 
+        _teamId = MasaUser.CurrentTeamId;
+        StackGlobalConfig.OnCurrentTeamChanged += CurrentTeamChanged;
+
         _queryStatusList = GetEnumMap<TaskRunStatus>();
         _queryStatusList.Insert(0, new KeyValuePair<string, TaskRunStatus>(T("All"), default));
 
         _jobQueryTimeTypeList = Enum.GetValues<JobQueryTimeTypes>().Where(t => t == JobQueryTimeTypes.CreationTime || t == JobQueryTimeTypes.ModificationTime).ToList();
 
+        if (IsState == true)
+        {
+            SetState();
+            await OnQueryDataChanged();
+        }
+
         await base.OnInitializedAsync();
+    }
+    private void SetState()
+    {
+        _queryStatus = SchedulerJobsState.QueryStatus;
+        _queryJobName = SchedulerJobsState.QueryJobName;
+        _queryJobType = SchedulerJobsState.QueryJobType;
+        _queryOrigin = SchedulerJobsState.QueryOrigin;
+        _projectIdentity = SchedulerJobsState.ProjectIdentity;
+        _jobCreateType = SchedulerJobsState.JobCreateType;
+    }
+
+    private void CurrentTeamChanged(Guid teamId)
+    {
+        _teamId = teamId;
+        OnQueryDataChanged().ContinueWith(_ => InvokeAsync(StateHasChanged));
     }
 
     private async Task SwitchJobCreateType(JobCreateTypes jobCreateTypes)
@@ -216,6 +236,7 @@ public partial class SchedulerJobs : ProComponentBase
         if (_jobCreateType != jobCreateTypes)
         {
             _jobCreateType = jobCreateTypes;
+            SchedulerJobsState.JobCreateType = jobCreateTypes;
             ResetQueryOptions();
             await GetProjectJobs();
         }
@@ -391,12 +412,9 @@ public partial class SchedulerJobs : ProComponentBase
         await GetProjectJobs();
     }
 
-    public async Task HandleJobSelect(SchedulerJobDto job)
+    public void HandleJobSelect(SchedulerJobDto job)
     {
-        if (OnJobSelect.HasDelegate)
-        {
-            await OnJobSelect.InvokeAsync(job);
-        }
+        NavigationManager.NavigateTo($"/job/task/{job.Id}");
     }
 
     private Task RadioGroupClickHandler()

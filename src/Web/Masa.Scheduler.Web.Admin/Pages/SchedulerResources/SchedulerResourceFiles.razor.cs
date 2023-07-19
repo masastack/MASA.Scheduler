@@ -41,7 +41,7 @@ public partial class SchedulerResourceFiles
 
     protected async override Task OnInitializedAsync()
     {
-        _teamId = StackGlobalConfig.CurrentTeamId == default ? MasaUser.CurrentTeamId : StackGlobalConfig.CurrentTeamId;
+        _teamId = MasaUser.CurrentTeamId;
 
         await GetProjects();
 

@@ -8,16 +8,16 @@ public class RemoveSchedulerJobDomainEventHandler
     private readonly QuartzUtils _quartzUtils;
     private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
-    private readonly IDomainEventBus _eventBus;
     private readonly SchedulerServerManager _schedulerServerManager;
+    private readonly IAlertClient _alertClient;
 
-    public RemoveSchedulerJobDomainEventHandler(QuartzUtils quartzUtils, ISchedulerJobRepository schedulerJobRepository, ISchedulerTaskRepository schedulerTaskRepository, IDomainEventBus eventBus, SchedulerServerManager schedulerServerManager)
+    public RemoveSchedulerJobDomainEventHandler(QuartzUtils quartzUtils, ISchedulerJobRepository schedulerJobRepository, ISchedulerTaskRepository schedulerTaskRepository, SchedulerServerManager schedulerServerManager, IAlertClient alertClient)
     {
         _quartzUtils = quartzUtils;
         _schedulerJobRepository = schedulerJobRepository;
         _schedulerTaskRepository = schedulerTaskRepository;
-        _eventBus = eventBus;
         _schedulerServerManager = schedulerServerManager;
+        _alertClient = alertClient;
     }
 
     [EventHandler]
@@ -46,5 +46,10 @@ public class RemoveSchedulerJobDomainEventHandler
         }
 
         await _quartzUtils.RemoveCronJob(@event.Request.JobId);
+
+        if (job.AlarmRuleId != default)
+        {
+            await _alertClient.AlarmRuleService.DeleteAsync(job.AlarmRuleId);
+        }
     }
 }

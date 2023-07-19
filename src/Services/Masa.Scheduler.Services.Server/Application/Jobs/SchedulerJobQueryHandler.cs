@@ -123,4 +123,13 @@ public class SchedulerJobQueryHandler
 
         query.Result = job == null ? null : _mapper.Map<SchedulerJobDto>(job);
     }
+
+    [EventHandler]
+    public async Task GetAsync(GetSchedulerJobQuery query)
+    {
+        var entity = await _schedulerJobRepository.FindAsync(query.SchedulerJobId);
+        MasaArgumentException.ThrowIfNull(entity, "SchedulerJob");
+
+        query.Result = entity.Adapt<SchedulerJobDto>();
+    }
 }

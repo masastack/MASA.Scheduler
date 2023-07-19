@@ -5,47 +5,17 @@ namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
 public partial class SchedulerTasks
 {
-    [Parameter]
-    public SchedulerJobDto? SelectedJob
-    {
-        get => _job;
-        set
-        {
-            ResetQueryOptions();
-
-            if (_job?.Id != value?.Id)
-            {
-                _job = value;
-                _jobChange = true;
-                OnQueryDataChanged();
-            }
-            else
-            {
-                _jobChange = false;
-            }
-        }
-    }
+    [CascadingParameter]
+    public SLayout Layout { get; set; } = default!;
 
     [Parameter]
-    public bool Visible
-    {
-        get => _visible;
-        set
-        {
-            if (_visible != value)
-            {
-                _visible = value;
+    public string JobId { get; set; } = string.Empty;
 
-                if (_visible && !_jobChange)
-                {
-                    OnQueryDataChanged();
-                }
-            }
-        }
-    }
+    //[Parameter]
+    //[SupplyParameterFromQuery(Name = "projectIdentity")]
+    //public string ProjectIdentity { get; set; } = string.Empty;
 
-    private bool _jobChange;
-    private bool _visible;
+    private Guid _jobId => string.IsNullOrEmpty(JobId) ? default : Guid.Parse(JobId);
     private TaskRunStatus _queryStatus;
     private TaskRunStatus _lastQueryStatus;
     private bool _showConfirmDialog;
@@ -158,6 +128,23 @@ public partial class SchedulerTasks
         _jobQueryTimeTypeList = Enum.GetValues<JobQueryTimeTypes>().Where(t => t != JobQueryTimeTypes.CreationTime && t != JobQueryTimeTypes.ModificationTime).ToList();
 
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            _job = await SchedulerServerCaller.SchedulerJobService.GetAsync(_jobId);
+            await OnQueryDataChanged();
+        }
+
+        Layout.ReplaceLastBreadcrumb(T("Task"));
+        Layout.UpdateBreadcrumbs(items =>
+        {
+            items[0].Href = $"/job?isState={true}";
+        });
     }
 
     private string ComputedStatusColor(TaskRunStatus status)

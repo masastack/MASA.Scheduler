@@ -103,4 +103,11 @@ public class SchedulerJobService : ServiceBase
         await eventBus.PublishAsync(command);
         return Results.Ok();
     }
+
+    public async Task<SchedulerJobDto> GetAsync(IEventBus eventBus, Guid id)
+    {
+        var query = new GetSchedulerJobQuery(id);
+        await eventBus.PublishAsync(query);
+        return query.Result;
+    }
 }

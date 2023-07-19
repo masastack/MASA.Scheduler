@@ -1,9 +1,12 @@
 ﻿@inherits ProComponentBase
+@page "/job"
+
+<PageTitle>@T("Job")</PageTitle>
 <AutoHeight Overflow="_jobs.Any()" AutoClass="relative mt-3">
     <HeaderContent>
         <MRow NoGutters Class="flex-none mt-3">
             <MCol Md="2">
-                <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="TeamId">
+                <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="_teamId" ProjectIdentity="@_projectIdentity">
                 </Projects>
             </MCol>
             

@@ -47,4 +47,9 @@ public class SchedulerJobService : ServiceBase
     {
         await PostAsync($"{id}/upsertAlarm?alarmRuleId={alarmRuleId}", new { });
     }
+
+    public async Task<SchedulerJobDto?> GetAsync(Guid id)
+    {
+        return await GetAsync<SchedulerJobDto>($"{id}");
+    }
 }
