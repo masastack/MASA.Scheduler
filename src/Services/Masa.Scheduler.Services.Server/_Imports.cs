@@ -118,3 +118,4 @@ global using System.Data.Common;
 global using System.Data;
 global using Masa.Contrib.StackSdks.Isolation;
 global using Masa.BuildingBlocks.StackSdks.Isolation;
+global using Mapster;

@@ -22,9 +22,14 @@ public partial class Projects
     }
 
     [Parameter]
+    public string ProjectIdentity { get; set; } = string.Empty;
+
+    [Parameter]
     public EventCallback<ProjectDto> OnProjectChanged { get; set; }
 
-    private string _projectName = string.Empty;
+    [Inject]
+    public SchedulerJobsState SchedulerJobsState { get; set; } = default!;
+
     private List<ProjectDto> _projects = new();
     private string _selectedProjectIdentity = string.Empty;
     private Guid? _teamId = null;
@@ -40,6 +45,7 @@ public partial class Projects
             if (_selectedProjectIdentity != value)
             {
                 _selectedProjectIdentity = value;
+                SchedulerJobsState.ProjectIdentity = value;
 
                 if (OnProjectChanged.HasDelegate)
                 {
@@ -58,7 +64,7 @@ public partial class Projects
 
     private async Task GetProjectList()
     {
-        if (_teamId == null)
+        if (_teamId == null || _teamId == default)
         {
             _projects = new();
             return;
@@ -68,7 +74,9 @@ public partial class Projects
 
         if (_projects.Any())
         {
-            var project = _projects.FirstOrDefault();
+            var project = _projects.FirstOrDefault(x => x.Identity == ProjectIdentity);
+            if (project == null)
+                project = _projects.FirstOrDefault();
 
             NextTick(async () =>
             {

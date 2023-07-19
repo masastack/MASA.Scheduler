@@ -1,7 +1,7 @@
 ﻿@inherits ProComponentBase
 
-<SSelect Small @bind-Value="@SelectedProjectIdentity" 
-        Label="@T("Project")"
+<SSelect Small @bind-Value="@SelectedProjectIdentity"
+         Label="@T("Project")"
         Items="_projects"
         ItemText="e => e.Name"
         ItemValue="e=> e.Identity"

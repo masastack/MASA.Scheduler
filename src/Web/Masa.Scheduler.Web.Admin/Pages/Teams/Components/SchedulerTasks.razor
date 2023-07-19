@@ -2,12 +2,15 @@
 @using Masa.Contrib.StackSdks.Config;
 @inherits ProComponentBase
 @inject IMasaStackConfig MasaStackConfig
-<AutoHeight Overflow>
+@page "/job/task/{JobId}"
+
+<PageTitle>@T("Task")</PageTitle>
+<AutoHeight Overflow AutoClass="mt-6">
     <HeaderContent>
-        <MRow Class="flex-none d-inline-flex my-6 pr-4" NoGutters>
+        <MRow Class="flex-none d-inline-flex pr-4" NoGutters>
             <MCol>
                 <span class="emphasis--text h5">
-                    @SelectedJob?.Name
+                    @_job?.Name
                 </span>
             </MCol>
             <MSpacer />
@@ -47,7 +50,7 @@
         </MRadioGroup>
     </HeaderContent>
     <AutoHeightContent>
-        <MCard Class="page-content mt-6 pa-2" Style="border-radius: 16px !important;position:relative;">
+        <MCard Class="full-height pa-2" Style="border-radius: 16px !important;position:relative;">
             @if (_tasks.Any())
             {
                 <SDataTable Headers="Headers" Items="_tasks" TItem="SchedulerTaskDto" ItemsPerPage="_pageSize" HideDefaultFooter Class="d-flex full-height flex-column masa-tasktable">

@@ -130,7 +130,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     {
         if (!_model.LogMonitorItems.Any())
         {
-            _model.LogMonitorItems.Add(new LogMonitorItemModel());
+            _model.LogMonitorItems.Add(new LogMonitorItemModel { AggregationType = LogAggregationType.Count });
         }
         if (!_model.MetricMonitorItems.Any())
         {
@@ -224,7 +224,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
     private void HandleLogMonitorItemsAdd(LogMonitorItemModel item)
     {
         var index = _model.LogMonitorItems.IndexOf(item) + 1;
-        _model.LogMonitorItems.Insert(index, new LogMonitorItemModel());
+        _model.LogMonitorItems.Insert(index, new LogMonitorItemModel { AggregationType = LogAggregationType.Count });
     }
 
     private void HandleLogMonitorItemsRemove(LogMonitorItemModel item)
@@ -292,24 +292,5 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
         {
             _appItems = await PmClient.AppService.GetListByProjectIdsAsync(new List<int> { projectId.Value }) ?? new();
         };
-    }
-
-    private async Task HandleDel()
-    {
-        await ConfirmAsync(T("DeletionConfirmationMessage", $"{T("AlarmRule")}\"{_model.DisplayName}\""), DeleteAsync, AlertTypes.Error);
-    }
-
-    private async Task DeleteAsync()
-    {
-        //Loading = true;
-        await AlertClient.AlarmRuleService.DeleteAsync(_entityId);
-        //Loading = false;
-        OpenSuccessMessage(T("DeletedSuccessfullyMessage"));
-        _visible = false;
-        ResetForm();
-        if (OnOk.HasDelegate)
-        {
-            await OnOk.InvokeAsync();
-        }
     }
 }
