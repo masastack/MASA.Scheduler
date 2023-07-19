@@ -64,7 +64,7 @@ public partial class Projects
 
     private async Task GetProjectList()
     {
-        if (_teamId == null || _teamId == default)
+        if (_teamId == null || _teamId == Guid.Empty)
         {
             _projects = new();
             return;
