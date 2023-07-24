@@ -11,9 +11,8 @@ public partial class SchedulerTasks
     [Parameter]
     public string JobId { get; set; } = string.Empty;
 
-    //[Parameter]
-    //[SupplyParameterFromQuery(Name = "projectIdentity")]
-    //public string ProjectIdentity { get; set; } = string.Empty;
+    [Inject]
+    public IMultiEnvironmentUserContext MultiEnvironmentUserContext { get; set; } = default!;
 
     private Guid _jobId => string.IsNullOrEmpty(JobId) ? default : Guid.Parse(JobId);
     private TaskRunStatus _queryStatus;
@@ -104,9 +103,12 @@ public partial class SchedulerTasks
     {
         await MasaSignalRClient.HubConnectionBuilder();
 
-        MasaSignalRClient.HubConnection?.On(SignalRMethodConsts.GET_NOTIFICATION, async (SchedulerTaskDto schedulerTaskDto) =>
+        MasaSignalRClient.HubConnection?.On(SignalRMethodConsts.GET_NOTIFICATION, async (SchedulerTaskDto schedulerTaskDto, string env) =>
         {
-            await SignalRNotifyDataHandler(schedulerTaskDto);
+            if (MultiEnvironmentUserContext.Environment == env)
+            {
+                await SignalRNotifyDataHandler(schedulerTaskDto);
+            }
         });
 
         Headers = new()

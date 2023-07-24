@@ -7,11 +7,13 @@ public class SignalRUtils
 {
     private readonly IHubContext<NotificationsHub> _hubContext;
     private readonly IDistributedCacheClient _distributedCacheClient;
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
 
-    public SignalRUtils(IHubContext<NotificationsHub> hubContext, IDistributedCacheClient distributedCacheClient)
+    public SignalRUtils(IHubContext<NotificationsHub> hubContext, IDistributedCacheClient distributedCacheClient, IMultiEnvironmentContext multiEnvironmentContext)
     {
         _hubContext = hubContext;
         _distributedCacheClient = distributedCacheClient;
+        _multiEnvironmentContext = multiEnvironmentContext;
     }
 
     public async Task SendNoticationByGroup(string group, string method, SchedulerTaskDto taskDto, int intervalSecond = 0)
@@ -29,7 +31,7 @@ public class SignalRUtils
             }
         }
         var groupClient = _hubContext.Clients.Groups(group);
-        await groupClient.SendAsync(SignalRMethodConsts.GET_NOTIFICATION, taskDto);
+        await groupClient.SendAsync(SignalRMethodConsts.GET_NOTIFICATION, taskDto, _multiEnvironmentContext.CurrentEnvironment);
     }
 
 }
