@@ -71,7 +71,7 @@ public partial class SchedulerJobs : ProComponentBase
 
     private List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
 
-    private bool _showProgressbar = true;
+    private bool _showProgressbar = false;
 
     private bool _showConfirmDialog;
 
