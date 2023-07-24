@@ -37,6 +37,9 @@ public partial class SchedulerJobs : ProComponentBase
     [Inject]
     public MasaUser MasaUser { get; set; } = default!;
 
+    [Inject]
+    public IMultiEnvironmentUserContext MultiEnvironmentUserContext { get; set; } = default!;
+
     private Guid _teamId = default;
 
     private bool _projectChange;
@@ -194,9 +197,12 @@ public partial class SchedulerJobs : ProComponentBase
     {
         await MasaSignalRClient.HubConnectionBuilder();
 
-        MasaSignalRClient.HubConnection?.On(SignalRMethodConsts.GET_NOTIFICATION, async (SchedulerTaskDto schedulerTaskDto) =>
+        MasaSignalRClient.HubConnection?.On(SignalRMethodConsts.GET_NOTIFICATION, async (SchedulerTaskDto schedulerTaskDto, string env) =>
         {
-            await SignalRNotifyDataHandler(schedulerTaskDto);
+            if (MultiEnvironmentUserContext.Environment == env)
+            {
+                await SignalRNotifyDataHandler(schedulerTaskDto);
+            }
         });
 
         _teamId = MasaUser.CurrentTeamId;
@@ -250,7 +256,7 @@ public partial class SchedulerJobs : ProComponentBase
     private Task QueryTimeChanged((DateTimeOffset? queryStartTime, DateTimeOffset? queryEndTime) arg)
     {
         _queryStartTime = arg.queryStartTime;
-        _queryEndTime= arg.queryEndTime;
+        _queryEndTime = arg.queryEndTime;
         return OnQueryDataChanged();
     }
 

@@ -40,6 +40,8 @@ public class ServerScopedProcessingService : IScopedProcessingService
     {
         var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => (t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry) && t.Job.Enabled).ToListAsync();
 
+        await StartAssignAsync();
+
         await LoadRunningTaskAsync(allTask);
 
         await LoadRetryTaskAsync(allTask);
@@ -49,8 +51,6 @@ public class ServerScopedProcessingService : IScopedProcessingService
         await CheckSchedulerExpiredJobAsync(cronJobList.Where(p => p.ScheduleExpiredStrategy != ScheduleExpiredStrategyTypes.Ignore));
 
         await RegisterCronJobAsync(cronJobList);
-
-        await StartAssignAsync();
     }
 
     private async Task LoadRunningTaskAsync(List<SchedulerTask> allTask)
