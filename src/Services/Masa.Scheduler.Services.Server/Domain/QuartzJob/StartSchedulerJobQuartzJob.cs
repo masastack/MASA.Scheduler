@@ -6,17 +6,19 @@ namespace Masa.Scheduler.Services.Server.Domain.QuartzJob;
 public class StartSchedulerJobQuartzJob : IJob
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IMasaStackConfig _masaStackConfig;
 
-    public StartSchedulerJobQuartzJob(IServiceProvider serviceProvider)
+    public StartSchedulerJobQuartzJob(IServiceProvider serviceProvider, IMasaStackConfig masaStackConfig)
     {
         _serviceProvider = serviceProvider;
+        _masaStackConfig = masaStackConfig;
     }
 
     public async Task Execute(IJobExecutionContext context)
     {
         var jobId = context.JobDetail.JobDataMap[ConstStrings.JOB_ID];
         var environment = context.JobDetail.JobDataMap[IsolationConsts.ENVIRONMENT];
-        var env = environment?.ToString() ?? string.Empty;
+        var env = environment?.ToString() ?? _masaStackConfig.Environment;
 
         if (jobId == null)
         {
