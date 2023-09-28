@@ -29,7 +29,7 @@ public class SchedulerJobHttpConfig : ValueObject
     [JsonInclude]
     public bool IsAsync { get; set; }
 
-    public void SetConfig(HttpMethods httpMethod, string requestUrl, List<KeyValuePair<string, string>> httpParameters, List<KeyValuePair<string, string>> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent)
+    public void SetConfig(HttpMethods httpMethod, string requestUrl, List<KeyValuePair<string, string>> httpParameters, List<KeyValuePair<string, string>> httpHeader, string httpBody, HttpVerifyTypes httpVerifyType, string verityContent, bool isAsync)
     {
         HttpMethod = httpMethod;
         RequestUrl = requestUrl;
@@ -38,6 +38,7 @@ public class SchedulerJobHttpConfig : ValueObject
         HttpBody = httpBody;
         HttpVerifyType = httpVerifyType;
         VerifyContent = verityContent;
+        IsAsync = isAsync;
     }
 
     protected override IEnumerable<object> GetEqualityValues()
@@ -49,5 +50,6 @@ public class SchedulerJobHttpConfig : ValueObject
         yield return HttpBody;
         yield return HttpVerifyType;
         yield return VerifyContent;
+        yield return IsAsync;
     }
 }
