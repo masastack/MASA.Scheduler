@@ -116,13 +116,13 @@ public class StartTaskDomainEventHandler
                     {
                         task.Wait();
                         allowEnqueue = false;
-                        _logger.LogInformation("Other task is running, trigger serial block strategy, waiting now", WriterTypes.Server, task.Id, task.JobId);
+                        _logger.LogWarning("Other task is running, trigger serial block strategy, waiting now", WriterTypes.Server, task.Id, task.JobId);
                     }
                     break;
                 case ScheduleBlockStrategyTypes.Discard:
                     task.Discard();
                     allowEnqueue = false;
-                    _logger.LogInformation("Trigger discard block strategy, task failed", WriterTypes.Server, task.Id, task.JobId);
+                    _logger.LogWarning("Trigger discard block strategy, task failed", WriterTypes.Server, task.Id, task.JobId);
                     break;
                 case ScheduleBlockStrategyTypes.Cover:
                     foreach (var otherRunningTask in otherRunningTaskList)
@@ -140,7 +140,7 @@ public class StartTaskDomainEventHandler
                         await _schedulerTaskRepository.UpdateAsync(otherRunningTask);
 
                         await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, _mapper.Map<SchedulerTaskDto>(otherRunningTask));
-                        _logger.LogInformation($"Trigger cover block strategy by TaskId: {task.Id}, task failed", WriterTypes.Server, otherRunningTask.Id, otherRunningTask.JobId);
+                        _logger.LogWarning($"Trigger cover block strategy by TaskId: {task.Id}, task failed", WriterTypes.Server, otherRunningTask.Id, otherRunningTask.JobId);
                     }
                     task.TaskSchedule(@event.Request.OperatorId);
                     break;
