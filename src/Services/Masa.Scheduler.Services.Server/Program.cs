@@ -162,7 +162,6 @@ app.UseMasaExceptionHandler(opt =>
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStackIsolation();
