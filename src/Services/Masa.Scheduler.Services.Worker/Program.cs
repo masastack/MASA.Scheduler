@@ -105,7 +105,7 @@ builder.Services
          {
              eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
          })
-         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
+         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter(), useTransaction: false)
         .UseRepository<SchedulerDbContext>();
     });
 

@@ -134,7 +134,7 @@ builder.Services
         {
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
-        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer().AddInterceptors(new QueryWithNoLockDbCommandInterceptor()).UseFilter())
+        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer().AddInterceptors(new QueryWithNoLockDbCommandInterceptor()).UseFilter(),useTransaction:false)
         .UseRepository<SchedulerDbContext>();
     });
 await builder.Services.AddStackIsolationAsync(MasaStackProject.Scheduler.Name);
