@@ -81,7 +81,7 @@ public class StopTaskDomainEventHandler
 
             var dto = _mapper.Map<SchedulerTaskDto>(task);
 
-            var waitForRunTask = await _dbContext.Tasks.OrderBy(t => t.SchedulerTime).ThenBy(t => t.CreationTime).Include(t => t.Job).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
+            var waitForRunTask = await _dbContext.Tasks.Include(t => t.Job).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
 
             if (waitForRunTask != null)
             {
