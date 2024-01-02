@@ -47,19 +47,19 @@ public class StopTaskDomainEventHandler
             throw new UserFriendlyException($"Scheduler Task not found, Id: {@event.Request.TaskId}");
         }
 
-        if(task.TaskStatus != TaskRunStatus.Running && task.TaskStatus != TaskRunStatus.WaitToRun && task.TaskStatus != TaskRunStatus.WaitToRetry && task.TaskStatus != TaskRunStatus.Timeout)
+        if (task.TaskStatus != TaskRunStatus.Running && task.TaskStatus != TaskRunStatus.WaitToRun && task.TaskStatus != TaskRunStatus.WaitToRetry && task.TaskStatus != TaskRunStatus.Timeout)
         {
             throw new UserFriendlyException("Only Process status can be stop");
         }
 
-        if(task.TaskStatus == TaskRunStatus.Running || task.TaskStatus == TaskRunStatus.Timeout)
+        if (task.TaskStatus == TaskRunStatus.Running || task.TaskStatus == TaskRunStatus.Timeout)
         {
             await _serverManager.StopTask(task.Id, task.WorkerHost);
         }
 
         if (!@event.IsRestart)
         {
-            if(task.TaskStatus == TaskRunStatus.WaitToRetry)
+            if (task.TaskStatus == TaskRunStatus.WaitToRetry)
             {
                 await _quartzUtils.RemoveDelayTask(task.Id, task.JobId);
             }
@@ -81,7 +81,7 @@ public class StopTaskDomainEventHandler
 
             var dto = _mapper.Map<SchedulerTaskDto>(task);
 
-            var waitForRunTask = await _dbContext.Tasks.OrderBy(t => t.SchedulerTime).ThenBy(t => t.CreationTime).Include(t => t.Job).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
+            var waitForRunTask = await _dbContext.Tasks.Include(t => t.Job).OrderBy(x => x.Id).FirstOrDefaultAsync(t => t.TaskStatus == TaskRunStatus.WaitToRun && t.JobId == task.JobId);
 
             if (waitForRunTask != null)
             {

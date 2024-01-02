@@ -98,7 +98,7 @@ public class ServerScopedProcessingService : IScopedProcessingService
 
             var calcStartTime = cronJob.UpdateExpiredStrategyTime;
 
-            var lastTask = await _dbContext.Tasks.Where(x => x.JobId == cronJob.Id).OrderByDescending(t => t.SchedulerTime).AsNoTracking().FirstOrDefaultAsync();
+            var lastTask = await _dbContext.Tasks.Where(x => x.JobId == cronJob.Id).OrderByDescending(t => t.Id).AsNoTracking().FirstOrDefaultAsync();
 
             if (lastTask != null && calcStartTime < lastTask.SchedulerTime)
             {
