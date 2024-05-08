@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Contracts.Server.Infrastructure.Utils;
 
 public static class HttpUtils
 {
-    private static ActivitySource _source = new ActivitySource("Masa.Scheduler.Background");
+    public static ActivitySource ActivitySource { get; private set; } = new ActivitySource("Masa.Scheduler.Background");
 
     public static HttpMethod ConvertHttpMethod(HttpMethods methods)
     {
@@ -36,7 +36,7 @@ public static class HttpUtils
 
     public static Activity? SetTraceParent(string? traceId, string? spanId)
     {
-        return _source.StartActivity("Background Task", ActivityKind.Consumer, $"00-{traceId}-{spanId}-01");
+        return ActivitySource.StartActivity("Background Task", ActivityKind.Consumer, $"00-{traceId}-{spanId}-01");
     }
 
     public static Uri GetRequestUrl(string requestUrl, List<KeyValuePair<string, string>> httpParameters)

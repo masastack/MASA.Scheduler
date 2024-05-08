@@ -46,7 +46,7 @@ public static class OpenTelemetrySchedulerExtensions
             {
                 builder.SetResourceBuilder(resources);
                 builder.AddOtlpExporter(options => options.Endpoint = uri);
-                builder.AddSource("Masa.Scheduler.Background");
+                builder.AddSource(HttpUtils.ActivitySource.Name);
             },
             builder =>
             {
