@@ -90,7 +90,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             Logger.LogError(ex, "OnManagerStartAsync");
         }
     }
-    
+
     public async Task ProcessTaskRun()
     {
         try
@@ -141,8 +141,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
     public Task StartTaskAsync(SchedulerWorkerManagerData data, Guid taskId, SchedulerJobDto job, DateTimeOffset excuteTime, string? traceId = null, string? spanId = null)
     {
         var cts = new CancellationTokenSource();
-        var internalCts = new CancellationTokenSource();
-
+        var internalCts = new CancellationTokenSource();       
         data.TaskCancellationTokenSources.TryAdd(taskId, cts);
 
         data.InternalCancellationTokenSources.TryAdd(taskId, internalCts);
@@ -182,11 +181,12 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
 
         _ = Task.Run(async () =>
         {
+            var activity = HttpUtils.SetTraceParent(traceId, spanId);
             var managerData = ServiceProvider.GetRequiredService<SchedulerWorkerManagerData>();
-
             try
             {
                 _schedulerLogger.LogInformation($"Task run", WriterTypes.Worker, taskId, job.Id);
+               
                 var runStatus = await taskHandler.RunTask(taskId, job, excuteTime, traceId, spanId, internalCts.Token);
 
                 if (!job.IsAsync || (job.IsAsync && runStatus != TaskRunStatus.Success))
@@ -201,6 +201,7 @@ public class SchedulerWorkerManager : BaseSchedulerManager<ServerModel, Schedule
             }
             finally
             {
+                activity?.Dispose();
                 cts?.Dispose();
                 internalCts?.Dispose();
 
