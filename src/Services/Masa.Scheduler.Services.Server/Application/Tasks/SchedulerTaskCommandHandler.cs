@@ -23,7 +23,7 @@ public class SchedulerTaskCommandHandler
     [EventHandler]
     public async Task AddHandleAsync(AddSchedulerTaskCommand command)
     {
-        var task = new SchedulerTask(command.Request.JobId, command.Request.Origin, command.Request.OperatorId);
+        var task = new SchedulerTask(command.Request.JobId, command.Request.Origin, command.Request.OperatorId, command.Request.ExcuteTime);
 
         await _schedulerTaskRepository.AddAsync(task);
     }

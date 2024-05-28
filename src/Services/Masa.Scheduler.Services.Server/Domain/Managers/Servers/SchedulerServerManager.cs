@@ -85,7 +85,6 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                 var currentRunCount = await RedisCacheClient.HashIncrementAsync(CacheKeys.CURRENT_RUN_COUNT);
                 var serviceCount = data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count;
                 var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % serviceCount);
-                Console.WriteLine($"CurrentRunCount: {currentRunCount}, currentUesIndex: {currentUesIndex}, serviceCount: {serviceCount}");
                 worker = data.ServiceList[currentUesIndex];
                 break;
                 //case RoutingStrategyTypes.DynamicRatioApm:

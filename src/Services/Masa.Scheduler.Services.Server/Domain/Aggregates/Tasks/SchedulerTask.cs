@@ -37,11 +37,12 @@ public class SchedulerTask : FullAggregateRoot<Guid, Guid>
 
     public Guid OperatorId { get; private set; }
 
-    public SchedulerTask(Guid jobId, string origin, Guid operatorId)
+    public SchedulerTask(Guid jobId, string origin, Guid operatorId, DateTimeOffset schedulerTime)
     {
         JobId = jobId;
         Origin = origin;
         OperatorId = operatorId;
+        UpdateTaskSchedulerTime(schedulerTime);
     }
 
     public void UpdateTaskSchedulerTime(DateTimeOffset excuteTime)
