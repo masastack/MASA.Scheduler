@@ -37,7 +37,7 @@ public class StartJobDomainEventHandler
 
         var operatorId = @event.Request.OperatorId == default ? job.Creator : @event.Request.OperatorId;
 
-        var task = new SchedulerTask(job.Id, job.Origin, operatorId);
+        var task = new SchedulerTask(job.Id, job.Origin, operatorId, @event.Request.ExcuteTime);
 
         await _schedulerTaskRepository.AddAsync(task);
         await _unitOfWork.SaveChangesAsync();
