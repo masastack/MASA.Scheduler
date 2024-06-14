@@ -154,13 +154,13 @@ public class ServerScopedProcessingService : IScopedProcessingService
         {
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
-            await using var scope = _scopeFactory.CreateAsyncScope();
-            var multiEnvironmentSetter = scope.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>();
-            multiEnvironmentSetter.SetEnvironment(_multiEnvironmentContext.CurrentEnvironment);
-            var schedulerServerManager = scope.ServiceProvider.GetRequiredService<SchedulerServerManager>();
-
             while (true)
             {
+                await using var scope = _scopeFactory.CreateAsyncScope();
+                var multiEnvironmentSetter = scope.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>();
+                multiEnvironmentSetter.SetEnvironment(_multiEnvironmentContext.CurrentEnvironment);
+                var schedulerServerManager = scope.ServiceProvider.GetRequiredService<SchedulerServerManager>();
+
                 await schedulerServerManager.StartAssignAsync();
 
                 await Task.Delay(100);
