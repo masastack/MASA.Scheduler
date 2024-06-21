@@ -68,7 +68,9 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
 
     private async Task InitData(Guid jobId, string displayName)
     {
-        var whereExpression = $@"{{""bool"":{{""must"":[{{""term"":{{""Attributes.JobId.keyword"":""{jobId}""}}}},{{""term"":{{""SeverityText.keyword"":""Error""}}}}]}}}}";
+        var whereExpression = $@"SeverityText='Error' 
+and indexOf(LogAttributesKeys,'JobId')>0
+and LogAttributesValues[indexOf(LogAttributesKeys,'JobId')]='{jobId}'";
         var ruleExpression = @"{""Rules"":[{""RuleName"":""CheckWorkerErrorJob"",""ErrorMessage"":""Log with error level."",""ErrorType"":""Error"",""RuleExpressionType"":""LambdaExpression"",""Expression"":""JobId > 0""}]}";
         var alarmRule = new AlarmRuleUpsertViewModel
         {
@@ -79,7 +81,7 @@ public partial class LogAlarmRuleUpsertModal : ProComponentBase
             CheckFrequency = new CheckFrequencyViewModel
             {
                 Type = AlarmCheckFrequencyType.Cron,
-                CronExpression = "0 0/10 * * * ? ",
+                CronExpression = "0 0/30 * * * ? ",
                 FixedInterval = new TimeIntervalViewModel
                 {
                     IntervalTimeType = TimeType.Minute
