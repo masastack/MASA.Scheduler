@@ -9,20 +9,20 @@
 	<PackageReference Include="FluentValidation" Version="11.2.0" />
     <PackageReference Include="Masa.BuildingBlocks.Caching" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Configuration.ConfigurationApi.Dcc" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.BuildingBlocks.StackSdks.Config" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.StackSdks.Config" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="$(MasaStackSdksPackageVersion)" />
+	<PackageReference Include="Masa.BuildingBlocks.StackSdks.Config" Version="$(MasaStackSdksPackageVersion)" />
+	<PackageReference Include="Masa.Contrib.StackSdks.Config" Version="$(MasaStackSdksPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Utils.Extensions.Validations.FluentValidation" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Utils.Security.Cryptography" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Utils.Configuration.Json" Version="$(MasaFrameworkPackageVersion)" />
 	<PackageReference Include="Masa.Contrib.Data.UoW.EFCore" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.StackSdks.Isolation" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.StackSdks.Auth" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.StackSdks.Dcc" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.StackSdks.Tsc.OpenTelemetry" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.StackSdks.Alert" Version="$(MasaFrameworkPackageVersion)" />
+	<PackageReference Include="Masa.Contrib.StackSdks.Isolation" Version="$(MasaStackSdksPackageVersion)" />
+	<PackageReference Include="Masa.Contrib.StackSdks.Auth" Version="$(MasaStackSdksPackageVersion)" />
+	<PackageReference Include="Masa.Contrib.StackSdks.Dcc" Version="$(MasaStackSdksPackageVersion)" />
+	<PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="$(MasaStackSdksPackageVersion)" />
+	<PackageReference Include="Masa.Contrib.StackSdks.Tsc.OpenTelemetry" Version="$(MasaStackSdksPackageVersion)" />
+	<PackageReference Include="Masa.Contrib.StackSdks.Alert" Version="$(MasaStackSdksPackageVersion)" />
 	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="6.0.5" />
   </ItemGroup>

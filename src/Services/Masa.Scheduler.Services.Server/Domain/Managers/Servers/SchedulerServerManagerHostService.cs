@@ -20,12 +20,12 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
         var environmentProvider = _serviceProvider.GetRequiredService<EnvironmentProvider>();
         var data = _serviceProvider.GetRequiredService<SchedulerServerManagerData>();
 
-        foreach (var environment in environmentProvider.GetEnvionments())
-        {
-            data.TaskQueue.TryAdd(environment, new());
+        //foreach (var environment in environmentProvider.GetEnvionments())
+        //{
+        //    data.TaskQueue.TryAdd(environment, new());
 
-            await DoWorkAsync(environment, stoppingToken);
-        }
+        //    await DoWorkAsync(environment, stoppingToken);
+        //}
     }
 
     private async Task DoWorkAsync(string environment, CancellationToken stoppingToken)
