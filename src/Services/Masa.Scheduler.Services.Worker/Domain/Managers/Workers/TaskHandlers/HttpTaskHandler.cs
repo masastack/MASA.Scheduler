@@ -34,6 +34,7 @@ public class HttpTaskHandler : ITaskHandler
 
         HttpUtils.AddHttpHeader(client, jobDto.HttpConfig.HttpHeaders);
 
+        jobDto.HttpConfig.HttpParameters.Add(new("jobId", jobDto.Id.ToString()));
         jobDto.HttpConfig.HttpParameters.Add(new("taskId", taskId.ToString()));
         jobDto.HttpConfig.HttpParameters.Add(new("excuteTime", System.Web.HttpUtility.UrlEncode(excuteTime.ToString(), System.Text.Encoding.UTF8)));
         jobDto.HttpConfig.HttpParameters.Add(new("traceId", traceId ?? ""));

@@ -3,7 +3,7 @@
 
 namespace Masa.Scheduler.Web.Admin;
 
-public abstract class ProComponentBase : BDomComponentBase
+public abstract class ProComponentBase : Blazor.Core.MasaComponentBase
 {
     private SchedulerServerCaller? _schedulerServerCaller;
     private GlobalConfig? _globalConfig;
