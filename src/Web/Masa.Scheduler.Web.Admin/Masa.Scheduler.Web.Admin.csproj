@@ -20,7 +20,7 @@
     <PackageReference Include="Masa.BuildingBlocks.Authentication.Identity" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Data.Mapping.Mapster" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Stack.Components" Version="0.0.464" />
+    <PackageReference Include="Masa.Stack.Components" Version="0.0.466" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.15" />
     <PackageReference Include="Quartz.AspNetCore" Version="3.6.2" />
 	<PackageReference Include="Masa.Contrib.StackSdks.Alert" Version="$(MasaStackSdksPackageVersion)" />

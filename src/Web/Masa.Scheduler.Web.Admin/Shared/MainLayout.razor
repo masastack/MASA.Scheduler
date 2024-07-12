@@ -3,7 +3,7 @@
 @inject NavigationManager Navigation
 @inject IMasaStackConfig MasaStackConfig
 
-<SLayout OnSignOut="SignOut" OnErrorAsync="OnError" WhiteUris="_whiteUris" IsShowEnvironmentSwitch Class="full-height"
+<SLayout OnSignOut="SignOut" OnErrorAfterHandle="OnErrorAfterHandle" WhiteUris="_whiteUris" IsShowEnvironmentSwitch Class="fill-height"
          Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
          MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg">
     @Body
@@ -18,9 +18,8 @@
 
     private readonly List<string> _whiteUris = new() { "/job/task/*" };
 
-    private Task OnError(Exception exception)
+    private Task OnErrorAfterHandle(Exception exception)
     {
-        PopupService.EnqueueSnackbarAsync(exception.Message, AlertTypes.Error);
         GlobalConfig.Loading = false;
         return Task.CompletedTask;
     }
