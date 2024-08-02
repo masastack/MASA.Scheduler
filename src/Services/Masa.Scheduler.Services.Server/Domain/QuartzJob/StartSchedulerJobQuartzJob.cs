@@ -34,7 +34,7 @@ public class StartSchedulerJobQuartzJob : IJob
         {
             JobId = new Guid(jobId.ToString()!),
             OperatorId = Guid.Empty,
-            ExcuteTime = DateTimeOffset.Now
+            ExcuteTime = context.ScheduledFireTimeUtc ?? DateTimeOffset.Now
         });
 
         await eventBus.PublishAsync(@event);
