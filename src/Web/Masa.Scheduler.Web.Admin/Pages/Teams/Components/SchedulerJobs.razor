@@ -6,8 +6,21 @@
     <HeaderContent>
         <MRow NoGutters Class="flex-none mt-3">
             <MCol Md="2">
-                <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="_teamId" ProjectIdentity="@_projectIdentity">
-                </Projects>
+                <SSelect Small @bind-Value="@_queryParam.BelongProjectIdentity"
+                         Label="@T("Project")"
+                         Items="_projects"
+                         ItemText="e => e.Name"
+                         ItemValue="e=> e.Identity"
+                         TValue="string"
+                         TItemValue="string"
+                         TItem="ProjectDto"
+                         BackgroundColor="white"
+                         Class="rounded-2 body2"
+                         OnChange="OnQueryDataChanged">
+                    <SelectionContent Context="data">
+                        <div class="m-select__selection m-select__selection--comma regular--text">@data.Item.Name</div>
+                    </SelectionContent>
+                </SSelect>
             </MCol>
             
             <SLabeledRadioGroup Value="_jobCreateType" ActiveClass="fill-background" Class="white ml-6" Dense TValue="JobCreateTypes" ValueChanged="SwitchJobCreateType">
@@ -30,7 +43,7 @@
                 {
                     <SButton Small BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="AddJob">
                         <SIcon Size=18 IsDefaultToolTip=false>@IconConstants.Add</SIcon>
-                        <span class="ml-2 btn">@T("Add")@_showProgressbar</span>
+                        <span class="ml-2 btn">@T("Add")</span>
                     </SButton>
                 }
             </div>
@@ -220,11 +233,10 @@
                 }
             </MRow>
         }
-        else if(!_showProgressbar)
+        else if (!Loading)
         {
             <SEmptyPlaceholder />
         }
-        <Loading ShowProgressbar="_showProgressbar" />
     </AutoHeightContent>
     <FooterContent>
         @if (_jobs.Any())
