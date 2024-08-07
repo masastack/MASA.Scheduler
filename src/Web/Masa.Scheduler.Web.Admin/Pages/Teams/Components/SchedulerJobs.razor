@@ -20,7 +20,7 @@
             </SLabeledRadioGroup>
             <MSpacer></MSpacer>
             <div class="d-flex">
-                <SSearch @bind-Value="QueryJobName" BackgroundColor="white" />
+                <SSearch @bind-Value="_queryParam.JobName" BackgroundColor="white" OnEnter="OnQueryDataChanged" />
                 <div @onclick="ToggleAdvanced" class="ml-6 block-center justify-center button fill">
                     <SIcon Class="ma-auto" Color="emphasis2" Size=20 Tooltip="@(!_advanced ? T("Filter") : T("CancelFilter"))">
                         @(!_advanced ? "mdi-filter" : "mdi-filter-off")
@@ -30,7 +30,7 @@
                 {
                     <SButton Small BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="AddJob">
                         <SIcon Size=18 IsDefaultToolTip=false>@IconConstants.Add</SIcon>
-                        <span class="ml-2 btn">@T("Add")</span>
+                        <span class="ml-2 btn">@T("Add")@_showProgressbar</span>
                     </SButton>
                 }
             </div>
@@ -39,43 +39,55 @@
         {
             <MRow Class="@($"mt-6 flex-none")" NoGutters>
                 <MCol Md="2">
-                    <SSelect Small @bind-Value="QueryTimeType"
+                    <SSelect Small @bind-Value="_queryParam.QueryTimeType"
                              Items="_jobQueryTimeTypeList"
                              Label="@T("JobQueryTimeType")"
                              ItemText="e => T(e == default ? string.Empty : e.ToString())"
                              ItemValue="e => e"
+                             TItemValue="JobQueryTimeTypes"
+                             TValue="JobQueryTimeTypes"
+                             TItem="JobQueryTimeTypes"
                              BackgroundColor="white"
-                             Class="rounded-2 body2">
+                             Class="rounded-2 body2"
+                             OnChange="OnQueryDataChanged">
                     </SSelect>
                 </MCol>
-                <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
+                <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryParam.QueryStartTime EndDateTime=_queryParam.QueryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
                 <MCol Md="2" Class="ml-6">
-                    <SSelect Small @bind-Value="QueryJobType"
+                    <SSelect Small @bind-Value="_queryParam.JobType"
                          Items="Enum.GetValues<JobTypes>().ToList()"
                          Label="@T("JobType")"
                          ItemText="e => T(e==default?string.Empty:e.ToString())"
                          ItemValue="e=> e"
+                         TItemValue="JobTypes"
+                         TValue="JobTypes"
+                         TItem="JobTypes"
                          BackgroundColor="white"
-                              Clearable
-                         Class="rounded-2 body2">
+                         Clearable
+                         Class="rounded-2 body2"
+                         OnChange="OnQueryDataChanged">
                     </SSelect>
                     </MCol>
                     @if (_jobCreateType == JobCreateTypes.Api)
                 {
                     <MCol Md="2" Class="ml-6">
-                        <SSelect Small Clearable @bind-Value="QueryOrigin"
+                        <SSelect Small Clearable @bind-Value="_queryParam.Origin"
                          Items="_originList"
                          Label="@T("Origin")"
                          ItemText="e => e"
                          ItemValue="e=> e"
+                         TItemValue="string"
+                         TValue="string"
+                         TItem="string"
                          BackgroundColor="white"
-                         Class="rounded-2 body2">
+                         Class="rounded-2 body2"
+                         OnChange="OnQueryDataChanged">
                         </SSelect>
                     </MCol>
                 }
             </MRow>
         }
-        <MRadioGroup @bind-Value="QueryStatus" Row OnClick="RadioGroupClickHandler" Class="masa-radiogroup">
+        <MRadioGroup @bind-Value="_queryParam.FilterStatus" Row OnChange="HandlerFilterStatusChange" TValue="TaskRunStatus" Class="masa-radiogroup">
             @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
             {
                 <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="green">
@@ -217,7 +229,7 @@
     <FooterContent>
         @if (_jobs.Any())
         {
-            <SPagination Class="mr-6 pb-2" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
+            <SPagination Class="mr-6 pb-2" Page="_queryParam.Page" PageSize=_queryParam.PageSize Total="_total" PageChanged="HandlePageChanged" PageSizeChanged="HandlePageSizeChanged" />
         }        
     </FooterContent>
 </AutoHeight>

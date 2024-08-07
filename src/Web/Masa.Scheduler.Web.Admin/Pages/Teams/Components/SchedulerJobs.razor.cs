@@ -9,24 +9,7 @@ public partial class SchedulerJobs : ProComponentBase
     [SupplyParameterFromQuery(Name = "isState")]
     public bool? IsState { get; set; }
 
-    public ProjectDto? Project
-    {
-        get => _project;
-        set
-        {
-            if (_project?.Id != value?.Id)
-            {
-                _project = value;
-                _projectChange = true;
-                ResetQueryOptions();
-                OnQueryDataChanged();
-            }
-            else
-            {
-                _projectChange = false;
-            }
-        }
-    }
+    public ProjectDto? Project { get; set; } = default;
 
     [Inject]
     public SchedulerJobsState SchedulerJobsState { get; set; } = default!;
@@ -42,29 +25,11 @@ public partial class SchedulerJobs : ProComponentBase
 
     private Guid _teamId = default;
 
-    private bool _projectChange;
-
-    private ProjectDto? _project = default;
-
-    private TaskRunStatus _queryStatus;
-
     private TaskRunStatus _lastQueryStatus;
-
-    private string _queryJobName = string.Empty;
-
-    private JobQueryTimeTypes _queryTimeType = JobQueryTimeTypes.CreationTime;
 
     private JobCreateTypes _jobCreateType = JobCreateTypes.Manual;
 
-    private int _page = 1;
-
-    private int _pageSize = 10;
-
     private long _total;
-
-    private JobTypes _queryJobType;
-
-    private string _queryOrigin = string.Empty;
 
     private List<SchedulerJobDto> _jobs = new();
 
@@ -74,7 +39,7 @@ public partial class SchedulerJobs : ProComponentBase
 
     private List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
 
-    private bool _showProgressbar = false;
+    private bool _showProgressbar = true;
 
     private bool _showConfirmDialog;
 
@@ -92,106 +57,13 @@ public partial class SchedulerJobs : ProComponentBase
 
     private bool _advanced = false;
 
-    private DateTimeOffset? _queryStartTime;
-
-    private DateTimeOffset? _queryEndTime;
-
     private string _projectIdentity { get; set; } = string.Empty;
 
-    public TaskRunStatus QueryStatus
-    {
-        get => _queryStatus;
-        set
-        {
-            if (_queryStatus != value)
-            {
-                _queryStatus = value;
-                SchedulerJobsState.QueryStatus = value;
-                OnQueryDataChanged();
-            }
-        }
-    }
-
-    public string QueryJobName
-    {
-        get => _queryJobName;
-        set
-        {
-            if (_queryJobName != value)
-            {
-                _queryJobName = value;
-                SchedulerJobsState.QueryJobName = value;
-                OnQueryDataChanged();
-            }
-        }
-    }
-
-    public JobQueryTimeTypes QueryTimeType
-    {
-        get => _queryTimeType;
-        set
-        {
-            if (_queryTimeType != value)
-            {
-                _queryTimeType = value;
-                OnQueryDataChanged();
-            }
-        }
-    }
-
-    public int Page
-    {
-        get => _page;
-        set
-        {
-            if (_page != value)
-            {
-                _page = value;
-                OnQueryDataChanged(false);
-            }
-        }
-    }
-
-    public int PageSize
-    {
-        get => _pageSize;
-        set
-        {
-            if (_pageSize != value)
-            {
-                _pageSize = value;
-                OnQueryDataChanged();
-            }
-        }
-    }
-
-    public JobTypes QueryJobType
-    {
-        get => _queryJobType;
-        set
-        {
-            if (_queryJobType != value)
-            {
-                _queryJobType = value;
-                SchedulerJobsState.QueryJobType = value;
-                OnQueryDataChanged();
-            }
-        }
-    }
-
-    public string QueryOrigin
-    {
-        get => _queryOrigin;
-        set
-        {
-            if (_queryOrigin != value)
-            {
-                _queryOrigin = value;
-                SchedulerJobsState.QueryOrigin = value;
-                OnQueryDataChanged();
-            }
-        }
-    }
+    private SchedulerJobListRequest _queryParam = new() {
+        QueryTimeType = JobQueryTimeTypes.CreationTime,
+        Page = 1,
+        PageSize = 10
+    };
 
     protected async override Task OnInitializedAsync()
     {
@@ -216,17 +88,17 @@ public partial class SchedulerJobs : ProComponentBase
         if (IsState == true)
         {
             SetState();
-            await OnQueryDataChanged();
         }
+        await OnQueryDataChanged();
 
         await base.OnInitializedAsync();
     }
     private void SetState()
     {
-        _queryStatus = SchedulerJobsState.QueryStatus;
-        _queryJobName = SchedulerJobsState.QueryJobName;
-        _queryJobType = SchedulerJobsState.QueryJobType;
-        _queryOrigin = SchedulerJobsState.QueryOrigin;
+        _queryParam.FilterStatus = SchedulerJobsState.QueryStatus;
+        _queryParam.JobName = SchedulerJobsState.QueryJobName;
+        _queryParam.JobType = SchedulerJobsState.QueryJobType;
+        _queryParam.Origin = SchedulerJobsState.QueryOrigin;
         _projectIdentity = SchedulerJobsState.ProjectIdentity;
         _jobCreateType = SchedulerJobsState.JobCreateType;
     }
@@ -234,7 +106,7 @@ public partial class SchedulerJobs : ProComponentBase
     private void CurrentTeamChanged(Guid teamId)
     {
         _teamId = teamId;
-        OnQueryDataChanged().ContinueWith(_ => InvokeAsync(StateHasChanged));
+        OnQueryDataChanged();
     }
 
     private async Task SwitchJobCreateType(JobCreateTypes jobCreateTypes)
@@ -248,47 +120,48 @@ public partial class SchedulerJobs : ProComponentBase
         }
     }
 
-    public Task OnQueryDataChanged(bool resetPage = true)
+    public Task OnQueryDataChanged()
     {
-        return GetProjectJobs(resetPage);
+        SchedulerJobsState.QueryStatus = _queryParam.FilterStatus;
+        SchedulerJobsState.QueryJobName = _queryParam.JobName;
+        SchedulerJobsState.QueryJobType = _queryParam.JobType;
+        SchedulerJobsState.QueryOrigin = _queryParam.Origin;
+        _queryParam.Page = 1;
+        return GetProjectJobs();
     }
 
     private Task QueryTimeChanged((DateTimeOffset? queryStartTime, DateTimeOffset? queryEndTime) arg)
     {
-        _queryStartTime = arg.queryStartTime;
-        _queryEndTime = arg.queryEndTime;
+        _queryParam.QueryStartTime = arg.queryStartTime?.UtcDateTime;
+        _queryParam.QueryEndTime = arg.queryEndTime?.UtcDateTime;
         return OnQueryDataChanged();
     }
 
-    private async Task GetProjectJobs(bool resetPage = true)
+    private async Task GetProjectJobs()
     {
         if (Project == null)
         {
             _jobs = new();
             _total = 0;
             _showProgressbar = false;
+            StateHasChanged();
             return;
         }
 
         _showProgressbar = true;
 
-        if (resetPage)
-        {
-            _page = 1;
-        }
-
         var request = new SchedulerJobListRequest()
         {
-            FilterStatus = QueryStatus,
+            FilterStatus = _queryParam.FilterStatus,
             IsCreatedByManual = _jobCreateType == JobCreateTypes.Manual,
-            JobName = QueryJobName,
-            JobType = QueryJobType,
-            Origin = QueryOrigin,
-            Page = Page,
-            PageSize = PageSize,
-            QueryEndTime = _queryEndTime?.UtcDateTime,
-            QueryStartTime = _queryStartTime?.UtcDateTime,
-            QueryTimeType = QueryTimeType,
+            JobName = _queryParam.JobName,
+            JobType = _queryParam.JobType,
+            Origin = _queryParam.Origin,
+            Page = _queryParam.Page,
+            PageSize = _queryParam.PageSize,
+            QueryEndTime = _queryParam.QueryEndTime,
+            QueryStartTime = _queryParam.QueryStartTime,
+            QueryTimeType = _queryParam.QueryTimeType,
             BelongProjectIdentity = Project.Identity,
         };
 
@@ -423,16 +296,16 @@ public partial class SchedulerJobs : ProComponentBase
         NavigationManager.NavigateTo($"/job/task/{job.Id}");
     }
 
-    private Task RadioGroupClickHandler()
+    private async Task HandlerFilterStatusChange(TaskRunStatus val)
     {
-        if (_lastQueryStatus == QueryStatus)
+        if (_lastQueryStatus == _queryParam.FilterStatus)
         {
-            QueryStatus = 0;
+            _queryParam.FilterStatus = 0;
         }
 
-        _lastQueryStatus = QueryStatus;
+        _lastQueryStatus = _queryParam.FilterStatus;
 
-        return Task.CompletedTask;
+        await OnQueryDataChanged();
     }
 
     private Task ShowDialog(ConfirmDialogTypes confirmDialogType, Guid jobId)
@@ -496,15 +369,15 @@ public partial class SchedulerJobs : ProComponentBase
 
     private void ResetQueryOptions()
     {
-        _queryEndTime = null;
-        _queryStartTime = null;
-        _queryJobName = string.Empty;
-        _queryOrigin = string.Empty;
-        _queryTimeType = JobQueryTimeTypes.CreationTime;
-        _queryStatus = 0;
-        _queryJobType = 0;
-        _page = 1;
-        _pageSize = 10;
+        _queryParam.QueryEndTime = null;
+        _queryParam.QueryStartTime = null;
+        _queryParam.JobName = string.Empty;
+        _queryParam.Origin = string.Empty;
+        _queryParam.QueryTimeType = JobQueryTimeTypes.CreationTime;
+        _queryParam.FilterStatus = 0;
+        _queryParam.JobType = 0;
+        _queryParam.Page = 1;
+        _queryParam.PageSize = 10;
     }
 
     private bool CheckNotifyData(SchedulerJobDto job)
@@ -534,22 +407,22 @@ public partial class SchedulerJobs : ProComponentBase
             return false;
         }
 
-        if (!string.IsNullOrWhiteSpace(_queryJobName) && !job.Name.Contains(_queryJobName))
+        if (!string.IsNullOrWhiteSpace(_queryParam.JobName) && !job.Name.Contains(_queryParam.JobName))
         {
             return false;
         }
 
-        if (!string.IsNullOrWhiteSpace(_queryOrigin) && !job.Origin.Contains(_queryOrigin))
+        if (!string.IsNullOrWhiteSpace(_queryParam.Origin) && !job.Origin.Contains(_queryParam.Origin))
         {
             return false;
         }
 
-        if (_queryStatus != 0 && job.LastRunStatus != _queryStatus)
+        if (_queryParam.FilterStatus != 0 && job.LastRunStatus != _queryParam.FilterStatus)
         {
             return false;
         }
 
-        if (_queryJobType != 0 && job.JobType != _queryJobType)
+        if (_queryParam.JobType != 0 && job.JobType != _queryParam.JobType)
         {
             return false;
         }
@@ -574,7 +447,7 @@ public partial class SchedulerJobs : ProComponentBase
                 notifyJob.ModifierName = job.ModifierName;
                 _jobs[jobIndex] = notifyJob;
             }
-            else if (Page == 1)
+            else if (_queryParam.Page == 1)
             {
                 var sameOwnerJob = _jobs.FirstOrDefault(j => j.OwnerId == notifyJob.OwnerId);
 
@@ -592,21 +465,35 @@ public partial class SchedulerJobs : ProComponentBase
 
                 _jobs.Add(notifyJob);
 
-                _jobs = _jobs.OrderByDescending(p => p.ModificationTime).ThenByDescending(p => p.CreationTime).Take(_pageSize).ToList();
+                _jobs = _jobs.OrderByDescending(p => p.ModificationTime).ThenByDescending(p => p.CreationTime).Take(_queryParam.PageSize).ToList();
             }
 
-            StateHasChanged();
         }
     }
 
-    public Task OnProjectChangedAsync(ProjectDto project)
+    public async Task OnProjectChangedAsync(ProjectDto project)
     {
-        Project = project;
-        return Task.CompletedTask;
+        if (Project?.Id != project?.Id)
+        {
+            Project = project;
+            await OnQueryDataChanged();
+        }
     }
 
     private void ToggleAdvanced()
     {
         _advanced = !_advanced;
+    }
+
+    private async Task HandlePageChanged(int page)
+    {
+        _queryParam.Page = page;
+        await GetProjectJobs();
+    }
+
+    private async Task HandlePageSizeChanged(int pageSize)
+    {
+        _queryParam.PageSize = pageSize;
+        await GetProjectJobs();
     }
 }

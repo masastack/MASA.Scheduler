@@ -29,7 +29,7 @@ public partial class SchedulerResourceFiles
 
     private AddSchedulerResourceFiles? _addResourceModal;
 
-    private bool _showProgressbar = true;
+    private bool _showProgressbar = false;
 
     private Guid _teamId = default;
 
