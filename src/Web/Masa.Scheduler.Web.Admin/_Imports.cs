@@ -31,7 +31,7 @@ global using Masa.Scheduler.Contracts.Server.Requests.SchedulerJobs;
 global using Masa.Scheduler.Contracts.Server.Requests.SchedulerResources;
 global using Masa.Scheduler.Contracts.Server.Requests.SchedulerTasks;
 global using Masa.Scheduler.Web.Admin.Components.AlarmRules;
-global using Masa.Scheduler.Web.Admin.Global;
+global using Masa.Stack.Components.Configs;
 global using Masa.Scheduler.Web.Admin.Pages.SchedulerResources.Components;
 global using Masa.Stack.Components;
 global using Masa.Stack.Components.Extensions;

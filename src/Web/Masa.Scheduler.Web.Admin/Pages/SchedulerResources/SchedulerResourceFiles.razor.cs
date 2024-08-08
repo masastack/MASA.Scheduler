@@ -29,8 +29,6 @@ public partial class SchedulerResourceFiles
 
     private AddSchedulerResourceFiles? _addResourceModal;
 
-    private bool _showProgressbar = true;
-
     private Guid _teamId = default;
 
     [Inject]
@@ -81,12 +79,12 @@ public partial class SchedulerResourceFiles
 
     private async Task GetResourceData()
     {
-        _showProgressbar = true;
+        Loading = true;
         var project = _projects.FirstOrDefault(x => x.Identity == _selectedProjectIdentity);
         if (project == null)
         {
             _resourceData = new();
-            _showProgressbar = false;
+            Loading = false;
             return;
         }
         var jobs = project.ProjectApps.Where(p => p.Type == ProjectAppTypes.Job).ToList();
@@ -105,7 +103,7 @@ public partial class SchedulerResourceFiles
             });
         }
         _resourceData = resources;
-        _showProgressbar = false;
+        Loading = false;
     }
 
     private async Task ShowDialog(ConfirmDialogTypes confirmType, Guid resourceId, string appIdentity)
