@@ -1,13 +1,11 @@
 ﻿@inherits LayoutComponentBase
-@inject GlobalConfig GlobalConfig
 @inject NavigationManager Navigation
 @inject IMasaStackConfig MasaStackConfig
 
-<SLayout OnSignOut="SignOut" OnErrorAfterHandle="OnErrorAfterHandle" WhiteUris="_whiteUris" IsShowEnvironmentSwitch Class="fill-height"
+<SLayout OnSignOut="SignOut" WhiteUris="_whiteUris" IsShowEnvironmentSwitch Class="fill-height"
          Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
          MiniLogo="/_content/Masa.Scheduler.Web.Admin/img/mainLayout/logo.svg">
     @Body
-    <SLoading />
 </SLayout>
 
 @code {
@@ -18,12 +16,6 @@
     public SchedulerServerCaller SchedulerServerCaller { get; set; } = default!;
 
     private readonly List<string> _whiteUris = new() { "/job/task/*" };
-
-    private Task OnErrorAfterHandle(Exception exception)
-    {
-        GlobalConfig.Loading = false;
-        return Task.CompletedTask;
-    }
 
     private bool SignOut()
     {

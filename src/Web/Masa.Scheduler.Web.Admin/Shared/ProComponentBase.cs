@@ -78,12 +78,6 @@ public abstract class ProComponentBase : Blazor.Core.MasaComponentBase
         return string.Format(T(formatKey), args);
     }
 
-    public bool Loading
-    {
-        get => GlobalConfig.Loading;
-        set => GlobalConfig.Loading = value;
-    }
-
     public void OpenInformationMessage(string message)
     {
         PopupService.EnqueueSnackbarAsync(message, AlertTypes.Info);
