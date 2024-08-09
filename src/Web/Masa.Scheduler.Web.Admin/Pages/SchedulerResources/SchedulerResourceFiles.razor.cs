@@ -79,12 +79,12 @@ public partial class SchedulerResourceFiles
 
     private async Task GetResourceData()
     {
-        Loading = true;
+        PopupService.ShowProgressLinear();
         var project = _projects.FirstOrDefault(x => x.Identity == _selectedProjectIdentity);
         if (project == null)
         {
             _resourceData = new();
-            Loading = false;
+            PopupService.HideProgressLinear();
             return;
         }
         var jobs = project.ProjectApps.Where(p => p.Type == ProjectAppTypes.Job).ToList();
@@ -103,7 +103,7 @@ public partial class SchedulerResourceFiles
             });
         }
         _resourceData = resources;
-        Loading = false;
+        PopupService.HideProgressLinear();
     }
 
     private async Task ShowDialog(ConfirmDialogTypes confirmType, Guid resourceId, string appIdentity)

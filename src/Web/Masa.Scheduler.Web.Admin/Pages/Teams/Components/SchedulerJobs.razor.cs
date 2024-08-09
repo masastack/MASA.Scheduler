@@ -158,11 +158,11 @@ public partial class SchedulerJobs : ProComponentBase
         {
             _jobs = new();
             _total = 0;
-            Loading = false;
+            PopupService.HideProgressLinear();
             return;
         }
 
-        Loading = true;
+        PopupService.ShowProgressLinear();
 
         var request = new SchedulerJobListRequest()
         {
@@ -187,7 +187,7 @@ public partial class SchedulerJobs : ProComponentBase
 
         _originList = jobListResponse.OriginList;
 
-        Loading = false;
+        PopupService.HideProgressLinear();
         StateHasChanged();
     }
 

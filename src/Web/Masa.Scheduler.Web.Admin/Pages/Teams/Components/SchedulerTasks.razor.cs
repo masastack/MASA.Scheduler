@@ -174,11 +174,11 @@ public partial class SchedulerTasks
     {
         if (_job is null)
         {
-            Loading = false;
+            PopupService.HideProgressLinear();
             return;
         }
 
-        Loading = true;
+        PopupService.ShowProgressLinear();
         var request = new SchedulerTaskListRequest()
         {
             JobId = _job.Id,
@@ -204,7 +204,7 @@ public partial class SchedulerTasks
             Page = 1;
         }
 
-        Loading = false;
+        PopupService.HideProgressLinear();
         StateHasChanged();
     }
 
