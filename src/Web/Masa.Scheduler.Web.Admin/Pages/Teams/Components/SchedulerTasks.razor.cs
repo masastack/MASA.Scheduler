@@ -25,6 +25,7 @@ public partial class SchedulerTasks
     private List<string> _orginList = new();
     private List<JobQueryTimeTypes> _jobQueryTimeTypeList = new();
     private bool IsApiCreate => _job != null && !string.IsNullOrWhiteSpace(_job.Origin);
+    private bool _showProgressbar = true;
 
     private Task QueryStatusChanged(TaskRunStatus status)
     {
@@ -174,10 +175,12 @@ public partial class SchedulerTasks
     {
         if (_job is null)
         {
+            _showProgressbar = false;
             PopupService.HideProgressLinear();
             return;
         }
 
+        _showProgressbar = true;
         PopupService.ShowProgressLinear();
         var request = new SchedulerTaskListRequest()
         {
@@ -204,6 +207,7 @@ public partial class SchedulerTasks
             Page = 1;
         }
 
+        _showProgressbar = false;
         PopupService.HideProgressLinear();
         StateHasChanged();
     }
