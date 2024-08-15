@@ -267,10 +267,12 @@ public partial class SchedulerJobs : ProComponentBase
             _jobs = new();
             _total = 0;
             _showProgressbar = false;
+            PopupService.HideProgressLinear();
             return;
         }
 
         _showProgressbar = true;
+        PopupService.ShowProgressLinear();
 
         if (resetPage)
         {
@@ -301,6 +303,7 @@ public partial class SchedulerJobs : ProComponentBase
         _originList = jobListResponse.OriginList;
 
         _showProgressbar = false;
+        PopupService.HideProgressLinear();
 
         StateHasChanged();
     }

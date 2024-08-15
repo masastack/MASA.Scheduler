@@ -176,10 +176,12 @@ public partial class SchedulerTasks
         if (_job is null)
         {
             _showProgressbar = false;
+            PopupService.HideProgressLinear();
             return;
         }
 
         _showProgressbar = true;
+        PopupService.ShowProgressLinear();
         var request = new SchedulerTaskListRequest()
         {
             JobId = _job.Id,
@@ -206,6 +208,7 @@ public partial class SchedulerTasks
         }
 
         _showProgressbar = false;
+        PopupService.HideProgressLinear();
         StateHasChanged();
     }
 
