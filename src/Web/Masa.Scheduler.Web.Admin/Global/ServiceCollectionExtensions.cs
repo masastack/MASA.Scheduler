@@ -7,14 +7,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddGlobalForServer(this IServiceCollection services)
     {
-        services.AddScoped<GlobalConfig>();
         services.AddScoped<SchedulerJobsState>();
-        return services;
-    }
-
-    public static IServiceCollection AddGlobalForWasmAsync(this IServiceCollection services, string baseUri)
-    {
-        services.AddScoped<GlobalConfig>();
         return services;
     }
 }
