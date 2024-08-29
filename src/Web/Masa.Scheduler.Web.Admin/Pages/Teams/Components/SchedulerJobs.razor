@@ -6,21 +6,8 @@
     <HeaderContent>
         <MRow NoGutters Class="flex-none mt-3">
             <MCol Md="2">
-                <SSelect Small @bind-Value="@_queryParam.BelongProjectIdentity"
-                         Label="@T("Project")"
-                         Items="_projects"
-                         ItemText="e => e.Name"
-                         ItemValue="e=> e.Identity"
-                         TValue="string"
-                         TItemValue="string"
-                         TItem="ProjectDto"
-                         BackgroundColor="white"
-                         Class="rounded-2 body2"
-                         OnChange="OnQueryDataChanged">
-                    <SelectionContent Context="data">
-                        <div class="m-select__selection m-select__selection--comma regular--text">@data.Item.Name</div>
-                    </SelectionContent>
-                </SSelect>
+                <Projects OnProjectChanged="OnProjectChangedAsync" TeamId="_teamId" ProjectIdentity="@_projectIdentity">
+                </Projects>
             </MCol>
             
             <SLabeledRadioGroup Value="_jobCreateType" ActiveClass="fill-background" Class="white ml-6" Dense TValue="JobCreateTypes" ValueChanged="SwitchJobCreateType">
@@ -33,7 +20,7 @@
             </SLabeledRadioGroup>
             <MSpacer></MSpacer>
             <div class="d-flex">
-                <SSearch @bind-Value="_queryParam.JobName" BackgroundColor="white" OnEnter="OnQueryDataChanged" />
+                <SSearch @bind-Value="QueryJobName" BackgroundColor="white" />
                 <div @onclick="ToggleAdvanced" class="ml-6 block-center justify-center button fill">
                     <SIcon Class="ma-auto" Color="emphasis2" Size=20 Tooltip="@(!_advanced ? T("Filter") : T("CancelFilter"))">
                         @(!_advanced ? "mdi-filter" : "mdi-filter-off")
@@ -52,55 +39,43 @@
         {
             <MRow Class="@($"mt-6 flex-none")" NoGutters>
                 <MCol Md="2">
-                    <SSelect Small @bind-Value="_queryParam.QueryTimeType"
+                    <SSelect Small @bind-Value="QueryTimeType"
                              Items="_jobQueryTimeTypeList"
                              Label="@T("JobQueryTimeType")"
                              ItemText="e => T(e == default ? string.Empty : e.ToString())"
                              ItemValue="e => e"
-                             TItemValue="JobQueryTimeTypes"
-                             TValue="JobQueryTimeTypes"
-                             TItem="JobQueryTimeTypes"
                              BackgroundColor="white"
-                             Class="rounded-2 body2"
-                             OnChange="OnQueryDataChanged">
+                             Class="rounded-2 body2">
                     </SSelect>
                 </MCol>
-                <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryParam.QueryStartTime EndDateTime=_queryParam.QueryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
+                <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
                 <MCol Md="2" Class="ml-6">
-                    <SSelect Small @bind-Value="_queryParam.JobType"
+                    <SSelect Small @bind-Value="QueryJobType"
                          Items="Enum.GetValues<JobTypes>().ToList()"
                          Label="@T("JobType")"
                          ItemText="e => T(e==default?string.Empty:e.ToString())"
                          ItemValue="e=> e"
-                         TItemValue="JobTypes"
-                         TValue="JobTypes"
-                         TItem="JobTypes"
                          BackgroundColor="white"
-                         Clearable
-                         Class="rounded-2 body2"
-                         OnChange="OnQueryDataChanged">
+                              Clearable
+                         Class="rounded-2 body2">
                     </SSelect>
                     </MCol>
                     @if (_jobCreateType == JobCreateTypes.Api)
                 {
                     <MCol Md="2" Class="ml-6">
-                        <SSelect Small Clearable @bind-Value="_queryParam.Origin"
+                        <SSelect Small Clearable @bind-Value="QueryOrigin"
                          Items="_originList"
                          Label="@T("Origin")"
                          ItemText="e => e"
                          ItemValue="e=> e"
-                         TItemValue="string"
-                         TValue="string"
-                         TItem="string"
                          BackgroundColor="white"
-                         Class="rounded-2 body2"
-                         OnChange="OnQueryDataChanged">
+                         Class="rounded-2 body2">
                         </SSelect>
                     </MCol>
                 }
             </MRow>
         }
-        <MRadioGroup @bind-Value="_queryParam.FilterStatus" Row OnChange="HandlerFilterStatusChange" TValue="TaskRunStatus" Class="masa-radiogroup">
+        <MRadioGroup @bind-Value="QueryStatus" Row OnClick="RadioGroupClickHandler" Class="masa-radiogroup">
             @foreach (KeyValuePair<string, TaskRunStatus> pair in _queryStatusList)
             {
                 <MRadio TValue="TaskRunStatus" Value="pair.Value" Color="green">
@@ -233,15 +208,16 @@
                 }
             </MRow>
         }
-        else
+        else if(!_showProgressbar)
         {
             <SEmptyPlaceholder />
         }
+        <Loading ShowProgressbar="_showProgressbar" />
     </AutoHeightContent>
     <FooterContent>
         @if (_jobs.Any())
         {
-            <SPagination Class="mr-6 pb-2" Page="_queryParam.Page" PageSize=_queryParam.PageSize Total="_total" PageChanged="HandlePageChanged" PageSizeChanged="HandlePageSizeChanged" />
+            <SPagination Class="mr-6 pb-2" @bind-Page="Page" @bind-PageSize=PageSize Total="_total" />
         }        
     </FooterContent>
 </AutoHeight>
