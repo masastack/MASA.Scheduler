@@ -9,14 +9,13 @@ public static class QuartzUtilsServiceCollectionExtensions
     {
         services.AddQuartz(q =>
         {
-            q.UseMicrosoftDependencyInjectionJobFactory();
             q.UsePersistentStore(config =>
             {
                 config.UseSqlServer(quartzConnectString);
                 config.UseClustering();
-                config.UseJsonSerializer();
+                config.UseNewtonsoftJsonSerializer();
             });
-            
+            q.UseDefaultThreadPool(20);
         });
         services.AddQuartzServer(options =>
         {   
