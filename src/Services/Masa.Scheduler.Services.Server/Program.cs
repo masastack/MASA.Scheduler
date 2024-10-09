@@ -80,7 +80,8 @@ Port= masaStackConfig.RedisModel.RedisPort
 }
 },
     DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
-    Password = masaStackConfig.RedisModel.RedisPassword
+    Password = masaStackConfig.RedisModel.RedisPassword,
+    ClientName = builder.Configuration.GetValue<string>("HOSTNAME") ?? masaStackConfig.GetServiceId(MasaStackProject.Scheduler)
 };
 builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
