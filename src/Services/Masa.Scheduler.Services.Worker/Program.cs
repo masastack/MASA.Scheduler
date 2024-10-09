@@ -59,7 +59,8 @@ var redisOptions = new RedisConfigurationOptions
         }
     },
     DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
-    Password = masaStackConfig.RedisModel.RedisPassword
+    Password = masaStackConfig.RedisModel.RedisPassword,
+    ClientName = builder.Configuration.GetValue<string>("HOSTNAME") ?? masaStackConfig.GetId(MasaStackProject.Scheduler, MasaStackApp.Worker)
 };
 builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
 builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
