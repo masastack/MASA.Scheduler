@@ -58,6 +58,7 @@ deploy-dev:
     - kubectl --kubeconfig ./config set image deployment/scheduler-service scheduler-service=$NEW_IMAGE_Scheduler_Server_DEV -n $NAMESPACE_DEV
     - kubectl --kubeconfig ./config set image statefulset/scheduler-worker scheduler-worker=$NEW_IMAGE_Scheduler_Worker_DEV -n $NAMESPACE_DEV
   retry: 2
+  when: manual
     
 deploy-sec:
   stage: deploy-dev
@@ -71,7 +72,7 @@ deploy-sec:
     - kubectl --kubeconfig ./config set image deployment/scheduler-service scheduler-service=$NEW_IMAGE_Scheduler_Server_DEV -n $NAMESPACE_SEC
     - kubectl --kubeconfig ./config set image statefulset/scheduler-worker scheduler-worker=$NEW_IMAGE_Scheduler_Worker_DEV -n $NAMESPACE_SEC
   retry: 2
-
+  when: manual
 
 deploy-new-prd:
   stage: deploy-new-prd
