@@ -1,6 +1,7 @@
 stages:
   - docker-dev
   - deploy-dev
+  - deploy-new-prd
   - deploy-test
   #- deploy-staging
   - docker-prd
@@ -23,6 +24,7 @@ variables:
   NAMESPACE_TEST: masastack-test
   NAMESPACE_STAGING: masastack-staging
   NAMESPACE_PRD: masastack
+  NAMESPACE_SEC: masa-to-sec
 
 docker-dev:
   stage: docker-dev
@@ -56,6 +58,34 @@ deploy-dev:
     - kubectl --kubeconfig ./config set image deployment/scheduler-service scheduler-service=$NEW_IMAGE_Scheduler_Server_DEV -n $NAMESPACE_DEV
     - kubectl --kubeconfig ./config set image statefulset/scheduler-worker scheduler-worker=$NEW_IMAGE_Scheduler_Worker_DEV -n $NAMESPACE_DEV
   retry: 2
+    
+deploy-sec:
+  stage: deploy-dev
+  image: registry.cn-hangzhou.aliyuncs.com/masa/library:kubectl-shell-v1.21.1
+  only:
+    - main
+  script:
+    - echo $KUBE_CONFIG_NEW_YDY | base64 -d > ./config
+    - echo $CI_PIPELINE_ID
+    - kubectl --kubeconfig ./config set image deployment/scheduler scheduler=$NEW_IMAGE_Scheduler_Web_Admin_Server_DEV -n $NAMESPACE_SEC
+    - kubectl --kubeconfig ./config set image deployment/scheduler-service scheduler-service=$NEW_IMAGE_Scheduler_Server_DEV -n $NAMESPACE_SEC
+    - kubectl --kubeconfig ./config set image statefulset/scheduler-worker scheduler-worker=$NEW_IMAGE_Scheduler_Worker_DEV -n $NAMESPACE_SEC
+  retry: 2
+
+
+deploy-new-prd:
+  stage: deploy-new-prd
+  image: registry.cn-hangzhou.aliyuncs.com/masa/library:kubectl-shell-v1.21.1
+  only:
+    - main
+  script:
+    - echo $KUBE_CONFIG_LSD_PRD_YDY | base64 -d > ./config
+    - echo $CI_COMMIT_ID
+    - kubectl --kubeconfig ./config set image deployment/scheduler scheduler=$NEW_IMAGE_Scheduler_Web_Admin_Server_DEV -n $NAMESPACE_PRD
+    - kubectl --kubeconfig ./config set image deployment/scheduler-service scheduler-service=$NEW_IMAGE_Scheduler_Server_DEV -n $NAMESPACE_PRD
+    - kubectl --kubeconfig ./config set image statefulset/scheduler-worker scheduler-worker=$NEW_IMAGE_Scheduler_Worker_DEV -n $NAMESPACE_PRD
+  retry: 2
+  when: manual
 
 deploy-test:
   stage: deploy-test
