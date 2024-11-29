@@ -22,7 +22,10 @@ public class MasaSignalRClient : IDisposable
     public async Task HubConnectionBuilder(string? signalRServiceUrl = null)
     {
         HubConnection = new HubConnectionBuilder()
-            .WithUrl(string.IsNullOrEmpty(signalRServiceUrl) ? _defaultSignalRServiceUrl : signalRServiceUrl)
+            .WithUrl(string.IsNullOrEmpty(signalRServiceUrl) ? _defaultSignalRServiceUrl : signalRServiceUrl, options =>
+            {
+                options.SkipNegotiation = true;
+            })
             .Build();
         await HubConnection.StartAsync();
     }

@@ -7,8 +7,6 @@ public class BaseSchedulerManagerData<T> where T : BaseServiceModel
 {
     public string ServiceId { get; set; } = string.Empty;
 
-    public List<Guid> StopTask { get; set; } = new List<Guid>();
-
     public List<T> ServiceList { get; set; } = new();
 
     public List<string> AddressList { get; set; } = new();

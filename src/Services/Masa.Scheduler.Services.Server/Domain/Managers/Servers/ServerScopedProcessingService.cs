@@ -1,6 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Quartz.Impl.Matchers;
+using Quartz;
+
 namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
 
 public class ServerScopedProcessingService : IScopedProcessingService
@@ -38,19 +41,49 @@ public class ServerScopedProcessingService : IScopedProcessingService
 
     private async Task OnManagerStartAsync()
     {
-        var allTask = await _dbContext.Tasks.Include(t => t.Job).Where(t => (t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry) && t.Job.Enabled).ToListAsync();
-
+        //await _quartzUtils.CleanAllJobsAsync();
         await StartAssignAsync();
 
-        await LoadRunningTaskAsync(allTask);
-
-        await LoadRetryTaskAsync(allTask);
+        //await LoadRunningAndRetryTaskAsync();
 
         var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression) && job.Enabled);
 
         await CheckSchedulerExpiredJobAsync(cronJobList.Where(p => p.ScheduleExpiredStrategy != ScheduleExpiredStrategyTypes.Ignore));
 
         await RegisterCronJobAsync(cronJobList);
+    }
+
+    private async Task LoadRunningAndRetryTaskAsync()
+    {
+        const int pageSize = 1000;
+        int pageNumber = 1;
+
+        do
+        {
+            var pageTasks = await LoadTasksAsync(pageSize, pageNumber);
+
+            if (pageTasks.Count == 0)
+            {
+                break;
+            }
+
+            await LoadRunningTaskAsync(pageTasks);
+
+            await LoadRetryTaskAsync(pageTasks);
+
+            pageNumber++;
+        } while (true);
+    }
+
+    private async Task<List<SchedulerTask>> LoadTasksAsync(int pageSize, int pageNumber)
+    {
+        return await _dbContext.Tasks
+            .Include(t => t.Job)
+            .Where(t => (t.TaskStatus == TaskRunStatus.Running || t.TaskStatus == TaskRunStatus.WaitToRetry) && t.Job.Enabled)
+            .OrderBy(t => t.CreationTime)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
 
     private async Task LoadRunningTaskAsync(List<SchedulerTask> allTask)

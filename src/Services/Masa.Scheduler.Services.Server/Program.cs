@@ -85,7 +85,11 @@ Port= masaStackConfig.RedisModel.RedisPort
 };
 builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
-
+builder.Services.AddSingleton(service =>
+{
+    var connection = StackExchange.Redis.ConnectionMultiplexer.Connect(redisOptions);
+    return connection;
+});
 builder.Services
 .AddAuthClient(masaStackConfig.GetAuthServiceDomain(), redisOptions)
 .AddPmClient(masaStackConfig.GetPmServiceDomain())

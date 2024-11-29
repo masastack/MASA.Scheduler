@@ -11,9 +11,10 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     private readonly IRepository<SchedulerResource> _resourceRepository;
     private readonly SchedulerLogger _schedulerLogger;
     private readonly IMultiEnvironmentContext _multiEnvironmentContext;
-    private readonly IRepository<SchedulerTask> _repository;
+    private readonly ISchedulerTaskRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly SignalRUtils _signalRUtils;
+    private readonly IDatabase _redis;
 
     public SchedulerServerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -30,9 +31,10 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         IRepository<SchedulerResource> resourceRepository,
         SchedulerLogger schedulerLogger,
         IMultiEnvironmentContext multiEnvironmentContext,
-        IRepository<SchedulerTask> repository,
+        ISchedulerTaskRepository repository,
         IUnitOfWork unitOfWork,
-        SignalRUtils signalRUtils)
+        SignalRUtils signalRUtils,
+        ConnectionMultiplexer connect)
         : base(cacheClientFactory,
                redisCacheClient,
                serviceProvider,
@@ -51,6 +53,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         _repository = repository;
         _unitOfWork = unitOfWork;
         _signalRUtils = signalRUtils;
+        _redis = connect.GetDatabase();
     }
 
     protected override string HeartbeatApi { get; set; } = $"{ConstStrings.SCHEDULER_SERVER_MANAGER_API}/heartbeat";
@@ -118,39 +121,18 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
     public async Task TaskEnqueue(SchedulerTask task)
     {
-        var taskDto = _mapper.Map<SchedulerTaskDto>(task);
+        _schedulerLogger.LogInformation($"Task Enqueue", WriterTypes.Server, task.Id, task.JobId);
 
-        if (taskDto.Job.JobType == JobTypes.JobApp && taskDto.Job.JobAppConfig != null)
-        {
-            var resourceList = await _resourceRepository.GetListAsync(r => r.JobAppIdentity == taskDto.Job.JobAppConfig.JobAppIdentity, nameof(SchedulerResource.CreationTime));
-
-            var resource = !string.IsNullOrEmpty(taskDto.Job.JobAppConfig.Version) ? resourceList.FirstOrDefault(r => r.Version == taskDto.Job.JobAppConfig.Version) : resourceList.FirstOrDefault();
-
-            if (resource != null)
-            {
-                taskDto.Job.JobAppConfig.SchedulerResourceDto = _mapper.Map<SchedulerResourceDto>(resource);
-            }
-        }
-
-        var data = ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
-
-        _schedulerLogger.LogInformation($"Task Enqueue, ResourceId: {taskDto.Job?.JobAppConfig?.SchedulerResourceDto?.Id}", WriterTypes.Server, taskDto.Id, taskDto.JobId);
-
-        var taskQueue = data.TaskQueue.GetValueOrDefault(_multiEnvironmentContext.CurrentEnvironment);
-
-        if (taskQueue != null)
-        {
-            taskQueue.Enqueue(taskDto);
-        }
+        await EnqueueTaskAsync(task.Id);
     }
 
     public async Task StopTask(Guid taskId, string workerHost)
     {
         var data = ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
 
-        if (data.TaskQueue.Any(p => p.Value.Any(x => x.Id == taskId)))
+        if(await ExistsTaskAsync(taskId))
         {
-            data.StopTask.Add(taskId);
+            await AddStopTaskAsync(taskId);
         }
         else
         {
@@ -158,7 +140,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
             if (worker != null)
             {
-                data.StopByManual.Add(taskId);
+                await AddStopTaskByManualAsync(taskId);
 
                 var @event = new StopTaskIntegrationEvent()
                 {
@@ -176,108 +158,112 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     public async Task StartAssignAsync()
     {
         var data = ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
+        var result = await DequeueTaskAsync();
 
-        var taskQueue = data.TaskQueue.GetValueOrDefault(_multiEnvironmentContext.CurrentEnvironment);
-
-        if (taskQueue == null || taskQueue.Count == 0)
+        if (result.IsNull)
         {
-            await Task.Delay(100);
+            _schedulerLogger.LogInformation($"Task Dequeue is null", WriterTypes.Server, Guid.Empty, Guid.Empty);
+            await Task.Delay(1000);
             return;
         }
 
-        SchedulerTaskDto? taskDto = null;
+        SchedulerTask? task = null;
 
         try
         {
-            if (taskQueue.TryDequeue(out taskDto))
+            var taskId = new Guid(result.ToString());
+            task = await _repository.AsQueryable().Include(x => x.Job).FirstOrDefaultAsync(p => p.Id == taskId);
+            if (task is null)
             {
-                _schedulerLogger.LogInformation($"Task Dequeue", WriterTypes.Server, taskDto.Id, taskDto.JobId);
-
-                if (data.StopTask.Any(p => p == taskDto.Id))
-                {
-                    _schedulerLogger.LogInformation($"Task Stop", WriterTypes.Server, taskDto.Id, taskDto.JobId);
-                    data.StopTask.Remove(taskDto.Id);
-                    await Task.Delay(100);
-                    return;
-                }
-
-                WorkerModel? workerModel;
-
-                if (taskDto.Job.RoutingStrategy == RoutingStrategyTypes.Specified)
-                {
-                    workerModel = await GetWorker(data, taskDto.Job.SpecifiedWorkerHost);
-                }
-                else
-                {
-                    workerModel = await GetWorker(data, taskDto.Job.RoutingStrategy);
-                }
-
-                var task = await _repository.FindAsync(p => p.Id == taskDto.Id);
-
-                if (task == null)
-                {
-                    _schedulerLogger.LogInformation($"Task is not found", WriterTypes.Server, taskDto.Id, taskDto.JobId);
-                    await Task.Delay(100);
-                    return;
-                }
-
-                if (workerModel == null || !data.ServiceList.Any(x => x.Status == ServiceStatus.Normal))
-                {
-                    if (taskDto.Job.ScheduleExpiredStrategy == ScheduleExpiredStrategyTypes.Ignore)
-                    {
-                        await EventBus.PublishAsync(new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
-                        {
-                            TaskId = taskDto.Id,
-                            Status = TaskRunStatus.Ignore,
-                            Message = "Worker not available, ignoring task"
-                        }));
-                        await Task.Delay(100);
-                        return;
-                    }
-                }
-
-                if (workerModel == null)
-                {
-                    var notifyEvent = new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
-                    {
-                        TaskId = taskDto.Id,
-                        Status = TaskRunStatus.Failure,
-                        Message = "cannot find worker"
-                    });
-                    await EventBus.PublishAsync(notifyEvent);
-
-                    _schedulerLogger.LogInformation($"Cannot find worker model", WriterTypes.Server, taskDto.Id, taskDto.JobId);
-                    await Task.Delay(100);
-                    return;
-                }
-
-                await CheckHeartbeat(workerModel!);
-
-                if (workerModel.Status != ServiceStatus.Normal)
-                {
-                    _schedulerLogger.LogInformation($"WorkerModel Status is not Normal, wait to retry", WriterTypes.Server, taskDto.Id, taskDto.JobId);
-                    taskQueue.Enqueue(taskDto);
-                    await Task.Delay(100);
-                    return;
-                }
-
-                task.TaskStart();
-                task.SetWorkerHost(workerModel.GetServiceUrl());
-                await _repository.UpdateAsync(task);
-                await _unitOfWork.SaveChangesAsync();
-
-                _schedulerLogger.LogInformation($"Sending task to worker, workerHost: {workerModel.GetServiceUrl()}", WriterTypes.Server, taskDto.Id, taskDto.JobId);
-
-                await StartTask(taskDto, workerModel);
-                await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, _mapper.Map<SchedulerTaskDto>(task));
+                _schedulerLogger.LogInformation($"Task is not found", WriterTypes.Server, Guid.Empty, Guid.Empty);
+                await Task.Delay(100);
+                return;
             }
+
+            _schedulerLogger.LogInformation($"Task Dequeue", WriterTypes.Server, task.Id, task.JobId);
+            if (await ExistsStopTaskAsync(task.Id))
+            {
+                _schedulerLogger.LogInformation($"Task Stop", WriterTypes.Server, task.Id, task.JobId);
+                await RemoveStopTaskAsync(task.Id);
+                await Task.Delay(100);
+                return;
+            }
+
+            WorkerModel? workerModel;
+
+            if (task.Job.RoutingStrategy == RoutingStrategyTypes.Specified)
+            {
+                workerModel = await GetWorker(data, task.Job.SpecifiedWorkerHost);
+            }
+            else
+            {
+                workerModel = await GetWorker(data, task.Job.RoutingStrategy);
+            }
+
+
+            if (workerModel == null || !data.ServiceList.Any(x => x.Status == ServiceStatus.Normal))
+            {
+                if (task.Job.ScheduleExpiredStrategy == ScheduleExpiredStrategyTypes.Ignore)
+                {
+                    await EventBus.PublishAsync(new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
+                    {
+                        TaskId = task.Id,
+                        Status = TaskRunStatus.Ignore,
+                        Message = "Worker not available, ignoring task"
+                    }));
+                    await Task.Delay(100);
+                    return;
+                }
+            }
+
+            if (workerModel == null)
+            {
+                var notifyEvent = new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
+                {
+                    TaskId = task.Id,
+                    Status = TaskRunStatus.Failure,
+                    Message = "cannot find worker"
+                });
+                await EventBus.PublishAsync(notifyEvent);
+
+                _schedulerLogger.LogInformation($"Cannot find worker model", WriterTypes.Server, task.Id, task.JobId);
+                await Task.Delay(100);
+                return;
+            }
+
+            await CheckHeartbeat(workerModel!);
+
+            if (workerModel.Status != ServiceStatus.Normal)
+            {
+                _schedulerLogger.LogInformation($"WorkerModel Status is not Normal, wait to retry", WriterTypes.Server, task.Id, task.JobId);
+                await EnqueueTaskAsync(task.Id);
+                await Task.Delay(100);
+                return;
+            }
+
+            task.TaskStart();
+            task.SetWorkerHost(workerModel.GetServiceUrl());
+            await _repository.UpdateAsync(task);
+            await _unitOfWork.SaveChangesAsync();
+
+            _schedulerLogger.LogInformation($"Sending task to worker, workerHost: {workerModel.GetServiceUrl()}", WriterTypes.Server, task.Id, task.JobId);
+
+            var taskDto = _mapper.Map<SchedulerTaskDto>(task);
+
+            if (taskDto.Job.JobType == JobTypes.JobApp && taskDto.Job.JobAppConfig != null)
+            {
+                await FillJobAppConfigAsync(taskDto);
+            }
+
+            await StartTask(taskDto, workerModel);
+            await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, taskDto);
         }
         catch (Exception ex)
         {
-            if (taskDto != null)
+            if (task != null)
             {
-                _schedulerLogger.LogError(ex, $"Task Assign Error", WriterTypes.Server, taskDto.Id, taskDto.JobId);
-                taskQueue.Enqueue(taskDto);
+                _schedulerLogger.LogError(ex, $"Task Assign Error", WriterTypes.Server, task.Id, task.JobId);
+                await EnqueueTaskAsync(task.Id);
             }
             else
             {
@@ -286,8 +272,20 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         }
     }
 
+    private async Task FillJobAppConfigAsync(SchedulerTaskDto taskDto)
+    {
+        var resourceList = await _resourceRepository.GetListAsync(r => r.JobAppIdentity == taskDto.Job.JobAppConfig.JobAppIdentity, nameof(SchedulerResource.CreationTime));
+
+        var resource = !string.IsNullOrEmpty(taskDto.Job.JobAppConfig.Version) ? resourceList.FirstOrDefault(r => r.Version == taskDto.Job.JobAppConfig.Version) : resourceList.FirstOrDefault();
+
+        if (resource != null)
+        {
+            taskDto.Job.JobAppConfig.SchedulerResourceDto = _mapper.Map<SchedulerResourceDto>(resource);
+        }
+    }
+
     private async Task StartTask(SchedulerTaskDto taskDto, WorkerModel worker)
-     {
+    {
         var @event = new StartTaskIntegrationEvent()
         {
             TaskId = taskDto.Id,
@@ -299,5 +297,51 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
         await EventBus.PublishAsync(@event);
         await EventBus.CommitAsync();
+    }
+
+    private async Task EnqueueTaskAsync(Guid taskId)
+    {
+        var taskQueueKey = ConstStrings.TaskQueueKey(_multiEnvironmentContext.CurrentEnvironment);
+        await _redis.ListRightPushAsync(taskQueueKey, taskId.ToString());
+
+        var taskSetKey = ConstStrings.TaskSetKey(_multiEnvironmentContext.CurrentEnvironment);
+        await _redis.SetAddAsync(taskSetKey, taskId.ToString());
+    }
+
+    private async Task<RedisValue> DequeueTaskAsync()
+    {
+        var taskQueueKey = ConstStrings.TaskQueueKey(_multiEnvironmentContext.CurrentEnvironment);
+        var result = await _redis.ListLeftPopAsync(taskQueueKey);
+
+        var taskSetKey = ConstStrings.TaskSetKey(_multiEnvironmentContext.CurrentEnvironment);
+        await _redis.SetRemoveAsync(taskSetKey, result.ToString());
+
+        return result;
+    }
+
+    private async Task<bool> ExistsTaskAsync(Guid taskId)
+    {
+        var taskSetKey = ConstStrings.TaskSetKey(_multiEnvironmentContext.CurrentEnvironment);
+        return await _redis.SetContainsAsync(taskSetKey, taskId.ToString());
+    }
+
+    private async Task AddStopTaskAsync(Guid taskId)
+    {
+        await _redis.SetAddAsync(ConstStrings.STOP_TASK_KEY, taskId.ToString());
+    }
+
+    private async Task<bool> ExistsStopTaskAsync(Guid taskId)
+    {
+        return await _redis.SetContainsAsync(ConstStrings.STOP_TASK_KEY, taskId.ToString());
+    }
+
+    private async Task RemoveStopTaskAsync(Guid taskId)
+    {
+        await _redis.SetRemoveAsync(ConstStrings.STOP_TASK_KEY, taskId.ToString());
+    }
+
+    private async Task AddStopTaskByManualAsync(Guid taskId)
+    {
+        await _redis.SetAddAsync(ConstStrings.STOP_BY_MANUAL_KEY, taskId.ToString());
     }
 }

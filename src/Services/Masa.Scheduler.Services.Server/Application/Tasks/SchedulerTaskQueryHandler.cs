@@ -53,7 +53,7 @@ public class SchedulerTaskQueryHandler
 
         var total = await dbQuery.CountAsync();
 
-        var result = await dbQuery.OrderByDescending(p => p.Id).Skip(skip).Take(request.PageSize).ToListAsync();
+        var result = await dbQuery.OrderByDescending(p => p.CreationTime).Skip(skip).Take(request.PageSize).ToListAsync();
 
         var taskDtos = _mapper.Map<List<SchedulerTaskDto>>(result);
 
