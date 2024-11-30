@@ -38,7 +38,6 @@ public class ServerScopedProcessingService : IScopedProcessingService
 
     private async Task OnManagerStartAsync()
     {
-        //await _quartzUtils.CleanAllJobsAsync();
         await StartAssignAsync();
 
         await LoadRunningAndRetryTaskAsync();

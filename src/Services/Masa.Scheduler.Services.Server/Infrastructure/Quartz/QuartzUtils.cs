@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Quartz.Impl.Matchers;
-
 namespace Masa.Scheduler.Services.Server.Infrastructure.Quartz;
 
 public class QuartzUtils
@@ -135,34 +133,5 @@ public class QuartzUtils
         }
 
         return Task.FromResult(excuteTimeList);
-    }
-
-    public async Task CleanAllJobsAsync()
-    {
-        // 获取所有触发器组名
-        var triggerGroups = await _scheduler.GetTriggerGroupNames();
-
-        // 遍历每个触发器组并删除其中的所有触发器
-        foreach (var groupName in triggerGroups)
-        {
-            var triggers = await _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals(groupName));
-            foreach (var triggerKey in triggers)
-            {
-                await _scheduler.UnscheduleJob(triggerKey);
-            }
-        }
-
-        // 获取所有作业组名
-        var jobGroups = await _scheduler.GetJobGroupNames();
-
-        // 遍历每个作业组并删除其中的所有作业
-        foreach (var groupName in jobGroups)
-        {
-            var jobs = await _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
-            foreach (var jobKey in jobs)
-            {
-                await _scheduler.DeleteJob(jobKey);
-            }
-        }
     }
 }
