@@ -7,7 +7,6 @@ global using FluentValidation;
 global using FluentValidation.AspNetCore;
 
 global using Mapster;
-
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Data.Mapping;
@@ -27,6 +26,7 @@ global using Masa.BuildingBlocks.StackSdks.Auth;
 global using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
 global using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Consts;
 global using Masa.BuildingBlocks.StackSdks.Config;
+global using Masa.BuildingBlocks.StackSdks.Config.Consts;
 global using Masa.BuildingBlocks.StackSdks.Isolation;
 global using Masa.BuildingBlocks.StackSdks.Pm;
 global using Masa.BuildingBlocks.Storage.ObjectStorage;

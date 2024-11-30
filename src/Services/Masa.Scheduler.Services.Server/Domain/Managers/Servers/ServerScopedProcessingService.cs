@@ -44,7 +44,7 @@ public class ServerScopedProcessingService : IScopedProcessingService
         //await _quartzUtils.CleanAllJobsAsync();
         await StartAssignAsync();
 
-        //await LoadRunningAndRetryTaskAsync();
+        await LoadRunningAndRetryTaskAsync();
 
         var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression) && job.Enabled);
 

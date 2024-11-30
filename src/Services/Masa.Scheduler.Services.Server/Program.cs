@@ -24,7 +24,7 @@ builder.Services.AddObservable(builder.Logging, () =>
         ServiceVersion = masaStackConfig.Version,
         ServiceName = masaStackConfig.GetServiceId(MasaStackProject.Scheduler),
         Layer = masaStackConfig.Namespace,
-        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")!
     };
 }, () =>
 {
