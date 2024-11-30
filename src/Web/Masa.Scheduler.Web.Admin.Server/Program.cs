@@ -10,7 +10,7 @@ builder.Services.AddObservable(builder.Logging, () => new MasaObservableOptions
     ServiceVersion = masaStackConfig.Version,
     ServiceName = masaStackConfig.GetWebId(MasaStackProject.Scheduler),
     Layer = masaStackConfig.Namespace,
-    ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
+    ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")!
 }, () => masaStackConfig.OtlpUrl, true);
 
 if (!builder.Environment.IsDevelopment())

@@ -20,7 +20,7 @@ var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationA
 var identityServerUrl = masaStackConfig.GetSsoDomain();
 builder.Services.AddDaprClient();
 
-builder.Services.AddSchedulerObservable(builder.Logging, () =>
+builder.Services.AddObservable(builder.Logging, () =>
 {
     return new MasaObservableOptions
     {
@@ -28,7 +28,7 @@ builder.Services.AddSchedulerObservable(builder.Logging, () =>
         ServiceVersion = masaStackConfig.Version,
         ServiceName = masaStackConfig.GetId(MasaStackProject.Scheduler, MasaStackApp.Worker),
         Layer = masaStackConfig.Namespace,
-        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")!
     };
 }, () =>
 {

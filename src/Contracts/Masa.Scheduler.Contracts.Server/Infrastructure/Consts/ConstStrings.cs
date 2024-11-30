@@ -17,4 +17,19 @@ public class ConstStrings
     public const string OSS_API = "api/oss";
     public const string JOB_ID = "JobId";
     public const string TASK_ID = "TaskId";
+    public const string SCHEDULER_PRE = "Scheduler.";
+    public const string TASK_QUEUE_KEY = SCHEDULER_PRE + "TaskQueue";
+    public const string TASK_SET_KEY = SCHEDULER_PRE + "TaskSet";
+    public const string STOP_TASK_KEY = SCHEDULER_PRE + "StopTask";
+    public const string STOP_BY_MANUAL_KEY = SCHEDULER_PRE + "StopByManual";
+
+    public static string TaskQueueKey(string environment)
+    {
+        return $"{environment}:{TASK_QUEUE_KEY}";
+    }
+
+    public static string TaskSetKey(string environment)
+    {
+        return $"{environment}:{TASK_SET_KEY}";
+    }
 }

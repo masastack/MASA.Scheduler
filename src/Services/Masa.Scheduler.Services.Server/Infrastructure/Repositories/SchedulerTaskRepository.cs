@@ -11,6 +11,11 @@ public class SchedulerTaskRepository : Repository<SchedulerDbContext, SchedulerT
 
     }
 
+    public IQueryable<SchedulerTask> AsQueryable()
+    {
+        return Context.Set<SchedulerTask>().AsQueryable();
+    }
+
     public async Task<bool> AnyAsync(Expression<Func<SchedulerTask, bool>> predicate)
     {
         return await Context.Set<SchedulerTask>().AnyAsync(predicate);

@@ -18,7 +18,7 @@ builder.Services.AddObservable(builder.Logging, () =>
         ServiceVersion = "1.0.0",
         ServiceName = "masa-scheduler-job-shell",
         Layer = "masastack",
-        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")!
     };
 }, () =>
 {
@@ -108,7 +108,7 @@ try
 {
     var jobContext = new JobContext() { TaskId = result.TaskId, JobId = jobId, ExcuteClassName = className, ExecutionTime = excuteTime, ExcuteParameters = parameterArr == null ? new() : parameterArr.ToList() };
 
-    await instance.InitializeAsync(builder, jobId, result.TaskId);
+    await instance.InitializeAsync(serviceProvider, jobId, result.TaskId);
 
     await instance.BeforeExcuteAsync(jobContext);
 

@@ -16,6 +16,7 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly IMapper _mapper;
     private readonly SchedulerLogger _schedulerLogger;
     private readonly IMultiEnvironmentContext _multiEnvironmentContext;
+    private readonly IDatabase _redis;
 
     public NotifyTaskRunResultDomainEventHandler(
         IRepository<SchedulerTask> schedulerTaskRepository,
@@ -28,7 +29,8 @@ public class NotifyTaskRunResultDomainEventHandler
         SchedulerServerManagerData data,
         IMapper mapper,
         SchedulerLogger schedulerLogger,
-        IMultiEnvironmentContext multiEnvironmentContext)
+        IMultiEnvironmentContext multiEnvironmentContext,
+        ConnectionMultiplexer connect)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _dbContext = dbContext;
@@ -41,6 +43,7 @@ public class NotifyTaskRunResultDomainEventHandler
         _mapper = mapper;
         _schedulerLogger = schedulerLogger;
         _multiEnvironmentContext = multiEnvironmentContext;
+        _redis = connect.GetDatabase();
     }
 
     [EventHandler]
@@ -53,9 +56,11 @@ public class NotifyTaskRunResultDomainEventHandler
             throw new UserFriendlyException($"cannot find task, task Id: {@event.Request.TaskId}");
         }
 
-        if (_data.StopByManual.Contains(@event.Request.TaskId))
+        var stopByManualKey = ConstStrings.STOP_BY_MANUAL_KEY;
+
+        if (await _redis.SetContainsAsync(stopByManualKey, @event.Request.TaskId.ToString()))
         {
-            _data.StopByManual.Remove(@event.Request.TaskId);
+            await _redis.SetRemoveAsync(stopByManualKey, @event.Request.TaskId.ToString());
             return;
         }
 
@@ -129,7 +134,5 @@ public class NotifyTaskRunResultDomainEventHandler
         var dto = _mapper.Map<SchedulerTaskDto>(task);
 
         await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, dto);
-
-
     }
 }

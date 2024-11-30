@@ -24,7 +24,7 @@ builder.Services.AddObservable(builder.Logging, () =>
         ServiceVersion = masaStackConfig.Version,
         ServiceName = masaStackConfig.GetServiceId(MasaStackProject.Scheduler),
         Layer = masaStackConfig.Namespace,
-        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")!
     };
 }, () =>
 {
@@ -85,7 +85,11 @@ Port= masaStackConfig.RedisModel.RedisPort
 };
 builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
-
+builder.Services.AddSingleton(service =>
+{
+    var connection = StackExchange.Redis.ConnectionMultiplexer.Connect(redisOptions);
+    return connection;
+});
 builder.Services
 .AddAuthClient(masaStackConfig.GetAuthServiceDomain(), redisOptions)
 .AddPmClient(masaStackConfig.GetPmServiceDomain())

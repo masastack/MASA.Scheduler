@@ -16,7 +16,7 @@ public class SchedulerDbContextFactory : IDesignTimeDbContextFactory<SchedulerDb
             .AddJsonFile("appsettings.json")
             .AddJsonFile("appsettings.Development.json")
             .Build();
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection")!);
 
         return new SchedulerDbContext(optionsBuilder.MasaOptions);
     }
