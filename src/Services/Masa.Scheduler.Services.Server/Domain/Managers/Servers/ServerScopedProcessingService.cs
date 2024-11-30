@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Quartz.Impl.Matchers;
-using Quartz;
-
 namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
 
 public class ServerScopedProcessingService : IScopedProcessingService
