@@ -47,6 +47,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Contracts\Masa.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.PostgreSql\Masa.Scheduler.EntityFrameworkCore.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.SqlServer\Masa.Scheduler.EntityFrameworkCore.SqlServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -39,6 +39,7 @@ global using Masa.Contrib.StackSdks.Isolation;
 global using Masa.Contrib.StackSdks.Tsc;
 
 // MASA Scheduler Contracts
+global using Masa.Scheduler;
 global using Masa.Scheduler.Contracts.Server.Dtos;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Consts;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
@@ -53,6 +54,7 @@ global using Masa.Scheduler.Services.Worker.Domain.Managers.Workers;
 global using Masa.Scheduler.Services.Worker.Domain.Managers.Workers.Data;
 global using Masa.Scheduler.Services.Worker.Domain.Managers.Workers.TaskHandlers;
 global using Masa.Scheduler.Services.Worker.Infrastructure;
+global using Masa.Scheduler.Services.Worker.Infrastructure.Extensions;
 global using Masa.Scheduler.Services.Worker.Infrastructure.Middleware;
 global using Masa.Scheduler.Services.Worker.Managers.Workers;
 

@@ -1,6 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 await builder.Services.AddMasaStackConfigAsync(MasaStackProject.Scheduler, MasaStackApp.Worker);
@@ -106,7 +107,7 @@ builder.Services
          {
              eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
          })
-         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseNpgsql().UseFilter(), useTransaction: false)
+         .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseDbSql(masaStackConfig.GetDbType()).UseFilter(), useTransaction: false)
         .UseRepository<SchedulerDbContext>();
     });
 

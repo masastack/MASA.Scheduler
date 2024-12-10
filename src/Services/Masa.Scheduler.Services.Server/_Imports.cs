@@ -38,6 +38,7 @@ global using Masa.Contrib.StackSdks.Isolation;
 global using Masa.Contrib.StackSdks.Middleware;
 global using Masa.Contrib.StackSdks.Tsc;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun;
+global using Masa.Scheduler;
 global using Masa.Scheduler.Contracts.Server.Dtos;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Consts;
 global using Masa.Scheduler.Contracts.Server.Infrastructure.Enums;
