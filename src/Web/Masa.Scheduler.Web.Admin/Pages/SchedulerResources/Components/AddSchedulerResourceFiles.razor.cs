@@ -145,7 +145,7 @@ public partial class AddSchedulerResourceFiles
 
         Model.FilePath = uploadUrls[0];
 
-        Model.UploadTime = DateTimeOffset.Now;
+        Model.UploadTime = DateTimeOffset.UtcNow;
 
         _progress = 100;
         _isUploadSuccess = true;

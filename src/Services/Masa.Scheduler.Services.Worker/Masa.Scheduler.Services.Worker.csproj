@@ -21,7 +21,7 @@
     <PackageReference Include="Masa.Contrib.Configuration" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Configuration.ConfigurationApi.Dcc" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Data.Contracts" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Data.EFCore.SqlServer" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.Data.EFCore.PostgreSql" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Data.Mapping.Mapster" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Ddd.Domain" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EFCore" Version="$(MasaFrameworkPackageVersion)" />

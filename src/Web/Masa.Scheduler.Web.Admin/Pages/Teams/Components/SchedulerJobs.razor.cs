@@ -334,7 +334,7 @@ public partial class SchedulerJobs : ProComponentBase
             case TaskRunStatus.Idle:
                 return T("Idle");
             case TaskRunStatus.Running:
-                var runTime = (DateTimeOffset.Now - job.LastRunStartTime).TotalSeconds;
+                var runTime = (DateTimeOffset.UtcNow - job.LastRunStartTime).TotalSeconds;
                 return T("AlreadyRun") + GetRunTimeDescription(runTime);
             case TaskRunStatus.WaitToRetry:
                 return T("WaitToRetry");

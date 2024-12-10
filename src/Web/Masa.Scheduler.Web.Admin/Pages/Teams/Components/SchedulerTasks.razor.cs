@@ -222,7 +222,7 @@ public partial class SchedulerTasks
         }
         else if (taskStartTime != DateTimeOffset.MinValue)
         {
-            totalSecond = (DateTimeOffset.Now - taskStartTime).TotalSeconds;
+            totalSecond = (DateTimeOffset.UtcNow - taskStartTime).TotalSeconds;
         }
         else
         {

@@ -31,7 +31,7 @@ public class QuartzUtils
 
         var trigger = TriggerBuilder.Create()
             .WithIdentity(taskId.ToString(), jobId.ToString())
-            .StartAt(DateTimeOffset.Now.Add(timeSpan))
+            .StartAt(DateTimeOffset.UtcNow.Add(timeSpan))
             .Build();
 
         return _scheduler.ScheduleJob(job, trigger);

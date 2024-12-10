@@ -23,7 +23,7 @@ public class SchedulerJobCommandHandler
     [EventHandler]
     public async Task AddHandleAsync(AddSchedulerJobCommand command)
     {
-        command.Request.Data.UpdateExpiredStrategyTime = DateTimeOffset.Now;
+        command.Request.Data.UpdateExpiredStrategyTime = DateTimeOffset.UtcNow;
 
         var job = _mapper.Map<SchedulerJob>(command.Request.Data);
 
@@ -71,7 +71,7 @@ public class SchedulerJobCommandHandler
 
         if(job.ScheduleExpiredStrategy != jobDto.ScheduleExpiredStrategy || job.CronExpression != jobDto.CronExpression)
         {
-            jobDto.UpdateExpiredStrategyTime = DateTimeOffset.Now;
+            jobDto.UpdateExpiredStrategyTime = DateTimeOffset.UtcNow;
         }
 
         job.UpdateJob(jobDto);
@@ -125,7 +125,7 @@ public class SchedulerJobCommandHandler
     [EventHandler]
     public async Task StartJobHandleAsync(StartSchedulerJobCommand command)
     {
-        command.Request.ExcuteTime = DateTimeOffset.Now;
+        command.Request.ExcuteTime = DateTimeOffset.UtcNow;
         await _schedulerJobDomainService.StartJobAsync(command.Request);
     }
 

@@ -12,7 +12,7 @@ public static class QuartzUtilsServiceCollectionExtensions
             q.UseMicrosoftDependencyInjectionJobFactory();
             q.UsePersistentStore(config =>
             {
-                config.UseSqlServer(quartzConnectString);
+                config.UsePostgres(quartzConnectString);
                 config.UseClustering();
                 config.UseJsonSerializer();
             });

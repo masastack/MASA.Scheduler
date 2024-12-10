@@ -78,7 +78,6 @@ global using Masa.Scheduler.Services.Server.Infrastructure;
 global using Masa.Scheduler.Services.Server.Infrastructure.Common;
 global using Masa.Scheduler.Services.Server.Infrastructure.Extensions;
 global using Masa.Scheduler.Services.Server.Infrastructure.Middleware;
-global using Masa.Scheduler.Services.Server.Infrastructure.EntityConfigurations.ValueConverts;
 global using Masa.Scheduler.Services.Server.Infrastructure.Quartz;
 global using Masa.Scheduler.Services.Server.Infrastructure.SignalR;
 global using Masa.Scheduler.Services.Server.Infrastructure.SignalR.Hubs;
@@ -112,3 +111,5 @@ global using System.Text.RegularExpressions;
 
 global using HttpMethods = Masa.Scheduler.Contracts.Server.Infrastructure.Enums.HttpMethods;
 global using ValidationException = FluentValidation.ValidationException;
+global using Masa.Scheduler.EntityFrameworkCore;
+global using Masa.BuildingBlocks.StackSdks.Config.Models;

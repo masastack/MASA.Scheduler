@@ -148,7 +148,7 @@ public partial class JobModal
 
         if (Model.ScheduleType == ScheduleTypes.Cron)
         {
-            var startTime = DateTimeOffset.Now;
+            var startTime = DateTimeOffset.UtcNow;
             var cronExpression = new CronExpression(Model.CronExpression);
             var nextExcuteTime = cronExpression.GetNextValidTimeAfter(startTime);
 
@@ -485,7 +485,7 @@ public partial class JobModal
 
         var sb = new StringBuilder();
 
-        var startTime = DateTimeOffset.Now;
+        var startTime = DateTimeOffset.UtcNow;
 
         var cronExpression = new CronExpression(Model.CronExpression);
 
