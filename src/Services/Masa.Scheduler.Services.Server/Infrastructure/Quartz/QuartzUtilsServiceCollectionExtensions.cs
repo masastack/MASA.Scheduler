@@ -5,14 +5,21 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Quartz;
 
 public static class QuartzUtilsServiceCollectionExtensions
 {
-    public static IServiceCollection AddQuartzUtils(this IServiceCollection services, string quartzConnectString)
+    public static IServiceCollection AddQuartzUtils(this IServiceCollection services, string quartzConnectString, string dbType)
     {
         services.AddQuartz(q =>
         {
             q.UseMicrosoftDependencyInjectionJobFactory();
             q.UsePersistentStore(config =>
             {
-                config.UsePostgres(quartzConnectString);
+                if(dbType == "PostgreSql")
+                {
+                    config.UsePostgres(quartzConnectString);
+                }
+                else
+                {
+                    config.UseSqlServer(quartzConnectString);
+                }
                 config.UseClustering();
                 config.UseJsonSerializer();
             });

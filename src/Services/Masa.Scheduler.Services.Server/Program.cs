@@ -94,14 +94,15 @@ builder.Services
 .AddPmClient(masaStackConfig.GetPmServiceDomain())
 .AddAlertClient(masaStackConfig.GetAlertServiceDomain());
 
+var dbType = masaStackConfig.GetDbType();
+
 builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR(redisOptions);
-builder.Services.AddQuartzUtils(quartzConnectString);
+builder.Services.AddQuartzUtils(quartzConnectString, dbType);
 builder.Services.AddSchedulerLogger();
 
-var dbType = masaStackConfig.GetDbType();
 
 builder.Services
     .AddEndpointsApiExplorer()
