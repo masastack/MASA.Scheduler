@@ -34,7 +34,6 @@ builder.Services.AddObservable(builder.Logging, () =>
 var quartzConnectString = masaStackConfig.GetConnectionString(MasaStackProject.Scheduler.Name);
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 var identityServerUrl = masaStackConfig.GetSsoDomain();
-
 builder.Services.AddObjectStorage(option => option.UseAliyunStorage());
 builder.Services.AddMasaIdentity(options =>
 {
@@ -95,12 +94,15 @@ builder.Services
 .AddPmClient(masaStackConfig.GetPmServiceDomain())
 .AddAlertClient(masaStackConfig.GetAlertServiceDomain());
 
+var dbType = masaStackConfig.GetDbType();
+
 builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR(redisOptions);
-builder.Services.AddQuartzUtils(quartzConnectString);
+builder.Services.AddQuartzUtils(quartzConnectString, dbType);
 builder.Services.AddSchedulerLogger();
+
 
 builder.Services
     .AddEndpointsApiExplorer()
@@ -139,11 +141,20 @@ builder.Services
         {
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
-        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseSqlServer().AddInterceptors(new QueryWithNoLockDbCommandInterceptor()).UseFilter(),useTransaction:false)
+        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseDbSql(dbType).AddInterceptors(new QueryWithNoLockDbCommandInterceptor()).UseFilter(),useTransaction:false)
         .UseRepository<SchedulerDbContext>();
     });
 await builder.Services.AddStackIsolationAsync(MasaStackProject.Scheduler.Name);
-await builder.Services.MigrateAsync();
+
+if (dbType == "PostgreSql")
+{
+    await builder.Services.MigratePostgreSqlAsync();
+}
+else
+{
+    await builder.Services.MigrateSqlServerAsync();
+}
+
 builder.Services.AddStackMiddleware();
 var app = builder.AddServices(options =>
 {

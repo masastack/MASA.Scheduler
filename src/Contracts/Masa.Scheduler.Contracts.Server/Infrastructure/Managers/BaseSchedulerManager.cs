@@ -115,7 +115,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             _ = await client.GetAsync(requestUrl);
             item.Status = ServiceStatus.Normal;
             item.NotResponseCount = 0;
-            item.LastResponseTime = DateTimeOffset.Now;
+            item.LastResponseTime = DateTimeOffset.UtcNow;
             Logger.LogInformation($"Heartbeat request success, RequestUrl: {requestUrl}");
         }
         catch (Exception ex)

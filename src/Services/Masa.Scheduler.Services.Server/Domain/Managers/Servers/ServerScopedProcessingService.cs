@@ -134,9 +134,9 @@ public class ServerScopedProcessingService : IScopedProcessingService
                 calcStartTime = lastTask.SchedulerTime;
             }
 
-            _logger.LogInformation($"Test ScheduleExpiredStrategy, currentTime: {DateTimeOffset.Now}, calcStartTime: {calcStartTime}, JobId: {cronJob.Id}");
+            _logger.LogInformation($"Test ScheduleExpiredStrategy, currentTime: {DateTimeOffset.UtcNow}, calcStartTime: {calcStartTime}, JobId: {cronJob.Id}");
 
-            var excuteTimeList = await _quartzUtils.GetCronExcuteTimeByTimeRange(cronJob.CronExpression, calcStartTime, DateTimeOffset.Now);
+            var excuteTimeList = await _quartzUtils.GetCronExcuteTimeByTimeRange(cronJob.CronExpression, calcStartTime, DateTimeOffset.UtcNow);
 
             _logger.LogInformation($"ExcuteTimeList, excuteTimeList: {JsonSerializer.Serialize(excuteTimeList)}, JobId: {cronJob.Id}");
 
@@ -145,7 +145,7 @@ public class ServerScopedProcessingService : IScopedProcessingService
                 case ScheduleExpiredStrategyTypes.ExecuteImmediately:
                     if (excuteTimeList.Any())
                     {
-                        request.ExcuteTime = DateTimeOffset.Now;
+                        request.ExcuteTime = DateTimeOffset.UtcNow;
                         await _eventBus.PublishAsync(new StartJobDomainEvent(request));
                     }
                     break;

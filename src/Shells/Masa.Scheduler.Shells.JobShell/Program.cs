@@ -74,7 +74,7 @@ if (args.Length >= 4)
     parameterArr = parameter.Split(";");
 }
 
-var excuteTime = DateTimeOffset.Now;
+var excuteTime = DateTimeOffset.UtcNow;
 
 if (args.Length >= 6)
 {
