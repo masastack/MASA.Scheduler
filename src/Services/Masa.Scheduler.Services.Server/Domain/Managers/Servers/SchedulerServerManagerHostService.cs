@@ -7,11 +7,13 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMasaConfiguration _configuration;
+    private readonly ILogger<SchedulerServerManagerBackgroundService> _logger;
 
-    public SchedulerServerManagerBackgroundService(IServiceProvider serviceProvider, IMasaConfiguration configuration)
+    public SchedulerServerManagerBackgroundService(IServiceProvider serviceProvider, IMasaConfiguration configuration, ILogger<SchedulerServerManagerBackgroundService> logger)
     {
         _serviceProvider = serviceProvider;
         _configuration = configuration;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,7 +45,14 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
             var scopedProcessingService =
                 scope.ServiceProvider.GetRequiredService<IScopedProcessingService>();
 
-            await scopedProcessingService.DoWorkAsync(stoppingToken);
+            try
+            {
+                await scopedProcessingService.DoWorkAsync(stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while processing environment: {environment}.");
+            }
         }
     }
 
