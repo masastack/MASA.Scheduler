@@ -6,10 +6,14 @@ namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
 public class SchedulerServerManagerBackgroundService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IMasaConfiguration _configuration;
+    private readonly ILogger<SchedulerServerManagerBackgroundService> _logger;
 
-    public SchedulerServerManagerBackgroundService(IServiceProvider serviceProvider)
+    public SchedulerServerManagerBackgroundService(IServiceProvider serviceProvider, IMasaConfiguration configuration, ILogger<SchedulerServerManagerBackgroundService> logger)
     {
         _serviceProvider = serviceProvider;
+        _configuration = configuration;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -18,9 +22,15 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
         await schedulerWorkerManager.StartManagerAsync(stoppingToken);
 
         var environmentProvider = _serviceProvider.GetRequiredService<EnvironmentProvider>();
+        var allowedEnvironments = GetAllowedEnvironments();
 
         foreach (var environment in environmentProvider.GetEnvionments())
         {
+            if (!IsEnvironmentAllowed(environment, allowedEnvironments))
+            {
+                continue;
+            }
+
             await DoWorkAsync(environment, stoppingToken);
         }
     }
@@ -35,7 +45,26 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
             var scopedProcessingService =
                 scope.ServiceProvider.GetRequiredService<IScopedProcessingService>();
 
-            await scopedProcessingService.DoWorkAsync(stoppingToken);
+            try
+            {
+                await scopedProcessingService.DoWorkAsync(stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while processing environment: {environment}.");
+            }
         }
+    }
+
+    private List<string> GetAllowedEnvironments()
+    {
+        var configuration = _configuration.ConfigurationApi.GetDefault();
+        return configuration.GetSection("AppSettings:AllowedEnvironments")
+                            .Get<List<string>>() ?? new();
+    }
+
+    private bool IsEnvironmentAllowed(string environment, List<string> allowedEnvironments)
+    {
+        return !allowedEnvironments.Any() || allowedEnvironments.Contains(environment, StringComparer.OrdinalIgnoreCase);
     }
 }
