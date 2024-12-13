@@ -37,5 +37,6 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
 
             await scopedProcessingService.DoWorkAsync(stoppingToken);
         }
+        return configuration.GetSection("AppSettings:AllowedEnvironments")
     }
 }
