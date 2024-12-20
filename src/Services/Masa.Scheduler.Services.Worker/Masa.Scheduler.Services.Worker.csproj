@@ -10,11 +10,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Application\**" />
-    <Content Remove="Application\**" />
-    <EmbeddedResource Remove="Application\**" />
-    <None Remove="Application\**" />
+    <Compile Remove="ExtractFiles\**" />
+    <Compile Remove="JobShell\**" />
+    <Compile Remove="ResourceFiles\**" />
+    <Content Remove="ExtractFiles\**" />
+    <Content Remove="JobShell\**" />
+    <Content Remove="ResourceFiles\**" />
+    <EmbeddedResource Remove="ExtractFiles\**" />
+    <EmbeddedResource Remove="JobShell\**" />
+    <EmbeddedResource Remove="ResourceFiles\**" />
+    <None Remove="ExtractFiles\**" />
+    <None Remove="JobShell\**" />
+    <None Remove="ResourceFiles\**" />
   </ItemGroup>
+
+
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.0" />
@@ -49,198 +59,7 @@
     <ProjectReference Include="..\..\Contracts\Masa.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.PostgreSql\Masa.Scheduler.EntityFrameworkCore.PostgreSql.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.SqlServer\Masa.Scheduler.EntityFrameworkCore.SqlServer.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="JobShell\Azure.Core.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Azure.Identity.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Google.Protobuf.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Grpc.Core.Api.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Grpc.Net.Client.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Grpc.Net.Common.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.BuildingBlocks.Authentication.Identity.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.BuildingBlocks.BasicAbility.Scheduler.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.BuildingBlocks.Data.Contracts.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.BuildingBlocks.Data.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.BuildingBlocks.Identity.IdentityModel.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.BuildingBlocks.Service.Caller.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.BuildingBlocks.StackSdks.Scheduler.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.BuildingBlocks.StackSdks.Tsc.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Contrib.BasicAbility.Scheduler.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Contrib.Service.Caller.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Contrib.Service.Caller.HttpClient.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Contrib.StackSdks.Scheduler.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Contrib.StackSdks.Tsc.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Scheduler.Shells.JobShell.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Utils.Caller.Core.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Utils.Caller.HttpClient.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Utils.Exceptions.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Masa.Utils.Security.Authentication.OpenIdConnect.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.AspNetCore.Authentication.OpenIdConnect.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.Bcl.AsyncInterfaces.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.Data.SqlClient.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.EntityFrameworkCore.Abstractions.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.EntityFrameworkCore.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.EntityFrameworkCore.Relational.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.EntityFrameworkCore.SqlServer.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.Extensions.Caching.Memory.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.Extensions.DependencyInjection.Abstractions.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.Extensions.DependencyInjection.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.Identity.Client.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.Identity.Client.Extensions.Msal.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.IdentityModel.JsonWebTokens.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.IdentityModel.Logging.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.IdentityModel.Protocols.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Microsoft.Win32.SystemEvents.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Api.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Contrib.Instrumentation.ElasticsearchClient.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Contrib.Instrumentation.EntityFrameworkCore.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Exporter.OpenTelemetryProtocol.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Extensions.Hosting.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Instrumentation.AspNetCore.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Instrumentation.Http.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Instrumentation.Runtime.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\OpenTelemetry.Instrumentation.StackExchangeRedis.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\Pipelines.Sockets.Unofficial.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\runtimes\unix\lib\netcoreapp3.1\Microsoft.Data.SqlClient.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\StackExchange.Redis.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\System.Configuration.ConfigurationManager.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\System.Diagnostics.PerformanceCounter.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\System.Drawing.Common.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\System.IdentityModel.Tokens.Jwt.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\System.Runtime.Caching.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\System.Security.Cryptography.ProtectedData.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\System.Security.Permissions.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="JobShell\System.Windows.Extensions.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\..\Shells\Masa.Scheduler.Shells.JobShell.Shared\Masa.Scheduler.Shells.JobShell.Shared.csproj" />
   </ItemGroup>
 
 </Project>

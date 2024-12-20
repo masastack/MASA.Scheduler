@@ -4,8 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <BaseOutputPath></BaseOutputPath>
+    <Nullable>enable</Nullable>   
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +12,10 @@
 	<PackageReference Include="Masa.Contrib.StackSdks.Tsc.OpenTelemetry" Version="$(MasaStackSdksPackageVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Masa.Scheduler.Shells.JobShell.Shared\Masa.Scheduler.Shells.JobShell.Shared.csproj" />
   </ItemGroup>
 
 </Project>
