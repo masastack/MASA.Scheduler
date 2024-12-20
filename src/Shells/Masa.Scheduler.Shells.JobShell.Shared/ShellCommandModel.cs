@@ -1,15 +1,15 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using System.Text;
-
 namespace Masa.Scheduler.Shells.JobShell.Shared;
 
 public struct ShellCommandModel
 {
     static string emptyTraceId = Guid.Empty.ToString("N");
 
-    public ShellCommandModel(string basePath, Guid taskId, string jobAssemblyPath, string jobEntryClassName, string? traceId, string? parentSpanId, long uTCTicks, long offset, Guid jobId, string otelUrl = "http://localhost:4317", string? jobStartParam = default)
+    internal const string DEFAULT_OTEL_URL = "http://localhost:4317";
+
+    public ShellCommandModel(string basePath, Guid taskId, string jobAssemblyPath, string jobEntryClassName, string? traceId, string? parentSpanId, long uTCTicks, long offset, Guid jobId, string? otelUrl = default, string? jobStartParam = default)
     {
         if (string.IsNullOrEmpty(jobAssemblyPath))
             throw new ArgumentNullException(nameof(jobAssemblyPath));
@@ -24,7 +24,7 @@ public struct ShellCommandModel
         UTCTicks = uTCTicks;
         Offset = offset;
         JobId = jobId;
-        OtelUrl = otelUrl;
+        OtelUrl = string.IsNullOrEmpty(otelUrl) ? DEFAULT_OTEL_URL : otelUrl;
         JobStartParam = jobStartParam;
     }
 
@@ -42,9 +42,6 @@ public struct ShellCommandModel
 
     public long UTCTicks { get; }
 
-    /// <summary>
-    /// 时区偏移量，单位s
-    /// </summary>
     public long Offset { get; }
 
     public Guid JobId { get; }
@@ -65,7 +62,7 @@ public struct ShellCommandModel
             UTCTicks,
             Offset,
             JobId,
-            string.IsNullOrEmpty(OtelUrl) ? "http://localhost:4317" : OtelUrl,
+            OtelUrl,
             string.IsNullOrEmpty(JobStartParam) ? "" : Convert.ToBase64String(Encoding.UTF8.GetBytes(JobStartParam))
             );
     }
@@ -86,9 +83,9 @@ public static class ShellCommandModelExtension
             throw new ArgumentException($"arg length less than {paramCount}");
         _ = Guid.TryParse(args[start++], out var taskId);
         string path = args[start++], className = args[start++], traceId = args[start++], spanId = args[start++];
-        long ticks = Convert.ToInt64(args[start++]);
-        long offset = Convert.ToInt64(args[start++]);
-        _ = Guid.TryParse(args[start++], out Guid jobId);
+        var ticks = Convert.ToInt64(args[start++]);
+        var offset = Convert.ToInt64(args[start++]);
+        _ = Guid.TryParse(args[start++], out var jobId);
         string otelUrl = args[start++],
             jobParam = args.Length - paramCount > 0 ? Encoding.UTF8.GetString(Convert.FromBase64String(args[start])) : default!;
         return new ShellCommandModel(hasFirst ? args[0] : default!, taskId, path, className, traceId, spanId, ticks, offset, jobId, otelUrl, jobParam);
