@@ -73,7 +73,7 @@ public class JobAppTaskHandler : ITaskHandler
         try
         {
             _schedulerLogger.LogInformation($"Process start", WriterTypes.Worker, taskId, jobDto.Id);
-            var process = processUtils.Run("dotnet", GetJobShellRunParameter(jobDto, jobExtractPath, taskId, excuteTime));
+            var process = processUtils.Run("dotnet", GetJobShellRunParameter(jobDto, jobExtractPath, taskId, excuteTime, traceId, spanId));
 
             token.Register(() =>
             {
@@ -85,7 +85,7 @@ public class JobAppTaskHandler : ITaskHandler
                 }
             });
 
-            process.WaitForExit();
+            await process.WaitForExitAsync(token);
         }
         catch (Exception ex)
         {
@@ -106,26 +106,23 @@ public class JobAppTaskHandler : ITaskHandler
         _schedulerLogger.LogInformation("Job Exits", WriterTypes.Worker, _taskId, _jobId);
     }
 
-    private string GetJobShellRunParameter(SchedulerJobDto dto, string jobExtractPath, Guid taskId, DateTimeOffset excuteTime)
+    private string GetJobShellRunParameter(SchedulerJobDto dto, string jobExtractPath, Guid taskId, DateTimeOffset excuteTime, string? traceId = default, string? spanId = default)
     {
-        var otlpEndpoint = _masaStackConfig.OtlpUrl;
-        var parameterList = new List<string>()
-        {
-            _rootPath + Path.Combine(JOB_SHELL_SOURCE_PATH, JOB_SHELL_NAME),
-            taskId.ToString(),
+        var parameters = new Shells.JobShell.Shared.ShellCommandModel(_rootPath + Path.Combine(JOB_SHELL_SOURCE_PATH, JOB_SHELL_NAME),
+            taskId,
             Path.Combine(jobExtractPath, dto.JobAppConfig.JobEntryAssembly),
             dto.JobAppConfig.JobEntryClassName,
-            //Todo The processing of RunParameter will be modified in the future
-            !string.IsNullOrWhiteSpace(dto.JobAppConfig.JobParams)?dto.JobAppConfig.JobParams:"params",
-            excuteTime.Ticks.ToString(),
-            excuteTime.Offset.Ticks.ToString(),
-            dto.Id.ToString(),
-            otlpEndpoint
-        };
+            traceId,
+            spanId,
+            excuteTime.Ticks,
+            excuteTime.Offset.Ticks,
+            dto.Id,
+            _masaStackConfig.OtlpUrl,
+            dto.JobAppConfig.JobParams
+            ).ToString();
+        _schedulerLogger.LogInformation($"JobShell run parameter: {parameters}", WriterTypes.Worker, _taskId, _jobId);
 
-        _schedulerLogger.LogInformation($"JobShell run parameter: {string.Join(" ", parameterList)}", WriterTypes.Worker, _taskId, _jobId);
-
-        return string.Join(" ", parameterList);
+        return parameters;
     }
 
     private string GetJobExtractPath(Guid jobId, SchedulerResourceDto resouce)
