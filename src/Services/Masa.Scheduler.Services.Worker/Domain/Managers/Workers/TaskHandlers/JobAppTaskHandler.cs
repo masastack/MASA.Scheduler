@@ -205,12 +205,14 @@ public class JobAppTaskHandler : ITaskHandler
     {
         var filePath = Path.Combine(resourcePath, resource.Name);
 
-        if (!File.Exists(filePath))
+        if (File.Exists(filePath))
         {
-            _schedulerLogger.LogInformation($"Start download Resource", WriterTypes.Worker, _taskId, _jobId);
-            await DownloadResource(resource, resourcePath);
-            _schedulerLogger.LogInformation($"Download resource success", WriterTypes.Worker, _taskId, _jobId);
+            return;
         }
+
+        _schedulerLogger.LogInformation($"Start download Resource", WriterTypes.Worker, _taskId, _jobId);
+        await DownloadResource(resource, resourcePath);
+        _schedulerLogger.LogInformation($"Download resource success", WriterTypes.Worker, _taskId, _jobId);
 
         if (!File.Exists(filePath))
         {
