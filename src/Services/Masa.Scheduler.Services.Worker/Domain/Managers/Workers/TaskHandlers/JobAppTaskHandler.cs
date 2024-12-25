@@ -219,15 +219,15 @@ public class JobAppTaskHandler : ITaskHandler
 
         if (resource.Name.EndsWith(DLL_EXTENSION))
         {
-            _schedulerLogger.LogError($"Start copy resource. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
+            _schedulerLogger.LogInformation($"Start copy resource. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
             await CopyFolder(resourcePath, jobExtractPath);
-            _schedulerLogger.LogError($"Copy resource success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
+            _schedulerLogger.LogInformation($"Copy resource success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
         }
         else
         {
-            _schedulerLogger.LogError($"Start decompress files. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
+            _schedulerLogger.LogInformation($"Start decompress files. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
             DeCompressFile(resource, resourcePath, jobExtractPath);
-            _schedulerLogger.LogError($"Decompress files success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
+            _schedulerLogger.LogInformation($"Decompress files success. version: {resource.Version}", WriterTypes.Worker, _taskId, _jobId);
 
             if (!Directory.Exists(jobExtractPath))
             {
