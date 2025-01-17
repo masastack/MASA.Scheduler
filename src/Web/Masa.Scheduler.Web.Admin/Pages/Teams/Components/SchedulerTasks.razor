@@ -110,7 +110,7 @@
                             case "Action":
                                 <MTooltip Bottom>
                                     <ActivatorContent Context="tooltips">
-                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation Link OnClick="()=>OpenTaskLog(context.Item)">
+                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation Link Target="blank" Href="@($"{MasaStackConfig.GetDomain(MasaStackProject.TSC, MasaStackApp.WEB)}/log/{context.Item.Id}?start={context.Item.TaskRunStartTime.ToString("yyyy-MM-dd HH:mm:ss")}&end={context.Item.TaskRunEndTime.ToString("yyyy-MM-dd HH:mm:ss")}")">
                                         <SIcon>md:plagiarism</SIcon>
                                         </MButton>
                                     </ActivatorContent>

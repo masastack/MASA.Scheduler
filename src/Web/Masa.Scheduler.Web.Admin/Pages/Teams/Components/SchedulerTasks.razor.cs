@@ -452,11 +452,5 @@ public partial class SchedulerTasks
             StateHasChanged();
         }
     }
-
-    private async Task OpenTaskLog(SchedulerTaskDto item)
-    {
-        var url = $"{MasaStackConfig.GetDomain(MasaStackProject.TSC, MasaStackApp.WEB)}/log/{item.Id}?start={item.TaskRunStartTime.ToString("yyyy-MM-dd HH:mm:ss")}&end={item.TaskRunEndTime.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")}";
-        await Js.InvokeVoidAsync("window.open", url, "_blank");
-    }
 }
 
