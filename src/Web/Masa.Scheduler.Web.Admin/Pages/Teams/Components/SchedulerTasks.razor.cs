@@ -1,6 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using System;
+using System.Security.Policy;
+
 namespace Masa.Scheduler.Web.Admin.Pages.Teams.Components;
 
 public partial class SchedulerTasks
@@ -451,6 +454,12 @@ public partial class SchedulerTasks
 
             StateHasChanged();
         }
+    }
+
+    private async Task OpenTaskLog(SchedulerTaskDto item)
+    {
+        var url = $"{MasaStackConfig.GetDomain(MasaStackProject.TSC, MasaStackApp.WEB)}/log/{item.Id}?start={item.TaskRunStartTime.ToString("yyyy-MM-dd HH:mm:ss")}&end={item.TaskRunEndTime.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")}";
+        await Js.InvokeVoidAsync("window.open", url, "_blank");
     }
 }
 
