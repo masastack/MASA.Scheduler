@@ -7,6 +7,10 @@ public class PMService : ServiceBase
 {
     public PMService() : base(ConstStrings.PM_API)
     {
+        RouteHandlerBuilder = builder =>
+        {
+            builder.RequireAuthorization();
+        };
     }
 
     public async Task<IResult> GetProjectListAsync(IEventBus eventBus, Guid? teamId, string environment = "")

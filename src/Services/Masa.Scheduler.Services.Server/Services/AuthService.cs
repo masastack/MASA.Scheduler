@@ -7,6 +7,10 @@ public class AuthService : ServiceBase
 {
     public AuthService() : base(ConstStrings.AUTH_API)
     {
+        RouteHandlerBuilder = builder =>
+        {
+            builder.RequireAuthorization();
+        };
     }
 
     public async Task<IResult> GetTeamListAsync(IEventBus eventBus)

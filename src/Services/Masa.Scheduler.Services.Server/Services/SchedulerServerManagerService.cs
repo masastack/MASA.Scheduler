@@ -7,6 +7,7 @@ public class SchedulerServerManagerService : ServiceBase
 {
     public SchedulerServerManagerService() : base(ConstStrings.SCHEDULER_SERVER_MANAGER_API)
     {
+
     }
 
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(NotifyTaskStartIntegrationEvent))]
