@@ -7,7 +7,10 @@ public class OssService : ServiceBase
 {
     public OssService() : base(ConstStrings.OSS_API)
     {
-
+        RouteHandlerBuilder = builder =>
+        {
+            builder.RequireAuthorization();
+        };
     }
 
     public async Task<SecurityTokenDto> GetSecurityTokenAsync([FromServices] IObjectStorageClient client, [FromServices] IOptions<OssOptions> ossOptions)

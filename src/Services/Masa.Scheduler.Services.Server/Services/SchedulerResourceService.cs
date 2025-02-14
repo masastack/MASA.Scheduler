@@ -7,6 +7,10 @@ public class SchedulerResourceService : ServiceBase
 {
     public SchedulerResourceService() : base(ConstStrings.SCHEDULER_RESOURCE_API)
     {
+        RouteHandlerBuilder = builder =>
+        {
+            builder.RequireAuthorization();
+        };
     }
 
     public async Task<IResult> GetListAsync(IEventBus eventBus, [FromQuery] string jobAppIdentity)
