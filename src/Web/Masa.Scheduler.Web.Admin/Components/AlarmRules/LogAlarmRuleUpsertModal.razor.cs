@@ -254,6 +254,8 @@ and LogAttributesValues[indexOf(LogAttributesKeys,'JobId')]='{jobId}'";
 
         var inputDto = _model.Adapt<AlarmRuleUpsertModel>();
 
+        inputDto.Source = MasaStackProject.Scheduler.Name;
+
         if (_entityId == default)
         {
             _entityId = await AlertClient.AlarmRuleService.CreateAsync(inputDto);
