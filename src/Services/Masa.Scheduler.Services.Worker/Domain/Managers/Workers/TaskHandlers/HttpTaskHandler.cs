@@ -47,11 +47,6 @@ public class HttpTaskHandler : ITaskHandler
             RequestUri = HttpUtils.GetRequestUrl(jobDto.HttpConfig.RequestUrl, jobDto.HttpConfig.HttpParameters),
             Content = HttpUtils.ConvertHttpContent(jobDto.HttpConfig.HttpBody)
         };
-        //if (traceId.IsNullOrEmpty() == false)
-        //{
-        //    //client.DefaultRequestHeaders.Add("traceparent", traceId);
-        //    //Activity.Current = new ActivitySource("HttpJob").StartActivity();
-        //}
 
         TaskRunStatus runSucess = TaskRunStatus.Failure;
 
@@ -94,9 +89,13 @@ public class HttpTaskHandler : ITaskHandler
                     break;
             }
 
-            if (runSucess != TaskRunStatus.Success && !string.IsNullOrEmpty(response.ReasonPhrase))
+            if (runSucess != TaskRunStatus.Success)
             {
-                _schedulerLogger.LogError(response.ReasonPhrase, WriterTypes.Worker, taskId, jobDto.Id);
+                string errorMessage = $"HTTP Status Code: {(int)response.StatusCode} ({response.StatusCode}) - " +
+                    (string.IsNullOrEmpty(response.ReasonPhrase) 
+                        ? "No additional information provided" 
+                        : response.ReasonPhrase);
+                _schedulerLogger.LogError(errorMessage, WriterTypes.Worker, taskId, jobDto.Id);
             }
         }
         catch (TimeoutException ex)
