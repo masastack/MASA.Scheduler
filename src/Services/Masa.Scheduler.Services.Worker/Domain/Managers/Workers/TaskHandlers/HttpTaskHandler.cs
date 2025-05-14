@@ -91,9 +91,10 @@ public class HttpTaskHandler : ITaskHandler
 
             if (runSucess != TaskRunStatus.Success)
             {
-                string errorMessage = string.IsNullOrEmpty(response.ReasonPhrase) 
-                    ? "No additional information provided" 
-                    : response.ReasonPhrase;
+                string errorMessage = $"HTTP Status Code: {(int)response.StatusCode} ({response.StatusCode}) - " +
+                    (string.IsNullOrEmpty(response.ReasonPhrase) 
+                        ? "No additional information provided" 
+                        : response.ReasonPhrase);
                 _schedulerLogger.LogError(errorMessage, WriterTypes.Worker, taskId, jobDto.Id);
             }
         }
