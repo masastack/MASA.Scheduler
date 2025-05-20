@@ -1,0 +1,88 @@
+﻿@namespace Masa.Scheduler.Web.Admin.Pages.Tsc
+@inherits TscComponentBase
+
+<ApmSearchComponent Value="Search" IsLog @ref="apmSearchComponent" ShowExceptError
+                    ValueChanged="LoadAsync" />
+<SDataTable Headers="headers"
+            Stripe
+            FixedHeader
+            ServerItemsLength="total"
+            ItemsPerPage="defaultSize"
+            MustSort
+            Items="data"
+            TItem="LogResponseDto"
+            Loading="@isTableLoading"
+            OnOptionsUpdate="OnTableOptionsChanged">
+    <ItemColContent>
+        @if (context.Header.Value == nameof(LogResponseDto.Timestamp))
+        {
+            <div class="d-flex justify-start">
+                <SIcon OnClick="@(() => OpenAsync(context.Item))" Class="pr-2" Size="18" Tooltip="@I18n.T("Detail")">mdi-arrow-top-right-bottom-left</SIcon>
+                @context.Item.Timestamp.UtcFormatLocal(CurrentTimeZone)
+            </div>
+        }
+        else if (context.Header.Value == nameof(LogResponseDto.Body))
+        {
+            <MTooltip Top Context="tooltipContent">
+                <ActivatorContent>
+                    <div @attributes="@tooltipContent.Attrs" style="width:400px" class="text-truncate">
+                        @context.Item.Body
+                    </div>
+                </ActivatorContent>
+                <ChildContent>
+                    <span>@context.Item.Body</span>
+                </ChildContent>
+            </MTooltip>
+        }
+        else if (context.Header.Value == "Resource.service.namespace")
+        {
+            @context.Item.Resource["service.namespace"]
+        }
+        else if (context.Header.Value == "Resource.service.name")
+        {
+            var service = @context.Item.Resource["service.name"]?.ToString();
+              var text = GetService(service)?.AppDescription;           
+            if (string.IsNullOrEmpty(text))
+                text = "无";
+            <MTooltip Top Context="tooltipContent">
+                <ActivatorContent>
+                    <div @attributes="@tooltipContent.Attrs" style="width:400px" class="text-truncate">
+                        @service
+                    </div>
+                </ActivatorContent>
+                <ChildContent>
+                    <span>@text</span>
+                </ChildContent>
+            </MTooltip>
+        }
+        else if (context.Header.Value == nameof(LogResponseDto.SeverityText))
+        {
+            @context.Item.SeverityText
+        }
+        else if (context.Header.Value == nameof(LogResponseDto.TraceId))
+        {
+            @context.Item.TraceId
+        }
+        else if (context.Header.Value == nameof(LogResponseDto.SpanId))
+        {
+            @context.Item.SpanId
+        }
+        else if (context.Header.Value == "Attributes.exception.type" && context.Item.Attributes.ContainsKey("exception.type"))
+        {
+            @context.Item.Attributes["exception.type"]
+        }
+    </ItemColContent>
+</SDataTable>
+
+<MCard Rounded=true Class="px-6 py-2" Style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;">
+    <SPagination Class="mt-2" @bind-Page="page" @bind-PageSize=defaultSize Total=total OnChange="OnPageChange" />
+</MCard>
+
+<style>
+    .m-data-table .m-data-table__wrapper {
+        height: calc(100vh - 400px)
+    }
+</style>
+
+
+<ApmTraceView Value="current" @bind-Show="dialogShow" />

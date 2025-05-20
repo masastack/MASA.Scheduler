@@ -25,7 +25,7 @@
                 </SSelect>
             </MCol>
             <SDateTimeRangeToolbar class="ml-6" ShowQuickChange="false" StartDateTime=_queryStartTime EndDateTime=_queryEndTime OnUpdate="QueryTimeChanged" Clearable></SDateTimeRangeToolbar>
-            @if(IsApiCreate)
+            @if (IsApiCreate)
             {
                 <MCol Md="2" Class="ml-6">
                     <SSelect Small Value="_queryOrigin" TItem="string" TItemValue="string" TValue="string" ValueChanged="QueryOriginChanged" Label="@T("Origin")" BackgroundColor="white" Class="rounded-2 body2" Clearable Items="_orginList" ItemText="origin => origin" ItemValue="origin=>origin">
@@ -110,21 +110,21 @@
                             case "Action":
                                 <MTooltip Bottom>
                                     <ActivatorContent Context="tooltips">
-                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation Link OnClick="()=>OpenTaskLog(context.Item)">
-                                        <SIcon>md:plagiarism</SIcon>
+                                        <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation OnClick="()=>OpenTaskLog(context.Item)">
+                                            <SIcon>md:plagiarism</SIcon>
                                         </MButton>
                                     </ActivatorContent>
                                     <ChildContent>
                                         <span>@T("TaskLog")</span>
                                     </ChildContent>
                                 </MTooltip>
-                                @if (string.IsNullOrEmpty(context.Item.TraceId) == false)
+                                @* @if (!string.IsNullOrEmpty(context.Item.TraceId)) *@
                                 {
                                     <MTooltip Bottom>
                                         <ActivatorContent Context="tooltips">
-                                            <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation Class="ml-6" Link Target="blank" Href="@($"{MasaStackConfig.GetDomain(MasaStackProject.TSC, MasaStackApp.WEB)}/trace/{context.Item.TraceId}")">
-                                            <SIcon>mdi-chart-timeline-variant</SIcon>
-                                        </MButton>
+                                            <MButton Icon @attributes="@tooltips.Attrs" Width="20" Height="20" OnClickStopPropagation Class="ml-6" OnClick="()=>OpenTaskTrace(context.Item)">
+                                                <SIcon>mdi-chart-timeline-variant</SIcon>
+                                            </MButton>
                                         </ActivatorContent>
                                         <ChildContent>
                                             <span>@T("TaskTrace")</span>
@@ -141,7 +141,7 @@
                                 {
                                     <MMenu Bottom Left Class="ml-2">
                                         <ActivatorContent Context="menuContext">
-                                        <SButton Color="" Icon @attributes="@menuContext.Attrs" Width="20" Height="20" OnClickStopPropagation Class="ml-6">
+                                            <SButton Color="" Icon @attributes="@menuContext.Attrs" Width="20" Height="20" OnClickStopPropagation Class="ml-6">
                                                 <SIcon>mdi-dots-vertical</SIcon>
                                             </SButton>
                                         </ActivatorContent>
@@ -201,3 +201,15 @@
         </span>
     </ChildContent>
 </SSimpleDialog>
+
+<SSimpleModal CancelText="@T("Close")" @bind-Value="_showTraceDialog" Title="@T("TaskTrace")" Class="max-width">
+    <ChildContent>
+        <Masa.Scheduler.Web.Admin.Pages.Tsc.TraceDetail TraceId="@_current!.TraceId" Start="_current.TaskRunStartTime.UtcDateTime.AddMinutes(-15)" End="_current.TaskRunStartTime.UtcDateTime.AddMinutes(15)" />
+    </ChildContent>
+</SSimpleModal>
+
+<SSimpleModal CancelText="@T("Close")" @bind-Value="_showLogDialog" Title="@T("TaskLog")" Class="max-width">
+    <ChildContent>
+        <Masa.Scheduler.Web.Admin.Pages.Tsc.LogList TaskId="@_current!.Id.ToString()" Start="_current.TaskRunStartTime.UtcDateTime.AddMinutes(-15)" End="_current.TaskRunStartTime.UtcDateTime.AddMinutes(15)" />
+    </ChildContent>
+</SSimpleModal>

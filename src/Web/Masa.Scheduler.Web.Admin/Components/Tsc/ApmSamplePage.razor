@@ -1,0 +1,10 @@
+﻿@namespace Masa.Scheduler.Web.Admin.Components.Tsc
+@inherits TscComponentBase
+
+<div class="d-flex">
+    <SIcon OnClick="@(()=>OnPageAsync(1))" Tooltip="@I18n.Apm("First record")">mdi-page-first</SIcon>
+    <SIcon Class="pl-2" OnClick="OnPreAsync" Tooltip="@I18n.Apm("Previous record")">mdi-chevron-left</SIcon>
+    <div class="pl-2"><span class="pr-2">@Current </span>of<span class="pl-2">@Total</span></div>
+    <SIcon Class="pl-2" OnClick="OnNextAsync" Tooltip="@I18n.Apm("Next record")">mdi-chevron-right</SIcon>
+    <SIcon Class="pl-2" OnClick="@(()=>OnPageAsync(Total))" Tooltip="@I18n.Apm("The last one record")">mdi-page-last</SIcon>
+</div>

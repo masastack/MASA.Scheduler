@@ -34,7 +34,7 @@ var authBaseAddress = masaStackConfig.GetAuthServiceDomain();
 var mcBaseAddress = masaStackConfig.GetMcServiceDomain();
 var schedulerBaseAddress = masaStackConfig.GetSchedulerServiceDomain();
 #if DEBUG
-schedulerBaseAddress = "https://localhost:19611";
+//schedulerBaseAddress = "https://localhost:19611";
 #endif
 
 var signalRBaseAddress = schedulerBaseAddress + "/server-hub/notifications";

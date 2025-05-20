@@ -1,0 +1,191 @@
+﻿@namespace Masa.Scheduler.Web.Admin.Components.Tsc
+@inherits TscComponentBase
+
+@if (Dialog)
+{
+    <MDialog Value=Show ValueChanged="CloseAsync">
+        <ChildContent>
+            <div class="@($"slide {(Show ? "slide_in" : "slide_out")}")">
+                @((RenderFragment)(dictRender => RenderData(dictRender)))
+            </div>
+        </ChildContent>
+    </MDialog>
+
+    <MDialog @bind-Value="@showJwt" Width="@("60%")">
+        <ChildContent>
+            <ApmJwtBearaToken Value="@jwtValue" />
+        </ChildContent>
+    </MDialog>
+}
+else
+{
+    @((RenderFragment)(dictRender => RenderData(dictRender)))
+}
+
+@code {
+    private void RenderData(RenderTreeBuilder __builder)
+    {
+        <MCard>
+            @if (Dialog)
+            {
+                <MCardSubtitle Class="d-flex justify-end">
+                    <SIcon OnClick="CloseAsync" Small Tooltip="@I18n.T("Close")">mdi-close</SIcon>
+                </MCardSubtitle>
+            }
+            <MCardText>
+                <div class="d-flex">
+                    <SSearch BackgroundColor="white" @bind-Value="search" Class="rounded-2" Style="border:solid 1px;width:100%" />
+                </div>
+                <MSimpleTable Height="@(Height??"calc(100vh - 200px)")" FixedHeader>
+                    <thead>
+                        <tr>
+                            <th class="text-left" width="15%">
+                                @I18n.Apm("Log.Dialog.Field")
+                            </th>
+                            <th class="text-left">
+                                @I18n.Apm("Log.Dialog.Value")
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @((RenderFragment)(dictRender => RenderTable(dictRender, _dic!)))
+                    </tbody>
+                </MSimpleTable>
+            </MCardText>
+        </MCard>
+    }
+
+    private void RenderTable(RenderTreeBuilder __builder, IDictionary<string, object> dic, string? parent = null)
+    {
+        if (dic == null || !dic.Any())
+            return;
+        foreach (var key in dic.Keys)
+        {
+            var currentName = string.IsNullOrEmpty(parent) ? key : $"{parent}.{key}";
+
+            var value = dic[key];
+            if (IsFundamental(value.GetType()) || value.GetType().Equals(typeof(JsonElement)))
+            {
+                if (value is DateTime time)
+                    value = time.UtcFormatLocal(CurrentTimeZone, "yyyy-MM-dd HH:mm:ss fff");
+
+                var isShow = string.IsNullOrEmpty(search) || currentName.Contains(search, StringComparison.CurrentCultureIgnoreCase) || value.ToString()!.Contains(search);
+                if (!isShow) continue;
+
+                <tr>
+                    <td>@currentName</td>
+                    <td class="text-wrap">
+                        @{
+                            if (IsRedirectTrace && string.Equals(currentName, StorageConst.Current.TraceId, StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                @value
+                            }
+                            else if (string.Equals(currentName, "Resource.service.name"))
+                            {
+                                var service = value?.ToString();
+                                var text = GetService(service)?.AppDescription;
+                                if (string.IsNullOrEmpty(text))
+                                    text = "无";
+                                <MTooltip Top Left Context="tooltipContent">
+                                    <ActivatorContent>
+                                        <div @attributes="@tooltipContent.Attrs" class="text-truncate">
+                                            @service
+                                        </div>
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <span>@text</span>
+                                    </ChildContent>
+                                </MTooltip>
+                            }
+                            else if (string.Equals(currentName, "Attributes.authorization") && !string.IsNullOrEmpty(@value?.ToString()))
+                            {
+                                <a onclick="@(()=>ShowJwt(value?.ToString()!))" style="text-decoration:underline" title="JWTToken">
+                                    @value
+                                </a>
+                            }
+                            else if (string.Equals(currentName, "Attributes.http.request_content_body"))
+                            {
+                                @FormatForm(value?.ToString())
+                            }
+                            else
+                            {
+                                @value
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+            else if (value is IDictionary<string, object> dicValue)
+            {
+                RenderTable(__builder, dicValue, currentName);
+            }
+        }
+    }
+
+    private static bool IsFundamental(Type type)
+    {
+        return type.IsPrimitive || type.IsEnum || type.Equals(typeof(string)) || type.Equals(typeof(DateTime));
+    }
+
+    private static string FormatForm(string? body)
+    {
+        if (string.IsNullOrEmpty(body))
+            return string.Empty;
+        var data = body.Split("\r\n");
+
+        var index = 0;
+        var startLine = string.Empty;
+        var files = new List<string>();
+        bool isFile = false;
+        string lastValue = string.Empty;
+        do
+        {
+            var temp = data[index++];
+            if (!string.IsNullOrEmpty(temp))
+            {
+                if (temp.StartsWith("-----"))
+                {
+                    if (string.IsNullOrEmpty(startLine))
+                    {
+                        startLine = temp;
+                    }
+                    else
+                    {
+                        if (!isFile)
+                            files.Add(lastValue);
+                        //文件结束
+                        //startLine = string.Empty;
+                        lastValue = string.Empty;
+                        isFile = false;
+                    }
+                }
+                else if (temp.IndexOf("filename=") > 0)
+                {
+                    isFile = true;
+                    var startIndex = temp.IndexOf("filename=") + "filename=".Length + 1;
+                    var fileName = temp.Substring(startIndex, temp.IndexOf('"', startIndex + 1) - startIndex);
+                    files.Add(fileName);
+                }
+                else if (temp.IndexOf("name=") > 0)
+                {
+                    var startIndex = temp.IndexOf("name=") + "name=".Length + 1;
+                    var keyName = temp.Substring(startIndex, temp.IndexOf('"', startIndex + 1) - startIndex);
+                    lastValue = keyName;
+                }
+                else if (!string.IsNullOrEmpty(lastValue))
+                {
+                    lastValue = $"{lastValue}: {temp}";
+                }
+            }
+            if (data.Length - index == 0)
+            {
+                break;
+            }
+        }
+        while (true);
+        if (files.Count > 0)
+            return string.Join("\r\n", files);
+
+        return body;
+    }
+}
