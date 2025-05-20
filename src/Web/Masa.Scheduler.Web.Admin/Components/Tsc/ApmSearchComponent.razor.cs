@@ -55,7 +55,7 @@ public partial class ApmSearchComponent
     };
 
     private QuickRangeKey quickRangeKey = QuickRangeKey.Last15Minutes;
-    private List<string> textFileds = new();
+    private List<string> textFields = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -175,15 +175,15 @@ public partial class ApmSearchComponent
 
     private void SetQueryList()
     {
-        if (textFileds.Count > 0 || StorageConst.Current == null)
+        if (textFields.Count > 0 || StorageConst.Current == null)
             return;
-        textFileds = new List<string> {
+        textFields = new List<string> {
                 StorageConst.Current.TraceId,
                 StorageConst.Current.SpanId
         };
         if (IsEndpoint)
         {
-            textFileds.AddRange(new string[] {
+            textFields.AddRange(new string[] {
                 StorageConst.Current.Trace.URLFull,
                 StorageConst.Current.Trace.UserId,
                 StorageConst.Current.Trace.HttpRequestBody
@@ -191,15 +191,15 @@ public partial class ApmSearchComponent
         }
         else if (!IsService)
         {
-            textFileds.Add(StorageConst.Current.ExceptionMessage);
+            textFields.Add(StorageConst.Current.ExceptionMessage);
             if (IsLog)
             {
-                textFileds.Add(StorageConst.Current.Log.Body);
-                textFileds.Add(StorageConst.Current.Log.TaskId);
+                textFields.Add(StorageConst.Current.Log.Body);
+                textFields.Add(StorageConst.Current.Log.TaskId);
             }
         }
-        if (string.IsNullOrEmpty(Value.TextField) || !textFileds.Contains(Value.TextField))
-            Value.TextField = textFileds[0];
+        if (string.IsNullOrEmpty(Value.TextField) || !textFields.Contains(Value.TextField))
+            Value.TextField = textFields[0];
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
         if (string.IsNullOrEmpty(uri.Query))
