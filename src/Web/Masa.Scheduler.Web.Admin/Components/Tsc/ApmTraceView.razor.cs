@@ -60,7 +60,7 @@ public partial class ApmTraceView
     private string? md5Key=default;
     private string search = string.Empty;
 
-    private void OnSeach(string value)
+    private void OnSearch(string value)
     {
         search = value;
     }
