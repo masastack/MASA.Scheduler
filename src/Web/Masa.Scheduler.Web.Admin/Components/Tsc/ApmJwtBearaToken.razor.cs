@@ -3,7 +3,6 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Encodings.Web;
-using System.Text.Json;
 
 namespace Masa.Scheduler.Web.Admin.Components.Tsc;
 

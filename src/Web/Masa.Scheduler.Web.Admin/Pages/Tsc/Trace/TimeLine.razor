@@ -2,11 +2,7 @@
 @inherits TscComponentBase
 
 <MCard Class="rounded-lg mt-4" Style="border:solid #ccc 1px;min-height:600px;" Loading="loading">
-    <MCardSubtitle>
-       @*  <div class="d-flex justify-start">
-            <div class="font-weight-black pr-4">@I18n.Apm("Trace.Detail.Sample")</div>
-            <ApmSamplePage Current="Page" Total="Total" CurrentChanged="LoadPageAsync" />
-        </div> *@
+    <MCardSubtitle>      
         <div class="d-flex justify-space-between">
             <div style="width:70%" class="d-flex justify-start pt-4">
                 <div>@(defaultTimeLine?.Trace?.Timestamp.FormatHistory())</div>
@@ -20,16 +16,7 @@
                     <div class="px-2" style="color: rgb(52, 55, 65);width:1px">|</div>
                     <div class="px-2 text-truncate" style="max-width:200px" title="@userAgent">@userAgent</div>
                 }
-            </div>
-            @* <div class="d-flex">
-                @if (!string.IsNullOrEmpty(traceLinkUrl))
-                {
-                    <SButton Class="white--text blue darken-1"
-                             Style="text-transform: none"
-                             BorderRadiusClass="rounded-lg"
-                             OnClick="OpenTraceLogAsync">@I18n.Apm("Trace.Detail.TraceLog")</SButton>
-                }
-            </div> *@
+            </div>           
         </div>
 
         <div class="d-flex justify-start pt-4">
@@ -80,7 +67,7 @@
     </MCardText>
 </MCard>
 
-<ApmTraceView Value="currentTimeLine?.Trace!" @bind-Show="showTraceDetail" LinkUrl="@spanLinkUrl" IsRedirectTrace=false />
+<ApmTraceView Value="currentTimeLine?.Trace!" @bind-Show="showTraceDetail" IsRedirectTrace=false />
 
 @code {
 

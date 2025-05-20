@@ -8,19 +8,15 @@ public class TscComponentBase : ProComponentBase
     [Inject]
     public ITscClient TscClient { get; set; } = default!;
 
+    [Inject]
+    public new IMultiEnvironmentUserContext UserContext { get; set; } = default!;
+
     protected override void OnInitialized()
     {
         StorageConst.Init(new ClickhouseStorageConst());
         base.OnInitialized();
     }
-
-    [Inject]
-    public JsInitVariables JsInitVariables { get; set; } = default!;
-
     protected ApmSearchComponent apmSearchComponent = default!;
-
-    [Inject]
-    public IMultiEnvironmentUserContext UserContext { get; set; } = default!;
 
     public virtual bool IsNeedRefresh { get; set; }
 
@@ -35,7 +31,6 @@ public class TscComponentBase : ProComponentBase
     }
 
     public string CurrentUrl { get; set; } = default!;
-
 
     public static string GetUrlParam(string? service = default,
          string? env = default,

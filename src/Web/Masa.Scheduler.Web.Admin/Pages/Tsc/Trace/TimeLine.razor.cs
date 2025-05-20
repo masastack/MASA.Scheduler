@@ -53,8 +53,7 @@ public partial class TimeLine
     TreeLineDto defaultTimeLine = default!;
     List<string> services = new();
     List<string> selectedServices = new();
-    string? traceLinkUrl = default, spanLinkUrl = default;
-    private string? urlService, UrlEndpoint, urlMethod;
+    private string? urlService;
 
     private static List<string> colors = new() {
         "rgb(84, 179, 153)",
@@ -85,16 +84,6 @@ public partial class TimeLine
         }
     }
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        var uri = NavigationManager.ToAbsoluteUri(CurrentUrl);
-        var values = HttpUtility.ParseQueryString(uri.Query);
-        urlService = values.Get("service")!;
-        UrlEndpoint = values.Get("endpoint")!;
-        urlMethod = values.Get("method")!;
-    }  
-
     protected override async Task OnInitializedAsync()
     {
         var statusCodes = await TscClient.ApmService.GetStatusCodesAsync();
@@ -113,8 +102,6 @@ public partial class TimeLine
     {
         if (string.IsNullOrEmpty(urlService) && !string.IsNullOrEmpty(Service))
             urlService = Service;
-        traceLinkUrl = default;
-        spanLinkUrl = default;
         timeLines.Clear();
         services.Clear();
         selectedServices.Clear();
@@ -157,7 +144,6 @@ public partial class TimeLine
         timeLines = timeLines.OrderBy(item => item.Trace.Timestamp).ToList();
         services = services.Distinct().ToList();
         selectedServices.Add(defaultTimeLine!.ServiceName!);
-        traceLinkUrl = GetUrl(defaultTimeLine);
     }
 
     private TreeLineDto? GetDefaultLine()
@@ -181,21 +167,15 @@ public partial class TimeLine
         return default;
     }
 
-    private bool IsTarget(TreeLineDto item)
+    private static bool IsTarget(TreeLineDto item)
     {
         if ((item.Trace.Kind == "SPAN_KIND_SERVER" || item.Trace.Kind == "Server")
-               && item.Trace.Resource.TryGetValue("telemetry.sdk.version", out var sdkVersion))
+               && item.Trace.Resource.TryGetValue("telemetry.sdk.version", out var _))
         {
             return true;
         }
         return false;
-    }
-
-    private static bool IsNullOrEquals(Dictionary<string, object> values, string key, string? urlValue = default)
-    {
-        if (string.IsNullOrEmpty(urlValue)) return true;
-        return values.TryGetValue(key, out var value) && string.Equals(urlValue, value.ToString(), StringComparison.CurrentCultureIgnoreCase);
-    }
+    }    
 
     private TreeLineDto? GetMauiDefaultLines(List<TreeLineDto>? data)
     {
@@ -269,14 +249,6 @@ public partial class TimeLine
         return result;
     }
 
-    private async Task LoadPageAsync(int page)
-    {
-        Page = page;
-        loading = true;
-        if (PageChanged.HasDelegate)
-            await PageChanged.InvokeAsync(Page);
-    }
-
     /// <summary>
     /// 完整的parentId为空的roots
     /// </summary>
@@ -301,7 +273,6 @@ public partial class TimeLine
 
     private void ShowTraceDetail(TreeLineDto current)
     {
-        spanLinkUrl = GetUrl(current, true);
         currentTimeLine = current;
         showTraceDetail = true;
     }
@@ -338,11 +309,6 @@ public partial class TimeLine
     {
         var url = GetUrl(item, true, "/apm/errors");
         await JSRuntime.InvokeVoidAsync("open", url, "_blank");
-    }
-
-    private async Task OpenTraceLogAsync()
-    {
-        await JSRuntime.InvokeVoidAsync("open", traceLinkUrl, "_blank");
     }
 
     private string GetServiceStyle(string service)
