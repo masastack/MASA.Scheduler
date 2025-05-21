@@ -99,6 +99,10 @@ public partial class SchedulerTasks
 
     private List<KeyValuePair<string, TaskRunStatus>> _queryStatusList = new();
 
+    bool _showTraceDialog = false;
+    bool _showLogDialog = false;
+    SchedulerTaskDto? _current = default;
+
     protected async override Task OnInitializedAsync()
     {
         await MasaSignalRClient.HubConnectionBuilder();
@@ -453,19 +457,11 @@ public partial class SchedulerTasks
         }
     }
 
-
-    bool _showTraceDialog = false;
-    bool _showLogDialog = false;
-    SchedulerTaskDto? _current=default;
-
     private void OpenTaskLog(SchedulerTaskDto item)
     {
         _current = item;
         _showLogDialog = true;
         StateHasChanged();
-
-        //var url = $"{MasaStackConfig.GetDomain(MasaStackProject.TSC, MasaStackApp.WEB)}/log/{item.Id}?start={item.TaskRunStartTime.ToString("yyyy-MM-dd HH:mm:ss")}&end={item.TaskRunEndTime.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")}";
-        //await Js.InvokeVoidAsync("window.open", url, "_blank");
     }
 
     private void OpenTaskTrace(SchedulerTaskDto item)
@@ -473,8 +469,5 @@ public partial class SchedulerTasks
         _current = item;
         _showTraceDialog = true;
         StateHasChanged();
-        //var url = $"{MasaStackConfig.GetDomain(MasaStackProject.TSC, MasaStackApp.WEB)}/log/{item.Id}?start={item.TaskRunStartTime.ToString("yyyy-MM-dd HH:mm:ss")}&end={item.TaskRunEndTime.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")}";
-        //await Js.InvokeVoidAsync("window.open", url, "_blank");
     }
 }
-

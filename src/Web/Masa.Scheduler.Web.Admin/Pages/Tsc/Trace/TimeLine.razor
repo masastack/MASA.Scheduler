@@ -30,7 +30,7 @@
                             @{
                                 var text = GetService(service)?.AppDescription;
                                 if (string.IsNullOrEmpty(text))
-                                    text = "无";
+                                    text = I18n.Apm("None");
                                 <MTooltip Top Left Context="tooltipContent">
                                     <ActivatorContent>
                                         <div @attributes="@tooltipContent.Attrs">

@@ -56,7 +56,7 @@
                     var service = @context.Item.Resource["service.name"]?.ToString();
                     var text = GetService(service)?.AppDescription;                   
                     if (string.IsNullOrEmpty(text))
-                        text = "无";
+                        text = I18n.Apm("None");
                     <MTooltip Top Context="tooltipContent">
                         <ActivatorContent>
                             <div @attributes="@tooltipContent.Attrs" style="width:400px" class="text-truncate">

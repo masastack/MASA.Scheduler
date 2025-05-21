@@ -82,3 +82,4 @@ global using System.Text.Json.Serialization;
 global using System.Text.RegularExpressions;
 global using Masa.Contrib.StackSdks.Tsc.Storage.Clickhouse.Apm.Models;
 global using Microsoft.Extensions.Caching.Memory;
+global using System.ComponentModel;

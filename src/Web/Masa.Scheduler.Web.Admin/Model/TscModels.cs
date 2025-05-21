@@ -53,18 +53,20 @@ public class SearchData
 public enum ApmComparisonTypes
 {
     None,
+
     Day = 1,
+
     Week = 2
 }
 
 public enum MetricTypes
 {
     Avg,
+
     P95,
+
     P99
 }
-
-
 
 public class ChartData
 {
@@ -77,7 +79,6 @@ public class ChartData
 
     public object Data { get; set; } = default!;
 }
-
 
 public class LatencyTypeChartData
 {
@@ -93,12 +94,12 @@ public class LatencyTypeChartData
     {
         get
         {
-            switch (MetricType)
+            return MetricType switch
             {
-                case MetricTypes.P95: return P95;
-                case MetricTypes.P99: return P99;
-                default: return Avg;
-            }
+                MetricTypes.P95 => P95,
+                MetricTypes.P99 => P99,
+                _ => Avg,
+            };
         }
     }
 }

@@ -121,7 +121,7 @@ public partial class TimeLine
                 traces.RemoveAt(index);
         }
         while (traces.Count - index >= 1);
-        //长连接，只取前100个
+       
         int limit = traces.Count;
         if (limit - 100 >= 0)
         {
@@ -249,11 +249,6 @@ public partial class TimeLine
         return result;
     }
 
-    /// <summary>
-    /// 完整的parentId为空的roots
-    /// </summary>
-    /// <param name="traces"></param>
-    /// <returns></returns>
     private List<TraceResponseDto> GetEmptyParentNodes(List<TraceResponseDto> traces)
     {
         return traces.Where(item => string.IsNullOrEmpty(item.ParentSpanId)).OrderBy(t => t.Timestamp).ToList();
@@ -276,12 +271,7 @@ public partial class TimeLine
         currentTimeLine = current;
         showTraceDetail = true;
     }
-
-    /// <summary>
-    /// 截断的trace,取最外面的作为roots
-    /// </summary>
-    /// <param name="traces"></param>
-    /// <returns></returns>
+   
     private List<TraceResponseDto> GetInteruptRootNodes(List<TraceResponseDto> traces)
     {
         //var parentIds = traces.Select(item => item.ParentSpanId).Distinct().ToList();

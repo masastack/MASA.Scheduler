@@ -109,7 +109,7 @@ public partial class TraceDetail
         traceDetails = null;
         errors = null;
         percentile = 0;
-        //首次
+        
         if (total == 0 && page == 1)
         {
             traceIds.Clear();

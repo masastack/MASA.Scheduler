@@ -291,6 +291,7 @@
     "AlarmRuleNameFormat.Verification": "告警规则名称格式错误"
   },
   "Apm": {
+    "None": "无",
     "Tabs": {
       "Overview": "概览",
       "Endpoints": "接口",
@@ -321,29 +322,29 @@
       "Refresh": "刷新",
       "ExceptionType": "异常类型"
     },
-      "Trace": {
-        "Detail": {
-          "Sample": "Trace 样例",
-          "TraceLog": "Trace日志",
-          "SpanLog": "Span日志"
-        }
+    "Trace": {
+      "Detail": {
+        "Sample": "Trace 样例",
+        "TraceLog": "Trace日志",
+        "SpanLog": "Span日志"
+      }
+    },
+    "Log": {
+      "List": {
+        "Timestamp": "时间",
+        "Environment": "环境",
+        "ServiceName": "服务",
+        "SeverityText": "级别",
+        "TraceId": "TraceId",
+        "SpanId": "SpanId",
+        "Body": "日志内容",
+        "ExceptionType": "异常类型"
       },
-      "Log": {
-        "List": {
-          "Timestamp": "时间",
-          "Environment": "环境",
-          "ServiceName": "服务",
-          "SeverityText": "级别",
-          "TraceId": "TraceId",
-          "SpanId": "SpanId",
-          "Body": "日志内容",
-          "ExceptionType": "异常类型"
-        },
-        "Dialog": {
-          "Actions": "操作",
-          "Field": "字段",
-          "Value": "内容"
-        }
+      "Dialog": {
+        "Actions": "操作",
+        "Field": "字段",
+        "Value": "内容"
       }
     }
   }
+}

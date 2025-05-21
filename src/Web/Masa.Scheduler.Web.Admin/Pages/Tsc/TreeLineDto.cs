@@ -47,18 +47,14 @@ public class TreeLineDto
         }
     }
 
-    /// <summary>
-    /// 多条error
-    /// </summary>
+
     public int ErrorCount { get; set; }
 
-    /// <summary>
-    /// 单条error
-    /// </summary>
+
     public string ErrorMessage { get; set; } = default!;
 
     /// <summary>
-    /// 单位毫秒
+    /// unit ms
     /// </summary>
     public string Latency => ((double)Trace.Duration).FormatTime();
 
@@ -168,7 +164,7 @@ public class TreeLineDto
             Name = trace.Name;
         }
 
-        if (trace.TryParseException(out var exception))
+        if (trace.TryParseException(out var _))
         {
             Faild = true;
         }
