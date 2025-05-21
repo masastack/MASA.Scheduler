@@ -83,3 +83,5 @@ global using System.Text.RegularExpressions;
 global using Masa.Contrib.StackSdks.Tsc.Storage.Clickhouse.Apm.Models;
 global using Microsoft.Extensions.Caching.Memory;
 global using System.ComponentModel;
+global using System.IdentityModel.Tokens.Jwt;
+global using System.Text.Encodings.Web;
