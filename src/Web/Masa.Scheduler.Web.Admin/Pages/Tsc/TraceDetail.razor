@@ -1,0 +1,27 @@
+﻿@namespace Masa.Scheduler.Web.Admin.Pages.Tsc
+@inherits TscComponentBase
+
+<ApmSearchComponent Value="Search"
+                    ValueChanged="OnSearchValueChanged"
+                    IsEndpoint
+                    ShowComparison @ref="apmSearchComponent" />
+
+<MTabs @bind-Value="index" Class="rounded-t-xl">
+    <MTab Value="1">@I18n.Apm("Tabs.Overview")</MTab>
+    <MTab Value="3">@I18n.Apm("Tabs.Logs")</MTab>
+    <div class="d-flex justify-end" style="width:calc(100% - 300px)">
+        <div class="pr-4 pt-4" style="color:#BDBDBD">@GetService(Search.Service!)?.AppDescription</div>
+    </div>
+</MTabs>
+<CascadingValue Value="Search">
+    <div style="height:calc(100vh - 280px)" class="overflow-y-scroll">
+        <MTabsItems @bind-Value="index" Class="rounded-b-xl">
+            <MTabItem Value="1">
+                <Masa.Scheduler.Web.Admin.Pages.Tsc.Trace.TimeLine Data="traceDetails" Errors="errors" Percentile="percentile" Page="page" Total="total" PageChanged="LoadTraceDetailAsync" OnSpanIdChanged="SpanIdChange" />
+            </MTabItem>
+            <MTabItem Value="3">
+                <Masa.Scheduler.Web.Admin.Pages.Tsc.Trace.ServiceLogs ShowChart=false SpanId="@spanId" />
+            </MTabItem>
+        </MTabsItems>
+    </div>
+</CascadingValue>

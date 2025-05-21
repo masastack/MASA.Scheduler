@@ -1,0 +1,151 @@
+﻿@namespace Masa.Scheduler.Web.Admin.Pages.Tsc
+@inherits TscComponentBase
+
+<div class="pa-4 container overflow-y-auto" style="height:100%">
+    <MCard Class="rounded-lg mt-4" Height="256" Style="border:solid #ccc 1px">
+        <MCardSubtitle Class="d-flex">
+            <div class="font-weight-black h6 ml-4 mt-2">@I18n.Apm("Chart.ErrorOccurrences")</div>
+        </MCardSubtitle>
+        <MCardText>
+            @if (!errorChart.ChartLoading && errorChart.HasChart)
+            {
+                <MECharts Option="@(errorChart.Data)" Height="166" Style="@("width:100%")" />
+            }
+        </MCardText>
+    </MCard>
+    <MCard Class="rounded-lg mt-4 pt-4" Style="border:solid #ccc 1px" Loading="loading">
+        <MCardSubtitle>
+            <div class="d-flex justify-start">
+                <div class="font-weight-black pr-4">@I18n.Apm("Error.Detail.Sample")</div>
+                <ApmSamplePage Total="total" Current="currentPage" CurrentChanged="ChangePageAsync"></ApmSamplePage>
+            </div>
+            <div class="d-flex justify-start pt-4">
+                <div>@(currentLog?.Timestamp.FormatHistory())</div>
+                <div style="color: rgb(52, 55, 65);width:1px" class="px-2">|</div>
+                <div class="pl-2">
+                    @{
+                        var service = currentLog?.Resource["service.name"]?.ToString();
+                        var text = GetService(service)?.AppDescription;
+                        if (string.IsNullOrEmpty(text))
+                            text = I18n.Apm("None");
+                        <MTooltip Top Left Context="tooltipContent">
+                            <ActivatorContent>
+                                <div @attributes="@tooltipContent.Attrs" class="text-truncate">
+                                    @service
+                                </div>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <span>@text</span>
+                            </ChildContent>
+                        </MTooltip>
+                    }
+                </div>
+                <div style="color: rgb(52, 55, 65);width:1px" class="px-2">|</div>
+                <div class="pl-2 text-truncate" style="max-width:400px;background-color: rgb(211, 218, 230); color: rgb(0, 0, 0);" title="@(currentTrace?.Method()) @(currentTrace?.Target())">@(currentTrace?.Method()) @(currentTrace?.Target())</div>
+                <div style="color: rgb(52, 55, 65);width:1px" class="px-2">|</div>
+                <div class="pl-2">@(currentLog?.Resource["service.namespace"])</div>
+                <div style="color: rgb(52, 55, 65);width:1px" class="px-2">|</div>
+                <div class="pl-2">@((currentLog?.Resource.TryGetValue("service.version", out var serviceVersion) ?? false) ? serviceVersion : default)</div>
+            </div>
+            <div class="pt-4">
+                <div class="text-black Body-1 d-flex">
+                    <div class="py-2">@I18n.Apm("Error.Detail.Type")</div>
+                    <SIcon Class="ml-4" Tooltip="@("排除")" OnClick="()=>showExceptError=true">mdi-shield-check-outline</SIcon>
+                </div>
+                <div class="ex_context pl-8 py-4 Body-2 text-black">@currentLog?.Attributes["exception.type"]</div>
+            </div>
+            <div class="pt-4">
+                <div class="text-black Body-1 pt-4">@I18n.Apm("Error.Detail.Message")</div>
+                <div class="ex_context pl-8 py-4 Body-2 text-black">@currentLog?.Body</div>
+            </div>
+        </MCardSubtitle>
+        <MCardText>
+            <MTabs @bind-Value="index" Class="rounded-t-xl">
+                <MTab Value="1">@I18n.Apm("Tabs.Stacktrace")</MTab>
+                <MTab Value="2">@I18n.Apm("Tabs.Metadata")</MTab>
+            </MTabs>
+            <MTabsItems Value="index">
+                <MTabItem Value="1">
+                    <div class="ex_content_stacktrace subtitle-1 pl-8 py-4">@currentLog?.Attributes["exception.stacktrace"]</div>
+                </MTabItem>
+                <MTabItem Value="2">
+                    <MCard>
+                        <MCardText>
+                            <div class="d-flex">
+                                <SSearch BackgroundColor="white" @bind-Value="search" Class="rounded-2" Style="border:solid 1px;width:100%" />
+                            </div>
+                            <MSimpleTable Height="560" FixedHeader Width="@("100%")" Class="error-detail" Dense>
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">
+                                            @I18n.Apm("Log.Dialog.Field")
+                                        </th>
+                                        <th class="text-left">
+                                            @I18n.Apm("Log.Dialog.Value")
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @((RenderFragment)(dictRender => RenderTable(dictRender, _dic!)))
+                                </tbody>
+                            </MSimpleTable>
+                        </MCardText>
+                    </MCard>
+                </MTabItem>
+            </MTabsItems>
+        </MCardText>
+    </MCard>
+</div>
+@code {
+
+    private void RenderTable(RenderTreeBuilder __builder, IDictionary<string, object> dic, string? parent = null)
+    {
+        if (dic == null || !dic.Any())
+            return;
+        foreach (var key in dic.Keys)
+        {
+            var currentName = string.IsNullOrEmpty(parent) ? key : $"{parent}.{key}";
+            var value = dic[key];
+            if (IsFundamental(value.GetType()) || value.GetType().Equals(typeof(JsonElement)))
+            {
+                if (value is DateTime time)
+                    value = time.UtcFormatLocal(CurrentTimeZone, "yyyy-MM-dd HH:mm:ss fff");
+                var isShow = string.IsNullOrEmpty(search) || currentName.Contains(search, StringComparison.CurrentCultureIgnoreCase) || value.ToString()!.Contains(search);
+                if (!isShow) continue;
+
+                <tr>
+                    <td>@currentName</td>
+                    <td>
+                        <div class="right-error-text">
+                            @{
+                                if (string.Equals(currentName, StorageConst.Current.TraceId, StringComparison.CurrentCultureIgnoreCase))
+                                {
+                                    var resources = (Dictionary<string, object>)dic["Resource"];
+                                    var attributes = (Dictionary<string, object>)dic["Attributes"];
+                                    attributes.TryGetValue("RequestPath", out var path);
+                                    var time1 = (DateTime)dic["Timestamp"];
+                                    DateTime start = time1.AddHours(-6), end = time1.AddHours(6);
+                                    var url = path?.ToString()!.Split('?')[0];
+                                    <a style="text-decoration:none" href="/apm/endpoints/@(HttpUtility.UrlEncode(url)+ GetUrlParam(service: resources["service.name"].ToString(), env: resources["service.namespace"].ToString(),endpoint:url, start: start, end: end,traceId:dic["TraceId"].ToString()))" target="_blank">@value</a>
+                                }
+                                else
+                                {
+                                    @value
+                                }
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+            else if (value is IDictionary<string, object> dicValue)
+            {
+                RenderTable(__builder, dicValue, currentName);
+            }
+        }
+    }
+
+    private static bool IsFundamental(Type type)
+    {
+        return type.IsPrimitive || type.IsEnum || type.Equals(typeof(string)) || type.Equals(typeof(DateTime));
+    }
+}

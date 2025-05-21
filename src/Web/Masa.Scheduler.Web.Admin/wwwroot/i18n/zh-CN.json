@@ -289,5 +289,62 @@
     "CheckFrequency": "检查频率",
     "FixedInterval": "固定间隔",
     "AlarmRuleNameFormat.Verification": "告警规则名称格式错误"
+  },
+  "Apm": {
+    "None": "无",
+    "Tabs": {
+      "Overview": "概览",
+      "Endpoints": "接口",
+      "Errors": "错误",
+      "Logs": "日志",
+      "Stacktrace": "异常堆栈",
+      "Metadata": "详细信息",
+      "Legend": "图例"
+    },
+    "Error": {
+      "List": {
+        "LastTime": "上次发生时间",
+        "Type": "类型",
+        "Message": "错误消息",
+        "Total": "总次数"
+      }
+    },
+    "Search": {
+      "Environment": "环境",
+      "Project": "项目",
+      "Service": "服务",
+      "ServiceType": "服务类型",
+      "Endpoint": "接口",
+      "StatusCode": "状态码",
+      "SelectField": "查询列",
+      "SearchValue": "查询文本",
+      "Comparison": "对比",
+      "Refresh": "刷新",
+      "ExceptionType": "异常类型"
+    },
+    "Trace": {
+      "Detail": {
+        "Sample": "Trace 样例",
+        "TraceLog": "Trace日志",
+        "SpanLog": "Span日志"
+      }
+    },
+    "Log": {
+      "List": {
+        "Timestamp": "时间",
+        "Environment": "环境",
+        "ServiceName": "服务",
+        "SeverityText": "级别",
+        "TraceId": "TraceId",
+        "SpanId": "SpanId",
+        "Body": "日志内容",
+        "ExceptionType": "异常类型"
+      },
+      "Dialog": {
+        "Actions": "操作",
+        "Field": "字段",
+        "Value": "内容"
+      }
+    }
   }
 }

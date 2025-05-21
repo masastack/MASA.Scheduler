@@ -1,0 +1,17 @@
+﻿.ex_title {
+}
+
+.ex_context, .ex_content_stacktrace {
+    background: rgb(241, 244, 250);
+    white-space: pre-line
+}
+
+.right-error-text {
+    white-space: pre-line;
+    line-height: 1.55rem;
+    word-break:break-word
+}
+
+.my-table tr:nth-child(2n+1) {
+    background: rgb(241, 244, 250);
+}
