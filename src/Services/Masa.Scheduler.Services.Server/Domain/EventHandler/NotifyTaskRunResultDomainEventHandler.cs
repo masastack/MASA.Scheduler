@@ -64,15 +64,20 @@ public class NotifyTaskRunResultDomainEventHandler
             return;
         }
 
-        var logMessage = $"Receive notify task result, status: {@event.Request.Status}，TraceId:{task.TraceId}";
+        LogTaskResult(@event.Request.Status, task.TraceId, task.Id, task.JobId);
 
-        if (@event.Request.Status == TaskRunStatus.Failure)
+        private void LogTaskResult(TaskRunStatus status, string traceId, Guid taskId, Guid jobId)
         {
-            _schedulerLogger.LogError(logMessage, WriterTypes.Server, task.Id, task.JobId);
-        }
-        else
-        {
-            _schedulerLogger.LogInformation(logMessage, WriterTypes.Server, task.Id, task.JobId);
+            var logMessage = $"Receive notify task result, status: {status}，TraceId:{traceId}";
+
+            if (status == TaskRunStatus.Failure)
+            {
+                _schedulerLogger.LogError(logMessage, WriterTypes.Server, taskId, jobId);
+            }
+            else
+            {
+                _schedulerLogger.LogInformation(logMessage, WriterTypes.Server, taskId, jobId);
+            }
         }
 
         TaskRunStatus status = @event.Request.Status;
