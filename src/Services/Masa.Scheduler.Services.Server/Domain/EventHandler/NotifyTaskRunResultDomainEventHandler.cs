@@ -66,20 +66,6 @@ public class NotifyTaskRunResultDomainEventHandler
 
         LogTaskResult(@event.Request.Status, task.TraceId, task.Id, task.JobId);
 
-        private void LogTaskResult(TaskRunStatus status, string traceId, Guid taskId, Guid jobId)
-        {
-            var logMessage = $"Receive notify task result, status: {status}，TraceId:{traceId}";
-
-            if (status == TaskRunStatus.Failure)
-            {
-                _schedulerLogger.LogError(logMessage, WriterTypes.Server, taskId, jobId);
-            }
-            else
-            {
-                _schedulerLogger.LogInformation(logMessage, WriterTypes.Server, taskId, jobId);
-            }
-        }
-
         TaskRunStatus status = @event.Request.Status;
 
         if(!@event.Request.StopManaul && status == TaskRunStatus.Failure && task.Job.FailedStrategy == FailedStrategyTypes.Auto && task.Job.RunTimeoutStrategy == RunTimeoutStrategyTypes.RunFailedStrategy)
@@ -148,5 +134,19 @@ public class NotifyTaskRunResultDomainEventHandler
         var dto = _mapper.Map<SchedulerTaskDto>(task);
 
         await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, dto);
+    }
+
+    private void LogTaskResult(TaskRunStatus status, string traceId, Guid taskId, Guid jobId)
+    {
+        var logMessage = $"Receive notify task result, status: {status}，TraceId:{traceId}";
+
+        if (status == TaskRunStatus.Failure)
+        {
+            _schedulerLogger.LogError(logMessage, WriterTypes.Server, taskId, jobId);
+        }
+        else
+        {
+            _schedulerLogger.LogInformation(logMessage, WriterTypes.Server, taskId, jobId);
+        }
     }
 }
