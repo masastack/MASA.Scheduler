@@ -1,65 +1,65 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>78407896-7390-463e-a81b-395c799f3b95</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..\..</DockerfileContext>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>78407896-7390-463e-a81b-395c799f3b95</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileContext>..\..\..</DockerfileContext>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="ExtractFiles\**" />
-    <Compile Remove="JobShell\**" />
-    <Compile Remove="ResourceFiles\**" />
-    <Content Remove="ExtractFiles\**" />
-    <Content Remove="JobShell\**" />
-    <Content Remove="ResourceFiles\**" />
-    <EmbeddedResource Remove="ExtractFiles\**" />
-    <EmbeddedResource Remove="JobShell\**" />
-    <EmbeddedResource Remove="ResourceFiles\**" />
-    <None Remove="ExtractFiles\**" />
-    <None Remove="JobShell\**" />
-    <None Remove="ResourceFiles\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="ExtractFiles\**" />
+		<Compile Remove="JobShell\**" />
+		<Compile Remove="ResourceFiles\**" />
+		<Content Remove="ExtractFiles\**" />
+		<Content Remove="JobShell\**" />
+		<Content Remove="ResourceFiles\**" />
+		<EmbeddedResource Remove="ExtractFiles\**" />
+		<EmbeddedResource Remove="JobShell\**" />
+		<EmbeddedResource Remove="ResourceFiles\**" />
+		<None Remove="ExtractFiles\**" />
+		<None Remove="JobShell\**" />
+		<None Remove="ResourceFiles\**" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="FluentValidation.AspNetCore" Version="11.2.0" />
+		<PackageReference Include="Masa.Contrib.Configuration" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Configuration.ConfigurationApi.Dcc" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Data.Contracts" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Data.EFCore.PostgreSql" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Data.Mapping.Mapster" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Ddd.Domain" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EFCore" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Isolation.MultiEnvironment" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.ReadWriteSplitting.Cqrs" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.BuildingBlocks.Caching" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Caching.Distributed.StackExchangeRedis" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Development.DaprStarter.AspNetCore" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.Exceptions" Version="$(MasaFrameworkPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="$(MasaStackSdksPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Middleware" Version="$(MasaStackSdksPackageVersion)" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Isolation" Version="$(MasaStackSdksPackageVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
+	</ItemGroup>
 
-
-  <ItemGroup>
-    <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.0" />
-    <PackageReference Include="Masa.Contrib.Configuration" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Configuration.ConfigurationApi.Dcc" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Data.Contracts" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Data.EFCore.PostgreSql" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Data.Mapping.Mapster" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Ddd.Domain" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EFCore" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Isolation.MultiEnvironment" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.ReadWriteSplitting.Cqrs" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.BuildingBlocks.Caching" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Caching.Distributed.StackExchangeRedis" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.Development.DaprStarter.AspNetCore" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.Exceptions" Version="$(MasaFrameworkPackageVersion)" />
-	<PackageReference Include="Masa.Contrib.StackSdks.Middleware" Version="$(MasaStackSdksPackageVersion)" />
-	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Contracts\Masa.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.PostgreSql\Masa.Scheduler.EntityFrameworkCore.PostgreSql.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.SqlServer\Masa.Scheduler.EntityFrameworkCore.SqlServer.csproj" />
-    <ProjectReference Include="..\..\Shells\Masa.Scheduler.Shells.JobShell.Shared\Masa.Scheduler.Shells.JobShell.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Contracts\Masa.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
+		<ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.PostgreSql\Masa.Scheduler.EntityFrameworkCore.PostgreSql.csproj" />
+		<ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.SqlServer\Masa.Scheduler.EntityFrameworkCore.SqlServer.csproj" />
+		<ProjectReference Include="..\..\Shells\Masa.Scheduler.Shells.JobShell.Shared\Masa.Scheduler.Shells.JobShell.Shared.csproj" />
+	</ItemGroup>
 
 </Project>

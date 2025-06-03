@@ -242,5 +242,12 @@
     "AlarmRuleNameFormat.Verification": "Incorrect format of alarm rule name"
   },
   "ViewAlrmRule": "View alrm rule",
-  "CancelFilter": "Cancel filter"
-}
+  "CancelFilter": "Cancel filter",
+  "Apm": {
+    "Trace": {
+      "Detail": {
+        "Sample": "Trace sample"
+      }
+    }
+  }
+  }

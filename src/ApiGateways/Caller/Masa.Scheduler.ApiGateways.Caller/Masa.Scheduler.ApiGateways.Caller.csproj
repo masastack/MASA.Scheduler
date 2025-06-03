@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Contrib.StackSdks.Caller" Version="$(MasaStackSdksPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Caller" Version="$(MasaSdkBlazorServerPackageVersion)" />
   </ItemGroup>
 
 	<ItemGroup>

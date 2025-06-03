@@ -1,0 +1,140 @@
+﻿@namespace Masa.Scheduler.Web.Admin.Pages.Tsc.Trace
+@inherits TscComponentBase
+
+<MCard Class="rounded-lg mt-4" Style="border:solid #ccc 1px;min-height:600px;" Loading="loading">
+    <MCardSubtitle>      
+        <div class="d-flex justify-space-between">
+            <div style="width:70%" class="d-flex justify-start pt-4">
+                <div>@(defaultTimeLine?.Trace?.Timestamp.FormatHistory())</div>
+                <div style="color: rgb(52, 55, 65);width:1px" class="mx-2">|</div>
+                <div>@(defaultTimeLine?.Latency)  (@((defaultTimeLine?.Trace.Duration * 100.0 / totalDuration)?.ToString("0.##"))% of trace)</div>
+                <div style="color: rgb(52, 55, 65);width:1px" class="mx-2">|</div>
+                <div class="px-2 text-truncate" style="max-width:calc(70% - 300px);background-color: rgb(211, 218, 230); color: rgb(0, 0, 0);" title="@(defaultTimeLine?.Trace?.Method()) @(defaultTimeLine?.Trace?.Target())">@(defaultTimeLine?.Trace?.Method()) @(defaultTimeLine?.Trace?.Target())</div>
+                <div class="px-2 rounded-sm" style="color:#fff;background-color:@((defaultTimeLine?.Faild ?? false)?"red":"green")">@(defaultTimeLine?.Trace?.StatusCode()) @((defaultTimeLine?.Faild ?? false) ? "Failed" : "OK")</div>
+                @if (defaultTimeLine?.Trace != null && defaultTimeLine!.Trace!.TryGetUserAgent(out string? userAgent))
+                {
+                    <div class="px-2" style="color: rgb(52, 55, 65);width:1px">|</div>
+                    <div class="px-2 text-truncate" style="max-width:200px" title="@userAgent">@userAgent</div>
+                }
+            </div>           
+        </div>
+
+        <div class="d-flex justify-start pt-4">
+            <div class="font-weight-bold align-self-center">Services</div>
+            <div class="d-flex justify-start flex-wrap">
+                @foreach (var service in services)
+                {
+                    <div class="pl-2">
+                        <div class="pa-1 rounded-xl" style="cursor: pointer;@(GetServiceStyle(service))" @onclick="@(()=>OnServiceSelected(service))">
+
+                            @{
+                                var text = GetService(service)?.AppDescription;
+                                if (string.IsNullOrEmpty(text))
+                                    text = I18n.Apm("None");
+                                <MTooltip Top Left Context="tooltipContent">
+                                    <ActivatorContent>
+                                        <div @attributes="@tooltipContent.Attrs">
+                                            <SIcon Small Color="@colors[services.IndexOf(service)]">mdi-circle</SIcon>
+                                            @service
+                                        </div>
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <span>@text</span>
+                                    </ChildContent>
+                                </MTooltip>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </MCardSubtitle>
+    <MCardText>
+        <div class="timeline_header d-flex justify-space-between pb-4" style="border-bottom:solid 1px #abb">
+            <div><SIcon OnClick="ShowOrHideAll" Small>@ShowTimeLineIcon</SIcon></div>
+            <div>0 ms</div>
+            @{
+                var stepIndex = 1;
+                do
+                {
+                    <div>@(((double)stepDuration * stepIndex++).FormatTime())</div>
+
+                } while (stepIndex - 6 <= 0);
+            }
+            <div>@(((double)totalDuration).FormatTime())</div>
+        </div>
+        @((RenderFragment)(dictRender => RenderRootTimeLine(dictRender, timeLines)))
+    </MCardText>
+</MCard>
+
+<ApmTraceView Value="currentTimeLine?.Trace!" @bind-Show="showTraceDetail" IsRedirectTrace=false />
+
+@code {
+
+    public void RenderRootTimeLine(RenderTreeBuilder __builder, List<TreeLineDto>? timeLines, int level = 0)
+    {
+        if (timeLines == null || !timeLines.Any())
+            return;
+        bool hasShow = false;
+        foreach (var timeLine in timeLines)
+        {
+            var left = timeLine.Left + timeLine.Process;
+            string className = "d-flex", style = default!;
+            if (timeLine.Left - 60 < 0)
+            {
+                style = $"padding-left:{timeLine.Left}%";
+            }
+            else if (40 - timeLine.Process - timeLine.Right >= 0)
+            {
+                className = "d-flex justify-end";
+                style = $"padding-right:{timeLine.Right}%";
+            }
+
+            if (selectedServices.Contains(timeLine.ServiceName!))
+            {
+                <div class="time_line d-flex justify-space-between">
+                    <div class="left_col d-flex justify-space-start" style="margin-left:@(level*8)px;border-left:solid 1px #ccc">
+                        @if (timeLine.Children != null && timeLine.Children.Any())
+                        {
+                            <SIcon Small Color="black" Class="pl-4 pr-2" OnClick="@(()=>ShowOrHideLine(timeLine))">@timeLine.ShowIcon</SIcon> <span class="pt-4" style="font-size:900">@timeLine.Children.Count</span>
+                        }
+                    </div>
+                    <div style="width:calc(100% - 100px)">
+                        <div class="d-flex mt-2">
+                            <div class="left" style="width:@timeLine.Left%"></div>
+                            <div @onclick="(()=>ShowTraceDetail(timeLine))" class="process" title="@timeLine.Label" style="width:@timeLine.Process%;background-color:@colors[services.IndexOf(timeLine.ServiceName!)]"></div>
+                            <div class="right" style="width:@timeLine.Right%"></div>
+                        </div>
+                        <div class="@className" style="@style">
+                            <div class="content" @onclick="(()=>ShowTraceDetail(timeLine))">
+                                <div class="name d-flex" title="@timeLine.Label">
+                                    <SIcon>@timeLine.Icon</SIcon> <i class="pl-2" style="line-height:30px">@timeLine.Type</i> <div class="@($"{timeLine.NameClass} subtitle-1 text-truncate ml-2")" style="max-width:400px">@timeLine.Name</div> <i class="pl-2" style="line-height:30px">@timeLine.Latency</i>
+                                    @if (timeLine.Faild)
+                                    {
+                                        <SButton XSmall Color="red white--text ml-2 mt-1" Style="text-transform:none">@I18n.T("failure")</SButton>
+                                    }
+                                    @if (timeLine.IsError)
+                                    {
+                                        <SButton XSmall OnClickStopPropagation=true Color="red white--text ml-2 mt-1" Style="text-transform:none" OnClick="@(()=>OpenLogAsync(timeLine))">View related error</SButton>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right_col"></div>
+                </div>
+            }
+            @if (level == 0 && !showTimeLine)
+            {
+                if (!hasShow)
+                    hasShow = true;
+                return;
+            }
+
+            @if (timeLine.Show)
+            {
+                @((RenderFragment)(dictRender => RenderRootTimeLine(dictRender, timeLine.Children, level + 1)))
+            }
+        }
+    }
+}

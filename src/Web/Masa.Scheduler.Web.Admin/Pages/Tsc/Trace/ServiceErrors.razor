@@ -1,0 +1,68 @@
+﻿@namespace Masa.Scheduler.Web.Admin.Pages.Tsc.Trace
+@inherits TscComponentBase
+
+<div class="mx-4">
+    @if (ShowChart)
+    {
+        <MCard Class="rounded-lg mt-4" Style="border:solid #ccc 1px">
+            <MCardSubtitle Class="font-weight-black h6 py-2">
+                @I18n.Apm("Chart.ErrorCount")
+            </MCardSubtitle>
+            <MCardText>
+                @if (!chart.ChartLoading && chart.HasChart)
+                {
+                    <MECharts Option="@(chart.Data)" Height="200" Style="@("width:100%")" />
+                }
+            </MCardText>
+        </MCard>
+    }
+    <div class="col-12 rounded-lg mt-4" style="border:solid #ccc 1px">
+        <SDataTable Headers="headers"
+                    Stripe
+                    MustSort
+                    Height="@GetHeight()"
+                    FixedHeader
+                    ServerItemsLength="total"
+                    ItemsPerPage="defaultSize"
+                    Items="data"
+                    TItem="ErrorMessageDto"
+                    Loading="@isTableLoading"
+                    Class="rounded-t-xl overflow-x-hidden"
+                    OnOptionsUpdate="OnTableOptionsChanged">
+            <ItemColContent>
+                @if (context.Header.Value == nameof(ErrorMessageDto.Type))
+                {
+                    <a style="text-decoration:none" onclick="@(()=>Show(context.Item.Type))">@context.Item.Type</a>
+                }
+                else if (context.Header.Value == nameof(ErrorMessageDto.Message))
+                {
+                    <MTooltip Top Context="tooltipContent">
+                        <ActivatorContent>
+                            <div @attributes="@tooltipContent.Attrs" style="width:400px;cursor:pointer" class="text-truncate" @onclick="@(()=>Show(context.Item.Type,context.Item.Message))">
+                                <a style="text-decoration:none" onclick="javascript:;">@context.Item.Message</a>
+                            </div>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <span>@context.Item.Message</span>
+                        </ChildContent>
+                    </MTooltip>
+                }
+                @if (context.Header.Value == nameof(ErrorMessageDto.LastTime))
+                {
+                    @context.Item.LastTime.UtcFormatLocal(CurrentTimeZone)
+                }
+                @if (context.Header.Value == nameof(ErrorMessageDto.Total))
+                {
+                    @context.Item.Total
+                }
+            </ItemColContent>
+        </SDataTable>
+        <MCard Rounded=true Class="px-6" Style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;">
+            <SPagination Class="mt-2" Page="page" OnChange="OnPageChange" @bind-PageSize=defaultSize Total=total />
+        </MCard>
+    </div>
+</div>
+
+<SSheetDialog @bind-Value="showDetail" Title="@(SearchData.ExceptionMsg??SearchData.ExceptionType)">
+    <ErrorDetail SearchData="@SearchData" Show="showDetail" />
+</SSheetDialog>
