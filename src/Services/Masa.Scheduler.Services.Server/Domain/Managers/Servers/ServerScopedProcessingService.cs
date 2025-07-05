@@ -185,14 +185,22 @@ public class ServerScopedProcessingService : IScopedProcessingService
 
             while (true)
             {
-                await using var scope = _scopeFactory.CreateAsyncScope();
-                var multiEnvironmentSetter = scope.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>();
-                multiEnvironmentSetter.SetEnvironment(_multiEnvironmentContext.CurrentEnvironment);
-                var schedulerServerManager = scope.ServiceProvider.GetRequiredService<SchedulerServerManager>();
+                try
+                {
+                    await using var scope = _scopeFactory.CreateAsyncScope();
+                    var multiEnvironmentSetter = scope.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>();
+                    multiEnvironmentSetter.SetEnvironment(_multiEnvironmentContext.CurrentEnvironment);
+                    var schedulerServerManager = scope.ServiceProvider.GetRequiredService<SchedulerServerManager>();
 
-                await schedulerServerManager.StartAssignAsync();
+                    await schedulerServerManager.StartAssignAsync();
 
-                await Task.Delay(100);
+                    await Task.Delay(100);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Background task execution failed, will continue to retry");
+                }
+                
             }
         });
 
