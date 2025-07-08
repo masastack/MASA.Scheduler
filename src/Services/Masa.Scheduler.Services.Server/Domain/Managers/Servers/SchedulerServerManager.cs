@@ -75,7 +75,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
     public async Task<WorkerModel?> GetWorker(SchedulerServerManagerData data, RoutingStrategyTypes routingType)
     {
-        if (!data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Any())
+        if (!data.ServiceList.Exists(w => w.Status == ServiceStatus.Normal))
         {
             return null;
         }
@@ -130,7 +130,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     {
         var data = ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
 
-        if(await ExistsTaskAsync(taskId))
+        if (await ExistsTaskAsync(taskId))
         {
             await AddStopTaskAsync(taskId);
         }

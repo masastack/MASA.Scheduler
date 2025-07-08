@@ -13,6 +13,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
     private readonly BaseSchedulerManagerData<T> _data;
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly IMasaStackConfig _masaStackConfig;
+    private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
 
     public BaseSchedulerManager(
         IDistributedCacheClientFactory cacheClientFactory,
@@ -55,7 +56,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     public virtual async Task StartManagerAsync(CancellationToken stoppingToken)
     {
-        if(! await WaitForAppStartup(_hostApplicationLifetime, stoppingToken))
+        if (!await WaitForAppStartup(_hostApplicationLifetime, stoppingToken))
         {
             return;
         }
@@ -91,9 +92,9 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     private async Task Heartbeat()
     {
-        var checkList = _data.ServiceList.FindAll(p => p.Status != ServiceStatus.Stopped);
+        var checkList = _data.ServiceList.Where(p => p.Status != ServiceStatus.Stopped).ToList();
 
-        if(!checkList.Any())
+        if (checkList.Count == 0)
         {
             return;
         }
@@ -103,7 +104,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             await CheckHeartbeat(item);
         }
 
-        _data.ServiceList.RemoveAll(p => p.Status == ServiceStatus.Stopped);
+        _ = _data.ServiceList.RemoveAll(p => p.Status == ServiceStatus.Stopped);
     }
 
     protected async Task CheckHeartbeat(T item)
@@ -116,15 +117,14 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             item.Status = ServiceStatus.Normal;
             item.NotResponseCount = 0;
             item.LastResponseTime = DateTimeOffset.UtcNow;
-            Logger.LogInformation($"Heartbeat request success, RequestUrl: {requestUrl}");
+            Logger.LogInformation("Heartbeat request success, RequestUrl: {RequestUrl}", requestUrl);
         }
         catch (Exception ex)
         {
-            var message = $"Heartbeat request error, RequestUrl: {requestUrl}";
-            Logger.LogError(ex, message);
+            Logger.LogError(ex, "Heartbeat request error, RequestUrl: {RequestUrl}", requestUrl);
 
             item.NotResponseCount++;
-            if (item.NotResponseCount >= 3)
+            if (item.NotResponseCount - 3 >= 0)
             {
                 item.Status = ServiceStatus.Stopped;
             }
@@ -165,7 +165,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
             await _redisCacheClient.PublishAsync(channel, handler =>
             {
-                if(handler != null)
+                if (handler != null)
                 {
                     handler.Key = OnlineTopic;
                     handler.Value = @event;
@@ -176,7 +176,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     private async Task<T?> GetServiceInfo()
     {
-        if (!_data.AddressList.Any())
+        if (_data.AddressList.Count == 0)
         {
             return null;
         }
@@ -192,7 +192,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
             HeartbeatApi = HeartbeatApi,
             Status = ServiceStatus.Normal
         };
-        
+
         _data.ServiceId = MD5Utils.Encrypt(DnsHelper.GetHostName(Logger));
 
         service.ServiceId = _data.ServiceId;
@@ -204,7 +204,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
     {
         var service = await GetServiceInfo();
 
-        if(service != null)
+        if (service != null)
         {
             var requestUrl = service.GetServiceUrl() + OnlineApi;
 
@@ -225,51 +225,60 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
     public async virtual Task MonitorHandler(TMonitorEvent @event)
     {
-        if (@event.OnlineService is null)
+        await _semaphoreSlim.WaitAsync();
+        try
         {
-            return;
-        }
 
-        if (string.IsNullOrEmpty(@event.OnlineService.HttpsServiceUrl) && string.IsNullOrEmpty(@event.OnlineService.HttpServiceUrl))
-        {
-            return;
-        }
-
-        var service = _data.ServiceList.FirstOrDefault(p => (!string.IsNullOrWhiteSpace(p.HttpServiceUrl) && p.HttpServiceUrl == @event.OnlineService.HttpServiceUrl) || (!string.IsNullOrWhiteSpace(p.HttpsServiceUrl) && p.HttpsServiceUrl == @event.OnlineService.HttpsServiceUrl));
-
-        if (service == null)
-        {
-            var model = new T()
+            if (@event.OnlineService is null)
             {
-                HttpServiceUrl = @event.OnlineService.HttpServiceUrl,
-                HttpsServiceUrl = @event.OnlineService.HttpsServiceUrl,
-                Status = ServiceStatus.Normal,
-                HeartbeatApi = @event.OnlineService.HeartbeatApi,
-                ServiceId = @event.OnlineService.ServiceId,
-            };
+                return;
+            }
 
-            _data.ServiceList.Add(model);
-        }
-        else
-        {
-            service.HttpServiceUrl = @event.OnlineService.HttpServiceUrl;
-            service.HttpServiceUrl = @event.OnlineService.HttpServiceUrl;
-            service.Status = ServiceStatus.Normal;
-            service.HeartbeatApi = @event.OnlineService.HeartbeatApi;
-            service.ServiceId = @event.OnlineService.ServiceId;
-        }
+            if (string.IsNullOrEmpty(@event.OnlineService.HttpsServiceUrl) && string.IsNullOrEmpty(@event.OnlineService.HttpServiceUrl))
+            {
+                return;
+            }
 
-        if (!@event.IsPong)
+            var service = _data.ServiceList.FirstOrDefault(p => (!string.IsNullOrWhiteSpace(p.HttpServiceUrl) && p.HttpServiceUrl == @event.OnlineService.HttpServiceUrl) || (!string.IsNullOrWhiteSpace(p.HttpsServiceUrl) && p.HttpsServiceUrl == @event.OnlineService.HttpsServiceUrl));
+
+            if (service == null)
+            {
+                var model = new T()
+                {
+                    HttpServiceUrl = @event.OnlineService.HttpServiceUrl,
+                    HttpsServiceUrl = @event.OnlineService.HttpsServiceUrl,
+                    Status = ServiceStatus.Normal,
+                    HeartbeatApi = @event.OnlineService.HeartbeatApi,
+                    ServiceId = @event.OnlineService.ServiceId,
+                };
+
+                _data.ServiceList.Add(model);
+            }
+            else
+            {
+                service.HttpServiceUrl = @event.OnlineService.HttpServiceUrl;
+                service.HttpServiceUrl = @event.OnlineService.HttpServiceUrl;
+                service.Status = ServiceStatus.Normal;
+                service.HeartbeatApi = @event.OnlineService.HeartbeatApi;
+                service.ServiceId = @event.OnlineService.ServiceId;
+            }
+
+            if (!@event.IsPong)
+            {
+                await Online(true);
+            }
+        }
+        finally
         {
-            await Online(true);
+            _semaphoreSlim.Release();
         }
     }
 
     private static async Task<string> GetCurrentIp()
     {
-        var hostName = System.Net.Dns.GetHostName();
+        var hostName = Dns.GetHostName();
 
-        var ips = await System.Net.Dns.GetHostAddressesAsync(hostName);
+        var ips = await Dns.GetHostAddressesAsync(hostName);
 
         foreach (var ip in ips)
         {
@@ -302,7 +311,7 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
                 return response.IsSuccessStatusCode;
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Logger.LogError(ex, "tryRequestCurrentIp error");
         }
@@ -332,10 +341,10 @@ public abstract class BaseSchedulerManager<T, TOnlineEvent, TMonitorEvent> where
 
             var host = string.Empty;
 
-            if(uri.Host != "localhost" && uri.Host != "127.0.0.1")
+            if (uri.Host != "localhost" && uri.Host != "127.0.0.1")
             {
                 var currentIp = await GetCurrentIp();
-                if(await TryRequestCurrentIp(uri.Scheme, currentIp, uri.Port))
+                if (await TryRequestCurrentIp(uri.Scheme, currentIp, uri.Port))
                 {
                     host = currentIp;
                 }

@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
@@ -21,7 +20,7 @@
 		<PackageReference Include="Masa.Contrib.Data.Mapping.Mapster" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Stack.Components" Version="0.0.497" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.15" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="$(MicrosoftPackageVersion)" />
 		<PackageReference Include="Quartz.AspNetCore" Version="3.6.2" />
 		<PackageReference Include="Masa.Contrib.StackSdks.Alert" Version="$(MasaSdkBlazorServerPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.StackSdks.Auth" Version="$(MasaSdkBlazorServerPackageVersion)" />

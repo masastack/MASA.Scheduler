@@ -81,14 +81,15 @@ global using Masa.Scheduler.Services.Server.Infrastructure.SignalR.Hubs;
 
 global using Masa.Scheduler.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Http.Connections;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.SignalR;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Options;
 global using Microsoft.OpenApi.Models;
+
 global using Quartz;
 global using StackExchange.Redis;
-
 global using System.Data;
 global using System.Linq.Expressions;
 global using System.Runtime.CompilerServices;

@@ -27,7 +27,7 @@ public class SignalRUtils
             }
             else
             {
-                _distributedCacheClient.Set(key, true, TimeSpan.FromSeconds(intervalSecond));
+                await _distributedCacheClient.SetAsync(key, true, TimeSpan.FromSeconds(intervalSecond));
             }
         }
         var groupClient = _hubContext.Clients.Groups(group);

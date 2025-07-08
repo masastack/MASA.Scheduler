@@ -12,11 +12,11 @@ public static class SignalRServiceCollectionExtensions
         services.AddScoped<SignalRUtils>();
         services.AddSignalR().AddStackExchangeRedis(config =>
         {
-            config.Configuration = new StackExchange.Redis.ConfigurationOptions()
+            config.Configuration = new ConfigurationOptions()
             {
                 AbortOnConnectFail = options.AbortOnConnectFail,
                 AllowAdmin = options.AllowAdmin,
-                ChannelPrefix = options.ChannelPrefix,
+                ChannelPrefix = RedisChannel.Literal(options.ChannelPrefix),
                 ClientName = options.ClientName,
                 ConnectRetry = options.ConnectRetry,
                 ConnectTimeout = options.ConnectTimeout,
@@ -28,7 +28,7 @@ public static class SignalRServiceCollectionExtensions
             };
 
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            config.Configuration.ChannelPrefix = $"masa-scheduler-{env}";
+            config.Configuration.ChannelPrefix = RedisChannel.Literal($"masa-scheduler-{env}");
 
             foreach (var server in options.Servers)
             {

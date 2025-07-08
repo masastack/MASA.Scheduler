@@ -1,5 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
 global using FluentValidation;
 global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
