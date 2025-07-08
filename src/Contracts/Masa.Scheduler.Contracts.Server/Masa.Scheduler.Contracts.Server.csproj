@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -15,8 +14,8 @@
 		<PackageReference Include="Masa.Utils.Configuration.Json" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.Data.UoW.EFCore" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.StackSdks.Tsc.OpenTelemetry" Version="$(MasaStackSdksPackageVersion)" />
-		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.5" />
-		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="6.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="$(MicrosoftPackageVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="$(MicrosoftPackageVersion)" />
 	</ItemGroup>
 
 </Project>

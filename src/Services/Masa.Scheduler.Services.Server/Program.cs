@@ -86,7 +86,7 @@ builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 builder.Services.AddMultilevelCache(options => options.UseStackExchangeRedisCache(redisOptions));
 builder.Services.AddSingleton(service =>
 {
-    var connection = StackExchange.Redis.ConnectionMultiplexer.Connect(redisOptions);
+    var connection = ConnectionMultiplexer.Connect(redisOptions);
     return connection;
 });
 builder.Services
@@ -141,7 +141,7 @@ builder.Services
         {
             eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>));
         })
-        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseDbSql(dbType).AddInterceptors(new QueryWithNoLockDbCommandInterceptor()).UseFilter(),useTransaction:false)
+        .UseUoW<SchedulerDbContext>(dbOptions => dbOptions.UseDbSql(dbType).AddInterceptors(new QueryWithNoLockDbCommandInterceptor()).UseFilter(), useTransaction: false)
         .UseRepository<SchedulerDbContext>();
     });
 await builder.Services.AddStackIsolationAsync(MasaStackProject.Scheduler.Name);
@@ -189,7 +189,10 @@ app.UseMasaCloudEvents();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapSubscribeHandler();
-    endpoints.MapHub<NotificationsHub>("/server-hub/notifications");
+    endpoints.MapHub<NotificationsHub>("/server-hub/notifications", options =>
+    {
+        options.Transports = HttpTransportType.WebSockets;
+    });
 });
 
 app.UseStackMiddleware();

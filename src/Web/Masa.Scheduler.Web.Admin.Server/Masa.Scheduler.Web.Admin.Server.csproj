@@ -1,16 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<UserSecretsId>4f06bd7b-ed7c-4fc6-ab7c-a8358917f172</UserSecretsId>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerfileContext>..\..\..</DockerfileContext>
 		<ServerGarbageCollection>false</ServerGarbageCollection>
 		<ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<ProjectReference Include="..\Masa.Scheduler.Web.Admin\Masa.Scheduler.Web.Admin.csproj" />
 	</ItemGroup>

@@ -69,7 +69,7 @@ public class ProcessUtils
         }
         catch (Exception ex)
         {
-            _logger?.LogError("ProcessUtils: error in output information ", ex);
+            _logger?.LogError(ex, "OnOutputDataReceived error ");
         }
     }
 
@@ -81,7 +81,7 @@ public class ProcessUtils
         }
         catch (Exception ex)
         {
-            _logger?.LogError("execution error", ex);
+            _logger?.LogError(ex, "OnErrorDataReceived error");
         }
     }
 

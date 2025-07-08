@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Masa.BuildingBlocks.Data.UoW" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EFCore" Version="$(MasaFrameworkPackageVersion)" />
@@ -14,6 +13,6 @@
 		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore" Version="$(MasaFrameworkPackageVersion)" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Domain\Masa.Scheduler.Domain\Masa.Scheduler.Domain.csproj" />
+		<ProjectReference Include="..\..\Domain\Masa.Scheduler.Domain\Masa.Scheduler.Domain.csproj" />
 	</ItemGroup>
 </Project>

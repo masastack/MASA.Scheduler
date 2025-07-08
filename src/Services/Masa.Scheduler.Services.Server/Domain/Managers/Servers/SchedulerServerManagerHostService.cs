@@ -18,42 +18,46 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var schedulerWorkerManager = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<SchedulerServerManager>();
-        await schedulerWorkerManager.StartManagerAsync(stoppingToken);
-
-        var environmentProvider = _serviceProvider.GetRequiredService<EnvironmentProvider>();
-        var allowedEnvironments = GetAllowedEnvironments();
-
-        foreach (var environment in environmentProvider.GetEnvionments())
+        try
         {
-            if (!IsEnvironmentAllowed(environment, allowedEnvironments))
-            {
-                continue;
-            }
+            var schedulerWorkerManager = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<SchedulerServerManager>();
+            await schedulerWorkerManager.StartManagerAsync(stoppingToken);
 
-            await DoWorkAsync(environment, stoppingToken);
+            var environmentProvider = _serviceProvider.GetRequiredService<EnvironmentProvider>();
+            var allowedEnvironments = GetAllowedEnvironments();
+
+            foreach (var environment in environmentProvider.GetEnvionments())
+            {
+                if (!IsEnvironmentAllowed(environment, allowedEnvironments))
+                {
+                    continue;
+                }
+
+                await DoWorkAsync(environment, stoppingToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "{Job} ExecuteAsync failed.", nameof(SchedulerServerManagerBackgroundService));
         }
     }
 
     private async Task DoWorkAsync(string environment, CancellationToken stoppingToken)
     {
-        using (IServiceScope scope = _serviceProvider.CreateScope())
+        using var scope = _serviceProvider.CreateScope();
+        var multiEnvironmentSetter = scope.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>();
+        multiEnvironmentSetter.SetEnvironment(environment);
+        var scopedProcessingService = scope.ServiceProvider.GetRequiredService<IScopedProcessingService>();
+
+        try
         {
-            var multiEnvironmentSetter = scope.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>();
-            multiEnvironmentSetter.SetEnvironment(environment);
-
-            var scopedProcessingService =
-                scope.ServiceProvider.GetRequiredService<IScopedProcessingService>();
-
-            try
-            {
-                await scopedProcessingService.DoWorkAsync(stoppingToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An error occurred while processing environment: {environment}.");
-            }
+            await scopedProcessingService.DoWorkAsync(stoppingToken);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while processing environment: {Environment}.", environment);
+        }
+
     }
 
     private List<string> GetAllowedEnvironments()
@@ -63,7 +67,7 @@ public class SchedulerServerManagerBackgroundService : BackgroundService
                             .Get<List<string>>() ?? new();
     }
 
-    private bool IsEnvironmentAllowed(string environment, List<string> allowedEnvironments)
+    private static bool IsEnvironmentAllowed(string environment, List<string> allowedEnvironments)
     {
         return !allowedEnvironments.Any() || allowedEnvironments.Contains(environment, StringComparer.OrdinalIgnoreCase);
     }
