@@ -7,7 +7,10 @@ public class ProjectDto
 {
     public int Id { get; set; }
 
-    public Guid TeamId { get; set; } = Guid.Empty;
+    public List<Guid> TeamIds { get; set; } = new List<Guid>();
+
+    [Obsolete]
+    public Guid TeamId => TeamIds.Count > 0 ? TeamIds[0] : Guid.Empty;
 
     public string Identity { get; set; } = "";
 
