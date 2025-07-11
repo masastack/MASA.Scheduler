@@ -28,7 +28,7 @@ public class ProjectQueryHandler
 
         if (query.TeamId.HasValue)
         {
-            projectList = projectList.FindAll(p => p.TeamId == query.TeamId.Value);
+            projectList = projectList.FindAll(p => p.TeamIds != null && p.TeamIds.Contains(query.TeamId.Value));
         }
 
         query.Result = projectList.Select(p => new ProjectDto()
@@ -36,8 +36,8 @@ public class ProjectQueryHandler
             Name = p.Name,
             Id = p.Id,
             Identity = p.Identity,
-            TeamId = p.TeamId,
-            ProjectApps = p.Apps.DistinctBy(p => p.Identity).Select(app => new ProjectAppDto() { Id = app.Id, Identity = app.Identity, Name = app.Name, ProjectId = app.ProjectId, Type = Enum.Parse<ProjectAppTypes>(app.Type.ToString())}).ToList(),
+            TeamIds = p.TeamIds ?? new List<Guid>(),
+            ProjectApps = p.Apps.DistinctBy(p => p.Identity).Select(app => new ProjectAppDto() { Id = app.Id, Identity = app.Identity, Name = app.Name, ProjectId = app.ProjectId, Type = Enum.Parse<ProjectAppTypes>(app.Type.ToString()) }).ToList(),
         }).ToList();
     }
 
