@@ -33,7 +33,6 @@ public class NotifyJobStatusEventHandler
         catch (Exception ex)
         {
             _logger.LogError(ex, "Notify job run result fail");
-            throw new UserFriendlyException(ex.Message);
         }
     }
 }
