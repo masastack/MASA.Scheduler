@@ -84,7 +84,7 @@ public class SchedulerJobQueryHandler
         {
             var ownerIds = jobDtos.Select(p => p.OwnerId).Distinct().ToList();
             var modifierIds = jobDtos.Where(x => x.Modifier != default).Select(x => x.Modifier).Distinct().ToList();
-            var creatorIds = jobDtos.Where(x => x.Creator != default).Select(x => x.Modifier).Distinct().ToList();
+            var creatorIds = jobDtos.Where(x => x.Creator != default).Select(x => x.Creator).Distinct().ToList();
             var userIds = ownerIds.Union(modifierIds).Union(creatorIds).ToList();
 
             var userQuery = new UserQuery() { UserIds = userIds };
