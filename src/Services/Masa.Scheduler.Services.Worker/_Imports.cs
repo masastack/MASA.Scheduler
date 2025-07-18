@@ -59,4 +59,6 @@ global using Masa.Scheduler.Services.Worker.Infrastructure.Middleware;
 global using Masa.Scheduler.Services.Worker.Managers.Workers;
 
 // Utility and Security
+global using IdentityModel.Client;
+global using Masa.Scheduler.Infrastructure.Cache;
 global using Masa.Utils.Security.Cryptography;

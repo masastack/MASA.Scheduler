@@ -61,6 +61,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Scheduler.EntityFramew
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Scheduler.Shells.JobShell.Shared", "src\Shells\Masa.Scheduler.Shells.JobShell.Shared\Masa.Scheduler.Shells.JobShell.Shared.csproj", "{67F98096-131F-4865-AA78-1E5112213EE5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Scheduler.Infrastructure.Cache", "src\Infrastructure\Masa.Scheduler.Infrastructure.Cache\Masa.Scheduler.Infrastructure.Cache.csproj", "{EFC30D33-022D-47AC-888F-D689437FEC4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -180,6 +182,14 @@ Global
 		{67F98096-131F-4865-AA78-1E5112213EE5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{67F98096-131F-4865-AA78-1E5112213EE5}.Release|x86.ActiveCfg = Release|Any CPU
 		{67F98096-131F-4865-AA78-1E5112213EE5}.Release|x86.Build.0 = Release|Any CPU
+		{EFC30D33-022D-47AC-888F-D689437FEC4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFC30D33-022D-47AC-888F-D689437FEC4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFC30D33-022D-47AC-888F-D689437FEC4E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EFC30D33-022D-47AC-888F-D689437FEC4E}.Debug|x86.Build.0 = Debug|Any CPU
+		{EFC30D33-022D-47AC-888F-D689437FEC4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC30D33-022D-47AC-888F-D689437FEC4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFC30D33-022D-47AC-888F-D689437FEC4E}.Release|x86.ActiveCfg = Release|Any CPU
+		{EFC30D33-022D-47AC-888F-D689437FEC4E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -206,6 +216,7 @@ Global
 		{AA23FFA5-BE5B-4D89-A6A7-B44AC4DCC0A7} = {6C2FCD97-E1FA-4EDB-8530-A7E3AC31BF0B}
 		{9AD50FC5-D7DB-48C5-B170-24CD1308D585} = {6C2FCD97-E1FA-4EDB-8530-A7E3AC31BF0B}
 		{67F98096-131F-4865-AA78-1E5112213EE5} = {9DE805E7-2CDC-43E0-A7DA-D5586DDAD260}
+		{EFC30D33-022D-47AC-888F-D689437FEC4E} = {6C2FCD97-E1FA-4EDB-8530-A7E3AC31BF0B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B83BA2BA-19E5-41FB-A92A-16A03DA229E4}

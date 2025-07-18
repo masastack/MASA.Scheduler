@@ -1,7 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 await builder.Services.AddMasaStackConfigAsync(MasaStackProject.Scheduler, MasaStackApp.Worker);
@@ -69,6 +68,7 @@ builder.Services.AddMapster();
 builder.Services.AddWorkerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddSchedulerLogger();
+builder.Services.AddCache(redisOptions);
 builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
