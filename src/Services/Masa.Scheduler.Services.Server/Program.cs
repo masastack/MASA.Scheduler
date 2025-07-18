@@ -103,7 +103,6 @@ builder.Services.AddMasaSignalR(redisOptions);
 builder.Services.AddQuartzUtils(quartzConnectString, dbType);
 builder.Services.AddSchedulerLogger();
 
-
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>

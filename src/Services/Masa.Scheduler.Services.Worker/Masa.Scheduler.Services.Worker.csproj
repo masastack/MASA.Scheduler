@@ -57,6 +57,7 @@
 		<ProjectReference Include="..\..\Contracts\Masa.Scheduler.Contracts.Server\Masa.Scheduler.Contracts.Server.csproj" />
 		<ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.PostgreSql\Masa.Scheduler.EntityFrameworkCore.PostgreSql.csproj" />
 		<ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.EntityFrameworkCore.SqlServer\Masa.Scheduler.EntityFrameworkCore.SqlServer.csproj" />
+		<ProjectReference Include="..\..\Infrastructure\Masa.Scheduler.Infrastructure.Cache\Masa.Scheduler.Infrastructure.Cache.csproj" />
 		<ProjectReference Include="..\..\Shells\Masa.Scheduler.Shells.JobShell.Shared\Masa.Scheduler.Shells.JobShell.Shared.csproj" />
 	</ItemGroup>
 

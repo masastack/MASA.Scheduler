@@ -22,6 +22,8 @@ public class ConstStrings
     public const string TASK_SET_KEY = SCHEDULER_PRE + "TaskSet";
     public const string STOP_TASK_KEY = SCHEDULER_PRE + "StopTask";
     public const string STOP_BY_MANUAL_KEY = SCHEDULER_PRE + "StopByManual";
+    public const string CLIENT_CREDENTIALS_TOKEN = "client_credentials_token:";
+    public const string COMMON_SCOPE = "MasaStack";
 
     public static string TaskQueueKey(string environment)
     {
@@ -31,5 +33,10 @@ public class ConstStrings
     public static string TaskSetKey(string environment)
     {
         return $"{environment}:{TASK_SET_KEY}";
+    }
+
+    public static string ClientCredentialsTokenKey(string clientId)
+    {
+        return $"{CLIENT_CREDENTIALS_TOKEN}{clientId}";
     }
 }

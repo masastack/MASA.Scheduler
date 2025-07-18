@@ -9,13 +9,17 @@ public class HttpTaskHandler : ITaskHandler
     private readonly ILogger<HttpTaskHandler> _logger;
     private readonly SchedulerLogger _schedulerLogger;
     private readonly IMultiEnvironmentContext _multiEnvironmentContext;
+    private readonly ICacheContext _cacheContext;
+    private readonly IMasaStackConfig _masaStackConfig;
 
-    public HttpTaskHandler(IHttpClientFactory httpClientFactory, ILogger<HttpTaskHandler> logger, SchedulerLogger schedulerLogger, IMultiEnvironmentContext multiEnvironmentContext)
+    public HttpTaskHandler(IHttpClientFactory httpClientFactory, ILogger<HttpTaskHandler> logger, SchedulerLogger schedulerLogger, IMultiEnvironmentContext multiEnvironmentContext, ICacheContext cacheContext, IMasaStackConfig masaStackConfig)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _schedulerLogger = schedulerLogger;
         _multiEnvironmentContext = multiEnvironmentContext;
+        _cacheContext = cacheContext;
+        _masaStackConfig = masaStackConfig;
     }
 
     public async Task<TaskRunStatus> RunTask(Guid taskId, SchedulerJobDto jobDto, DateTimeOffset excuteTime, string? traceId, string? spanId, CancellationToken token)
@@ -33,6 +37,19 @@ public class HttpTaskHandler : ITaskHandler
         }
 
         HttpUtils.AddHttpHeader(client, jobDto.HttpConfig.HttpHeaders);
+
+        try
+        {
+            var accessToken = await GetClientCredentialsTokenAsync();
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to get access token for HTTP request");
+        }
 
         jobDto.HttpConfig.HttpParameters.Add(new("jobId", jobDto.Id.ToString()));
         jobDto.HttpConfig.HttpParameters.Add(new("taskId", taskId.ToString()));
@@ -110,5 +127,31 @@ public class HttpTaskHandler : ITaskHandler
         }
 
         return runSucess;
+    }
+
+    private async Task<string> GetClientCredentialsTokenAsync()
+    {
+        var clientId = _masaStackConfig.GetWebId(MasaStackProject.Scheduler);
+        var accessToken = await _cacheContext.GetOrSetAsync(ConstStrings.ClientCredentialsTokenKey(clientId),
+            async () =>
+            {
+                var request = new ClientCredentialsTokenRequest
+                {
+                    Address = _masaStackConfig.GetSsoDomain() + "/connect/token",
+                    GrantType = BuildingBlocks.Authentication.OpenIdConnect.Models.Constans.GrantType.CLIENT_CREDENTIALS,
+                    ClientId = clientId,
+                    Scope = ConstStrings.COMMON_SCOPE
+                };
+
+                var client = _httpClientFactory.CreateClient();
+                var tokenResponse = await client.RequestClientCredentialsTokenAsync(request);
+
+                var expirationSeconds = Math.Max(tokenResponse.ExpiresIn - 60, 60);
+                var cacheEntryOptions = new CacheEntryOptions(TimeSpan.FromSeconds(expirationSeconds));
+                return (tokenResponse.AccessToken, cacheEntryOptions);
+            }
+            );
+
+        return accessToken;
     }
 }
