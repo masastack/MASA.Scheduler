@@ -11,7 +11,7 @@ public class UserDto
 
     public string DisplayName { get; set; } = string.Empty;
 
-    public string? StaffDislpayName { get; set; }
+    public string? StaffDisplayName { get; set; }
 
     public string Account { get; set; } = string.Empty;
 
