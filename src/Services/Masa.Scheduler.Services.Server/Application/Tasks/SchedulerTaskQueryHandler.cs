@@ -76,7 +76,7 @@ public class SchedulerTaskQueryHandler
 
                 if (user != null)
                 {
-                    item.OperatorName = user.StaffDisplayName ?? user.DisplayName;
+                        item.OperatorName = string.IsNullOrEmpty(user.StaffDisplayName) ? user.DisplayName : user.StaffDisplayName;
                 }
             }
         }

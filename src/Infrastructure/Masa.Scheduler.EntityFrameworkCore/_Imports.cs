@@ -10,6 +10,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Diagnostics;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+global using Masa.Scheduler.EntityFrameworkCore.ValueConverters;
 
 // Microsoft Extensions
 global using Microsoft.Extensions.Logging;
