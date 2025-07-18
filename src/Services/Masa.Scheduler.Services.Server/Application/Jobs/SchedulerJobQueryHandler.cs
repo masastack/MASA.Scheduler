@@ -101,8 +101,11 @@ public class SchedulerJobQueryHandler
                     item.Avator = user.Avatar;
                 }
 
-                item.CreatorName = userQuery.Result.FirstOrDefault(x => x.Id == item.Creator)?.StaffDisplayName ?? string.Empty;
-                item.ModifierName = userQuery.Result.FirstOrDefault(x => x.Id == item.Modifier)?.StaffDisplayName ?? string.Empty;
+                var creator = userQuery.Result.FirstOrDefault(x => x.Id == item.Creator);   
+                var modifier = userQuery.Result.FirstOrDefault(x => x.Id == item.Modifier);
+
+                item.CreatorName = creator?.StaffDisplayName ?? creator?.DisplayName ?? string.Empty;
+                item.ModifierName = modifier?.StaffDisplayName ?? modifier?.DisplayName ?? string.Empty;
             }
         }
 
