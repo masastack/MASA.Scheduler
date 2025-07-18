@@ -37,6 +37,7 @@ public class AuthQueryHandler
         var userInfos = await _authClient.UserService.GetListByIdsAsync(query.UserIds.ToArray()) ?? new();
 
         var response = _mapper.Map<List<UserDto>>(userInfos);
+
         query.Result = response ?? new();
     }
 }
