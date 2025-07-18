@@ -33,11 +33,36 @@ public class SchedulerDbContext : MasaDbContext<SchedulerDbContext>
         builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
         builder.ApplyConfigurationsFromAssembly(typeof(IntegrationEventLogModelCreatingProvider).Assembly);
         builder.ApplyConfigurationsFromAssembly(Assembly);
+
+        // Apply provider-specific configurations
+        ApplyProviderSpecificConfigurations(builder);
+
         base.OnModelCreatingExecuting(builder);
     }
 
     public static void RegisterAssembly(Assembly assembly)
     {
         Assembly = assembly;
+    }
+
+    private void ApplyProviderSpecificConfigurations(ModelBuilder builder)
+    {
+        if (Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
+        {
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.ClrType == typeof(DateTime))
+                    {
+                        property.SetValueConverter(new DateTimeUtcConverter());
+                    }
+                    else if (property.ClrType == typeof(DateTime?))
+                    {
+                        property.SetValueConverter(new NullableDateTimeUtcConverter());
+                    }
+                }
+            }
+        }
     }
 }
