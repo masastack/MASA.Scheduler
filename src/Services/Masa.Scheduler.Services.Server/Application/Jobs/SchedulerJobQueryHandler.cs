@@ -97,15 +97,15 @@ public class SchedulerJobQueryHandler
 
                 if (user != null)
                 {
-                    item.UserName = user.StaffDisplayName ?? user.DisplayName;
+                    item.UserName = string.IsNullOrEmpty(user.StaffDisplayName) ? user.DisplayName : user.StaffDisplayName;
                     item.Avator = user.Avatar;
                 }
 
                 var creator = userQuery.Result.FirstOrDefault(x => x.Id == item.Creator);   
                 var modifier = userQuery.Result.FirstOrDefault(x => x.Id == item.Modifier);
 
-                item.CreatorName = creator?.StaffDisplayName ?? creator?.DisplayName ?? string.Empty;
-                item.ModifierName = modifier?.StaffDisplayName ?? modifier?.DisplayName ?? string.Empty;
+                item.CreatorName = (string.IsNullOrEmpty(creator?.StaffDisplayName) ? creator?.DisplayName : creator?.StaffDisplayName) ?? string.Empty;
+                item.ModifierName = (string.IsNullOrEmpty(modifier?.StaffDisplayName) ? modifier?.DisplayName : modifier?.StaffDisplayName) ?? string.Empty;
             }
         }
 
