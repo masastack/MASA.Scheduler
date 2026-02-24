@@ -5,7 +5,6 @@ global using Dapr;
 
 global using FluentValidation;
 global using FluentValidation.AspNetCore;
-
 global using Mapster;
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Caching;
@@ -80,6 +79,7 @@ global using Masa.Scheduler.Services.Server.Infrastructure.SignalR;
 global using Masa.Scheduler.Services.Server.Infrastructure.SignalR.Hubs;
 
 global using Masa.Scheduler.EntityFrameworkCore;
+global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.SignalR;
