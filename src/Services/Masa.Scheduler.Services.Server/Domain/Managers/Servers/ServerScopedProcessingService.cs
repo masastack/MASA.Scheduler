@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
@@ -40,7 +40,8 @@ public class ServerScopedProcessingService : IScopedProcessingService
     {
         await StartAssignAsync();
 
-        await LoadRunningAndRetryTaskAsync();
+        // Temporary disabled to avoid duplicate execution after restart, especially in multi-pod scenarios.
+        // await LoadRunningAndRetryTaskAsync();
 
         var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression) && job.Enabled);
 

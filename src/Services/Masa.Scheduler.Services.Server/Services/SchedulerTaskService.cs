@@ -33,6 +33,7 @@ public class SchedulerTaskService : ServiceBase
     }
 
     [Topic(ConstStrings.PUB_SUB_NAME, nameof(StartWaitingTaskIntergrationEvent))]
+    [AllowAnonymous]
     public async Task StartWaitingTask([FromServices] IEventBus eventBus, StartWaitingTaskIntergrationEvent @event)
     {
         var request = new StartSchedulerTaskRequest()
