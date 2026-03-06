@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
@@ -100,7 +100,8 @@ builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
 builder.Services.AddMasaSignalR(redisOptions);
-builder.Services.AddQuartzUtils(quartzConnectString, dbType);
+var configuration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetDefault();
+builder.Services.AddSchedulerBackend(configuration, quartzConnectString, dbType);
 builder.Services.AddSchedulerLogger();
 
 builder.Services

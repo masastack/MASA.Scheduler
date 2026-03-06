@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
@@ -9,26 +9,35 @@ public class ServerScopedProcessingService : IScopedProcessingService
     private readonly SchedulerDbContext _dbContext;
     private readonly IRepository<SchedulerJob> _jobRepository;
     private readonly IEventBus _eventBus;
-    private readonly QuartzUtils _quartzUtils;
+    private readonly ISchedulerBackend _schedulerBackend;
     private readonly IMultiEnvironmentContext _multiEnvironmentContext;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IOptions<SchedulerBackendOptions> _schedulerOptions;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IServiceProvider _serviceProvider;
 
     public ServerScopedProcessingService(
         ILogger<ServerScopedProcessingService> logger,
         SchedulerDbContext dbContext,
         IRepository<SchedulerJob> jobRepository,
         IEventBus eventBus,
-        QuartzUtils quartzUtils,
+        ISchedulerBackend schedulerBackend,
         IMultiEnvironmentContext multiEnvironmentContext,
-        IServiceScopeFactory scopeFactory)  
+        IServiceScopeFactory scopeFactory,
+        IOptions<SchedulerBackendOptions> schedulerOptions,
+        IHttpClientFactory httpClientFactory,
+        IServiceProvider serviceProvider)  
     {
         _logger = logger;
         _dbContext = dbContext;
         _jobRepository = jobRepository;
         _eventBus = eventBus;
-        _quartzUtils = quartzUtils;
+        _schedulerBackend = schedulerBackend;
         _multiEnvironmentContext = multiEnvironmentContext;
         _scopeFactory = scopeFactory;
+        _schedulerOptions = schedulerOptions;
+        _httpClientFactory = httpClientFactory;
+        _serviceProvider = serviceProvider;
     }
 
     public async Task DoWorkAsync(CancellationToken stoppingToken)
@@ -38,9 +47,11 @@ public class ServerScopedProcessingService : IScopedProcessingService
 
     private async Task OnManagerStartAsync()
     {
+        await CleanupOtherBackendAsync();
+
         await StartAssignAsync();
 
-        await LoadRunningAndRetryTaskAsync();
+        //await LoadRunningAndRetryTaskAsync();
 
         var cronJobList = await _jobRepository.GetListAsync(job => job.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrEmpty(job.CronExpression) && job.Enabled);
 
@@ -106,7 +117,7 @@ public class ServerScopedProcessingService : IScopedProcessingService
 
         foreach (var retryTask in retryTaskList)
         {
-            await _quartzUtils.AddDelayTask<StartSchedulerTaskQuartzJob>(_multiEnvironmentContext.CurrentEnvironment, retryTask.Id, retryTask.Job.Id, TimeSpan.FromSeconds(retryTask.Job.FailedRetryInterval));
+            await _schedulerBackend.AddDelayTask(_multiEnvironmentContext.CurrentEnvironment, retryTask.Id, retryTask.Job.Id, TimeSpan.FromSeconds(retryTask.Job.FailedRetryInterval));
         }
     }
 
@@ -136,7 +147,7 @@ public class ServerScopedProcessingService : IScopedProcessingService
 
             _logger.LogInformation($"Test ScheduleExpiredStrategy, currentTime: {DateTimeOffset.UtcNow}, calcStartTime: {calcStartTime}, JobId: {cronJob.Id}");
 
-            var excuteTimeList = await _quartzUtils.GetCronExcuteTimeByTimeRange(cronJob.CronExpression, calcStartTime, DateTimeOffset.UtcNow);
+            var excuteTimeList = await _schedulerBackend.GetCronExecuteTimeByTimeRange(cronJob.CronExpression, calcStartTime, DateTimeOffset.UtcNow);
 
             _logger.LogInformation($"ExcuteTimeList, excuteTimeList: {JsonSerializer.Serialize(excuteTimeList)}, JobId: {cronJob.Id}");
 
@@ -168,7 +179,7 @@ public class ServerScopedProcessingService : IScopedProcessingService
         {
             try
             {
-                await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(_multiEnvironmentContext.CurrentEnvironment, cronJob.Id, cronJob.CronExpression);
+                await _schedulerBackend.RegisterCronJob(_multiEnvironmentContext.CurrentEnvironment, cronJob.Id, cronJob.CronExpression);
             }
             catch (Exception ex)
             {
@@ -205,5 +216,159 @@ public class ServerScopedProcessingService : IScopedProcessingService
         });
 
         return Task.CompletedTask;
+    }
+
+    private async Task CleanupOtherBackendAsync()
+    {
+        var options = _schedulerOptions.Value;
+        if (!options.CleanupOtherBackendOnStart)
+        {
+            return;
+        }
+
+        var useDapr = string.Equals(options.Backend, SchedulerBackendType.DaprJobs, StringComparison.OrdinalIgnoreCase);
+        if (useDapr)
+        {
+            await CleanupQuartzJobsAsync();
+        }
+        else
+        {
+            await CleanupDaprJobsAsync();
+        }
+    }
+
+    private async Task CleanupQuartzJobsAsync()
+    {
+        try
+        {
+            var quartzUtils = _serviceProvider.GetService<Infrastructure.Quartz.QuartzUtils>();
+            if (quartzUtils == null)
+            {
+                _logger.LogWarning("CleanupQuartzJobs skipped because QuartzUtils is not registered.");
+                return;
+            }
+
+            await quartzUtils.ClearAllJobsAsync();
+            _logger.LogInformation("Quartz jobs cleared because backend switched to DaprJobs.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "CleanupQuartzJobs failed; will continue startup.");
+        }
+    }
+
+    private async Task CleanupDaprJobsAsync()
+    {
+        try
+        {
+            if (!await WaitForDaprSidecarReadyAsync())
+            {
+                _logger.LogWarning("CleanupDaprJobs skipped because Dapr sidecar is not ready.");
+                return;
+            }
+
+            var environment = _multiEnvironmentContext.CurrentEnvironment;
+            var cronJobs = await _jobRepository.GetListAsync(job =>
+                job.ScheduleType == ScheduleTypes.Cron
+                && !string.IsNullOrEmpty(job.CronExpression));
+
+            foreach (var cronJob in cronJobs)
+            {
+                var name = DaprJobsNameHelper.BuildCronName(environment, cronJob.Id);
+                await TryDeleteDaprJobAsync(name);
+            }
+
+            var retryTasks = await _dbContext.Tasks
+                .Where(task => task.TaskStatus == TaskRunStatus.WaitToRetry && task.Job.Enabled)
+                .Select(task => new { task.Id, task.JobId })
+                .ToListAsync();
+
+            foreach (var retryTask in retryTasks)
+            {
+                var name = DaprJobsNameHelper.BuildRetryName(environment, retryTask.JobId, retryTask.Id);
+                await TryDeleteDaprJobAsync(name);
+            }
+
+            _logger.LogInformation("Dapr Jobs cleared because backend switched to Quartz.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "CleanupDaprJobs failed; will continue startup.");
+        }
+    }
+
+    private async Task TryDeleteDaprJobAsync(string name)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient();
+            var endpoint = BuildDaprHttpEndpoint($"/v1.0-alpha1/jobs/{Uri.EscapeDataString(name)}");
+            var response = await client.DeleteAsync(endpoint);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                if (IsCronClosed(body))
+                {
+                    _logger.LogWarning("TryDeleteDaprJobAsync ignored. Name: {Name}. Status: {Status}. Body: {Body}", name, response.StatusCode, body);
+                    return;
+                }
+                _logger.LogError("TryDeleteDaprJobAsync failed. Name: {Name}. Status: {Status}. Body: {Body}", name, response.StatusCode, body);
+                response.EnsureSuccessStatusCode();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "TryDeleteDaprJobAsync failed. Name: {Name}", name);
+            throw;
+        }
+    }
+
+    private static bool IsDaprNotFound(Exception exception)
+    {
+        return exception.Message.Contains("NotFound", StringComparison.OrdinalIgnoreCase)
+            || exception.Message.Contains("404", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string BuildDaprHttpEndpoint(string path)
+    {
+        var endpoint = Environment.GetEnvironmentVariable("DAPR_HTTP_ENDPOINT");
+        if (string.IsNullOrWhiteSpace(endpoint))
+        {
+            var port = Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "3500";
+            endpoint = $"http://127.0.0.1:{port}";
+        }
+
+        return $"{endpoint.TrimEnd('/')}{path}";
+    }
+
+    private async Task<bool> WaitForDaprSidecarReadyAsync()
+    {
+        var client = _httpClientFactory.CreateClient();
+        var endpoint = BuildDaprHttpEndpoint("/v1.0/metadata");
+        var deadline = DateTimeOffset.UtcNow.AddSeconds(15);
+
+        while (DateTimeOffset.UtcNow < deadline)
+        {
+            try
+            {
+                var response = await client.GetAsync(endpoint);
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+            }
+
+            await Task.Delay(500);
+        }
+
+        return false;
+    }
+
+    private static bool IsCronClosed(string body)
+    {
+        return body.Contains("cron is closed", StringComparison.OrdinalIgnoreCase);
     }
 }

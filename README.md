@@ -20,7 +20,9 @@ Scheduler是MASA Stack 1.0推出的一款辅助性软件产品，主要负责处
 
 
 ## 本地开发
-- 待补充
+- Dapr Jobs 支持需 Dapr 1.14+ 并启用 Scheduler control plane
+- 服务端配置切换：`Scheduler:Backend` 设为 `DaprJobs`
+- Jobs 回调路径固定为 `/job/{name}`，由服务端接收并触发任务
 
 ## 开发路线
 - 待补充

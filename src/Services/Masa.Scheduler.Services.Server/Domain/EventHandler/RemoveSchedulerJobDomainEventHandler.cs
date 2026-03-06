@@ -1,19 +1,19 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Domain.EventHandler;
 
 public class RemoveSchedulerJobDomainEventHandler
 {
-    private readonly QuartzUtils _quartzUtils;
+    private readonly ISchedulerBackend _schedulerBackend;
     private readonly ISchedulerJobRepository _schedulerJobRepository;
     private readonly ISchedulerTaskRepository _schedulerTaskRepository;
     private readonly SchedulerServerManager _schedulerServerManager;
     private readonly IAlertClient _alertClient;
 
-    public RemoveSchedulerJobDomainEventHandler(QuartzUtils quartzUtils, ISchedulerJobRepository schedulerJobRepository, ISchedulerTaskRepository schedulerTaskRepository, SchedulerServerManager schedulerServerManager, IAlertClient alertClient)
+    public RemoveSchedulerJobDomainEventHandler(ISchedulerBackend schedulerBackend, ISchedulerJobRepository schedulerJobRepository, ISchedulerTaskRepository schedulerTaskRepository, SchedulerServerManager schedulerServerManager, IAlertClient alertClient)
     {
-        _quartzUtils = quartzUtils;
+        _schedulerBackend = schedulerBackend;
         _schedulerJobRepository = schedulerJobRepository;
         _schedulerTaskRepository = schedulerTaskRepository;
         _schedulerServerManager = schedulerServerManager;
@@ -45,7 +45,7 @@ public class RemoveSchedulerJobDomainEventHandler
             await _schedulerTaskRepository.UpdateAsync(task);
         }
 
-        await _quartzUtils.RemoveCronJob(@event.Request.JobId);
+        await _schedulerBackend.RemoveCronJob(@event.Request.JobId);
 
         if (job.AlarmRuleId != default)
         {

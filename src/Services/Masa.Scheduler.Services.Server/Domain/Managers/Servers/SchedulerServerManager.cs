@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
@@ -6,7 +6,7 @@ namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
 public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, SchedulerServerOnlineIntegrationEvent, SchedulerWorkerOnlineIntegrationEvent>
 {
     private readonly ILogger<SchedulerServerManager> _logger;
-    private readonly QuartzUtils _quartzUtils;
+    private readonly ISchedulerBackend _schedulerBackend;
     private readonly IMapper _mapper;
     private readonly IRepository<SchedulerResource> _resourceRepository;
     private readonly SchedulerLogger _schedulerLogger;
@@ -25,7 +25,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         IHttpClientFactory httpClientFactory,
         SchedulerServerManagerData data,
         IHostApplicationLifetime hostApplicationLifetime,
-        QuartzUtils quartzUtils,
+        ISchedulerBackend schedulerBackend,
         IMasaStackConfig masaStackConfig,
         IMapper mapper,
         IRepository<SchedulerResource> resourceRepository,
@@ -45,7 +45,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
                masaStackConfig)
     {
         _logger = logger;
-        _quartzUtils = quartzUtils;
+        _schedulerBackend = schedulerBackend;
         _mapper = mapper;
         _resourceRepository = resourceRepository;
         _schedulerLogger = schedulerLogger;
@@ -70,7 +70,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     {
         await base.OnManagerStartAsync();
 
-        await _quartzUtils.StartQuartzScheduler();
+        await _schedulerBackend.StartAsync();
     }
 
     public async Task<WorkerModel?> GetWorker(SchedulerServerManagerData data, RoutingStrategyTypes routingType)

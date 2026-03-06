@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Domain.EventHandler;
@@ -13,7 +13,7 @@ public class StopTaskDomainEventHandler
     private readonly SchedulerDbContext _dbContext;
     private readonly IDistributedCacheClient _distributedCacheClient;
     private readonly IIntegrationEventBus _eventBus;
-    private readonly QuartzUtils _quartzUtils;
+    private readonly ISchedulerBackend _schedulerBackend;
 
     public StopTaskDomainEventHandler(
         ISchedulerTaskRepository schedulerTaskRepository,
@@ -24,7 +24,7 @@ public class StopTaskDomainEventHandler
         IMapper mapper,
         SchedulerDbContext dbContext,
         IDistributedCacheClient distributedCacheClient,
-        QuartzUtils quartzUtils)
+        ISchedulerBackend schedulerBackend)
     {
         _schedulerTaskRepository = schedulerTaskRepository;
         _eventBus = eventBus;
@@ -34,7 +34,7 @@ public class StopTaskDomainEventHandler
         _mapper = mapper;
         _dbContext = dbContext;
         _distributedCacheClient = distributedCacheClient;
-        _quartzUtils = quartzUtils;
+        _schedulerBackend = schedulerBackend;
     }
 
     [EventHandler(1)]
@@ -61,7 +61,7 @@ public class StopTaskDomainEventHandler
         {
             if (task.TaskStatus == TaskRunStatus.WaitToRetry)
             {
-                await _quartzUtils.RemoveDelayTask(task.Id, task.JobId);
+                await _schedulerBackend.RemoveDelayTask(task.Id, task.JobId);
             }
 
             task.TaskEnd(TaskRunStatus.Failure, $"User manual stop task, OperatorId: {@event.Request.OperatorId}");

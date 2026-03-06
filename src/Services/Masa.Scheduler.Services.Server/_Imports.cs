@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 global using Dapr;
@@ -76,6 +76,7 @@ global using Masa.Scheduler.Services.Server.Infrastructure.Common;
 global using Masa.Scheduler.Services.Server.Infrastructure.Extensions;
 global using Masa.Scheduler.Services.Server.Infrastructure.Middleware;
 global using Masa.Scheduler.Services.Server.Infrastructure.Quartz;
+global using Masa.Scheduler.Services.Server.Infrastructure.Scheduling;
 global using Masa.Scheduler.Services.Server.Infrastructure.SignalR;
 global using Masa.Scheduler.Services.Server.Infrastructure.SignalR.Hubs;
 
@@ -94,6 +95,7 @@ global using System.Linq.Expressions;
 global using System.Runtime.CompilerServices;
 global using System.Text;
 global using System.Text.Json;
+global using System.Net.Http.Json;
 global using System.Text.RegularExpressions;
 
 // Alias to avoid naming conflicts

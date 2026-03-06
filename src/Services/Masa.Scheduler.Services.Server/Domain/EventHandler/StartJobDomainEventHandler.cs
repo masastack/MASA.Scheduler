@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Domain.EventHandler;
@@ -10,19 +10,25 @@ public class StartJobDomainEventHandler
     private readonly IEventBus _eventBus;
     private readonly SchedulerLogger _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
+    private readonly IDatabase _redis;
 
     public StartJobDomainEventHandler(
         IEventBus eventBus,
         ISchedulerJobRepository schedulerJobRepository,
         ISchedulerTaskRepository schedulerTaskRepository,
         SchedulerLogger logger,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IMultiEnvironmentContext multiEnvironmentContext,
+        ConnectionMultiplexer connect)
     {
         _eventBus = eventBus;
         _schedulerJobRepository = schedulerJobRepository;
         _schedulerTaskRepository = schedulerTaskRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _multiEnvironmentContext = multiEnvironmentContext;
+        _redis = connect.GetDatabase();
     }
 
     [EventHandler(1)]
@@ -36,6 +42,22 @@ public class StartJobDomainEventHandler
         }
 
         var operatorId = @event.Request.OperatorId == default ? job.Creator : @event.Request.OperatorId;
+
+        if (@event.Request.OperatorId == Guid.Empty)
+        {
+            var executeTime = @event.Request.ExcuteTime == DateTimeOffset.MinValue
+                ? DateTimeOffset.UtcNow
+                : @event.Request.ExcuteTime;
+            const int windowSeconds = 30;
+            var bucket = executeTime.ToUnixTimeSeconds() / windowSeconds;
+            var dedupKey = CacheKeys.JobScheduleDedupKey(_multiEnvironmentContext.CurrentEnvironment, job.Id, bucket);
+            var acquired = await _redis.StringSetAsync(dedupKey, "1", TimeSpan.FromMinutes(2), When.NotExists);
+            if (!acquired)
+            {
+                _logger.LogWarning($"Duplicate schedule ignored. ExecuteTime: {executeTime:O}", WriterTypes.Server, Guid.Empty, job.Id);
+                return;
+            }
+        }
 
         var task = new SchedulerTask(job.Id, job.Origin, operatorId, @event.Request.ExcuteTime);
 
