@@ -306,6 +306,11 @@ public class ServerScopedProcessingService : IScopedProcessingService
             var response = await client.DeleteAsync(endpoint);
             if (!response.IsSuccessStatusCode)
             {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    _logger.LogInformation("TryDeleteDaprJobAsync ignored because job was not found. Name: {Name}. Status: {Status}", name, response.StatusCode);
+                    return;
+                }
                 var body = await response.Content.ReadAsStringAsync();
                 if (IsCronClosed(body))
                 {

@@ -192,11 +192,15 @@ public class DaprJobsSchedulerBackend : ISchedulerBackend
             return parts;
         }
 
-        if (value.Contains("7"))
+        if (value.Contains('7'))
         {
-            value = value.Replace("7", "0");
-            value = string.Join(',', value.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Distinct(StringComparer.Ordinal));
+            var tokens = value.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(token =>
+                {
+                    var trimmed = token.Trim();
+                    return string.Equals(trimmed, "7", StringComparison.Ordinal) ? "0" : trimmed;
+                });
+            value = string.Join(',', tokens.Distinct(StringComparer.Ordinal));
         }
 
         var copy = parts.ToArray();

@@ -25,6 +25,7 @@ public class UpdateCronJobDomainEventHandler
         {
             if (!CronExpression.IsValidExpression(@event.Request.CronExpression))
             {
+                await _schedulerBackend.RemoveCronJob(@event.Request.JobId);
                 return;
             }
 

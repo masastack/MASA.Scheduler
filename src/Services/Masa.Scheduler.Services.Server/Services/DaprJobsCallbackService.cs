@@ -22,6 +22,18 @@ public class DaprJobsCallbackService : ServiceBase
         string name,
         HttpRequest request)
     {
+        var expectedToken = Environment.GetEnvironmentVariable("DAPR_API_TOKEN");
+        if (!string.IsNullOrEmpty(expectedToken))
+        {
+            if (!request.Headers.TryGetValue("dapr-api-token", out var providedTokens) ||
+                providedTokens.Count == 0 ||
+                !string.Equals(providedTokens[0], expectedToken, StringComparison.Ordinal))
+            {
+                logger.LogWarning("Unauthorized DaprJobs callback attempt. Name: {Name}", name);
+                return Results.Unauthorized();
+            }
+        }
+
         var useDaprJobs = string.Equals(options.Value.Backend, SchedulerBackendType.DaprJobs, StringComparison.OrdinalIgnoreCase);
         if (!useDaprJobs)
         {
