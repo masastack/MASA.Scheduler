@@ -9,5 +9,6 @@ if (cmd == null)
 
 Debug.WriteLine(cmd.ToString());
 ShellHelper.UseOpenTelemtry(builder, cmd.Value);
+builder.Services.AddHttpClient();
 var app = builder.Build();
 await ShellHelper.Execute(app.Services, cmd.Value);
