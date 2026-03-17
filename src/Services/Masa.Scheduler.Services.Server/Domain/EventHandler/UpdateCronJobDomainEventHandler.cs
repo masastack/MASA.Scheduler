@@ -1,18 +1,18 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Domain.EventHandler;
 
 public class UpdateCronJobDomainEventHandler
 {
-    private readonly QuartzUtils _quartzUtils;
+    private readonly ISchedulerBackend _schedulerBackend;
     private readonly IRepository<SchedulerTask> _schedulerTaskRepository;
     private readonly IRepository<SchedulerJob> _schedulerJobRepository;
     private readonly IMultiEnvironmentContext _multiEnvironmentContext;
 
-    public UpdateCronJobDomainEventHandler(QuartzUtils quartzUtils, IRepository<SchedulerTask> schedulerTaskRepository, IRepository<SchedulerJob> schedulerJobRepository, IMultiEnvironmentContext multiEnvironmentContext)
+    public UpdateCronJobDomainEventHandler(ISchedulerBackend schedulerBackend, IRepository<SchedulerTask> schedulerTaskRepository, IRepository<SchedulerJob> schedulerJobRepository, IMultiEnvironmentContext multiEnvironmentContext)
     {
-        _quartzUtils = quartzUtils;
+        _schedulerBackend = schedulerBackend;
         _schedulerTaskRepository = schedulerTaskRepository;
         _schedulerJobRepository = schedulerJobRepository;
         _multiEnvironmentContext = multiEnvironmentContext;
@@ -23,7 +23,13 @@ public class UpdateCronJobDomainEventHandler
     {
         if(@event.Request.ScheduleType == ScheduleTypes.Cron && !string.IsNullOrWhiteSpace(@event.Request.CronExpression) && @event.Request.Enabled)
         {
-            await _quartzUtils.RegisterCronJob<StartSchedulerJobQuartzJob>(_multiEnvironmentContext.CurrentEnvironment, @event.Request.JobId, @event.Request.CronExpression);
+            if (!CronExpression.IsValidExpression(@event.Request.CronExpression))
+            {
+                await _schedulerBackend.RemoveCronJob(@event.Request.JobId);
+                return;
+            }
+
+            await _schedulerBackend.RegisterCronJob(_multiEnvironmentContext.CurrentEnvironment, @event.Request.JobId, @event.Request.CronExpression);
         }
         else
         {
@@ -49,7 +55,7 @@ public class UpdateCronJobDomainEventHandler
                 }
             }
 
-            await _quartzUtils.RemoveCronJob(@event.Request.JobId);
+            await _schedulerBackend.RemoveCronJob(@event.Request.JobId);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Domain.EventHandler;
@@ -11,7 +11,7 @@ public class StartTaskDomainEventHandler
     private readonly SchedulerServerManager _serverManager;
     private readonly SchedulerDbContext _dbContext;
     private readonly IMapper _mapper;
-    private readonly QuartzUtils _quartzUtils;
+    private readonly ISchedulerBackend _schedulerBackend;
     private readonly IDistributedCacheClient _distributedCacheClient;
     private readonly SchedulerLogger _logger;
     private readonly SignalRUtils _signalRUtils;
@@ -23,7 +23,7 @@ public class StartTaskDomainEventHandler
         SchedulerServerManager serverManager,
         SchedulerDbContext dbContext,
         IMapper mapper,
-        QuartzUtils quartzUtils,
+        ISchedulerBackend schedulerBackend,
         IDistributedCacheClient distributedCacheClient,
         SchedulerLogger logger,
         ISchedulerJobRepository schedulerJobRepository,
@@ -35,7 +35,7 @@ public class StartTaskDomainEventHandler
         _serverManager = serverManager;
         _dbContext = dbContext;
         _mapper = mapper;
-        _quartzUtils = quartzUtils;
+        _schedulerBackend = schedulerBackend;
         _distributedCacheClient = distributedCacheClient;
         _logger = logger;
         _schedulerJobRepository = schedulerJobRepository;
@@ -92,7 +92,14 @@ public class StartTaskDomainEventHandler
         // When task run by manual, remove FailedStrategy delay task
         if (task.TaskStatus == TaskRunStatus.WaitToRetry && @event.Request.IsManual)
         {
-            await _quartzUtils.RemoveDelayTask(task.Id, task.Job.Id);
+            try
+            {
+                await _schedulerBackend.RemoveDelayTask(task.Id, task.Job.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Remove delay task failed, ignored for manual trigger. Error: {ex.Message}", WriterTypes.Server, task.Id, task.JobId);
+            }
             await _distributedCacheClient.RemoveAsync($"{CacheKeys.TASK_RETRY_COUNT}_{task.Id}");
         }
 
@@ -144,7 +151,14 @@ public class StartTaskDomainEventHandler
                     }
                     else
                     {
-                        await _quartzUtils.RemoveDelayTask(otherRunningTask.Id, task.Job.Id);
+                        try
+                        {
+                            await _schedulerBackend.RemoveDelayTask(otherRunningTask.Id, task.Job.Id);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning($"Remove delay task failed, ignored for cover strategy. Error: {ex.Message}", WriterTypes.Server, otherRunningTask.Id, otherRunningTask.JobId);
+                        }
                     }
 
                     otherRunningTask.TaskEnd(TaskRunStatus.Failure, "Stop by SchedulerBlockStrategy");

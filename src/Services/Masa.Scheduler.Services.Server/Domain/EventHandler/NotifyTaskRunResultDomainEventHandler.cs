@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Domain.EventHandler;
@@ -10,7 +10,7 @@ public class NotifyTaskRunResultDomainEventHandler
     private readonly IRepository<SchedulerJob> _schedulerJobRepository;
     private readonly SignalRUtils _signalRUtils;
     private readonly IDistributedCacheClient _distributedCacheClient;
-    private readonly QuartzUtils _quartzUtils;
+    private readonly ISchedulerBackend _schedulerBackend;
     private readonly IIntegrationEventBus _eventBus;
     private readonly SchedulerServerManagerData _data;
     private readonly IMapper _mapper;
@@ -24,7 +24,7 @@ public class NotifyTaskRunResultDomainEventHandler
         IRepository<SchedulerJob> schedulerJobRepository,
         SignalRUtils signalRUtils,
         IDistributedCacheClient distributedCacheClient,
-        QuartzUtils quartzUtils,
+        ISchedulerBackend schedulerBackend,
         IIntegrationEventBus eventBus,
         SchedulerServerManagerData data,
         IMapper mapper,
@@ -37,7 +37,7 @@ public class NotifyTaskRunResultDomainEventHandler
         _schedulerJobRepository = schedulerJobRepository;
         _signalRUtils = signalRUtils;
         _distributedCacheClient = distributedCacheClient;
-        _quartzUtils = quartzUtils;
+        _schedulerBackend = schedulerBackend;
         _eventBus = eventBus;
         _data = data;
         _mapper = mapper;
@@ -76,7 +76,7 @@ public class NotifyTaskRunResultDomainEventHandler
             {
                 status = TaskRunStatus.WaitToRetry;
 
-                await _quartzUtils.AddDelayTask<StartSchedulerTaskQuartzJob>(_multiEnvironmentContext.CurrentEnvironment, task.Id, task.Job.Id, TimeSpan.FromSeconds(task.Job.FailedRetryInterval));
+                await _schedulerBackend.AddDelayTask(_multiEnvironmentContext.CurrentEnvironment, task.Id, task.Job.Id, TimeSpan.FromSeconds(task.Job.FailedRetryInterval));
             }
         }
 

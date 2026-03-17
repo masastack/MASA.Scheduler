@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Server.Infrastructure.Quartz;
@@ -17,6 +17,12 @@ public class QuartzUtils
     {
         _scheduler = await _schedulerFactory.GetScheduler();
         await _scheduler.Start();
+    }
+
+    public async Task ClearAllJobsAsync()
+    {
+        var scheduler = await _schedulerFactory.GetScheduler();
+        await scheduler.Clear();
     }
 
     public Task AddDelayTask<T>(string environment, Guid taskId, Guid jobId, TimeSpan timeSpan) where T : IJob
