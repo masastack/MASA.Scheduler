@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Services.Worker.Domain.Managers.Workers.TaskHandlers;
@@ -16,21 +16,27 @@ public class JobAppTaskHandler : ITaskHandler
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<JobAppTaskHandler> _logger;
-    private readonly IConfiguration _configuration;
     private readonly SchedulerLogger _schedulerLogger;
     private readonly IMasaStackConfig _masaStackConfig;
+    private readonly IMultiEnvironmentContext _multiEnvironmentContext;
     private Guid _taskId;
     private Guid _jobId;
     private string _message = string.Empty;
 
-    public JobAppTaskHandler(IHttpClientFactory httpClientFactory, ILogger<JobAppTaskHandler> logger, ILoggerFactory loggerFactory, IConfiguration configuration, SchedulerLogger schedulerLogger, IMasaStackConfig masaStackConfig)
+    public JobAppTaskHandler(
+        IHttpClientFactory httpClientFactory,
+        ILogger<JobAppTaskHandler> logger,
+        ILoggerFactory loggerFactory,
+        SchedulerLogger schedulerLogger,
+        IMasaStackConfig masaStackConfig,
+        IMultiEnvironmentContext multiEnvironmentContext)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _loggerFactory = loggerFactory;
-        _configuration = configuration;
         _schedulerLogger = schedulerLogger;
         _masaStackConfig = masaStackConfig;
+        _multiEnvironmentContext = multiEnvironmentContext;
     }
 
     TaskRunStatus _runStatus = TaskRunStatus.Failure;
@@ -108,6 +114,18 @@ public class JobAppTaskHandler : ITaskHandler
 
     private string GetJobShellRunParameter(SchedulerJobDto dto, string jobExtractPath, Guid taskId, DateTimeOffset excuteTime, string? traceId = default, string? spanId = default)
     {
+        var schedulerEnvironment = _multiEnvironmentContext.CurrentEnvironment;
+        _schedulerLogger.LogInformation(
+            $"[EnvTrace][Worker] _multiEnvironmentContext.CurrentEnvironment: {schedulerEnvironment ?? "<null>"}",
+            WriterTypes.Worker,
+            _taskId,
+            _jobId);
+
+        if (string.IsNullOrWhiteSpace(schedulerEnvironment))
+        {
+            throw new UserFriendlyException("CurrentEnvironment cannot be null or empty");
+        }
+
         var parameters = new Shells.JobShell.Shared.ShellCommandModel(_rootPath + Path.Combine(JOB_SHELL_SOURCE_PATH, JOB_SHELL_NAME),
             taskId,
             Path.Combine(jobExtractPath, dto.JobAppConfig.JobEntryAssembly),
@@ -118,8 +136,14 @@ public class JobAppTaskHandler : ITaskHandler
             excuteTime.Offset.Ticks,
             dto.Id,
             _masaStackConfig.OtlpUrl,
-            dto.JobAppConfig.JobParams
+            dto.JobAppConfig.JobParams,
+            schedulerEnvironment
             ).ToString();
+        _schedulerLogger.LogInformation(
+            $"[EnvTrace][Worker] schedulerEnvironment passed to JobShell: {schedulerEnvironment}",
+            WriterTypes.Worker,
+            _taskId,
+            _jobId);
         _schedulerLogger.LogInformation($"JobShell run parameter: {parameters}", WriterTypes.Worker, _taskId, _jobId);
 
         return parameters;

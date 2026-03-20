@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Shells.JobShell.Shared;
@@ -6,10 +6,24 @@ namespace Masa.Scheduler.Shells.JobShell.Shared;
 public struct ShellCommandModel
 {
     static string emptyTraceId = Guid.Empty.ToString("N");
+    internal const string ENV_PREFIX = "env:";
+    internal const string PARAM_PREFIX = "param:";
 
     internal const string DEFAULT_OTEL_URL = "http://localhost:4317";
 
-    public ShellCommandModel(string basePath, Guid taskId, string jobAssemblyPath, string jobEntryClassName, string? traceId, string? parentSpanId, long uTCTicks, long offset, Guid jobId, string? otelUrl = default, string? jobStartParam = default)
+    public ShellCommandModel(
+        string basePath,
+        Guid taskId,
+        string jobAssemblyPath,
+        string jobEntryClassName,
+        string? traceId,
+        string? parentSpanId,
+        long uTCTicks,
+        long offset,
+        Guid jobId,
+        string? otelUrl = default,
+        string? jobStartParam = default,
+        string? schedulerEnvironment = default)
     {
         if (string.IsNullOrEmpty(jobAssemblyPath))
             throw new ArgumentNullException(nameof(jobAssemblyPath));
@@ -26,6 +40,7 @@ public struct ShellCommandModel
         JobId = jobId;
         OtelUrl = string.IsNullOrEmpty(otelUrl) ? DEFAULT_OTEL_URL : otelUrl;
         JobStartParam = jobStartParam;
+        SchedulerEnvironment = schedulerEnvironment;
     }
 
     public string BasePath { get; }
@@ -50,21 +65,35 @@ public struct ShellCommandModel
 
     public string? JobStartParam { get; }
 
+    public string? SchedulerEnvironment { get; }
+
     public override string ToString()
     {
-        return string.Join(' ',
+        var values = new List<string>
+        {
             BasePath,
-            TaskId,
+            TaskId.ToString(),
             JobAssemblyPath,
             JobEntryClassName,
             string.IsNullOrEmpty(TraceId) ? emptyTraceId : TraceId,
             string.IsNullOrEmpty(ParentSpanId) ? emptyTraceId.Substring(0, 16) : ParentSpanId,
-            UTCTicks,
-            Offset,
-            JobId,
-            OtelUrl,
-            string.IsNullOrEmpty(JobStartParam) ? "" : Convert.ToBase64String(Encoding.UTF8.GetBytes(JobStartParam))
-            );
+            UTCTicks.ToString(),
+            Offset.ToString(),
+            JobId.ToString(),
+            OtelUrl
+        };
+
+        if (!string.IsNullOrEmpty(SchedulerEnvironment))
+        {
+            values.Add($"{ENV_PREFIX}{Convert.ToBase64String(Encoding.UTF8.GetBytes(SchedulerEnvironment))}");
+        }
+
+        if (!string.IsNullOrEmpty(JobStartParam))
+        {
+            values.Add($"{PARAM_PREFIX}{Convert.ToBase64String(Encoding.UTF8.GetBytes(JobStartParam))}");
+        }
+
+        return string.Join(' ', values);
     }
 }
 
@@ -86,8 +115,50 @@ public static class ShellCommandModelExtension
         var ticks = Convert.ToInt64(args[start++]);
         var offset = Convert.ToInt64(args[start++]);
         _ = Guid.TryParse(args[start++], out var jobId);
-        string otelUrl = args[start++],
-            jobParam = args.Length - paramCount > 0 ? Encoding.UTF8.GetString(Convert.FromBase64String(args[start])) : default!;
-        return new ShellCommandModel(hasFirst ? args[0] : default!, taskId, path, className, traceId, spanId, ticks, offset, jobId, otelUrl, jobParam);
+        string otelUrl = args[start++];
+        string? schedulerEnv = default;
+        string? jobParam = default;
+
+        // Support both old format (single base64 jobParam) and new prefixed extras.
+        for (var i = start; i < args.Length; i++)
+        {
+            var current = args[i];
+            if (current.StartsWith(ShellCommandModel.ENV_PREFIX, StringComparison.OrdinalIgnoreCase))
+            {
+                var value = current.Substring(ShellCommandModel.ENV_PREFIX.Length);
+                if (!string.IsNullOrEmpty(value))
+                {
+                    schedulerEnv = Encoding.UTF8.GetString(Convert.FromBase64String(value));
+                }
+                continue;
+            }
+
+            if (current.StartsWith(ShellCommandModel.PARAM_PREFIX, StringComparison.OrdinalIgnoreCase))
+            {
+                var value = current.Substring(ShellCommandModel.PARAM_PREFIX.Length);
+                if (!string.IsNullOrEmpty(value))
+                {
+                    jobParam = Encoding.UTF8.GetString(Convert.FromBase64String(value));
+                }
+                continue;
+            }
+
+            // Legacy format: only one extra argument, it is jobParam in base64.
+            jobParam ??= Encoding.UTF8.GetString(Convert.FromBase64String(current));
+        }
+
+        return new ShellCommandModel(
+            hasFirst ? args[0] : default!,
+            taskId,
+            path,
+            className,
+            traceId,
+            spanId,
+            ticks,
+            offset,
+            jobId,
+            otelUrl,
+            jobParam,
+            schedulerEnv);
     }
 }
