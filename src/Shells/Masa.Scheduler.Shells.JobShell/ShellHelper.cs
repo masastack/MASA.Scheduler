@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Scheduler.Shells.JobShell;
@@ -56,6 +56,14 @@ internal sealed class ShellHelper
     public static async Task Execute(IServiceProvider service, ShellCommandModel cmd)
     {
         var result = new RunResult() { TaskId = cmd.TaskId };
+
+        if (!string.IsNullOrWhiteSpace(cmd.SchedulerEnvironment))
+        {
+            // Keep runtime environment aligned with scheduler side environment.
+            Environment.SetEnvironmentVariable("MASA_SCHEDULER_ENVIRONMENT", cmd.SchedulerEnvironment);
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", cmd.SchedulerEnvironment);
+        }
+
         Assembly assembly;
         try
         {

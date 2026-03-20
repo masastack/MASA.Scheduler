@@ -8,11 +8,13 @@ ENV CSPROJ="src/Shells/Masa.Scheduler.Shells.JobShell/Masa.Scheduler.Shells.JobS
 RUN dotnet restore $CSPROJ && dotnet publish $CSPROJ -c Release -o /app/publish/JobShell
 
 FROM registry.cn-hangzhou.aliyuncs.com/masa/dotnet_aspnet:6.0.0
-RUN sed -i 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1/g' /etc/ssl/openssl.cnf
-RUN sed -i 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1/g' /usr/lib/ssl/openssl.cnf
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY src/Services/Masa.Scheduler.Services.Worker/entrypoint.sh /app/entrypoint.sh
+RUN sed -i 's/\r$//' /app/entrypoint.sh || true
+RUN chmod +x /app/entrypoint.sh
+RUN test -f /app/entrypoint.sh
 ENV ASPNETCORE_URLS=http://0.0.0.0:80
 EXPOSE 80
-ENTRYPOINT ["dotnet", "Masa.Scheduler.Services.Worker.dll"]
+ENTRYPOINT ["/bin/sh", "/app/entrypoint.sh"]
 
