@@ -13,7 +13,7 @@ public class ServerScopedProcessingService : IScopedProcessingService
     private readonly IMultiEnvironmentContext _multiEnvironmentContext;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IOptions<SchedulerBackendOptions> _schedulerOptions;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly DaprJobsClient _daprJobsClient;
     private readonly IServiceProvider _serviceProvider;
 
     public ServerScopedProcessingService(
@@ -25,7 +25,7 @@ public class ServerScopedProcessingService : IScopedProcessingService
         IMultiEnvironmentContext multiEnvironmentContext,
         IServiceScopeFactory scopeFactory,
         IOptions<SchedulerBackendOptions> schedulerOptions,
-        IHttpClientFactory httpClientFactory,
+        DaprJobsClient daprJobsClient,
         IServiceProvider serviceProvider)  
     {
         _logger = logger;
@@ -36,7 +36,7 @@ public class ServerScopedProcessingService : IScopedProcessingService
         _multiEnvironmentContext = multiEnvironmentContext;
         _scopeFactory = scopeFactory;
         _schedulerOptions = schedulerOptions;
-        _httpClientFactory = httpClientFactory;
+        _daprJobsClient = daprJobsClient;
         _serviceProvider = serviceProvider;
     }
 
@@ -261,12 +261,6 @@ public class ServerScopedProcessingService : IScopedProcessingService
     {
         try
         {
-            if (!await WaitForDaprSidecarReadyAsync())
-            {
-                _logger.LogWarning("CleanupDaprJobs skipped because Dapr sidecar is not ready.");
-                return;
-            }
-
             var environment = _multiEnvironmentContext.CurrentEnvironment;
             var cronJobs = await _jobRepository.GetListAsync(job =>
                 job.ScheduleType == ScheduleTypes.Cron
@@ -301,75 +295,25 @@ public class ServerScopedProcessingService : IScopedProcessingService
     {
         try
         {
-            var client = _httpClientFactory.CreateClient();
-            var endpoint = BuildDaprHttpEndpoint($"/v1.0-alpha1/jobs/{Uri.EscapeDataString(name)}");
-            var response = await client.DeleteAsync(endpoint);
-            if (!response.IsSuccessStatusCode)
-            {
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    _logger.LogInformation("TryDeleteDaprJobAsync ignored because job was not found. Name: {Name}. Status: {Status}", name, response.StatusCode);
-                    return;
-                }
-                var body = await response.Content.ReadAsStringAsync();
-                if (IsCronClosed(body))
-                {
-                    _logger.LogWarning("TryDeleteDaprJobAsync ignored. Name: {Name}. Status: {Status}. Body: {Body}", name, response.StatusCode, body);
-                    return;
-                }
-                _logger.LogError("TryDeleteDaprJobAsync failed. Name: {Name}. Status: {Status}. Body: {Body}", name, response.StatusCode, body);
-                response.EnsureSuccessStatusCode();
-            }
+            await _daprJobsClient.DeleteJobAsync(name);
         }
         catch (Exception ex)
         {
+            if (DaprJobsExceptionHelper.IsNotFound(ex))
+            {
+                _logger.LogInformation("TryDeleteDaprJobAsync ignored because job was not found. Name: {Name}", name);
+                return;
+            }
+
+            if (IsCronClosed(ex.Message))
+            {
+                _logger.LogWarning("TryDeleteDaprJobAsync ignored. Name: {Name}. Error: {Error}", name, ex.Message);
+                return;
+            }
+
             _logger.LogError(ex, "TryDeleteDaprJobAsync failed. Name: {Name}", name);
             throw;
         }
-    }
-
-    private static bool IsDaprNotFound(Exception exception)
-    {
-        return exception.Message.Contains("NotFound", StringComparison.OrdinalIgnoreCase)
-            || exception.Message.Contains("404", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string BuildDaprHttpEndpoint(string path)
-    {
-        var endpoint = Environment.GetEnvironmentVariable("DAPR_HTTP_ENDPOINT");
-        if (string.IsNullOrWhiteSpace(endpoint))
-        {
-            var port = Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "3500";
-            endpoint = $"http://127.0.0.1:{port}";
-        }
-
-        return $"{endpoint.TrimEnd('/')}{path}";
-    }
-
-    private async Task<bool> WaitForDaprSidecarReadyAsync()
-    {
-        var client = _httpClientFactory.CreateClient();
-        var endpoint = BuildDaprHttpEndpoint("/v1.0/metadata");
-        var deadline = DateTimeOffset.UtcNow.AddSeconds(15);
-
-        while (DateTimeOffset.UtcNow < deadline)
-        {
-            try
-            {
-                var response = await client.GetAsync(endpoint);
-                if (response.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-            }
-
-            await Task.Delay(500);
-        }
-
-        return false;
     }
 
     private static bool IsCronClosed(string body)

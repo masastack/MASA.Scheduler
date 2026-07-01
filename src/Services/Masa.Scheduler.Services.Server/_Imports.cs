@@ -2,6 +2,9 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 global using Dapr;
+global using Dapr.Jobs;
+global using Dapr.Jobs.Extensions;
+global using Dapr.Jobs.Models;
 
 global using FluentValidation;
 global using FluentValidation.AspNetCore;

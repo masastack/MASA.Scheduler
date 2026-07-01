@@ -17,6 +17,11 @@ public class SchedulerBackendOptions
 public class DaprJobsOptions
 {
     public bool Overwrite { get; set; } = true;
+
+    /// <summary>
+    /// Cron timezone for Dapr Jobs expression, e.g. Asia/Shanghai.
+    /// </summary>
+    public string CronTimeZone { get; set; } = "Asia/Shanghai";
 }
 
 public static class SchedulerBackendType
