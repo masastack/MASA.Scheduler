@@ -95,11 +95,21 @@ builder.Services
 .AddAlertClient(masaStackConfig.GetAlertServiceDomain());
 
 var dbType = masaStackConfig.GetDbType();
+var daprGrpcEndpoint = DaprEndpointResolver.Resolve(builder.Configuration, "DAPR_GRPC_ENDPOINT", "DAPR_GRPC_PORT", 50001);
+var daprHttpEndpoint = DaprEndpointResolver.Resolve(builder.Configuration, "DAPR_HTTP_ENDPOINT", "DAPR_HTTP_PORT", 3500);
+
+// Ensure all Dapr SDK consumers in-process use an IPv4 loopback endpoint.
+builder.Configuration["DAPR_GRPC_ENDPOINT"] = daprGrpcEndpoint;
+builder.Configuration["DAPR_HTTP_ENDPOINT"] = daprHttpEndpoint;
 
 builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
-builder.Services.AddDaprJobsClient();
+builder.Services.AddDaprJobsClient((_, daprJobsClientBuilder) =>
+{
+    daprJobsClientBuilder.UseGrpcEndpoint(daprGrpcEndpoint);
+    daprJobsClientBuilder.UseHttpEndpoint(daprHttpEndpoint);
+});
 builder.Services.AddMasaSignalR(redisOptions);
 var configuration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetDefault();
 builder.Services.AddSchedulerBackend(configuration, quartzConnectString, dbType);
@@ -198,5 +208,3 @@ app.UseStackMiddleware();
 app.UseHttpsRedirection();
 
 app.Run();
-
-
