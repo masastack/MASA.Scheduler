@@ -36,6 +36,16 @@ public class ConstStrings
         return $"{environment}:{TASK_SET_KEY}";
     }
 
+    public static string StopTaskKey(string environment)
+    {
+        return $"{environment}:{STOP_TASK_KEY}";
+    }
+
+    public static string StopByManualKey(string environment)
+    {
+        return $"{environment}:{STOP_BY_MANUAL_KEY}";
+    }
+
     public static string ClientCredentialsTokenKey(string clientId)
     {
         return $"{CLIENT_CREDENTIALS_TOKEN}{clientId}";

@@ -5,6 +5,9 @@ namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
 
 public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, SchedulerServerOnlineIntegrationEvent, SchedulerWorkerOnlineIntegrationEvent>
 {
+    private static readonly TimeSpan StopTaskKeyTtl = TimeSpan.FromDays(1);
+    private static readonly TimeSpan StopByManualKeyTtl = TimeSpan.FromDays(1);
+
     private readonly ILogger<SchedulerServerManager> _logger;
     private readonly ISchedulerBackend _schedulerBackend;
     private readonly IMapper _mapper;
@@ -75,7 +78,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
     public async Task<WorkerModel?> GetWorker(SchedulerServerManagerData data, RoutingStrategyTypes routingType)
     {
-        if (!data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Any())
+        var normalWorkers = data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal);
+
+        if (!normalWorkers.Any())
         {
             return null;
         }
@@ -86,9 +91,9 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
         {
             case RoutingStrategyTypes.RoundRobin:
                 var currentRunCount = await RedisCacheClient.HashIncrementAsync(CacheKeys.CURRENT_RUN_COUNT);
-                var serviceCount = data.ServiceList.FindAll(w => w.Status == ServiceStatus.Normal).Count;
+                var serviceCount = normalWorkers.Count;
                 var currentUesIndex = Convert.ToInt32((currentRunCount - 1) % serviceCount);
-                worker = data.ServiceList[currentUesIndex];
+                worker = normalWorkers[currentUesIndex];
                 break;
                 //case RoutingStrategyTypes.DynamicRatioApm:
                 //    break;
@@ -159,6 +164,7 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
     {
         var data = ServiceProvider.GetRequiredService<SchedulerServerManagerData>();
         var result = await DequeueTaskAsync();
+        var hasDispatchedTask = false;
 
         if (result.IsNull)
         {
@@ -256,14 +262,38 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
             }
 
             await StartTask(taskDto, workerModel);
-            await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, taskDto);
+            hasDispatchedTask = true;
+
+            try
+            {
+                await _signalRUtils.SendNoticationByGroup(ConstStrings.GLOBAL_GROUP, SignalRMethodConsts.GET_NOTIFICATION, taskDto);
+            }
+            catch (Exception ex)
+            {
+                _schedulerLogger.LogError(ex, "SignalR notification failed after task dispatch", WriterTypes.Server, task.Id, task.JobId);
+            }
         }
         catch (Exception ex)
         {
             if (task != null)
             {
                 _schedulerLogger.LogError(ex, $"Task Assign Error", WriterTypes.Server, task.Id, task.JobId);
-                await EnqueueTaskAsync(task.Id);
+
+                if (IsTransientAssignException(ex))
+                {
+                    await EnqueueTaskAsync(task.Id);
+                    return;
+                }
+
+                if (!hasDispatchedTask)
+                {
+                    await EventBus.PublishAsync(new NotifyTaskRunResultDomainEvent(new NotifySchedulerTaskRunResultRequest()
+                    {
+                        TaskId = task.Id,
+                        Status = TaskRunStatus.Failure,
+                        Message = $"Task assign failed without retry: {ex.Message}"
+                    }));
+                }
             }
             else
             {
@@ -301,47 +331,70 @@ public class SchedulerServerManager : BaseSchedulerManager<WorkerModel, Schedule
 
     private async Task EnqueueTaskAsync(Guid taskId)
     {
-        var taskQueueKey = ConstStrings.TaskQueueKey(_multiEnvironmentContext.CurrentEnvironment);
-        await _redis.ListRightPushAsync(taskQueueKey, taskId.ToString());
-
-        var taskSetKey = ConstStrings.TaskSetKey(_multiEnvironmentContext.CurrentEnvironment);
-        await _redis.SetAddAsync(taskSetKey, taskId.ToString());
+        var environment = _multiEnvironmentContext.CurrentEnvironment;
+        var taskQueueKey = ConstStrings.TaskQueueKey(environment);
+        var taskSetKey = ConstStrings.TaskSetKey(environment);
+        await _redis.SetAddAndListRightPushWhenNewAsync(taskQueueKey, taskSetKey, taskId.ToString());
     }
 
     private async Task<RedisValue> DequeueTaskAsync()
     {
-        var taskQueueKey = ConstStrings.TaskQueueKey(_multiEnvironmentContext.CurrentEnvironment);
-        var result = await _redis.ListLeftPopAsync(taskQueueKey);
+        var environment = _multiEnvironmentContext.CurrentEnvironment;
+        var taskQueueKey = ConstStrings.TaskQueueKey(environment);
+        var taskSetKey = ConstStrings.TaskSetKey(environment);
 
-        var taskSetKey = ConstStrings.TaskSetKey(_multiEnvironmentContext.CurrentEnvironment);
-        await _redis.SetRemoveAsync(taskSetKey, result.ToString());
-
-        return result;
+        return await _redis.ListLeftPopAndSetRemoveAsync(taskQueueKey, taskSetKey);
     }
 
     private async Task<bool> ExistsTaskAsync(Guid taskId)
     {
-        var taskSetKey = ConstStrings.TaskSetKey(_multiEnvironmentContext.CurrentEnvironment);
+        var environment = _multiEnvironmentContext.CurrentEnvironment;
+        var taskSetKey = ConstStrings.TaskSetKey(environment);
         return await _redis.SetContainsAsync(taskSetKey, taskId.ToString());
     }
 
     private async Task AddStopTaskAsync(Guid taskId)
     {
-        await _redis.SetAddAsync(ConstStrings.STOP_TASK_KEY, taskId.ToString());
+        var environment = _multiEnvironmentContext.CurrentEnvironment;
+        var stopTaskKey = ConstStrings.StopTaskKey(environment);
+        await _redis.SetAddAsync(stopTaskKey, taskId.ToString());
+        await _redis.KeyExpireAsync(stopTaskKey, StopTaskKeyTtl);
     }
 
     private async Task<bool> ExistsStopTaskAsync(Guid taskId)
     {
-        return await _redis.SetContainsAsync(ConstStrings.STOP_TASK_KEY, taskId.ToString());
+        var environment = _multiEnvironmentContext.CurrentEnvironment;
+        var stopTaskKey = ConstStrings.StopTaskKey(environment);
+        return await _redis.SetContainsAsync(stopTaskKey, taskId.ToString());
     }
 
     private async Task RemoveStopTaskAsync(Guid taskId)
     {
-        await _redis.SetRemoveAsync(ConstStrings.STOP_TASK_KEY, taskId.ToString());
+        var environment = _multiEnvironmentContext.CurrentEnvironment;
+        var stopTaskKey = ConstStrings.StopTaskKey(environment);
+        await _redis.SetRemoveAsync(stopTaskKey, taskId.ToString());
     }
 
     private async Task AddStopTaskByManualAsync(Guid taskId)
     {
-        await _redis.SetAddAsync(ConstStrings.STOP_BY_MANUAL_KEY, taskId.ToString());
+        var environment = _multiEnvironmentContext.CurrentEnvironment;
+        var stopByManualKey = ConstStrings.StopByManualKey(environment);
+        await _redis.SetAddAsync(stopByManualKey, taskId.ToString());
+        await _redis.KeyExpireAsync(stopByManualKey, StopByManualKeyTtl);
+    }
+
+    private static bool IsTransientAssignException(Exception exception)
+    {
+        if (exception is TimeoutException
+            || exception is TaskCanceledException
+            || exception is HttpRequestException
+            || exception is RedisTimeoutException
+            || exception is RedisConnectionException
+            || exception is System.Net.Sockets.SocketException)
+        {
+            return true;
+        }
+
+        return exception.InnerException != null && IsTransientAssignException(exception.InnerException);
     }
 }
