@@ -1,6 +1,6 @@
 ﻿<Project>
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>
 			$(WarningsAsErrors);CS8600;CS8601;CS8602;CS8603;CS8604;CS8609;CS8610;CS8614;CS8616;CS8618;CS8619;CS8620;CS8622;CS8625
@@ -8,6 +8,6 @@
 		<MasaFrameworkPackageVersion>1.2.0-preview.*</MasaFrameworkPackageVersion>
 		<MasaStackSdksPackageVersion>1.2.1-preview.*</MasaStackSdksPackageVersion>
 		<MasaSdkBlazorServerPackageVersion>1.2.1-preview.20</MasaSdkBlazorServerPackageVersion>
-		<MicrosoftPackageVersion>6.*</MicrosoftPackageVersion>
+		<MicrosoftPackageVersion>8.*</MicrosoftPackageVersion>
 	</PropertyGroup>
 </Project>

@@ -7,6 +7,7 @@ public class ConstStrings
 {
     public const string SCHEDULER_WORKER_MANAGER_API = "/api/scheduler-worker-manager";
     public const string SCHEDULER_SERVER_MANAGER_API = "/api/scheduler-server-manager";
+    public const string SCHEDULER_DAPR_JOB_API = "api/scheduler-dapr-job";
     public const string SCHEDULER_RESOURCE_API = "api/scheduler-resource";
     public const string SCHEDULER_JOB_API = "api/scheduler-job";
     public const string SCHEDULER_TASK_API = "api/scheduler-task";
@@ -33,6 +34,16 @@ public class ConstStrings
     public static string TaskSetKey(string environment)
     {
         return $"{environment}:{TASK_SET_KEY}";
+    }
+
+    public static string StopTaskKey(string environment)
+    {
+        return $"{environment}:{STOP_TASK_KEY}";
+    }
+
+    public static string StopByManualKey(string environment)
+    {
+        return $"{environment}:{STOP_BY_MANUAL_KEY}";
     }
 
     public static string ClientCredentialsTokenKey(string clientId)

@@ -99,6 +99,7 @@ var dbType = masaStackConfig.GetDbType();
 builder.Services.AddMapster();
 builder.Services.AddServerManager();
 builder.Services.AddHttpClient();
+builder.Services.AddDaprJobsClient();
 builder.Services.AddMasaSignalR(redisOptions);
 var configuration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetDefault();
 builder.Services.AddSchedulerBackend(configuration, quartzConnectString, dbType);

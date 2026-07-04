@@ -56,7 +56,7 @@ public class NotifyTaskRunResultDomainEventHandler
             throw new UserFriendlyException($"cannot find task, task Id: {@event.Request.TaskId}");
         }
 
-        var stopByManualKey = ConstStrings.STOP_BY_MANUAL_KEY;
+        var stopByManualKey = ConstStrings.StopByManualKey(_multiEnvironmentContext.CurrentEnvironment);
 
         if (await _redis.SetContainsAsync(stopByManualKey, @event.Request.TaskId.ToString()))
         {
