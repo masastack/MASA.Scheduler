@@ -31,8 +31,7 @@ public class DaprJobsSchedulerBackend : ISchedulerBackend
             Type = DaprJobNameType.Cron,
             JobId = jobId,
             Environment = environment,
-            CronExpression = cron,
-            CronTimeZone = _options.Value.DaprJobs.CronTimeZone
+            CronExpression = cron
         };
 
         return ScheduleCronJobAsync(name, cron, payload);
@@ -105,8 +104,8 @@ public class DaprJobsSchedulerBackend : ISchedulerBackend
 
     private async Task ScheduleCronJobAsync(string name, string cron, DaprJobPayload payload)
     {
-        var candidates = DaprJobsCronExpressionNormalizer.BuildCronCandidates(cron, _options.Value.DaprJobs.CronTimeZone);
-        var activationWindow = DaprJobsCronTimeZoneConverter.BuildCronActivationWindow(cron, _options.Value.DaprJobs.CronTimeZone);
+        var candidates = DaprJobsCronExpressionNormalizer.BuildCronCandidates(cron);
+        var activationWindow = DaprJobsCronExpressionNormalizer.BuildCronActivationWindow(cron);
         if (candidates.Count == 0)
         {
             throw new UserFriendlyException("CronExpression is empty");
@@ -141,7 +140,7 @@ public class DaprJobsSchedulerBackend : ISchedulerBackend
         var result = await ScheduleJobAsync(name, DaprJobSchedule.FromExpression(schedule), payload, startingFrom, ttl);
         if (result.Success)
         {
-            _logger.LogInformation("DaprJobs schedule applied via SDK: {Schedule}", schedule);
+            _logger.LogInformation("DaprJobs schedule applied via SDK: {Schedule}, StartingFrom: {StartingFrom}, Ttl: {Ttl}", schedule, startingFrom, ttl);
         }
         return result;
     }

@@ -5,15 +5,16 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Scheduling;
 
 public static class DaprJobsCronExpressionNormalizer
 {
-    public static List<string> BuildCronCandidates(string cron, string? cronTimeZone)
+    public static List<string> BuildCronCandidates(string cron)
     {
         if (string.IsNullOrWhiteSpace(cron))
         {
             return new List<string>();
         }
 
-        var cronExpression = DaprJobsCronTimeZoneConverter.ExtractCronBodyAndResolveTimeZone(cron, cronTimeZone, out var resolvedCronTimeZone);
-        var normalized = cronExpression.Trim().Replace('?', '*');
+        ThrowIfCronTimeZonePrefix(cron);
+
+        var normalized = cron.Trim().Replace('?', '*');
         var parts = normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var candidates = new List<string>();
 
@@ -29,17 +30,49 @@ public static class DaprJobsCronExpressionNormalizer
             AddCronCandidates(candidates, variant);
         }
 
-        var normalizedCandidates = candidates
+        return candidates
             .Where(candidate => !string.IsNullOrWhiteSpace(candidate))
             .Distinct(StringComparer.Ordinal)
             .ToList();
+    }
 
-        if (string.IsNullOrWhiteSpace(resolvedCronTimeZone))
+    public static CronActivationWindow BuildCronActivationWindow(string cron)
+    {
+        if (string.IsNullOrWhiteSpace(cron))
         {
-            return normalizedCandidates;
+            return CronActivationWindow.Empty;
         }
 
-        return DaprJobsCronTimeZoneConverter.ConvertCronCandidatesToSchedulerTimeZone(normalizedCandidates, resolvedCronTimeZone);
+        ThrowIfCronTimeZonePrefix(cron);
+
+        var parts = cron.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length != 7)
+        {
+            return CronActivationWindow.Empty;
+        }
+
+        var yearToken = parts[6];
+        if (string.IsNullOrWhiteSpace(yearToken) || yearToken == "*" || yearToken == "?")
+        {
+            return CronActivationWindow.Empty;
+        }
+
+        var yearRange = ParseYearRange(yearToken);
+        if (yearRange == null)
+        {
+            return CronActivationWindow.Empty;
+        }
+
+        var dueTime = CreateLocalDateTime(yearRange.Value.Min, 1, 1);
+        var now = DateTimeOffset.Now;
+        DateTimeOffset? startingFrom = dueTime > now ? dueTime : null;
+        DateTimeOffset? ttl = null;
+        if (yearRange.Value.Max < 9999)
+        {
+            ttl = CreateLocalDateTime(yearRange.Value.Max + 1, 1, 1);
+        }
+
+        return new CronActivationWindow(startingFrom, ttl);
     }
 
     private static void AddCronCandidates(List<string> candidates, string[] parts)
@@ -174,5 +207,80 @@ public static class DaprJobsCronExpressionNormalizer
         }
 
         throw new UserFriendlyException($"DaprJobs does not support Quartz day-of-week value: {value}");
+    }
+
+    private static void ThrowIfCronTimeZonePrefix(string cron)
+    {
+        var firstToken = cron.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        if (firstToken != null
+            && (firstToken.StartsWith("CRON_TZ=", StringComparison.OrdinalIgnoreCase)
+                || firstToken.StartsWith("TZ=", StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new UserFriendlyException("DaprJobs cron does not support timezone prefix");
+        }
+    }
+
+    private static (int Min, int Max)? ParseYearRange(string yearToken)
+    {
+        if (yearToken.Contains('/'))
+        {
+            throw new UserFriendlyException($"DaprJobs does not support cron year step expression: {yearToken}");
+        }
+
+        var segments = yearToken.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (segments.Length == 0)
+        {
+            return null;
+        }
+
+        var intervals = new List<(int Start, int End)>();
+        foreach (var segment in segments)
+        {
+            if (int.TryParse(segment, out var singleYear))
+            {
+                intervals.Add((singleYear, singleYear));
+                continue;
+            }
+
+            var rangeParts = segment.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (rangeParts.Length == 2
+                && int.TryParse(rangeParts[0], out var startYear)
+                && int.TryParse(rangeParts[1], out var endYear)
+                && startYear <= endYear)
+            {
+                intervals.Add((startYear, endYear));
+                continue;
+            }
+
+            throw new UserFriendlyException($"DaprJobs does not support cron year expression: {yearToken}");
+        }
+
+        if (intervals.Count == 0)
+        {
+            return null;
+        }
+
+        var orderedIntervals = intervals.OrderBy(interval => interval.Start).ToList();
+        var minYear = orderedIntervals[0].Start;
+        var maxYear = orderedIntervals[0].End;
+        for (var index = 1; index < orderedIntervals.Count; index++)
+        {
+            var current = orderedIntervals[index];
+            if (current.Start <= maxYear + 1)
+            {
+                maxYear = Math.Max(maxYear, current.End);
+                continue;
+            }
+
+            throw new UserFriendlyException($"DaprJobs does not support discontinuous cron year expression: {yearToken}");
+        }
+
+        return (minYear, maxYear);
+    }
+
+    private static DateTimeOffset CreateLocalDateTime(int year, int month, int day)
+    {
+        var localDateTime = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Unspecified);
+        return new DateTimeOffset(localDateTime, TimeZoneInfo.Local.GetUtcOffset(localDateTime));
     }
 }
