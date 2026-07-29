@@ -5,7 +5,8 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Scheduling;
 
 public static class DaprJobsCronExpressionNormalizer
 {
-    private static readonly TimeSpan BeijingUtcOffset = TimeSpan.FromHours(8);
+    private const string DefaultCronTimeZone = "Asia/Shanghai";
+    private static readonly TimeSpan DefaultCronUtcOffset = TimeSpan.FromHours(8);
 
     public static List<string> BuildCronCandidates(string cron)
     {
@@ -38,7 +39,7 @@ public static class DaprJobsCronExpressionNormalizer
             .ToList();
     }
 
-    public static CronActivationWindow BuildCronActivationWindow(string cron)
+    public static CronActivationWindow BuildCronActivationWindow(string cron, string? cronTimeZone = null)
     {
         if (string.IsNullOrWhiteSpace(cron))
         {
@@ -65,13 +66,14 @@ public static class DaprJobsCronExpressionNormalizer
             return CronActivationWindow.Empty;
         }
 
-        var dueTime = CreateBeijingDateTime(yearRange.Value.Min, 1, 1);
+        var timeZoneId = string.IsNullOrWhiteSpace(cronTimeZone) ? DefaultCronTimeZone : cronTimeZone.Trim();
+        var dueTime = CreateTimeZoneDateTime(yearRange.Value.Min, 1, 1, timeZoneId);
         var now = DateTimeOffset.Now;
         DateTimeOffset? startingFrom = dueTime > now ? dueTime : null;
         DateTimeOffset? ttl = null;
         if (yearRange.Value.Max < 9999)
         {
-            ttl = CreateBeijingDateTime(yearRange.Value.Max + 1, 1, 1);
+            ttl = CreateTimeZoneDateTime(yearRange.Value.Max + 1, 1, 1, timeZoneId);
         }
 
         return new CronActivationWindow(startingFrom, ttl);
@@ -218,7 +220,7 @@ public static class DaprJobsCronExpressionNormalizer
             && (firstToken.StartsWith("CRON_TZ=", StringComparison.OrdinalIgnoreCase)
                 || firstToken.StartsWith("TZ=", StringComparison.OrdinalIgnoreCase)))
         {
-            throw new UserFriendlyException("CronExpression should not include timezone prefix. DaprJobs backend applies Asia/Shanghai automatically");
+            throw new UserFriendlyException("CronExpression should not include timezone prefix. DaprJobs backend applies the configured cron timezone automatically");
         }
     }
 
@@ -280,9 +282,27 @@ public static class DaprJobsCronExpressionNormalizer
         return (minYear, maxYear);
     }
 
-    private static DateTimeOffset CreateBeijingDateTime(int year, int month, int day)
+    private static DateTimeOffset CreateTimeZoneDateTime(int year, int month, int day, string timeZoneId)
     {
         var localDateTime = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Unspecified);
-        return new DateTimeOffset(localDateTime, BeijingUtcOffset);
+        return new DateTimeOffset(localDateTime, GetUtcOffset(localDateTime, timeZoneId));
+    }
+
+    private static TimeSpan GetUtcOffset(DateTime localDateTime, string timeZoneId)
+    {
+        if (string.Equals(timeZoneId, DefaultCronTimeZone, StringComparison.OrdinalIgnoreCase))
+        {
+            return DefaultCronUtcOffset;
+        }
+
+        try
+        {
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            return timeZone.GetUtcOffset(localDateTime);
+        }
+        catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException)
+        {
+            throw new UserFriendlyException($"DaprJobs cron timezone is invalid: {timeZoneId}");
+        }
     }
 }

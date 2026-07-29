@@ -16,6 +16,8 @@ public class SchedulerBackendOptions
 
 public class DaprJobsOptions
 {
+    public string CronTimeZone { get; set; } = "Asia/Shanghai";
+
     public bool Overwrite { get; set; } = true;
 }
 

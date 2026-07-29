@@ -5,7 +5,7 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Scheduling;
 
 public class DaprJobsSchedulerBackend : ISchedulerBackend
 {
-    private const string CronTimeZone = "Asia/Shanghai";
+    private const string DefaultCronTimeZone = "Asia/Shanghai";
 
     private readonly DaprJobsClient _daprJobsClient;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -116,8 +116,9 @@ public class DaprJobsSchedulerBackend : ISchedulerBackend
 
     private async Task ScheduleCronJobAsync(string name, string cron, DaprJobPayload payload)
     {
+        var cronTimeZone = GetCronTimeZone();
         var candidates = DaprJobsCronExpressionNormalizer.BuildCronCandidates(cron);
-        var activationWindow = DaprJobsCronExpressionNormalizer.BuildCronActivationWindow(cron);
+        var activationWindow = DaprJobsCronExpressionNormalizer.BuildCronActivationWindow(cron, cronTimeZone);
         if (candidates.Count == 0)
         {
             throw new UserFriendlyException("CronExpression is empty");
@@ -131,7 +132,7 @@ public class DaprJobsSchedulerBackend : ISchedulerBackend
         string? lastError = null;
         foreach (var candidate in candidates)
         {
-            var schedule = BuildDaprCronSchedule(candidate);
+            var schedule = BuildDaprCronSchedule(candidate, cronTimeZone);
             var result = await TryScheduleCronViaHttpAsync(name, schedule, payload, activationWindow.StartingFrom, activationWindow.Ttl);
             if (result.Success)
             {
@@ -148,9 +149,26 @@ public class DaprJobsSchedulerBackend : ISchedulerBackend
         throw new UserFriendlyException(message);
     }
 
-    private static string BuildDaprCronSchedule(string cron)
+    private string GetCronTimeZone()
     {
-        return $"CRON_TZ={CronTimeZone} {cron}";
+        var cronTimeZone = _options.Value.DaprJobs.CronTimeZone;
+        if (string.IsNullOrWhiteSpace(cronTimeZone))
+        {
+            return DefaultCronTimeZone;
+        }
+
+        cronTimeZone = cronTimeZone.Trim();
+        if (cronTimeZone.Any(char.IsWhiteSpace))
+        {
+            throw new UserFriendlyException("DaprJobs cron timezone should be an IANA timezone id without spaces, for example Asia/Shanghai");
+        }
+
+        return cronTimeZone;
+    }
+
+    private static string BuildDaprCronSchedule(string cron, string cronTimeZone)
+    {
+        return $"CRON_TZ={cronTimeZone} {cron}";
     }
 
     private async Task<ScheduleJobResult> TryScheduleCronViaHttpAsync(string name, string schedule, DaprJobPayload payload, DateTimeOffset? startingFrom, DateTimeOffset? ttl)
