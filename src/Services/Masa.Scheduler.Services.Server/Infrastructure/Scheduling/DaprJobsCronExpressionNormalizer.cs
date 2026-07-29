@@ -5,6 +5,8 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Scheduling;
 
 public static class DaprJobsCronExpressionNormalizer
 {
+    private static readonly TimeSpan BeijingUtcOffset = TimeSpan.FromHours(8);
+
     public static List<string> BuildCronCandidates(string cron)
     {
         if (string.IsNullOrWhiteSpace(cron))
@@ -63,13 +65,13 @@ public static class DaprJobsCronExpressionNormalizer
             return CronActivationWindow.Empty;
         }
 
-        var dueTime = CreateLocalDateTime(yearRange.Value.Min, 1, 1);
+        var dueTime = CreateBeijingDateTime(yearRange.Value.Min, 1, 1);
         var now = DateTimeOffset.Now;
         DateTimeOffset? startingFrom = dueTime > now ? dueTime : null;
         DateTimeOffset? ttl = null;
         if (yearRange.Value.Max < 9999)
         {
-            ttl = CreateLocalDateTime(yearRange.Value.Max + 1, 1, 1);
+            ttl = CreateBeijingDateTime(yearRange.Value.Max + 1, 1, 1);
         }
 
         return new CronActivationWindow(startingFrom, ttl);
@@ -216,7 +218,7 @@ public static class DaprJobsCronExpressionNormalizer
             && (firstToken.StartsWith("CRON_TZ=", StringComparison.OrdinalIgnoreCase)
                 || firstToken.StartsWith("TZ=", StringComparison.OrdinalIgnoreCase)))
         {
-            throw new UserFriendlyException("DaprJobs cron does not support timezone prefix");
+            throw new UserFriendlyException("CronExpression should not include timezone prefix. DaprJobs backend applies Asia/Shanghai automatically");
         }
     }
 
@@ -278,9 +280,9 @@ public static class DaprJobsCronExpressionNormalizer
         return (minYear, maxYear);
     }
 
-    private static DateTimeOffset CreateLocalDateTime(int year, int month, int day)
+    private static DateTimeOffset CreateBeijingDateTime(int year, int month, int day)
     {
         var localDateTime = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Unspecified);
-        return new DateTimeOffset(localDateTime, TimeZoneInfo.Local.GetUtcOffset(localDateTime));
+        return new DateTimeOffset(localDateTime, BeijingUtcOffset);
     }
 }

@@ -5,14 +5,26 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Scheduling;
 
 public class DaprJobsSchedulerBackend : ISchedulerBackend
 {
+    private const string CronTimeZone = "Asia/Shanghai";
+
     private readonly DaprJobsClient _daprJobsClient;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConfiguration _configuration;
     private readonly IOptions<SchedulerBackendOptions> _options;
     private readonly IMultiEnvironmentContext _multiEnvironmentContext;
     private readonly ILogger<DaprJobsSchedulerBackend> _logger;
 
-    public DaprJobsSchedulerBackend(DaprJobsClient daprJobsClient, IOptions<SchedulerBackendOptions> options, IMultiEnvironmentContext multiEnvironmentContext, ILogger<DaprJobsSchedulerBackend> logger)
+    public DaprJobsSchedulerBackend(
+        DaprJobsClient daprJobsClient,
+        IHttpClientFactory httpClientFactory,
+        IConfiguration configuration,
+        IOptions<SchedulerBackendOptions> options,
+        IMultiEnvironmentContext multiEnvironmentContext,
+        ILogger<DaprJobsSchedulerBackend> logger)
     {
         _daprJobsClient = daprJobsClient;
+        _httpClientFactory = httpClientFactory;
+        _configuration = configuration;
         _options = options;
         _multiEnvironmentContext = multiEnvironmentContext;
         _logger = logger;
@@ -119,7 +131,8 @@ public class DaprJobsSchedulerBackend : ISchedulerBackend
         string? lastError = null;
         foreach (var candidate in candidates)
         {
-            var result = await TryScheduleCronViaSdkAsync(name, candidate, payload, activationWindow.StartingFrom, activationWindow.Ttl);
+            var schedule = BuildDaprCronSchedule(candidate);
+            var result = await TryScheduleCronViaHttpAsync(name, schedule, payload, activationWindow.StartingFrom, activationWindow.Ttl);
             if (result.Success)
             {
                 return;
@@ -135,14 +148,62 @@ public class DaprJobsSchedulerBackend : ISchedulerBackend
         throw new UserFriendlyException(message);
     }
 
-    private async Task<ScheduleJobResult> TryScheduleCronViaSdkAsync(string name, string schedule, DaprJobPayload payload, DateTimeOffset? startingFrom, DateTimeOffset? ttl)
+    private static string BuildDaprCronSchedule(string cron)
     {
-        var result = await ScheduleJobAsync(name, DaprJobSchedule.FromExpression(schedule), payload, startingFrom, ttl);
-        if (result.Success)
+        return $"CRON_TZ={CronTimeZone} {cron}";
+    }
+
+    private async Task<ScheduleJobResult> TryScheduleCronViaHttpAsync(string name, string schedule, DaprJobPayload payload, DateTimeOffset? startingFrom, DateTimeOffset? ttl)
+    {
+        try
         {
-            _logger.LogInformation("DaprJobs schedule applied via SDK: {Schedule}, StartingFrom: {StartingFrom}, Ttl: {Ttl}", schedule, startingFrom, ttl);
+            var daprHttpEndpoint = DaprEndpointResolver.Resolve(_configuration, "DAPR_HTTP_ENDPOINT", "DAPR_HTTP_PORT", 3500);
+            var requestUri = $"{daprHttpEndpoint}/v1.0/jobs/{Uri.EscapeDataString(name)}";
+            var requestBody = new Dictionary<string, object?>
+            {
+                ["schedule"] = schedule,
+                ["data"] = payload,
+                ["overwrite"] = _options.Value.DaprJobs.Overwrite
+            };
+
+            if (startingFrom.HasValue)
+            {
+                requestBody["dueTime"] = startingFrom.Value.ToString("O");
+            }
+
+            if (ttl.HasValue)
+            {
+                requestBody["ttl"] = ttl.Value.ToString("O");
+            }
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+            {
+                Content = JsonContent.Create(requestBody)
+            };
+
+            var daprApiToken = Environment.GetEnvironmentVariable("DAPR_API_TOKEN");
+            if (!string.IsNullOrWhiteSpace(daprApiToken))
+            {
+                request.Headers.TryAddWithoutValidation("dapr-api-token", daprApiToken);
+            }
+
+            var httpClient = _httpClientFactory.CreateClient();
+            using var response = await httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("DaprJobs schedule applied via HTTP: {Schedule}, StartingFrom: {StartingFrom}, Ttl: {Ttl}", schedule, startingFrom, ttl);
+                return ScheduleJobResult.SuccessResult();
+            }
+
+            var error = await response.Content.ReadAsStringAsync();
+            _logger.LogWarning("DaprJobs schedule failed via HTTP. StatusCode: {StatusCode}. Error: {Error}", response.StatusCode, error);
+            return ScheduleJobResult.Fail(string.IsNullOrWhiteSpace(error) ? response.ReasonPhrase : error);
         }
-        return result;
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "DaprJobs schedule failed via HTTP.");
+            return ScheduleJobResult.Fail(ex.Message);
+        }
     }
 
     private async Task<ScheduleJobResult> ScheduleJobAsync(string name, DaprJobSchedule schedule, DaprJobPayload payload, DateTimeOffset? startingFrom, DateTimeOffset? ttl)
