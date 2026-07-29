@@ -5,6 +5,9 @@ namespace Masa.Scheduler.Services.Server.Domain.Managers.Servers;
 
 public class ServerScopedProcessingService : IScopedProcessingService
 {
+    private const int DAPR_STARTUP_HEALTH_MAX_ATTEMPTS = 30;
+    private static readonly TimeSpan DAPR_STARTUP_HEALTH_INTERVAL = TimeSpan.FromSeconds(1);
+
     private readonly ILogger<ServerScopedProcessingService> _logger;
     private readonly SchedulerDbContext _dbContext;
     private readonly IRepository<SchedulerJob> _jobRepository;
@@ -15,6 +18,8 @@ public class ServerScopedProcessingService : IScopedProcessingService
     private readonly IOptions<SchedulerBackendOptions> _schedulerOptions;
     private readonly DaprJobsClient _daprJobsClient;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConfiguration _configuration;
 
     public ServerScopedProcessingService(
         ILogger<ServerScopedProcessingService> logger,
@@ -26,7 +31,9 @@ public class ServerScopedProcessingService : IScopedProcessingService
         IServiceScopeFactory scopeFactory,
         IOptions<SchedulerBackendOptions> schedulerOptions,
         DaprJobsClient daprJobsClient,
-        IServiceProvider serviceProvider)  
+        IServiceProvider serviceProvider,
+        IHttpClientFactory httpClientFactory,
+        IConfiguration configuration)
     {
         _logger = logger;
         _dbContext = dbContext;
@@ -38,15 +45,18 @@ public class ServerScopedProcessingService : IScopedProcessingService
         _schedulerOptions = schedulerOptions;
         _daprJobsClient = daprJobsClient;
         _serviceProvider = serviceProvider;
+        _httpClientFactory = httpClientFactory;
+        _configuration = configuration;
     }
 
     public async Task DoWorkAsync(CancellationToken stoppingToken)
     {
-        await OnManagerStartAsync();
+        await OnManagerStartAsync(stoppingToken);
     }
 
-    private async Task OnManagerStartAsync()
+    private async Task OnManagerStartAsync(CancellationToken stoppingToken)
     {
+        await EnsureDaprSidecarReadyBeforeStartupAsync(stoppingToken);
         await CleanupOtherBackendAsync();
 
         await StartAssignAsync();
@@ -58,6 +68,72 @@ public class ServerScopedProcessingService : IScopedProcessingService
         await CheckSchedulerExpiredJobAsync(cronJobList.Where(p => p.ScheduleExpiredStrategy != ScheduleExpiredStrategyTypes.Ignore));
 
         await RegisterCronJobAsync(cronJobList);
+    }
+
+    private async Task EnsureDaprSidecarReadyBeforeStartupAsync(CancellationToken stoppingToken)
+    {
+        if (!ShouldWaitForDaprSidecar())
+        {
+            return;
+        }
+
+        var daprHttpEndpoint = global::Masa.Scheduler.Services.Server.Infrastructure.Common.DaprEndpointResolver.Resolve(
+            _configuration,
+            "DAPR_HTTP_ENDPOINT",
+            "DAPR_HTTP_PORT",
+            3500);
+        var healthEndpoint = $"{daprHttpEndpoint.TrimEnd('/')}/v1.0/healthz";
+        var httpClient = _httpClientFactory.CreateClient(nameof(ServerScopedProcessingService));
+        httpClient.Timeout = TimeSpan.FromSeconds(2);
+
+        string? lastError = null;
+        for (var attempt = 1; attempt <= DAPR_STARTUP_HEALTH_MAX_ATTEMPTS; attempt++)
+        {
+            try
+            {
+                using var response = await httpClient.GetAsync(healthEndpoint, stoppingToken);
+                if (response.IsSuccessStatusCode)
+                {
+                    if (attempt > 1)
+                    {
+                        _logger.LogInformation("Dapr sidecar startup health check passed after retry. Endpoint: {HealthEndpoint}, Attempt: {Attempt}",
+                            healthEndpoint, attempt);
+                    }
+                    return;
+                }
+
+                lastError = $"HTTP {(int)response.StatusCode}";
+                _logger.LogWarning("Dapr sidecar startup health check failed. Endpoint: {HealthEndpoint}, Attempt: {Attempt}/{MaxAttempts}, StatusCode: {StatusCode}",
+                    healthEndpoint, attempt, DAPR_STARTUP_HEALTH_MAX_ATTEMPTS, (int)response.StatusCode);
+            }
+            catch (OperationCanceledException) when (!stoppingToken.IsCancellationRequested)
+            {
+                lastError = "Request timeout";
+                _logger.LogWarning("Dapr sidecar startup health check timeout. Endpoint: {HealthEndpoint}, Attempt: {Attempt}/{MaxAttempts}",
+                    healthEndpoint, attempt, DAPR_STARTUP_HEALTH_MAX_ATTEMPTS);
+            }
+            catch (Exception ex)
+            {
+                lastError = ex.Message;
+                _logger.LogWarning(ex, "Dapr sidecar startup health check exception. Endpoint: {HealthEndpoint}, Attempt: {Attempt}/{MaxAttempts}",
+                    healthEndpoint, attempt, DAPR_STARTUP_HEALTH_MAX_ATTEMPTS);
+            }
+
+            if (attempt < DAPR_STARTUP_HEALTH_MAX_ATTEMPTS)
+            {
+                await Task.Delay(DAPR_STARTUP_HEALTH_INTERVAL, stoppingToken);
+            }
+        }
+
+        throw new InvalidOperationException(
+            $"Dapr sidecar is not ready before scheduler startup. Endpoint: {healthEndpoint}. LastError: {lastError}");
+    }
+
+    private bool ShouldWaitForDaprSidecar()
+    {
+        var options = _schedulerOptions.Value;
+        var useDaprJobs = string.Equals(options.Backend, SchedulerBackendType.DaprJobs, StringComparison.OrdinalIgnoreCase);
+        return useDaprJobs || options.CleanupOtherBackendOnStart;
     }
 
     private async Task LoadRunningAndRetryTaskAsync()

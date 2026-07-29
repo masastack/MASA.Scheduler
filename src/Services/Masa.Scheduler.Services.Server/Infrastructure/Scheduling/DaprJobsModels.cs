@@ -23,5 +23,4 @@ public sealed class DaprJobPayload
     public string Environment { get; set; } = string.Empty;
     public DateTimeOffset? ExecuteTime { get; set; }
     public string? CronExpression { get; set; }
-    public string? CronTimeZone { get; set; }
 }

@@ -5,39 +5,12 @@ namespace Masa.Scheduler.Services.Server.Infrastructure.Scheduling;
 
 public static class DaprJobsTimeCalculator
 {
-    private static TimeZoneInfo GetChinaStandardTimeZone()
-    {
-        try
-        {
-            return TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
-        }
-        catch (TimeZoneNotFoundException)
-        {
-            try
-            {
-                return TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai");
-            }
-            catch (TimeZoneNotFoundException)
-            {
-                return TimeZoneInfo.Local;
-            }
-            catch (InvalidTimeZoneException)
-            {
-                return TimeZoneInfo.Local;
-            }
-        }
-        catch (InvalidTimeZoneException)
-        {
-            return TimeZoneInfo.Local;
-        }
-    }
-
     public static Task<List<DateTimeOffset>> GetCronExecuteTimeByTimeRange(string cron, DateTimeOffset startTime, DateTimeOffset endTime)
     {
         var executeTimeList = new List<DateTimeOffset>();
         var cronExpression = new CronExpression(cron)
         {
-            TimeZone = GetChinaStandardTimeZone()
+            TimeZone = TimeZoneInfo.Local
         };
 
         while (startTime < endTime)
