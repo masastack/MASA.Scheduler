@@ -12,6 +12,8 @@ public class SchedulerSqlServerDbContextFactory : IDesignTimeDbContextFactory<Sc
         var configurationBuilder = new ConfigurationBuilder();
         var configuration = configurationBuilder
             .AddJsonFile("appsettings.SqlServer.json")
+            .AddJsonFile("appsettings.secrets.json", optional: true)
+            .AddEnvironmentVariables()
             .Build();
         optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection")!, b => b.MigrationsAssembly("Masa.Scheduler.EntityFrameworkCore.SqlServer"));
 

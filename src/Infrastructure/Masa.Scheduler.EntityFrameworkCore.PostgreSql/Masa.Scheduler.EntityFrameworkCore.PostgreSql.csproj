@@ -20,6 +20,9 @@
 	  <None Update="appsettings.PostgreSql.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	  <None Update="appsettings.secrets.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="qrtz-postgres-sql.txt">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
