@@ -2,8 +2,16 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
+var clientId = builder.Configuration.GetProjectAppId(MasaStackProject.Scheduler, MasaStackApp.WEB)!;
+var ssoHost = builder.Configuration.GetSsoHost()!;
 
-await builder.Services.AddMasaStackConfigAsync(MasaStackProject.Scheduler, MasaStackApp.Service);
+ArgumentNullException.ThrowIfNull(clientId);
+ArgumentNullException.ThrowIfNull(ssoHost);
+
+await builder.Services.AddMasaStackConfigAsync(MasaStackProject.Scheduler, MasaStackApp.Service, callerAction: caller =>
+{
+    caller.UseClientAuthentication(clientId, ssoHost);
+});
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (builder.Environment.IsDevelopment())
@@ -171,6 +179,8 @@ var app = builder.AddServices(options =>
 {
     options.MapHttpMethodsForUnmatched = new[] { "Post" };
 });
+
+await app.Services.SeedAuthSchedulerJobsAsync();
 
 app.UseI18n();
 
