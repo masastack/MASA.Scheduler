@@ -41,7 +41,10 @@ public class StartJobDomainEventHandler
             throw new UserFriendlyException($"SchedulerJob not found, JobId: {@event.Request.JobId}");
         }
 
-        var operatorId = @event.Request.OperatorId == default ? job.Creator : @event.Request.OperatorId;
+        // OperatorId stays Guid.Empty for scheduler-triggered runs (cron / expired compensation).
+        // It must NOT fall back to job.Creator: "Run user" means "who triggered this run", and an
+        // automatic run has no user.
+        var operatorId = @event.Request.OperatorId;
 
         if (@event.Request.OperatorId == Guid.Empty)
         {
