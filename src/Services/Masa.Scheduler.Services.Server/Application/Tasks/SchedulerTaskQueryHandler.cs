@@ -59,7 +59,7 @@ public class SchedulerTaskQueryHandler
 
         if (taskDtos.Any())
         {
-            var userIds = taskDtos.Select(p => p.OperatorId).Distinct().ToList();
+            var userIds = taskDtos.Select(p => p.OperatorId).Where(id => id != Guid.Empty).Distinct().ToList();
 
             var userQuery = new UserQuery() { UserIds = userIds };
 
